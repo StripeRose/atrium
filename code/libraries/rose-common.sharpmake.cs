@@ -9,6 +9,6 @@ public class RoseCommon : RoseGold.Core.Library
     public RoseCommon()
     {
         Name = "rose-common";
-        SourceRootPath = Path.Combine(Globals.RootDirectory, "libraries", "rose-common");
+        SourceRootPath = Path.Combine(Globals.RootDirectory, "libraries");
     }
 }
