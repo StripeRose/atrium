@@ -9,9 +9,8 @@ public class RoseCommon : RoseGold.Core.Library
     public RoseCommon()
     {
         Name = "rose-common";
-        SourceRootPath = Path.Combine(Globals.RootDirectory, "libraries/rose-common");
-
-        SourceFilesExcludeRegex.Add(@".*notready.*");
+        SourceRootPath = Path.Combine(Globals.RootDirectory, "libraries/rose-common/include");
+        AdditionalSourceRootPaths.Add(Path.Combine(Globals.RootDirectory, "libraries/rose-common/source"));
     }
 
     public override void ConfigureAll(Configuration conf, Target target)
