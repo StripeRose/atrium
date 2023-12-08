@@ -1,0 +1,6 @@
+[submodule "tools/Sharpmake"]
+	path = tools/Sharpmake
+	url = https://github.com/ubisoft/Sharpmake
+[submodule "code/libraries/rose-common"]
+	path = code/libraries/rose-common
+	url = https://github.com/StripeRose/rose-common.git

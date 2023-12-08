@@ -10,3 +10,36 @@ The intent of this project is to create a graphics library and game engine that 
 * Keep it simple to use. Every part of the code should be relatively self-explanatory.
 * Allow room for expansion to console systems. Getting it to run on a PS Vita would be really cool.
 * Performance, performance, performance.
+
+## Folder structure
+* `bin`
+* `code`
+    * `apis` - *Non-platform specific API implementations.*
+        * `dx12`
+        * `xinput`
+    * `client`
+        * `bootstrapper`
+        * `windows`
+    * `core` - *Core code in use by the engine and other projects.*
+        * `audio` - *Future API for creating audio playback.*
+        * `graphics` - *API for creating graphics renderers.*
+        * `input` - *API for creating input handlers.*
+        * `platform` - *API for creating platform handlers that tie things together.*
+	* `example`
+    * `libraries` - *External code in use by the project.*
+	* `modules` - *Add-on engine modules.*
+        * `node-editor`
+        * `user-interface`
+* `config`
+* `data`
+    * `assets`
+        * `audio`
+        * `fonts`
+        * `images`
+        * `models`
+        * `shaders`
+        * `video`
+    * `docs`
+    * `localization`
+    * `scripts`
+* `tools`
