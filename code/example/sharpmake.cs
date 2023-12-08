@@ -2,6 +2,7 @@ using System.IO;
 using Sharpmake;
 
 [module: Sharpmake.Include("../core/sharpmake.cs")]
+[module: Sharpmake.Include("../libraries/rose-common.sharpmake.cs")]
 [module: Sharpmake.Include("../modules/sharpmake.cs")]
 
 namespace ExampleGame
@@ -18,6 +19,8 @@ namespace ExampleGame
         public override void ConfigureAll(Project.Configuration conf, Target target)
         {
             base.ConfigureAll(conf, target);
+
+            conf.AddPrivateDependency<RoseCommon>(target);
 
             // Add explicit dependencies to all available core modules.
             // Todo: For non-editor builds, only depend on the actually used modules.
