@@ -154,11 +154,11 @@ namespace RoseGold
         }
     }
 
-    public class Project : Core.Executable
+    public class Executable : Core.Executable
     {
-        public Project()
+        public Executable()
         {
-            Name = "Project";
+            Name = "Executable";
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)

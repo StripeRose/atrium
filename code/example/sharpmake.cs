@@ -7,7 +7,7 @@ using Sharpmake;
 namespace ExampleGame
 {
     [Generate]
-    public class ExampleGame : RoseGold.Project
+    public class ExampleGame : RoseGold.Executable
     {
         public ExampleGame()
         {
