@@ -1,7 +1,7 @@
 
 #include <rose-common/CommandLineParser.hpp>
 
-#include <Win32_WindowManagement.hpp>
+#include <Bootstrapper.hpp>
 
 #include <Windows.h>
 
@@ -16,25 +16,25 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR someCommandArg
 		, anArgumentCount
 #endif
 	);
-	
-	RoseGold::Platform::Win32::WindowManager windowManager;
+
+	RoseGold::Client::BootstrapResult roseGold = RoseGold::Client::Bootstrap();
 
 	RoseGold::Core::Platform::WindowManager::CreationParameters windowParams;
 
 	windowParams.Title = "Test window";
-	windowManager.NewWindow(windowParams);
+	roseGold.WindowManager->NewWindow(windowParams);
 
 	windowParams.Title = "Test window 2";
 	windowParams.Size = { 800, 600 };
-	windowManager.NewWindow(windowParams);
+	roseGold.WindowManager->NewWindow(windowParams);
 
 	windowParams.Title = "Test window 3";
 	windowParams.Size = { 200, 200 };
-	windowManager.NewWindow(windowParams);
+	roseGold.WindowManager->NewWindow(windowParams);
 
-	while (!windowManager.GetWindows().empty())
+	while (!roseGold.WindowManager->GetWindows().empty())
 	{
-		windowManager.Update();
+		roseGold.WindowManager->Update();
 	}
 
 	return 0;
