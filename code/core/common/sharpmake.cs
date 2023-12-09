@@ -21,7 +21,7 @@ namespace RoseGold.Core
 
             conf.Output = Configuration.OutputType.Utility; // Remove when there's code to build.
 
-            conf.SolutionFolder = "rose-gold";
+            conf.SolutionFolder = "rose-gold/core";
             conf.AddPublicDependency<RoseCommon>(target);
         }
     }
