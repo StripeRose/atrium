@@ -23,6 +23,8 @@ namespace RoseGold
             conf.AddPublicDependency<Core.Graphics>(target);
 
             conf.AddPrivateDependency<RoseCommon>(target);
+
+            conf.Output = Configuration.OutputType.Utility; // Remove when there's code to build.
             
             //conf.AddPrivateDependency<Client.WindowsClient>(target);
             

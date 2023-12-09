@@ -13,5 +13,12 @@ namespace RoseGold.Modules
         {
             Name = "Node graphs";
         }
+
+        public override void ConfigureAll(Project.Configuration conf, Target target)
+        {
+            base.ConfigureAll(conf, target);
+            
+            conf.Output = Configuration.OutputType.Utility; // Remove when there's code to build.
+        }
     }
 }
