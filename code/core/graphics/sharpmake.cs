@@ -1,6 +1,7 @@
 using System.IO;
 using Sharpmake;
 
+[module: Sharpmake.Include("../sharpmake.cs")]
 [module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 
@@ -20,6 +21,9 @@ namespace RoseGold.Core
             base.ConfigureAll(conf, target);
 
             conf.SolutionFolder = "rose-gold/core";
+
+            conf.AddPublicDependency<RoseGold.Core.Common>(target);
+            
             conf.AddPrivateDependency<RoseCommon>(target);
         }
     }
