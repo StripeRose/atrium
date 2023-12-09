@@ -1,7 +1,7 @@
 using System.IO;
 using Sharpmake;
 
-[module: Sharpmake.Include("../core/sharpmake.cs")]
+[module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 [module: Sharpmake.Include("./node-graphs/sharpmake.cs")]
 
 namespace RoseGold.Modules

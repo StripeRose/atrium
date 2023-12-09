@@ -1,7 +1,7 @@
 using System.IO;
 using Sharpmake;
 
-[module: Sharpmake.Include("../../core/sharpmake.cs")]
+[module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
 [module: Sharpmake.Include("../../apis/dx12/sharpmake.cs")]
 [module: Sharpmake.Include("../windows/sharpmake.cs")]
 

@@ -1,8 +1,8 @@
 using System.IO;
 using Sharpmake;
 
-[module: Sharpmake.Include("core/sharpmake.cs")]
-[module: Sharpmake.Include("client/bootstrapper/sharpmake.cs")]
+[module: Sharpmake.Include("coreproject.sharpmake.cs")]
+[module: Sharpmake.Include("../client/bootstrapper/sharpmake.cs")]
 
 namespace RoseGold
 {

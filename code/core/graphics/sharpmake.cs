@@ -1,7 +1,7 @@
 using System.IO;
 using Sharpmake;
 
-[module: Sharpmake.Include("../sharpmake.cs")]
+[module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 
 namespace RoseGold.Core
