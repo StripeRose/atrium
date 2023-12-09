@@ -12,7 +12,7 @@ The intent of this project is to create a graphics library and game engine that 
 * Performance, performance, performance.
 
 ## Folder structure
-* `bin`
+* `build`
 * `code`
     * `apis` - *Non-platform specific API implementations.*
         * `dx12`
@@ -25,11 +25,13 @@ The intent of this project is to create a graphics library and game engine that 
         * `graphics` - *API for creating graphics renderers.*
         * `input` - *API for creating input handlers.*
         * `platform` - *API for creating platform handlers that tie things together.*
+    * `engine` - *Basics of the engine itself. Scene and component management, amongst other things.*
 	* `example`
     * `libraries` - *External code in use by the project.*
-	* `modules` - *Add-on engine modules.*
+	* `modules` - *Add-on modules for the engine.*
         * `node-editor`
         * `user-interface`
+        * `...`
 * `config`
 * `data`
     * `assets`

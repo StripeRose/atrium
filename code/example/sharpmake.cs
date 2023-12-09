@@ -1,7 +1,7 @@
 using System.IO;
 using Sharpmake;
 
-[module: Sharpmake.Include("../core/sharpmake.cs")]
+[module: Sharpmake.Include("../project.sharpmake.cs")]
 [module: Sharpmake.Include("../libraries/rose-common.sharpmake.cs")]
 [module: Sharpmake.Include("../modules/sharpmake.cs")]
 

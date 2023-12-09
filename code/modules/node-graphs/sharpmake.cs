@@ -11,7 +11,7 @@ namespace RoseGold.Modules
         public NodeGraphs()
             : base("node-graphs")
         {
-            Name = "Node-graphs";
+            Name = "Node graphs";
         }
     }
 }

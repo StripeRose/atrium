@@ -10,7 +10,7 @@ namespace RoseGold.Client
     {
         public WindowsClient()
         {
-            Name = "Windows client";
+            Name = "Windows";
             SourceRootPath = Path.Combine(Globals.RootDirectory, "client", "windows");
         }
 
