@@ -2,6 +2,8 @@ using System.IO;
 using Sharpmake;
 
 [module: Sharpmake.Include("../../core/sharpmake.cs")]
+[module: Sharpmake.Include("../../core/graphics/sharpmake.cs")]
+[module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 
 namespace RoseGold
 {
@@ -18,7 +20,10 @@ namespace RoseGold
         {
             base.ConfigureAll(conf, target);
             conf.SolutionFolder = "rose-gold/apis";
-            //conf.AddPublicDependency<Fireblade.Core>(target);
+            conf.AddPublicDependency<Core.Graphics>(target);
+
+            conf.AddPrivateDependency<RoseCommon>(target);
+            
             //conf.AddPrivateDependency<Client.WindowsClient>(target);
             
             // if (target.Optimization != Optimization.Retail)

@@ -27,8 +27,8 @@ namespace RoseGold.Client
 
             switch (target.Platform)
             {
-                case Platform.win32:
-                case Platform.win64:
+                case Sharpmake.Platform.win32:
+                case Sharpmake.Platform.win64:
                     conf.AddPrivateDependency<WindowsClient>(target);
                     conf.AddPrivateDependency<DirectX12>(target);
                     break;

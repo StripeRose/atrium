@@ -110,16 +110,16 @@ namespace RoseGold
                 Name = "New core library";
 
                 AddTargets(new Target(
-                    Platform.win32 | Platform.win64,
-                    DevEnv.vs2022,
-                    Optimization.Debug | Optimization.Release | Optimization.Retail,
-                    OutputType.Lib));
+                    Sharpmake.Platform.win32 | Sharpmake.Platform.win64,
+                    Sharpmake.DevEnv.vs2022,
+                    Sharpmake.Optimization.Debug | Sharpmake.Optimization.Release | Sharpmake.Optimization.Retail,
+                    Sharpmake.OutputType.Lib));
             }
 
             public override void ConfigureAll(Project.Configuration conf, Target target)
             {
                 base.ConfigureAll(conf, target);
-                conf.Output = Project.Configuration.OutputType.Lib;
+                conf.Output = Sharpmake.Project.Configuration.OutputType.Lib;
             }
         }
 
@@ -130,9 +130,9 @@ namespace RoseGold
                 Name = "New core executable";
 
                 AddTargets(new Target(
-                    Platform.win32 | Platform.win64,
-                    DevEnv.vs2022,
-                    Optimization.Debug | Optimization.Release | Optimization.Retail));
+                    Sharpmake.Platform.win32 | Sharpmake.Platform.win64,
+                    Sharpmake.DevEnv.vs2022,
+                    Sharpmake.Optimization.Debug | Sharpmake.Optimization.Release | Sharpmake.Optimization.Retail));
             }
         }
     }

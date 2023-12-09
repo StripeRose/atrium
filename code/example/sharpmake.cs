@@ -36,9 +36,9 @@ namespace ExampleGame
             Name = "Example game";
 
             AddTargets(new Target(
-                Platform.win32 | Platform.win64,
-                DevEnv.vs2022,
-                Optimization.Debug | Optimization.Release | Optimization.Retail));
+                Sharpmake.Platform.win32 | Sharpmake.Platform.win64,
+                Sharpmake.DevEnv.vs2022,
+                Sharpmake.Optimization.Debug | Sharpmake.Optimization.Release | Sharpmake.Optimization.Retail));
         }
 
         public override void ConfigureAll(Solution.Configuration conf, Target target)
