@@ -1,7 +1,5 @@
 #include "DX12_Diagnostics.hpp"
 
-#include <Common_Debug.hpp>
-
 #include <comdef.h>
 
 namespace RoseGold::DirectX12

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "DX12_CommandQueue.hpp"
 #include "DX12_ComPtr.hpp"
+#include "DX12_DescriptorHeapManager.hpp"
 
 #include <Platform_WindowManagement.hpp>
 
@@ -27,6 +29,13 @@ namespace RoseGold::DirectX12
 
 		void CreateSwapChain(Core::Platform::Window& aWindow);
 
+		const DeviceParameters& GetParameters() const { return myParameters; }
+
+		ComPtr<ID3D12Device> GetDevice() { return myDevice; }
+		ComPtr<IDXGIFactory4> GetFactory() { return myDXGIFactory; }
+		DescriptorHeapManager& GetDescriptorHeapManager() { return *myDescriptorHeapManager; }
+		CommandQueueManager& GetCommandQueueManager() { return *myCommandQueues.get(); }
+
 	private:
 #ifdef _DEBUG
 		void SetupDebug(UINT& someDXGIFlagsOut);
@@ -44,8 +53,8 @@ namespace RoseGold::DirectX12
 		ComPtr<IDXGIAdapter1> myAdapter;
 		ComPtr<ID3D12Device> myDevice;
 		ComPtr<ID3D12InfoQueue> myInfoQueue;
-		//std::unique_ptr<CommandQueueManager> myCommandQueues;
-		//std::unique_ptr<DescriptorHeapManager> myDescriptorHeapManager;
+		std::unique_ptr<CommandQueueManager> myCommandQueues;
+		std::unique_ptr<DescriptorHeapManager> myDescriptorHeapManager;
 
 		/*std::mutex mySwapChainMutex;
 		std::map<Platform::DrawSurface*, std::unique_ptr<SwapChain>> myDrawSurfaceSwapChain;

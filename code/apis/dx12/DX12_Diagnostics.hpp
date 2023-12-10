@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Common_Debug.hpp>
+
 #include <Windows.h>
 
 namespace RoseGold::DirectX12

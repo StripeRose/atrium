@@ -2,8 +2,6 @@
 
 #include "DX12_Diagnostics.hpp"
 
-#include <Common_Debug.hpp>
-
 #ifdef _DEBUG
 #include <dxgidebug.h>
 #include <d3d12sdklayers.h>
@@ -212,12 +210,12 @@ namespace RoseGold::DirectX12
 		static const D3D_FEATURE_LEVEL s_featureLevels[] =
 		{
 #if defined(NTDDI_WIN10_FE) || defined(USING_D3D12_AGILITY_SDK)
-					D3D_FEATURE_LEVEL_12_2,
+			D3D_FEATURE_LEVEL_12_2,
 #endif
-					D3D_FEATURE_LEVEL_12_1,
-					D3D_FEATURE_LEVEL_12_0,
-					D3D_FEATURE_LEVEL_11_1,
-					D3D_FEATURE_LEVEL_11_0,
+			D3D_FEATURE_LEVEL_12_1,
+			D3D_FEATURE_LEVEL_12_0,
+			D3D_FEATURE_LEVEL_11_1,
+			D3D_FEATURE_LEVEL_11_0,
 		};
 
 		D3D12_FEATURE_DATA_FEATURE_LEVELS featLevels =
@@ -235,19 +233,18 @@ namespace RoseGold::DirectX12
 
 	bool Device::SetupCommandQueue()
 	{
-		/*if (!myDevice)
+		if (!myDevice)
 			return false;
 
 		myCommandQueues.reset(new CommandQueueManager(myDevice));
-		return myCommandQueues.get() != nullptr;*/
+		return myCommandQueues.get() != nullptr;
 
 		return true;
 	}
 
 	bool Device::SetupHeapManager()
 	{
-		//myDescriptorHeapManager.reset(new DescriptorHeapManager(myDevice));
-		//return myDescriptorHeapManager.get() != nullptr;
-		return true;
+		myDescriptorHeapManager.reset(new DescriptorHeapManager(myDevice));
+		return myDescriptorHeapManager.get() != nullptr;
 	}
 }
