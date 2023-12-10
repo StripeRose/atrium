@@ -2,7 +2,7 @@
 
 #include <windowsx.h>
 
-namespace RoseGold::Platform::Win32
+namespace RoseGold::Win32
 {
 	Window::~Window()
 	{

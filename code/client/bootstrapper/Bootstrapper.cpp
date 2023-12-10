@@ -1,12 +1,14 @@
 #include "Bootstrapper.hpp"
 
+#include <DX12_Manager.hpp>
 #include <Win32_WindowManagement.hpp>
 
 namespace RoseGold::Client
 {
 	void Bootstrap_Windows(BootstrapResult& aResult)
 	{
-		aResult.WindowManager.reset(new Platform::Win32::WindowManager());
+		aResult.GraphicsManager.reset(new DirectX12::Manager());
+		aResult.WindowManager.reset(new Win32::WindowManager());
 	}
 
 	BootstrapResult Bootstrap()

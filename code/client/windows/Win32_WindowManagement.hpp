@@ -5,7 +5,7 @@
 #include <Windows.h>
 #include <windowsx.h>
 
-namespace RoseGold::Platform::Win32
+namespace RoseGold::Win32
 {
 	class WindowManager;
 	class Window final : public Core::Platform::Window

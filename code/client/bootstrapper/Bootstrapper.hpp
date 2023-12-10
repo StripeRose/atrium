@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Graphics_Manager.hpp>
 #include <Platform_WindowManagement.hpp>
 
 #include <memory>
@@ -9,6 +10,7 @@ namespace RoseGold::Client
 	struct BootstrapResult
 	{
 		// Todo: Add eventual graphics, audio and input handlers.
+		std::unique_ptr<Core::Graphics::Manager> GraphicsManager;
 		std::unique_ptr<Core::Platform::WindowManager> WindowManager;
 	};
 
