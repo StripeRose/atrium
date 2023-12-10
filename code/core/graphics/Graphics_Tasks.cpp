@@ -21,7 +21,7 @@ namespace RoseGold::Core::Graphics
 	void GraphicsTask::AddDependency(GraphicsTask& aTask)
 	{
 		Debug::Assert(
-			!DependsOn(aTask),
+			!aTask.DependsOn(*this),
 			"GraphicsTask circular dependency.");
 		myDependencies.push_back(&aTask);
 	}
