@@ -17,6 +17,9 @@ namespace RoseGold::DirectX12
 
 		bool SupportsMultipleWindows() const override { return true; }
 
+		void MarkFrameStart() override;
+		void MarkFrameEnd() override;
+
 	private:
 		void ReportUnreleasedObjects();
 

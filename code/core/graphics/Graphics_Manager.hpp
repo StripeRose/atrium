@@ -12,5 +12,8 @@ namespace RoseGold::Core::Graphics
 		virtual void CreateSwapChain(Platform::Window& aWindow) = 0;
 
 		virtual bool SupportsMultipleWindows() const = 0;
+
+		virtual void MarkFrameStart() = 0;
+		virtual void MarkFrameEnd() = 0;
 	};
 }

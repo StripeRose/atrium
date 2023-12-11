@@ -3,6 +3,7 @@
 #include "DX12_CommandQueue.hpp"
 #include "DX12_ComPtr.hpp"
 #include "DX12_DescriptorHeapManager.hpp"
+#include "DX12_SwapChain.hpp"
 
 #include <Platform_WindowManagement.hpp>
 
@@ -27,7 +28,11 @@ namespace RoseGold::DirectX12
 	public:
 		Device(const DeviceParameters& someParameters = { });
 
-		void CreateSwapChain(Core::Platform::Window& aWindow);
+		void UpdateSwapchainResolutions();
+
+		SwapChain* CreateSwapChain(Core::Platform::Window& aWindow);
+		SwapChain* GetSwapChain(Core::Platform::Window& aWindow);
+		std::vector<SwapChain*> GetSwapChains();
 
 		const DeviceParameters& GetParameters() const { return myParameters; }
 
@@ -56,9 +61,8 @@ namespace RoseGold::DirectX12
 		std::unique_ptr<CommandQueueManager> myCommandQueues;
 		std::unique_ptr<DescriptorHeapManager> myDescriptorHeapManager;
 
-		/*std::mutex mySwapChainMutex;
-		std::map<Platform::DrawSurface*, std::unique_ptr<SwapChain>> myDrawSurfaceSwapChain;
-		SwapChain* myPrimarySwapChain;*/
+		std::mutex mySwapChainMutex;
+		std::map<Core::Platform::Window*, std::unique_ptr<SwapChain>> myDrawSurfaceSwapChain;
 
 		DeviceParameters myParameters;
 		D3D_FEATURE_LEVEL myFeatureLevel;

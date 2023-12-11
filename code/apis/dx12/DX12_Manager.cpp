@@ -31,6 +31,18 @@ namespace RoseGold::DirectX12
 		myDevice->CreateSwapChain(aWindow);
 	}
 
+	void Manager::MarkFrameStart()
+	{
+		myDevice->UpdateSwapchainResolutions();
+	}
+
+	void Manager::MarkFrameEnd()
+	{
+		std::vector<SwapChain*> swapChains = myDevice->GetSwapChains();
+		for (SwapChain* swapChain : swapChains)
+			swapChain->Present();
+	}
+
 	void Manager::ReportUnreleasedObjects()
 	{
 #if _DEBUG

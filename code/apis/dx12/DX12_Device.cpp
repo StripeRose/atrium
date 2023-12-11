@@ -1,6 +1,7 @@
 #include "DX12_Device.hpp"
 
 #include "DX12_Diagnostics.hpp"
+#include "DX12_RenderTexture.hpp"
 
 #ifdef _DEBUG
 #include <dxgidebug.h>
@@ -27,9 +28,35 @@ namespace RoseGold::DirectX12
 		SetupHeapManager();
 	}
 
-	void Device::CreateSwapChain(Core::Platform::Window& aWindow)
+	void Device::UpdateSwapchainResolutions()
 	{
-		aWindow;
+		const std::scoped_lock lock(mySwapChainMutex);
+		for (auto& swapChain : myDrawSurfaceSwapChain)
+			swapChain.second->UpdateResolution();
+	}
+
+	SwapChain* Device::CreateSwapChain(Core::Platform::Window& aWindow)
+	{
+		const std::scoped_lock lock(mySwapChainMutex);
+		std::unique_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
+		swapChain.reset(new SwapChain(*this, aWindow));
+		return swapChain.get();
+	}
+
+	SwapChain* Device::GetSwapChain(Core::Platform::Window& aWindow)
+	{
+		const std::scoped_lock lock(mySwapChainMutex);
+		auto it = myDrawSurfaceSwapChain.find(&aWindow);
+		return (it != myDrawSurfaceSwapChain.end()) ? it->second.get() : nullptr;
+	}
+
+	std::vector<SwapChain*> Device::GetSwapChains()
+	{
+		const std::scoped_lock lock(mySwapChainMutex);
+		std::vector<SwapChain*> swapChains;
+		for (auto& swapChain : myDrawSurfaceSwapChain)
+			swapChains.push_back(swapChain.second.get());
+		return swapChains;
 	}
 
 #if _DEBUG
