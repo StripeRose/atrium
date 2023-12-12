@@ -2,7 +2,7 @@
 
 namespace RoseGold::Core::Graphics
 {
-	void CommandBuffer::Clear(RoseCommon::Color aClearColor)
+	void CommandBuffer::Clear(Color aClearColor)
 	{
 		myRecordedCommands.emplace_back(
 			[aClearColor](CommandBuffer& aBuffer)
@@ -22,7 +22,7 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
-	void CommandBuffer::Clear(RoseCommon::Color aClearColor, float aClearDepth)
+	void CommandBuffer::Clear(Color aClearColor, float aClearDepth)
 	{
 		myRecordedCommands.emplace_back(
 			[aClearColor, aClearDepth](CommandBuffer& aBuffer)

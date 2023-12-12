@@ -1,6 +1,6 @@
 #pragma once
 
-#include <rose-common/Color.hpp>
+#include "Common_Color.hpp"
 
 #include <functional>
 #include <vector>
@@ -17,9 +17,9 @@ namespace RoseGold::Core::Graphics
 		// virtual void Blit(RenderTarget aSource, RenderTarget aTarget, Material aMaterial);
 		// virtual void Blit(RenderTarget aSource, RenderTarget aTarget, Vector2 aScale, Vector2 anOffset);
 
-		virtual void Clear(RoseCommon::Color aClearColor);
+		virtual void Clear(Color aClearColor);
 		virtual void Clear(float aClearDepth);
-		virtual void Clear(RoseCommon::Color aClearColor, float aClearDepth);
+		virtual void Clear(Color aClearColor, float aClearDepth);
 
 		// virtual void ConvertTexture(Texture aSource, Texture aDestination);
 
