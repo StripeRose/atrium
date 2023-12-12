@@ -169,7 +169,7 @@ namespace RoseGold::DirectX12
 				return;
 			}
 
-			const Math::Rectangle<LONG> windowRect = Math::Rectangle<LONG>::FromExtents(
+			const Math::RectangleT<LONG> windowRect = Math::RectangleT<LONG>::FromExtents(
 				{ windowBounds.left, windowBounds.top },
 				{ windowBounds.right, windowBounds.bottom }
 			);
@@ -190,7 +190,7 @@ namespace RoseGold::DirectX12
 					// Get the rectangle bounds of current output.
 					DXGI_OUTPUT_DESC desc;
 					AssertSuccess(output->GetDesc(&desc));
-					const Math::Rectangle<LONG> desktopCoordinates = Math::Rectangle<LONG>::FromExtents(
+					const Math::RectangleT<LONG> desktopCoordinates = Math::RectangleT<LONG>::FromExtents(
 						{ desc.DesktopCoordinates.left, desc.DesktopCoordinates.top },
 						{ desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom });
 
