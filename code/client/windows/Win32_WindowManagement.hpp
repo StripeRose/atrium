@@ -25,6 +25,8 @@ namespace RoseGold::Win32
 
 		LRESULT HandleWindowMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+		void DestroyWindow();
+
 	private:
 		HWND myWindowHandle;
 		HCURSOR myDefaultCursor;
@@ -41,7 +43,7 @@ namespace RoseGold::Win32
 
 		std::shared_ptr<Core::Platform::Window> NewWindow(const CreationParameters& someParameters) override;
 
-		std::vector<std::shared_ptr<Core::Platform::Window>> GetWindows() const override { return myWindows; }
+		std::vector<std::shared_ptr<Core::Platform::Window>> GetWindows() const override;
 
 		void Update() override;
 
@@ -54,7 +56,7 @@ namespace RoseGold::Win32
 
 		void ProcessWindowMessages();
 
-		std::vector<std::shared_ptr<Core::Platform::Window>> myWindows;
+		std::vector<std::shared_ptr<Win32::Window>> myWindows;
 		std::vector<WNDCLASSEX> myWindowClasses;
 	};
 }

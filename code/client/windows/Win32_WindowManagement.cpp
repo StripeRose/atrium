@@ -1,13 +1,13 @@
 #include "Win32_WindowManagement.hpp"
 
+#include <memory>
 #include <windowsx.h>
 
 namespace RoseGold::Win32
 {
 	Window::~Window()
 	{
-		OnClosed.Invoke();
-		::DestroyWindow(myWindowHandle);
+		DestroyWindow();
 	}
 
 	void Window::Close()
@@ -137,6 +137,16 @@ namespace RoseGold::Win32
 		return ::DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 
+	void Window::DestroyWindow()
+	{
+		if (myWindowHandle == NULL)
+			return;
+
+		OnClosed.Invoke();
+		::DestroyWindow(myWindowHandle);
+		myWindowHandle = NULL;
+	}
+
 	WindowManager::WindowManager()
 	{
 		RegisterWindowClasses();
@@ -155,6 +165,14 @@ namespace RoseGold::Win32
 		return newWindow;
 	}
 
+	std::vector<std::shared_ptr<Core::Platform::Window>> WindowManager::GetWindows() const
+	{
+		std::vector<std::shared_ptr<Core::Platform::Window>> windows;
+		for (const auto& window : myWindows)
+			windows.push_back(static_pointer_cast<Core::Platform::Window>(window));
+		return windows;
+	}
+
 	void WindowManager::Update()
 	{
 		ProcessWindowMessages();
@@ -166,7 +184,9 @@ namespace RoseGold::Win32
 			if (window->myHasRequestedClose)
 			{
 				window->myHasRequestedClose = false;
-				myWindows.erase(myWindows.begin() + reverseIndex);
+				auto currentWindowIterator = myWindows.begin() + reverseIndex;
+				currentWindowIterator->get()->DestroyWindow();
+				myWindows.erase(currentWindowIterator);
 			}
 		}
 	}
