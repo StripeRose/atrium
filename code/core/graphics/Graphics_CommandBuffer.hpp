@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Graphics_RenderTexture.hpp"
+
 #include "Common_Color.hpp"
 
 #include <functional>
@@ -10,6 +12,8 @@ namespace RoseGold::Core::Graphics
 	class CommandBuffer
 	{
 	public:
+		void RerecordTo(CommandBuffer& anOtherCommandBuffer) const;
+
 		// virtual void Blit(Texture aSource, RenderTarget aTarget);
 		// virtual void Blit(Texture aSource, RenderTarget aTarget, Material aMaterial);
 		// virtual void Blit(Texture aSource, RenderTarget aTarget, Vector2 aScale, Vector2 anOffset);
@@ -49,8 +53,8 @@ namespace RoseGold::Core::Graphics
 
 		//virtual void SetProjectionMatrix(const System::Math::Matrix& aMatrix);
 
-		//virtual void SetRenderTarget(Resource<RenderTexture> aTexture);
-		// virtual void SetRenderTarget(Resource<RenderTexture> aTexture, unsigned int aMipLevel);
+		virtual void SetRenderTarget(std::shared_ptr<RenderTexture> aTexture);
+		//virtual void SetRenderTarget(RenderTexture& aTexture, unsigned int aMipLevel);
 
 		// Transforms world space into camera space.
 		//virtual void SetViewMatrix(const System::Math::Matrix& aMatrix);
@@ -58,8 +62,6 @@ namespace RoseGold::Core::Graphics
 		//virtual void SetViewport(const System::Math::Rectangle<float>& aRectangle);
 
 		// virtual void WaitOnGraphicsFence(GraphicsFence aFence);
-
-		virtual void Reset();
 
 	protected:
 		std::vector<std::function<void(CommandBuffer&)>> myRecordedCommands;

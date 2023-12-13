@@ -2,6 +2,12 @@
 
 namespace RoseGold::Core::Graphics
 {
+	void CommandBuffer::RerecordTo(CommandBuffer& anOtherCommandBuffer) const
+	{
+		for (const auto& commands : myRecordedCommands)
+			commands(anOtherCommandBuffer);
+	}
+
 	void CommandBuffer::Clear(Color aClearColor)
 	{
 		myRecordedCommands.emplace_back(
@@ -32,8 +38,13 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
-	void CommandBuffer::Reset()
+	void CommandBuffer::SetRenderTarget(std::shared_ptr<RenderTexture> aTexture)
 	{
-		myRecordedCommands.clear();
+		myRecordedCommands.emplace_back(
+			[aTexture](CommandBuffer& aBuffer)
+			{
+				aBuffer.SetRenderTarget(aTexture);
+			}
+		);
 	}
 }

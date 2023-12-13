@@ -28,6 +28,13 @@ namespace RoseGold::DirectX12
 		SetupHeapManager();
 	}
 
+	Device::~Device()
+	{
+		myCommandQueues.reset();
+		myDrawSurfaceSwapChain.clear();
+		myDescriptorHeapManager.reset();
+	}
+
 	void Device::UpdateSwapchainResolutions()
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
@@ -35,27 +42,27 @@ namespace RoseGold::DirectX12
 			swapChain.second->UpdateResolution();
 	}
 
-	SwapChain* Device::CreateSwapChain(Core::Platform::Window& aWindow)
+	std::shared_ptr<SwapChain> Device::CreateRenderTextureForWindow(Core::Platform::Window& aWindow)
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
-		std::unique_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
+		std::shared_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
 		swapChain.reset(new SwapChain(*this, aWindow));
-		return swapChain.get();
+		return swapChain;
 	}
 
-	SwapChain* Device::GetSwapChain(Core::Platform::Window& aWindow)
+	std::shared_ptr<SwapChain> Device::GetSwapChain(Core::Platform::Window& aWindow)
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
 		auto it = myDrawSurfaceSwapChain.find(&aWindow);
-		return (it != myDrawSurfaceSwapChain.end()) ? it->second.get() : nullptr;
+		return (it != myDrawSurfaceSwapChain.end()) ? it->second : nullptr;
 	}
 
-	std::vector<SwapChain*> Device::GetSwapChains()
+	std::vector<std::shared_ptr<SwapChain>> Device::GetSwapChains()
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
-		std::vector<SwapChain*> swapChains;
+		std::vector<std::shared_ptr<SwapChain>> swapChains;
 		for (auto& swapChain : myDrawSurfaceSwapChain)
-			swapChains.push_back(swapChain.second.get());
+			swapChains.push_back(swapChain.second);
 		return swapChains;
 	}
 

@@ -12,7 +12,7 @@ namespace RoseGold::DirectX12
 		: myDevice(&aDevice)
 		, myWindow(&aWindow)
 	{
-		CreateSwapChain();
+		CreateRenderTextureForWindow();
 		UpdateColorSpace();
 
 		int windowWidth, windowHeight;
@@ -41,14 +41,6 @@ namespace RoseGold::DirectX12
 		mySwapChain->Present(1, 0);
 	}
 
-	RenderTexture* SwapChain::GetRenderTexture()
-	{
-		if (myBackBuffers.size() > GetCurrentBufferIndex())
-			return myBackBuffers.at(GetCurrentBufferIndex()).get();
-		else
-			return nullptr;
-	}
-
 	unsigned int SwapChain::GetCurrentBufferIndex() const
 	{
 		return mySwapChain->GetCurrentBackBufferIndex();
@@ -59,7 +51,122 @@ namespace RoseGold::DirectX12
 		return 2;
 	}
 
-	void SwapChain::CreateSwapChain()
+	const DescriptorHeapHandle* SwapChain::GetColorView() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetColorView();
+	}
+
+	const DescriptorHeapHandle* SwapChain::GetDepthStencilView() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthStencilView();
+	}
+
+	ID3D12Resource* SwapChain::GetColorResource() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetColorResource();
+	}
+
+	ID3D12Resource* SwapChain::GetDepthResource() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthResource();
+	}
+
+	const Core::Graphics::RenderTextureDescriptor& SwapChain::GetDescriptor() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetDescriptor();
+	}
+
+	void* SwapChain::GetNativeDepthBufferPtr() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetNativeDepthBufferPtr();
+	}
+
+	void SwapChain::SetFilterMode(Core::Graphics::FilterMode aFilterMode)
+	{
+		for (auto backBuffer : myBackBuffers)
+			backBuffer->SetFilterMode(aFilterMode);
+	}
+
+	Core::Graphics::TextureDimension SwapChain::GetDimensions() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetDimensions();
+	}
+
+	unsigned int SwapChain::GetDepth() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepth();
+	}
+
+	Core::Graphics::FilterMode SwapChain::GetFilterMode() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetFilterMode();
+	}
+
+	unsigned int SwapChain::GetHeight() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetHeight();
+	}
+
+	bool SwapChain::IsReadable() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->IsReadable();
+	}
+
+	unsigned int SwapChain::GetMipmapCount() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetMipmapCount();
+	}
+
+	unsigned int SwapChain::GetWidth() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetWidth();
+	}
+
+	Core::Graphics::TextureWrapMode SwapChain::GetWrapModeU() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeU();
+	}
+
+	Core::Graphics::TextureWrapMode SwapChain::GetWrapModeV() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeV();
+	}
+
+	Core::Graphics::TextureWrapMode SwapChain::GetWrapModeW() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeW();
+	}
+
+	void SwapChain::SetWrapMode(Core::Graphics::TextureWrapMode aWrapMode)
+	{
+		for (auto backBuffer : myBackBuffers)
+			backBuffer->SetWrapMode(aWrapMode);
+	}
+
+	void SwapChain::SetWrapModeU(Core::Graphics::TextureWrapMode aWrapMode) const
+	{
+		for (auto backBuffer : myBackBuffers)
+			backBuffer->SetWrapModeU(aWrapMode);
+	}
+
+	void SwapChain::SetWrapModeV(Core::Graphics::TextureWrapMode aWrapMode) const
+	{
+		for (auto backBuffer : myBackBuffers)
+			backBuffer->SetWrapModeV(aWrapMode);
+	}
+
+	void SwapChain::SetWrapModeW(Core::Graphics::TextureWrapMode aWrapMode) const
+	{
+		for (auto backBuffer : myBackBuffers)
+			backBuffer->SetWrapModeW(aWrapMode);
+	}
+
+	void* SwapChain::GetNativeTexturePtr() const
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetNativeTexturePtr();
+	}
+
+	void SwapChain::CreateRenderTextureForWindow()
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDescriptor = {};
 		int windowWidth, windowHeight;

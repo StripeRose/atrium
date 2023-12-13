@@ -9,8 +9,20 @@
 
 namespace RoseGold::DirectX12
 {
+	class RenderTarget : public Core::Graphics::RenderTexture
+	{
+	public:
+		virtual bool IsSwapChain() const = 0;
+
+		virtual const DescriptorHeapHandle* GetColorView() const = 0;
+		virtual const DescriptorHeapHandle* GetDepthStencilView() const = 0;
+
+		virtual ID3D12Resource* GetColorResource() const = 0;
+		virtual ID3D12Resource* GetDepthResource() const = 0;
+	};
+
 	class Device;
-	class RenderTexture : public Core::Graphics::RenderTexture
+	class RenderTexture : public RenderTarget
 	{
 	public:
 		RenderTexture(
@@ -25,11 +37,13 @@ namespace RoseGold::DirectX12
 		);
 		~RenderTexture() override = default;
 
-		const DescriptorHeapHandle* GetColorView() const { return myRSVHandle.get(); }
-		const DescriptorHeapHandle* GetDepthStencilView() const { return myDSVHandle.get(); }
+		const DescriptorHeapHandle* GetColorView() const override { return myRSVHandle.get(); }
+		const DescriptorHeapHandle* GetDepthStencilView() const override { return myDSVHandle.get(); }
 
-		ID3D12Resource* GetColorResource() const { return myColorBuffer.Get(); }
-		ID3D12Resource* GetDepthResource() const { return myDepthBuffer.Get(); }
+		ID3D12Resource* GetColorResource() const override { return myColorBuffer.Get(); }
+		ID3D12Resource* GetDepthResource() const override { return myDepthBuffer.Get(); }
+
+		bool IsSwapChain() const override { return false; }
 
 		// Implementing RenderTexture
 	public:

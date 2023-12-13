@@ -27,12 +27,13 @@ namespace RoseGold::DirectX12
 
 	public:
 		Device(const DeviceParameters& someParameters = { });
+		~Device();
 
 		void UpdateSwapchainResolutions();
 
-		SwapChain* CreateSwapChain(Core::Platform::Window& aWindow);
-		SwapChain* GetSwapChain(Core::Platform::Window& aWindow);
-		std::vector<SwapChain*> GetSwapChains();
+		std::shared_ptr<SwapChain> CreateRenderTextureForWindow(Core::Platform::Window& aWindow);
+		std::shared_ptr<SwapChain> GetSwapChain(Core::Platform::Window& aWindow);
+		std::vector<std::shared_ptr<SwapChain>> GetSwapChains();
 
 		const DeviceParameters& GetParameters() const { return myParameters; }
 
@@ -62,7 +63,7 @@ namespace RoseGold::DirectX12
 		std::unique_ptr<DescriptorHeapManager> myDescriptorHeapManager;
 
 		std::mutex mySwapChainMutex;
-		std::map<Core::Platform::Window*, std::unique_ptr<SwapChain>> myDrawSurfaceSwapChain;
+		std::map<Core::Platform::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
 
 		DeviceParameters myParameters;
 		D3D_FEATURE_LEVEL myFeatureLevel;

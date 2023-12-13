@@ -10,10 +10,10 @@ namespace RoseGold::Core::Graphics
 		: myName(aName)
 	{ }
 
-	void GraphicsTask::ResolveWorkTasks(std::vector<GraphicsTask*>& outTasks)
+	void GraphicsTask::ResolveWorkTasks(std::vector<const GraphicsTask*>& outTasks) const
 	{
 		GetWorkTasks(outTasks);
-		std::sort(outTasks.begin(), outTasks.end(), [](GraphicsTask* a, GraphicsTask* b) {
+		std::sort(outTasks.begin(), outTasks.end(), [](const GraphicsTask* a, const GraphicsTask* b) {
 			return b->DependsOn(*a);
 			});
 	}
@@ -29,7 +29,7 @@ namespace RoseGold::Core::Graphics
 	CommandBuffer& GraphicsTask::AddWork()
 	{
 		Debug::Assert(myTasks.empty(), "A group task cannot itself contain any work.");
-		return myCommandBuffers.emplace_back();
+		return *myCommandBuffers.emplace_back(new CommandBuffer()).get();
 	}
 
 	GraphicsTask& GraphicsTask::CreateTask()
@@ -111,9 +111,9 @@ namespace RoseGold::Core::Graphics
 		return false;
 	}
 
-	void GraphicsTask::GetWorkTasks(std::vector<GraphicsTask*>& outTasks)
+	void GraphicsTask::GetWorkTasks(std::vector<const GraphicsTask*>& outTasks) const
 	{
-		for (std::unique_ptr<GraphicsTask>& task : myTasks)
+		for (const std::unique_ptr<GraphicsTask>& task : myTasks)
 		{
 			if (!task->myCommandBuffers.empty())
 				outTasks.push_back(task.get());

@@ -169,7 +169,7 @@ namespace RoseGold::Win32
 	{
 		std::vector<std::shared_ptr<Core::Platform::Window>> windows;
 		for (const auto& window : myWindows)
-			windows.push_back(static_pointer_cast<Core::Platform::Window>(window));
+			windows.push_back(std::static_pointer_cast<Core::Platform::Window>(window));
 		return windows;
 	}
 

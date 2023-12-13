@@ -14,7 +14,7 @@ namespace RoseGold::Core::Graphics
 		GraphicsTask() = default;
 		GraphicsTask(const char* aName);
 
-		void ResolveWorkTasks(std::vector<GraphicsTask*>& outTasks);
+		void ResolveWorkTasks(std::vector<const GraphicsTask*>& outTasks) const;
 
 		void AddDependency(GraphicsTask& aTask);
 		CommandBuffer& AddWork();
@@ -27,12 +27,12 @@ namespace RoseGold::Core::Graphics
 		GraphicsTask* FindTask(const char* aTaskName);
 		const GraphicsTask* FindTask(const char* aTaskName) const;
 
-		const std::vector<CommandBuffer>& GetWork() const { return myCommandBuffers; }
+		const std::vector<std::shared_ptr<CommandBuffer>>& GetWork() const { return myCommandBuffers; }
 
 		bool HasWork() const;
 
 	private:
-		void GetWorkTasks(std::vector<GraphicsTask*>& outTasks);
+		void GetWorkTasks(std::vector<const GraphicsTask*>& outTasks) const;
 
 	private:
 		std::string myName;
@@ -40,6 +40,6 @@ namespace RoseGold::Core::Graphics
 		std::vector<GraphicsTask*> myDependencies;
 
 		std::vector<std::unique_ptr<GraphicsTask>> myTasks;
-		std::vector<CommandBuffer> myCommandBuffers;
+		std::vector<std::shared_ptr<CommandBuffer>> myCommandBuffers;
 	};
 }
