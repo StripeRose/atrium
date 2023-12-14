@@ -48,9 +48,14 @@ namespace RoseGold::DirectX12
 		if (!aTexture)
 			return;
 
-		myTargetTextures.push_back(aTexture);
-
 		RenderTarget* target = static_cast<RenderTarget*>(aTexture.get());
+
+		if (target->GetColorView())
+			myLastColorHandle = target->GetColorView()->GetCPUHandle();
+		if (target->GetDepthStencilView())
+			myLastDepthHandle = target->GetDepthStencilView()->GetCPUHandle();
+		if (target->GetColorView() && target->GetDepthStencilView())
+			myTargetTextures.push_back(aTexture);
 
 		if (target->GetColorResource())
 		{
@@ -65,11 +70,6 @@ namespace RoseGold::DirectX12
 			D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = target->GetDepthStencilView()->GetCPUHandle();
 			myCommandList->OMSetRenderTargets(1, &colorHandle, false, &depthStencilHandle);
 		}
-
-		if (target->GetColorView())
-			myLastColorHandle = target->GetColorView()->GetCPUHandle();
-		if (target->GetDepthStencilView())
-			myLastDepthHandle = target->GetDepthStencilView()->GetCPUHandle();
 	}
 
 	void ResolvedCommandBuffer::Clear_Internal(Color aClearColor)
@@ -106,6 +106,9 @@ namespace RoseGold::DirectX12
 
 	void ResolvedCommandBuffer::CloseTargets()
 	{
+		if (myTargetTextures.empty())
+			return;
+
 		std::vector<D3D12_RESOURCE_BARRIER> barriers;
 		for (const auto& target : myTargetTextures)
 		{

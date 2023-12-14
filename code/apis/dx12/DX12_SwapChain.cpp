@@ -45,37 +45,55 @@ namespace RoseGold::DirectX12
 
 	void SwapChain::Present()
 	{
+		if (myBackBuffers.empty())
+			return;
+
 		myDevice->GetCommandQueueManager().GetGraphicsQueue().InsertSignal();
 		mySwapChain->Present(1, 0);
 	}
 
 	unsigned int SwapChain::GetCurrentBufferIndex() const
 	{
+		if (myBackBuffers.empty())
+			return 0;
+
 		return mySwapChain->GetCurrentBackBufferIndex();
 	}
 
 	unsigned int SwapChain::GetBufferCount() const
 	{
-		return 2;
+		return static_cast<unsigned int>(myBackBuffers.size());
 	}
 
 	const DescriptorHeapHandle* SwapChain::GetColorView() const
 	{
+		if (myBackBuffers.empty())
+			return nullptr;
+
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetColorView();
 	}
 
 	const DescriptorHeapHandle* SwapChain::GetDepthStencilView() const
 	{
+		if (myBackBuffers.empty())
+			return nullptr;
+
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthStencilView();
 	}
 
 	ID3D12Resource* SwapChain::GetColorResource() const
 	{
+		if (myBackBuffers.empty())
+			return nullptr;
+
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetColorResource();
 	}
 
 	ID3D12Resource* SwapChain::GetDepthResource() const
 	{
+		if (myBackBuffers.empty())
+			return nullptr;
+
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthResource();
 	}
 
@@ -86,6 +104,9 @@ namespace RoseGold::DirectX12
 
 	void* SwapChain::GetNativeDepthBufferPtr() const
 	{
+		if (myBackBuffers.empty())
+			return nullptr;
+
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetNativeDepthBufferPtr();
 	}
 
@@ -183,7 +204,7 @@ namespace RoseGold::DirectX12
 		swapChainDescriptor.Height = windowHeight;
 		swapChainDescriptor.Format = ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat()));
 		swapChainDescriptor.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDescriptor.BufferCount = GetBufferCount();
+		swapChainDescriptor.BufferCount = 2;
 		swapChainDescriptor.SampleDesc.Count = 1;
 		swapChainDescriptor.SampleDesc.Quality = 0;
 		swapChainDescriptor.Scaling = DXGI_SCALING_STRETCH;
@@ -238,7 +259,7 @@ namespace RoseGold::DirectX12
 
 		Debug::Assert(mySwapChain, "Resizing a draw surface without a swapchain.");
 		HRESULT hr = mySwapChain->ResizeBuffers(
-			GetBufferCount(),
+			static_cast<UINT>(myBackBuffers.size()),
 			newResolution.first,
 			newResolution.second,
 			ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat())),
@@ -371,7 +392,7 @@ namespace RoseGold::DirectX12
 
 		ComPtr<ID3D12Resource> backBufferResource;
 
-		for (unsigned int i = 0; i < GetBufferCount(); ++i)
+		for (unsigned int i = 0; i < 2; ++i)
 		{
 			AssertSuccess(mySwapChain->GetBuffer(i, IID_PPV_ARGS(backBufferResource.ReleaseAndGetAddressOf())));
 			//backBufferResource->SetName(BasicString<wchar_t>::Format(L"Backbuffer Texture #%i", i).ToCharArray());
