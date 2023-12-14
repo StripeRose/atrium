@@ -23,6 +23,8 @@ namespace RoseGold::DirectX12
 
 		ComPtr<ID3D12GraphicsCommandList> GetCommandList() { return myCommandList; }
 
+		const std::vector<std::shared_ptr<Core::Graphics::RenderTexture>>& GetUsedTargets() const { return myTargetTextures; }
+
 		// Implements CommandBuffer
 	private:
 		void Clear(Color aClearColor) override;

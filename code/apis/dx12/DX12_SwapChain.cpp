@@ -24,10 +24,18 @@ namespace RoseGold::DirectX12
 			});
 	}
 
-	SwapChain::~SwapChain()
+	void SwapChain::Invalidate()
 	{
-		/*CommandQueue& queue = myDevicePtr->GetCommandQueueManager().GetGraphicsQueue();
-		queue.WaitForFenceCPUBlocking(queue.InsertSignal());*/
+		if (myWindow != nullptr)
+		{
+			myWindow->OnSizeChanged.Disconnect(this);
+			myWindow = nullptr;
+		}
+
+		myDevice = nullptr;
+		myBackBuffers.clear();
+		mySwapChain.Reset();
+		myDesiredResolution.reset();
 	}
 
 	void SwapChain::UpdateResolution()

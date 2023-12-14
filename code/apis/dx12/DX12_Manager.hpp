@@ -32,5 +32,6 @@ namespace RoseGold::DirectX12
 	private:
 		std::unique_ptr<Device> myDevice;
 		ComPtr<ID3D12CommandAllocator> myCommandAllocator;
+		std::vector<std::shared_ptr<Core::Graphics::RenderTexture>> myFrameTargets;
 	};
 }

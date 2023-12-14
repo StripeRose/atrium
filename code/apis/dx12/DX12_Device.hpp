@@ -29,7 +29,7 @@ namespace RoseGold::DirectX12
 		Device(const DeviceParameters& someParameters = { });
 		~Device();
 
-		void UpdateSwapchainResolutions();
+		void MarkFrameStart();
 
 		std::shared_ptr<SwapChain> CreateRenderTextureForWindow(Core::Platform::Window& aWindow);
 		std::shared_ptr<SwapChain> GetSwapChain(Core::Platform::Window& aWindow);

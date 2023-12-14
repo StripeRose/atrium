@@ -28,19 +28,29 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR someCommandArg
 	windowParams.Title = "Test window";
 	windowParams.Size = { 200, 200 };
 	auto window1 = roseGold.WindowManager->NewWindow(windowParams);
-	window1->OnClosed.Connect(nullptr, [&window1]() { window1.reset(); });
 	auto renderTarget1 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window1);
+	window1->OnClosed.Connect(nullptr, [&]() {
+		renderTarget1.reset();
+		window1.reset();
+		});
 
 	windowParams.Title = "Test window 2";
 	windowParams.Size = { 200, 200 };
 	auto window2 = roseGold.WindowManager->NewWindow(windowParams);
 	auto renderTarget2 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window2);
+	window2->OnClosed.Connect(nullptr, [&]() {
+		renderTarget2.reset();
+		window2.reset();
+		});
 
 	windowParams.Title = "Test window 3";
 	windowParams.Size = { 200, 200 };
 	auto window3 = roseGold.WindowManager->NewWindow(windowParams);
-	window3->OnClosed.Connect(nullptr, [&window3]() { window3.reset(); });
 	auto renderTarget3 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window3);
+	window3->OnClosed.Connect(nullptr, [&]() {
+		renderTarget3.reset();
+		window3.reset();
+		});
 
 	{
 		using namespace RoseGold::Core::Graphics;

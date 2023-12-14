@@ -14,8 +14,8 @@ namespace RoseGold::DirectX12
 	{
 	public:
 		SwapChain(Device& aDevice, Core::Platform::Window& aWindow);
-		~SwapChain();
 
+		void Invalidate();
 		void UpdateResolution();
 		void Present();
 
@@ -83,7 +83,7 @@ namespace RoseGold::DirectX12
 	private:
 		Device* myDevice;
 		ComPtr<IDXGISwapChain3> mySwapChain;
-		const Core::Platform::Window* myWindow;
+		Core::Platform::Window* myWindow;
 
 		std::vector<std::shared_ptr<SwapChainBackBuffer>> myBackBuffers;
 		std::optional<std::pair<int, int>> myDesiredResolution;

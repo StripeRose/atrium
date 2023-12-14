@@ -12,6 +12,8 @@
 #include <dxgidebug.h>
 #endif
 
+#include <algorithm>
+
 namespace RoseGold::DirectX12
 {
 	Manager::Manager()
@@ -46,6 +48,13 @@ namespace RoseGold::DirectX12
 	{
 		ResolvedCommandBuffer resolvedBuffer(*myDevice, myCommandAllocator.Get());
 		resolvedBuffer.Resolve(aCommandBuffer);
+
+		for (const auto& target : resolvedBuffer.GetUsedTargets())
+		{
+			if (std::find(myFrameTargets.begin(), myFrameTargets.end(), target) == myFrameTargets.end())
+				myFrameTargets.push_back(target);
+		}
+
 		myDevice->GetCommandQueueManager().GetGraphicsQueue().ExecuteCommandList(
 			resolvedBuffer.GetCommandList()
 		);
@@ -65,15 +74,27 @@ namespace RoseGold::DirectX12
 
 	void Manager::MarkFrameStart()
 	{
-		myDevice->UpdateSwapchainResolutions();
+		myDevice->MarkFrameStart();
 		myCommandAllocator->Reset();
 	}
 
 	void Manager::MarkFrameEnd()
 	{
-		std::vector<std::shared_ptr<SwapChain>> swapChains = myDevice->GetSwapChains();
-		for (std::shared_ptr<SwapChain> swapChain : swapChains)
-			swapChain->Present();
+		for (const std::shared_ptr<Core::Graphics::RenderTexture>& renderTarget : myFrameTargets)
+		{
+			RenderTarget* target = static_cast<RenderTarget*>(renderTarget.get());
+			if (target->IsSwapChain())
+			{
+				SwapChain* swapChain = static_cast<SwapChain*>(target);
+				swapChain->Present();
+			}
+		}
+
+		CommandQueue& queue = myDevice->GetCommandQueueManager().GetGraphicsQueue();
+		queue.WaitForFenceCPUBlocking(queue.InsertSignal());
+
+		myCommandAllocator->Reset();
+		myFrameTargets.clear();
 	}
 
 	void Manager::ReportUnreleasedObjects()

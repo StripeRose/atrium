@@ -35,7 +35,7 @@ namespace RoseGold::DirectX12
 		myDescriptorHeapManager.reset();
 	}
 
-	void Device::UpdateSwapchainResolutions()
+	void Device::MarkFrameStart()
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
 		for (auto& swapChain : myDrawSurfaceSwapChain)
@@ -47,6 +47,12 @@ namespace RoseGold::DirectX12
 		const std::scoped_lock lock(mySwapChainMutex);
 		std::shared_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
 		swapChain.reset(new SwapChain(*this, aWindow));
+
+		aWindow.OnClosed.Connect(this, [&]() {
+			myDrawSurfaceSwapChain.at(&aWindow)->Invalidate();
+			myDrawSurfaceSwapChain.erase(&aWindow);
+			});
+
 		return swapChain;
 	}
 
@@ -272,8 +278,6 @@ namespace RoseGold::DirectX12
 
 		myCommandQueues.reset(new CommandQueueManager(myDevice));
 		return myCommandQueues.get() != nullptr;
-
-		return true;
 	}
 
 	bool Device::SetupHeapManager()
