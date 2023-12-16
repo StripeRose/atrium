@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Graphics_Buffer.hpp"
 #include "Graphics_CommandBuffer.hpp"
+#include "Graphics_Mesh.hpp"
 #include "Graphics_RenderTexture.hpp"
 #include "Graphics_Tasks.hpp"
 
@@ -14,6 +16,8 @@ namespace RoseGold::Core::Graphics
 		virtual ~Manager() = default;
 		
 		virtual std::shared_ptr<RenderTexture> CreateRenderTextureForWindow(Platform::Window& aWindow) = 0;
+		virtual std::shared_ptr<GraphicsBuffer> CreateGraphicsBuffer(GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) = 0;
+		virtual std::shared_ptr<Mesh> CreateMesh() = 0;
 
 		virtual void ExecuteCommandBuffer(const CommandBuffer& aCommandBuffer) = 0;
 		virtual void ExecuteTask(const GraphicsTask& aGraphicsTask) = 0;

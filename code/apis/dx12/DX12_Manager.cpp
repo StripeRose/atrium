@@ -4,6 +4,8 @@
 #include "DX12_ComPtr.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
+#include "DX12_GraphicsBuffer.hpp"
+#include "DX12_Mesh.hpp"
 
 #include "Common_Debug.hpp"
 
@@ -42,6 +44,24 @@ namespace RoseGold::DirectX12
 	std::shared_ptr<Core::Graphics::RenderTexture> Manager::CreateRenderTextureForWindow(Core::Platform::Window& aWindow)
 	{
 		return myDevice->CreateRenderTextureForWindow(aWindow);
+	}
+
+	std::shared_ptr<Core::Graphics::GraphicsBuffer> Manager::CreateGraphicsBuffer(Core::Graphics::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+	{
+		switch (aTarget)
+		{
+		case Core::Graphics::GraphicsBuffer::Target::Vertex:
+			return std::shared_ptr<Core::Graphics::GraphicsBuffer>(new NativeVertexBuffer(*myDevice, aCount, aStride));
+		case Core::Graphics::GraphicsBuffer::Target::Index:
+			return nullptr;
+		default:
+			return nullptr;
+		}
+	}
+
+	std::shared_ptr<Core::Graphics::Mesh> Manager::CreateMesh()
+	{
+		return std::shared_ptr<Core::Graphics::Mesh>(new Mesh(*this));
 	}
 
 	void Manager::ExecuteCommandBuffer(const Core::Graphics::CommandBuffer& aCommandBuffer)

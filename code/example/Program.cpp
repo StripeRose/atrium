@@ -5,6 +5,7 @@
 
 #include <Bootstrapper.hpp>
 
+#include <Graphics_Mesh.hpp>
 #include <Graphics_Tasks.hpp>
 
 #include <Windows.h>
@@ -13,6 +14,64 @@
 
 std::chrono::high_resolution_clock::time_point ourStartTime;
 std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> ourRT1, ourRT2, ourRT3;
+
+std::shared_ptr<RoseGold::Core::Graphics::Mesh> ourMesh;
+
+void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
+{
+	RoseGold::Core::Platform::WindowManager::CreationParameters windowParams;
+
+	windowParams.Title = "Test window";
+	windowParams.Size = { 200, 200 };
+	auto window1 = roseGold.WindowManager->NewWindow(windowParams);
+	ourRT1 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window1);
+	window1->OnClosed.Connect(nullptr, [&]() {
+		ourRT1.reset();
+		});
+
+	windowParams.Title = "Test window 2";
+	windowParams.Size = { 200, 200 };
+	auto window2 = roseGold.WindowManager->NewWindow(windowParams);
+	ourRT2 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window2);
+	window2->OnClosed.Connect(nullptr, [&]() {
+		ourRT2.reset();
+		});
+
+	windowParams.Title = "Test window 3";
+	windowParams.Size = { 200, 200 };
+	auto window3 = roseGold.WindowManager->NewWindow(windowParams);
+	ourRT3 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window3);
+	window3->OnClosed.Connect(nullptr, [&]() {
+		ourRT3.reset();
+		});
+
+	{
+		std::vector<RoseGold::Core::Graphics::Vertex> vertices;
+
+		auto& v1 = vertices.emplace_back();
+		v1.Position = { 0.f, 0.25f, 0.f };
+		v1.Normal = { 1, 0, 0 };
+
+		auto& v2 = vertices.emplace_back();
+		v2.Position = { 0.25f, -0.25f, 0.f };
+		v2.Normal = { 0, 1, 0 };
+
+		auto& v3 = vertices.emplace_back();
+		v3.Position = { -0.25f, -0.25f, 0.f };
+		v3.Normal = { 0, 0, 1 };
+
+		ourMesh = roseGold.GraphicsManager->CreateMesh();
+		ourMesh->SetFromList(vertices);
+	}
+}
+
+void CleanupResources()
+{
+	ourMesh.reset();
+	ourRT1.reset();
+	ourRT2.reset();
+	ourRT3.reset();
+}
 
 void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 {
@@ -74,34 +133,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR someCommandArg
 
 	RoseGold::Client::BootstrapResult roseGold = RoseGold::Client::Bootstrap();
 
-	RoseGold::Core::Platform::WindowManager::CreationParameters windowParams;
-
-	windowParams.Title = "Test window";
-	windowParams.Size = { 200, 200 };
-	auto window1 = roseGold.WindowManager->NewWindow(windowParams);
-	ourRT1 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window1);
-	window1->OnClosed.Connect(nullptr, [&]() {
-		ourRT1.reset();
-		window1.reset();
-		});
-
-	windowParams.Title = "Test window 2";
-	windowParams.Size = { 200, 200 };
-	auto window2 = roseGold.WindowManager->NewWindow(windowParams);
-	ourRT2 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window2);
-	window2->OnClosed.Connect(nullptr, [&]() {
-		ourRT2.reset();
-		window2.reset();
-		});
-
-	windowParams.Title = "Test window 3";
-	windowParams.Size = { 200, 200 };
-	auto window3 = roseGold.WindowManager->NewWindow(windowParams);
-	ourRT3 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window3);
-	window3->OnClosed.Connect(nullptr, [&]() {
-		ourRT3.reset();
-		window3.reset();
-		});
+	SetupResources(roseGold);
 
 	ourStartTime = std::chrono::high_resolution_clock::now();
 
@@ -116,6 +148,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR someCommandArg
 
 		std::this_thread::sleep_until(frameStart + std::chrono::milliseconds(16));
 	}
+
+	CleanupResources();
 
 	return 0;
 }
