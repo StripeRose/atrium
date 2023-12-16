@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DX12_ComPtr.hpp"
+#include "DX12_Shader.hpp"
 
 #include <Graphics_Mesh.hpp>
 
@@ -27,9 +28,7 @@ namespace RoseGold::DirectX12
 		static void CreateShaders();
 
 		static ComPtr<ID3D12RootSignature> ourMeshRootSignature;
-		static std::unique_ptr<char> ourVertexShaderData;
-		static D3D12_SHADER_BYTECODE ourVertexShaderBytecode;
-		static std::unique_ptr<char> ourPixelShaderData;
-		static D3D12_SHADER_BYTECODE ourPixelShaderBytecode;
+		static std::shared_ptr<Shader> ourVertexShader;
+		static std::shared_ptr<Shader> ourPixelShader;
 	};
 }

@@ -11,10 +11,8 @@
 namespace RoseGold::DirectX12
 {
 	ComPtr<ID3D12RootSignature> Mesh::ourMeshRootSignature;
-	std::unique_ptr<char> Mesh::ourVertexShaderData;
-	D3D12_SHADER_BYTECODE Mesh::ourVertexShaderBytecode;
-	std::unique_ptr<char> Mesh::ourPixelShaderData;
-	D3D12_SHADER_BYTECODE Mesh::ourPixelShaderBytecode;
+	std::shared_ptr<Shader> Mesh::ourVertexShader;
+	std::shared_ptr<Shader> Mesh::ourPixelShader;
 
 	void Mesh::Prepare(ID3D12Device* aDevice)
 	{
@@ -30,10 +28,8 @@ namespace RoseGold::DirectX12
 	void Mesh::Cleanup()
 	{
 		ourMeshRootSignature.Reset();
-		ourVertexShaderData.reset();
-		ourVertexShaderBytecode.BytecodeLength = 0;
-		ourPixelShaderData.reset();
-		ourPixelShaderBytecode.BytecodeLength = 0;
+		ourVertexShader.reset();
+		ourPixelShader.reset();
 	}
 
 	Mesh::Mesh(Manager& aManager)
@@ -93,24 +89,7 @@ namespace RoseGold::DirectX12
 
 	void Mesh::CreateShaders()
 	{
-		/*auto readShaderFile = [](const std::filesystem::path& aFilePath, std::unique_ptr<char>& someData, D3D12_SHADER_BYTECODE& aBytecodeEntry)
-		{
-			std::ifstream fileStream(aFilePath, std::ios::ate | std::ios::binary);
-			if (!fileStream.is_open())
-				return;
-
-			const std::size_t fileSize = fileStream.tellg();
-			fileStream.seekg(0);
-
-			someData = std::unique_ptr<char>(new char[fileSize]);
-			fileStream.read(someData.get(), fileSize);
-			fileStream.close();
-
-			aBytecodeEntry.pShaderBytecode = someData.get();
-			aBytecodeEntry.BytecodeLength = fileSize;
-		};
-
-		readShaderFile(L"lib/MeshVertex.cso", ourVertexShaderData, ourVertexShaderBytecode);
-		readShaderFile(L"lib/MeshPixel.cso", ourPixelShaderData, ourPixelShaderBytecode);*/
+		ourVertexShader = Shader::CreateFromSource("shaders/MeshVertex.hlsl", "main", "vs_5_0");
+		ourPixelShader = Shader::CreateFromSource("shaders/MeshPixel.hlsl", "main", "ps_5_0");
 	}
 }

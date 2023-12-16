@@ -1,5 +1,3 @@
-// Filter "Shaders"
-
 struct PixelInput
 {
     float3 Color : COLOR;

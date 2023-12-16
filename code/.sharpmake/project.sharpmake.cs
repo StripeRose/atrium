@@ -35,7 +35,7 @@ namespace RoseGold
             conf.AddPublicDependency<Client.Bootstrapper>(target);
 
             conf.VcxprojUserFile = new Project.Configuration.VcxprojUserFileSettings();
-            conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = "$(OutputPath)";
+            conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = "$(OutputPath)..\\data\\";
         }
     }
 

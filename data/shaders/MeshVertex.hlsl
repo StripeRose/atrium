@@ -1,5 +1,3 @@
-// Filter "Shaders"
-
 cbuffer Camera : register(b0)
 {
     row_major float4x4 ProjectionMatrix : packoffset(c0);
