@@ -33,6 +33,9 @@ namespace RoseGold
             base.ConfigureAll(conf, target);
             conf.SolutionFolder = "Executables";
             conf.AddPublicDependency<Client.Bootstrapper>(target);
+
+            conf.VcxprojUserFile = new Project.Configuration.VcxprojUserFileSettings();
+            conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = "$(OutputPath)";
         }
     }
 
