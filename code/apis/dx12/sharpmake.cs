@@ -15,6 +15,9 @@ namespace RoseGold
         {
             Name = "DirectX 12";
             SourceRootPath = Path.Combine(Globals.RootDirectory, "apis", "dx12");
+
+            // Allow core shaders to be part of the project and built with it.
+            SourceFilesExtensions.Add(".hlsl");
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)

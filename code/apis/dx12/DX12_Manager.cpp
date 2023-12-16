@@ -29,11 +29,15 @@ namespace RoseGold::DirectX12
 				IID_PPV_ARGS(myCommandAllocator.ReleaseAndGetAddressOf())
 			)
 		);
+
+		Mesh::Prepare(myDevice->GetDevice().Get());
 	}
 
 	Manager::~Manager()
 	{
 		Debug::Log("DX12 stop");
+
+		Mesh::Cleanup();
 
 		myCommandAllocator->Reset();
 		myCommandAllocator.Reset();
@@ -51,9 +55,9 @@ namespace RoseGold::DirectX12
 		switch (aTarget)
 		{
 		case Core::Graphics::GraphicsBuffer::Target::Vertex:
-			return std::shared_ptr<Core::Graphics::GraphicsBuffer>(new NativeVertexBuffer(*myDevice, aCount, aStride));
+			return std::shared_ptr<Core::Graphics::GraphicsBuffer>(new VertexBuffer(*myDevice, aCount, aStride));
 		case Core::Graphics::GraphicsBuffer::Target::Index:
-			return nullptr;
+			return std::shared_ptr<Core::Graphics::GraphicsBuffer>(new IndexBuffer(*myDevice, aCount));
 		default:
 			return nullptr;
 		}

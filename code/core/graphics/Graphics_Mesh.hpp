@@ -2,6 +2,7 @@
 
 #include "Graphics_Buffer.hpp"
 
+#include "Common_Color.hpp"
 #include "Common_Math.hpp"
 
 #include <cstdint>
@@ -35,6 +36,8 @@ namespace RoseGold::Core::Graphics
 		Math::Vector3 Position;
 		Math::Vector3 Normal;
 		Math::Vector2 UV;
+		Color Color;
+
 		Math::Vector3 Binormal;
 		Math::Vector3 Tangent;
 	};

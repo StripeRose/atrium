@@ -35,10 +35,10 @@ namespace RoseGold::DirectX12
 	};
 
 	class Device;
-	class NativeGraphicsBuffer : public Core::Graphics::GraphicsBuffer, public GPUResource
+	class GraphicsBuffer : public Core::Graphics::GraphicsBuffer, public GPUResource
 	{
 	public:
-		NativeGraphicsBuffer(ComPtr<ID3D12Resource> aResource, D3D12_RESOURCE_STATES aUsageState);
+		GraphicsBuffer(ComPtr<ID3D12Resource> aResource, D3D12_RESOURCE_STATES aUsageState);
 
 		// Implementing GraphicsBuffer
 	public:
@@ -48,12 +48,12 @@ namespace RoseGold::DirectX12
 		std::uint32_t Align(std::uint32_t aLocation, std::uint32_t anAlignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	};
 
-	class NativeVertexBuffer : public NativeGraphicsBuffer
+	class VertexBuffer : public GraphicsBuffer
 	{
 	public:
-		NativeVertexBuffer(Device& aDevice, std::uint32_t aVertexCount, std::uint32_t aVertexStride);
+		VertexBuffer(Device& aDevice, std::uint32_t aVertexCount, std::uint32_t aVertexStride);
 
-		const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return myBufferView; }
+		const D3D12_VERTEX_BUFFER_VIEW& GetBufferView() const { return myBufferView; }
 
 		// Implementing GraphicsBuffer
 	public:
@@ -70,11 +70,33 @@ namespace RoseGold::DirectX12
 		D3D12_VERTEX_BUFFER_VIEW myBufferView;
 	};
 
-	class NativeConstantBuffer : public NativeGraphicsBuffer
+	class IndexBuffer : public GraphicsBuffer
 	{
 	public:
-		NativeConstantBuffer(Device& aDevice, std::uint32_t aBufferSize);
-		virtual ~NativeConstantBuffer() override;
+		IndexBuffer(Device& aDevice, std::uint32_t anIndexCount);
+
+		const D3D12_INDEX_BUFFER_VIEW GetBufferView() const { return myBufferView; }
+
+		// Implementing GraphicsBuffer
+	public:
+		void SetData(const void* aDataPtr, std::uint32_t aDataSize) override;
+
+		std::uint32_t GetCount() const override { return myBufferView.SizeInBytes / GetStride(); }
+		std::uint32_t GetStride() const override { return sizeof(std::uint32_t); }
+		Target GetTarget() const override { return Target::Index; }
+
+	private:
+		ComPtr<ID3D12Resource> CreateResource(Device& aDevice, std::uint32_t anIndexCount);
+
+	private:
+		D3D12_INDEX_BUFFER_VIEW myBufferView;
+	};
+
+	class ConstantBuffer : public GraphicsBuffer
+	{
+	public:
+		ConstantBuffer(Device& aDevice, std::uint32_t aBufferSize);
+		virtual ~ConstantBuffer() override;
 
 		void SetData(const void* aDataPtr, std::uint32_t aDataSize) override;
 		const DescriptorHeapHandle& GetViewHandle() const { return *myConstantBufferViewHandle; }

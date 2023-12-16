@@ -51,14 +51,17 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 		auto& v1 = vertices.emplace_back();
 		v1.Position = { 0.f, 0.25f, 0.f };
 		v1.Normal = { 1, 0, 0 };
+		v1.Color = 0xFFFF0000;
 
 		auto& v2 = vertices.emplace_back();
 		v2.Position = { 0.25f, -0.25f, 0.f };
 		v2.Normal = { 0, 1, 0 };
+		v2.Color = 0xFF00FF00;
 
 		auto& v3 = vertices.emplace_back();
 		v3.Position = { -0.25f, -0.25f, 0.f };
 		v3.Normal = { 0, 0, 1 };
+		v3.Color = 0xFF0000FF;
 
 		ourMesh = roseGold.GraphicsManager->CreateMesh();
 		ourMesh->SetFromList(vertices);
