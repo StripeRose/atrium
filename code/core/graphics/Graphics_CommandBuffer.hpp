@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Graphics_Mesh.hpp"
+#include "Graphics_Pipeline.hpp"
 #include "Graphics_RenderTexture.hpp"
 
 #include "Common_Color.hpp"
@@ -40,7 +42,8 @@ namespace RoseGold::Core::Graphics
 
 		// virtual void DispatchCompute(ComputeShader aShader);
 
-		// virtual void DrawMesh(Mesh aMesh, Matrix aMatrix, Material aMaterial, int aSubmeshIndex, MaterialPropertyBlock someProperties);
+		virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<PipelineState> aPipelineState, int aSubmeshIndex);
+		//virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<Material> aMaterial, int aSubmeshIndex);
 
 		// Todo: Figure out mesh instancing.
 

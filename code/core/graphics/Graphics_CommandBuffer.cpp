@@ -38,6 +38,16 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
+	void CommandBuffer::DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<PipelineState> aPipelineState, int aSubmeshIndex)
+	{
+		myRecordedCommands.emplace_back(
+			[aMesh, aMatrix, aPipelineState, aSubmeshIndex](CommandBuffer& aBuffer)
+			{
+				aBuffer.DrawMesh(aMesh, aMatrix, aPipelineState, aSubmeshIndex);
+			}
+		);
+	}
+
 	void CommandBuffer::SetRenderTarget(std::shared_ptr<RenderTexture> aTexture)
 	{
 		myRecordedCommands.emplace_back(

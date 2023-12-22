@@ -6,6 +6,7 @@
 #include <Bootstrapper.hpp>
 
 #include <Graphics_Mesh.hpp>
+#include <Graphics_Pipeline.hpp>
 #include <Graphics_Tasks.hpp>
 
 #include <Windows.h>
@@ -14,6 +15,9 @@
 
 std::chrono::high_resolution_clock::time_point ourStartTime;
 std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> ourRT1, ourRT2, ourRT3;
+
+std::shared_ptr<RoseGold::Core::Graphics::PipelineState> ourMeshPipelineState;
+std::shared_ptr<RoseGold::Core::Graphics::Shader> ourVertexShader, ourPixelShader;
 
 std::shared_ptr<RoseGold::Core::Graphics::Mesh> ourMesh;
 
@@ -66,10 +70,21 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 		ourMesh = roseGold.GraphicsManager->CreateMesh();
 		ourMesh->SetFromList(vertices);
 	}
+
+	{
+		ourVertexShader = roseGold.GraphicsManager->CreateShader("shaders/MeshVertex.hlsl", RoseGold::Core::Graphics::Shader::Type::Vertex);
+		ourPixelShader = roseGold.GraphicsManager->CreateShader("shaders/MeshPixel.hlsl", RoseGold::Core::Graphics::Shader::Type::Pixel);
+
+		ourMeshPipelineState = roseGold.GraphicsManager->CreatePipelineState();
+		// Todo: Define the pipeline state.
+	}
 }
 
 void CleanupResources()
 {
+	ourMeshPipelineState.reset();
+	ourVertexShader.reset();
+	ourPixelShader.reset();
 	ourMesh.reset();
 	ourRT1.reset();
 	ourRT2.reset();
@@ -84,42 +99,60 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 	const float lerp = (RoseCommon::Math::Sine<float>(secondsSinceStart) + 1.f) / 2.f;
 
 	using namespace RoseGold::Core::Graphics;
-	GraphicsTask clearTask;
+	GraphicsTask drawFrame;
 
-	GraphicsTask& clearWindow1 = clearTask.CreateTask("Clear window 1");
+	GraphicsTask& clearTask = drawFrame.CreateTask("Clear frame");
+
 	{
-		CommandBuffer& buffer = clearWindow1.AddWork();
-		buffer.SetRenderTarget(ourRT1);
-		buffer.Clear(RoseCommon::Math::Lerp<RoseGold::Color>(
-			RoseGold::Color::Predefined::Aqua,
-			RoseGold::Color::Predefined::Tan,
-			lerp
-		));
+		GraphicsTask& drawMesh = drawFrame.CreateTask("Draw meshes");
+		drawMesh.AddDependency(clearTask);
+		{
+			CommandBuffer& buffer = drawMesh.AddWork();
+
+			buffer.SetRenderTarget(ourRT1);
+			buffer.DrawMesh(ourMesh, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
+
+			buffer.SetRenderTarget(ourRT2);
+			buffer.DrawMesh(ourMesh, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
+		}
 	}
 
-	GraphicsTask& clearWindow2 = clearTask.CreateTask("Clear window 2");
 	{
-		CommandBuffer& buffer = clearWindow2.AddWork();
-		buffer.SetRenderTarget(ourRT2);
-		buffer.Clear(RoseCommon::Math::Lerp<RoseGold::Color>(
-			RoseGold::Color::Predefined::Tomato,
-			RoseGold::Color::Predefined::LightGreen,
-			lerp
-		));
+		GraphicsTask& clearWindow1 = clearTask.CreateTask("Clear window 1");
+		{
+			CommandBuffer& buffer = clearWindow1.AddWork();
+			buffer.SetRenderTarget(ourRT1);
+			buffer.Clear(RoseCommon::Math::Lerp<RoseGold::Color>(
+				RoseGold::Color::Predefined::Aqua,
+				RoseGold::Color::Predefined::Tan,
+				lerp
+			));
+		}
+
+		GraphicsTask& clearWindow2 = clearTask.CreateTask("Clear window 2");
+		{
+			CommandBuffer& buffer = clearWindow2.AddWork();
+			buffer.SetRenderTarget(ourRT2);
+			buffer.Clear(RoseCommon::Math::Lerp<RoseGold::Color>(
+				RoseGold::Color::Predefined::Tomato,
+				RoseGold::Color::Predefined::LightGreen,
+				lerp
+			));
+		}
+
+		GraphicsTask& clearWindow3 = clearTask.CreateTask("Clear window 3");
+		{
+			CommandBuffer& buffer = clearWindow3.AddWork();
+			buffer.SetRenderTarget(ourRT3);
+			buffer.Clear(RoseCommon::Math::Lerp<RoseGold::Color>(
+				RoseGold::Color::Predefined::LightYellow,
+				RoseGold::Color::Predefined::CornflowerBlue,
+				lerp
+			));
+		}
 	}
 
-	GraphicsTask& clearWindow3 = clearTask.CreateTask("Clear window 3");
-	{
-		CommandBuffer& buffer = clearWindow3.AddWork();
-		buffer.SetRenderTarget(ourRT3);
-		buffer.Clear(RoseCommon::Math::Lerp<RoseGold::Color>(
-			RoseGold::Color::Predefined::LightYellow,
-			RoseGold::Color::Predefined::CornflowerBlue,
-			lerp
-		));
-	}
-
-	aManager.ExecuteTask(clearTask);
+	aManager.ExecuteTask(drawFrame);
 }
 
 #if defined(_CONSOLE)

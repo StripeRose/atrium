@@ -4,6 +4,8 @@
 
 #include "DX12_ComPtr.hpp"
 
+#include <Graphics_Pipeline.hpp>
+
 #include <d3d12.h>
 
 #include <filesystem>
@@ -11,7 +13,7 @@
 
 namespace RoseGold::DirectX12
 {
-	class Shader
+	class Shader : public Core::Graphics::Shader
 	{
 	public:
 		static std::shared_ptr<Shader> CreateFromSource(const std::filesystem::path& aFilePath, const char* anEntryPoint, const char* aProfile);
