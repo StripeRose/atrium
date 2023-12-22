@@ -3,6 +3,8 @@
 #include <rose-common/math/Constants.hpp>
 #include <rose-common/math/Common.hpp>
 #include <rose-common/math/Geometry.hpp>
+#include <rose-common/math/Matrix.hpp>
+#include <rose-common/math/MakeMatrix.h>
 #include <rose-common/math/Trigonometry.hpp>
 #include <rose-common/math/Vector.hpp>
 
@@ -27,5 +29,8 @@ namespace RoseGold
 		template <typename T> using BoxT = RoseCommon::Math::Box<Vector3T<T>>;
 		template <typename T> using CircleT = RoseCommon::Math::Sphere<Vector2T<T>>;
 		template <typename T> using SphereT = RoseCommon::Math::Sphere<Vector3T<T>>;
+
+		using Matrix = RoseCommon::Math::Matrix<4, 4, float>;
+		using MakeMatrix = RoseCommon::Math::MakeMatrix<float>;
 	}
 }
