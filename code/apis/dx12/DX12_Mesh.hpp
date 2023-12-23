@@ -21,5 +21,7 @@ namespace RoseGold::DirectX12
 		~Mesh() = default;
 
 		std::shared_ptr<VertexBuffer> GetVertexBuffer();
+
+		void SetFromList(const std::span<Core::Graphics::Vertex> someVertices) override;
 	};
 }

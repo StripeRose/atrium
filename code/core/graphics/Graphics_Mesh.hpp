@@ -48,8 +48,8 @@ namespace RoseGold::Core::Graphics
 	public:
 		virtual ~Mesh() = default;
 
-		void SetFromList(const std::span<Vertex> someVertices);
-		void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
+		virtual void SetFromList(const std::span<Vertex> someVertices);
+		virtual void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
 
 	protected:
 		Mesh(Manager& aGraphicsManager)
