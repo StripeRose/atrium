@@ -42,7 +42,7 @@ namespace RoseGold::Core::Graphics
 
 		// virtual void DispatchCompute(ComputeShader aShader);
 
-		virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<PipelineState> aPipelineState, int aSubmeshIndex);
+		virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<CachedPipelineState> aPipelineState, int aSubmeshIndex);
 		//virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<Material> aMaterial, int aSubmeshIndex);
 
 		// Todo: Figure out mesh instancing.

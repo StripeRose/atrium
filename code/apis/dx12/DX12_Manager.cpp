@@ -6,6 +6,7 @@
 #include "DX12_Diagnostics.hpp"
 #include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Mesh.hpp"
+#include "DX12_Pipeline.hpp"
 
 #include "Common_Debug.hpp"
 
@@ -22,6 +23,7 @@ namespace RoseGold::DirectX12
 	{
 		Debug::Log("DX12 start");
 		myDevice.reset(new Device());
+		myPipeline.reset(new Pipeline(*myDevice));
 
 		AssertSuccess(
 			myDevice->GetDevice()->CreateCommandAllocator(
@@ -29,15 +31,11 @@ namespace RoseGold::DirectX12
 				IID_PPV_ARGS(myCommandAllocator.ReleaseAndGetAddressOf())
 			)
 		);
-
-		Mesh::Prepare(myDevice->GetDevice().Get());
 	}
 
 	Manager::~Manager()
 	{
 		Debug::Log("DX12 stop");
-
-		Mesh::Cleanup();
 
 		myCommandAllocator->Reset();
 		myCommandAllocator.Reset();
@@ -68,9 +66,9 @@ namespace RoseGold::DirectX12
 		return std::shared_ptr<Core::Graphics::Mesh>(new Mesh(*this));
 	}
 
-	std::shared_ptr<Core::Graphics::PipelineState> Manager::CreatePipelineState()
+	std::shared_ptr<Core::Graphics::CachedPipelineState> Manager::CreateOrGetPipelineState(const Core::Graphics::PipelineState& aPipelineState)
 	{
-		return std::make_shared<Core::Graphics::PipelineState>();
+		return myPipeline->CreateOrGetState(aPipelineState);
 	}
 
 	std::shared_ptr<Core::Graphics::Shader> Manager::CreateShader(const std::filesystem::path& aSource, Core::Graphics::Shader::Type aType)

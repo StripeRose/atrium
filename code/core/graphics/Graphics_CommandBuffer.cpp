@@ -38,7 +38,7 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
-	void CommandBuffer::DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<PipelineState> aPipelineState, int aSubmeshIndex)
+	void CommandBuffer::DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<CachedPipelineState> aPipelineState, int aSubmeshIndex)
 	{
 		myRecordedCommands.emplace_back(
 			[aMesh, aMatrix, aPipelineState, aSubmeshIndex](CommandBuffer& aBuffer)

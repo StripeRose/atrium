@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 namespace RoseGold::Core::Graphics
 {
 	class Shader
@@ -14,9 +16,11 @@ namespace RoseGold::Core::Graphics
 
 	class PipelineState
 	{
+	public:
 		// (IA) Input assembler
 
 		// (VS) Vertex shader
+		std::shared_ptr<Shader> VertexShader;
 
 		// (HS) Hull shader
 
@@ -31,7 +35,13 @@ namespace RoseGold::Core::Graphics
 		// (RS) Rasterizer
 
 		// (PS) Pixel shader
+		std::shared_ptr<Shader> PixelShader;
 
 		// (OM) Output merger
+	};
+
+	class CachedPipelineState
+	{
+
 	};
 }

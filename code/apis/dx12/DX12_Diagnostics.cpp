@@ -27,7 +27,7 @@ namespace RoseGold::DirectX12
 
 	bool LogIfError(HRESULT aResult, const char* aMessage)
 	{
-		if (SUCCEEDED(aResult))
+		if (FAILED(aResult))
 		{
 			_com_error error(aResult);
 

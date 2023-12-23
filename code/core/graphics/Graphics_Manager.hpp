@@ -24,7 +24,7 @@ namespace RoseGold::Core::Graphics
 
 		virtual std::shared_ptr<Mesh> CreateMesh() = 0;
 
-		virtual std::shared_ptr<PipelineState> CreatePipelineState() = 0;
+		virtual std::shared_ptr<CachedPipelineState> CreateOrGetPipelineState(const PipelineState& aPipelineState) = 0;
 
 		virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& aShaderSource, Shader::Type aShaderType) = 0;
 		

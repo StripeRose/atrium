@@ -16,7 +16,7 @@
 std::chrono::high_resolution_clock::time_point ourStartTime;
 std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> ourRT1, ourRT2, ourRT3;
 
-std::shared_ptr<RoseGold::Core::Graphics::PipelineState> ourMeshPipelineState;
+std::shared_ptr<RoseGold::Core::Graphics::CachedPipelineState> ourMeshPipelineState;
 std::shared_ptr<RoseGold::Core::Graphics::Shader> ourVertexShader, ourPixelShader;
 
 std::shared_ptr<RoseGold::Core::Graphics::Mesh> ourMesh;
@@ -75,8 +75,11 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 		ourVertexShader = roseGold.GraphicsManager->CreateShader("shaders/MeshVertex.hlsl", RoseGold::Core::Graphics::Shader::Type::Vertex);
 		ourPixelShader = roseGold.GraphicsManager->CreateShader("shaders/MeshPixel.hlsl", RoseGold::Core::Graphics::Shader::Type::Pixel);
 
-		ourMeshPipelineState = roseGold.GraphicsManager->CreatePipelineState();
-		// Todo: Define the pipeline state.
+		RoseGold::Core::Graphics::PipelineState pipelineState;
+		pipelineState.VertexShader = ourVertexShader;
+		pipelineState.PixelShader = ourPixelShader;
+
+		ourMeshPipelineState = roseGold.GraphicsManager->CreateOrGetPipelineState(pipelineState);
 	}
 }
 
