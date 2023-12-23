@@ -48,12 +48,32 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
+	void CommandBuffer::SetScissorRect(const Math::RectangleT<int>& aRectangle)
+	{
+		myRecordedCommands.emplace_back(
+			[aRectangle](CommandBuffer& aBuffer)
+			{
+				aBuffer.SetScissorRect(aRectangle);
+			}
+		);
+	}
+
 	void CommandBuffer::SetRenderTarget(std::shared_ptr<RenderTexture> aTexture)
 	{
 		myRecordedCommands.emplace_back(
 			[aTexture](CommandBuffer& aBuffer)
 			{
 				aBuffer.SetRenderTarget(aTexture);
+			}
+		);
+	}
+
+	void CommandBuffer::SetViewport(const Math::Rectangle& aRectangle)
+	{
+		myRecordedCommands.emplace_back(
+			[aRectangle](CommandBuffer& aBuffer)
+			{
+				aBuffer.SetViewport(aRectangle);
 			}
 		);
 	}

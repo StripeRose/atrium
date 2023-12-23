@@ -30,7 +30,10 @@ namespace RoseGold::DirectX12
 		void Clear(Color aClearColor) override;
 		void Clear(float aClearDepth) override;
 		void Clear(Color aClearColor, float aClearDepth) override;
+		void DrawMesh(std::shared_ptr<Core::Graphics::Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<Core::Graphics::CachedPipelineState> aPipelineState, int aSubmeshIndex) override;
+		void SetScissorRect(const Math::RectangleT<int>& aRectangle) override;
 		void SetRenderTarget(std::shared_ptr<Core::Graphics::RenderTexture> aTexture) override;
+		void SetViewport(const Math::Rectangle& aRectangle) override;
 
 		/*void Clear(System::Color aClearColor) override;
 		void Clear(float aClearDepth) override;

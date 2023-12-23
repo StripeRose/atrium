@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DX12_ComPtr.hpp"
+#include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Manager.hpp"
 #include "DX12_Shader.hpp"
 
@@ -18,5 +19,7 @@ namespace RoseGold::DirectX12
 	public:
 		Mesh(Manager& aManager);
 		~Mesh() = default;
+
+		std::shared_ptr<VertexBuffer> GetVertexBuffer();
 	};
 }

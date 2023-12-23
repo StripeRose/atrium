@@ -13,4 +13,9 @@ namespace RoseGold::DirectX12
 	Mesh::Mesh(Manager& aManager)
 		: Core::Graphics::Mesh(aManager)
 	{ }
+
+	std::shared_ptr<VertexBuffer> Mesh::GetVertexBuffer()
+	{
+		return std::static_pointer_cast<VertexBuffer>(myVertexBuffer);
+	}
 }

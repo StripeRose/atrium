@@ -1,5 +1,6 @@
 // Filter "Resource"
 
+#include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_Pipeline.hpp"
 #include "DX12_Shader.hpp"
@@ -77,7 +78,7 @@ namespace RoseGold::DirectX12
 
 		// Output
 		psoDesc.NumRenderTargets = 1;
-		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		psoDesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
 		psoDesc.SampleDesc.Count = 1;
 
 		std::shared_ptr<CachedPipelineState> cachedState = std::make_shared<CachedPipelineState>();

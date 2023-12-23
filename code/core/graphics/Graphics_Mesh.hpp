@@ -56,7 +56,7 @@ namespace RoseGold::Core::Graphics
 			: myGraphicsManager(aGraphicsManager)
 		{ }
 
-	private:
+	protected:
 		std::shared_ptr<GraphicsBuffer> myVertexBuffer;
 		Manager& myGraphicsManager;
 	};

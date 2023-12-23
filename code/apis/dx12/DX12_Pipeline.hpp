@@ -3,7 +3,6 @@
 #pragma once
 
 #include "DX12_ComPtr.hpp"
-#include "DX12_Device.hpp"
 
 #include <Graphics_Pipeline.hpp>
 
@@ -18,12 +17,15 @@ namespace RoseGold::DirectX12
 		ComPtr<ID3D12PipelineState> myPipelineState;
 	};
 
+	class Device;
 	class Pipeline
 	{
 	public:
 		Pipeline(Device& aDevice);
 
 		std::shared_ptr<CachedPipelineState> CreateOrGetState(const Core::Graphics::PipelineState& aPipelineState);
+
+		ID3D12RootSignature* GetRootSignature() { return myRootSignature.Get(); }
 		
 	private:
 		void SetupRootSignature();

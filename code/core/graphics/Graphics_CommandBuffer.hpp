@@ -47,7 +47,7 @@ namespace RoseGold::Core::Graphics
 
 		// Todo: Figure out mesh instancing.
 
-		//virtual void SetScissorRect(const System::Math::Rectangle<float>& aRectangle);
+		virtual void SetScissorRect(const Math::RectangleT<int>& aRectangle);
 
 		// virtual void SetBufferData(ComputeBuffer aBuffer, void* someData, size_t aDataSize);
 		// template <typename T> virtual void SetBufferData(ComputeBuffer aBuffer, const List<T>& someData);
@@ -62,7 +62,7 @@ namespace RoseGold::Core::Graphics
 		// Transforms world space into camera space.
 		//virtual void SetViewMatrix(const System::Math::Matrix& aMatrix);
 
-		//virtual void SetViewport(const System::Math::Rectangle<float>& aRectangle);
+		virtual void SetViewport(const Math::Rectangle& aRectangle);
 
 		// virtual void WaitOnGraphicsFence(GraphicsFence aFence);
 

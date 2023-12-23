@@ -23,7 +23,6 @@ namespace RoseGold::DirectX12
 	{
 		Debug::Log("DX12 start");
 		myDevice.reset(new Device());
-		myPipeline.reset(new Pipeline(*myDevice));
 
 		AssertSuccess(
 			myDevice->GetDevice()->CreateCommandAllocator(
@@ -68,7 +67,7 @@ namespace RoseGold::DirectX12
 
 	std::shared_ptr<Core::Graphics::CachedPipelineState> Manager::CreateOrGetPipelineState(const Core::Graphics::PipelineState& aPipelineState)
 	{
-		return myPipeline->CreateOrGetState(aPipelineState);
+		return myDevice->GetPipeline().CreateOrGetState(aPipelineState);
 	}
 
 	std::shared_ptr<Core::Graphics::Shader> Manager::CreateShader(const std::filesystem::path& aSource, Core::Graphics::Shader::Type aType)

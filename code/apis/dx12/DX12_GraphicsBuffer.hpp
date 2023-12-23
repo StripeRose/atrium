@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DX12_ComPtr.hpp"
+#include "DX12_DescriptorHeap.hpp"
 
 #include <Graphics_Buffer.hpp>
 
