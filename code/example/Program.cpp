@@ -14,7 +14,7 @@
 #include <chrono>
 
 std::chrono::high_resolution_clock::time_point ourStartTime;
-std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> ourRT1;
+std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> ourRT1, ourRT2, ourRT3;
 
 std::shared_ptr<RoseGold::Core::Graphics::CachedPipelineState> ourMeshPipelineState;
 std::shared_ptr<RoseGold::Core::Graphics::Shader> ourVertexShader, ourPixelShader;
@@ -25,12 +25,28 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 {
 	RoseGold::Core::Platform::WindowManager::CreationParameters windowParams;
 
-	windowParams.Title = "Test window";
+	windowParams.Title = "Window 1";
 	windowParams.Size = { 200, 200 };
 	auto window1 = roseGold.WindowManager->NewWindow(windowParams);
 	ourRT1 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window1);
 	window1->OnClosed.Connect(nullptr, [&]() {
 		ourRT1.reset();
+		});
+
+	windowParams.Title = "Window 2";
+	windowParams.Size = { 200, 200 };
+	auto window2 = roseGold.WindowManager->NewWindow(windowParams);
+	ourRT2 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window2);
+	window2->OnClosed.Connect(nullptr, [&]() {
+		ourRT2.reset();
+		});
+
+	windowParams.Title = "Window 3";
+	windowParams.Size = { 200, 200 };
+	auto window3 = roseGold.WindowManager->NewWindow(windowParams);
+	ourRT3 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window3);
+	window3->OnClosed.Connect(nullptr, [&]() {
+		ourRT3.reset();
 		});
 
 	{
@@ -74,6 +90,8 @@ void CleanupResources()
 	ourPixelShader.reset();
 	ourMesh.reset();
 	ourRT1.reset();
+	ourRT2.reset();
+	ourRT3.reset();
 }
 
 void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
@@ -92,16 +110,19 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 		GraphicsTask& drawMesh = drawFrame.CreateTask("Draw meshes");
 		drawMesh.AddDependency(clearTask);
 		{
-			if (ourRT1)
-			{
-				CommandBuffer& buffer = drawMesh.AddWork();
+			CommandBuffer& buffer = drawMesh.AddWork();
 
-				buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT1->GetWidth()), static_cast<float>(ourRT1->GetHeight()) }));
-				buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT1->GetWidth()), static_cast<int>(ourRT1->GetHeight()) }));
+			buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT1->GetWidth()), static_cast<float>(ourRT1->GetHeight()) }));
+			buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT1->GetWidth()), static_cast<int>(ourRT1->GetHeight()) }));
 
-				buffer.SetRenderTarget(ourRT1);
-				buffer.DrawMesh(ourMesh, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
-			}
+			buffer.SetRenderTarget(ourRT1);
+			buffer.DrawMesh(ourMesh, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
+
+			buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT2->GetWidth() / 2), static_cast<float>(ourRT2->GetHeight() / 2) }));
+			buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT2->GetWidth() / 2), static_cast<int>(ourRT2->GetHeight() / 2) }));
+
+			buffer.SetRenderTarget(ourRT2);
+			buffer.DrawMesh(ourMesh, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
 		}
 	}
 
@@ -113,6 +134,28 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 			buffer.Clear(RoseCommon::Math::Lerp<RoseGold::Color>(
 				RoseGold::Color::Predefined::Aqua,
 				RoseGold::Color::Predefined::Tan,
+				lerp
+			));
+		}
+
+		GraphicsTask& clearWindow2 = clearTask.CreateTask("Clear window 2");
+		{
+			CommandBuffer& buffer = clearWindow2.AddWork();
+			buffer.SetRenderTarget(ourRT2);
+			buffer.Clear(RoseCommon::Math::Lerp<RoseGold::Color>(
+				RoseGold::Color::Predefined::Tomato,
+				RoseGold::Color::Predefined::LightGreen,
+				lerp
+			));
+		}
+
+		GraphicsTask& clearWindow3 = clearTask.CreateTask("Clear window 3");
+		{
+			CommandBuffer& buffer = clearWindow3.AddWork();
+			buffer.SetRenderTarget(ourRT3);
+			buffer.Clear(RoseCommon::Math::Lerp<RoseGold::Color>(
+				RoseGold::Color::Predefined::LightYellow,
+				RoseGold::Color::Predefined::CornflowerBlue,
 				lerp
 			));
 		}
