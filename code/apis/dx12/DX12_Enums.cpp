@@ -46,11 +46,11 @@ namespace RoseGold::DirectX12
 
 		case GraphicsFormat::R32_UInt:						return DXGI_FORMAT_R32_UINT;
 		case GraphicsFormat::R32G32_UInt:					return DXGI_FORMAT_R32G32_UINT;
-		case GraphicsFormat::R32G32B32_UInt:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
+		case GraphicsFormat::R32G32B32_UInt:				return DXGI_FORMAT_R32G32B32_UINT;
 		case GraphicsFormat::R32G32B32A32_UInt:				return DXGI_FORMAT_R32G32B32A32_UINT;
 		case GraphicsFormat::R32_SInt:						return DXGI_FORMAT_R32_SINT;
 		case GraphicsFormat::R32G32_SInt:					return DXGI_FORMAT_R32G32_SINT;
-		case GraphicsFormat::R32G32B32_SInt:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
+		case GraphicsFormat::R32G32B32_SInt:				return DXGI_FORMAT_R32G32B32_SINT;
 		case GraphicsFormat::R32G32B32A32_SInt:				return DXGI_FORMAT_R32G32B32A32_SINT;
 
 		case GraphicsFormat::R16_SFloat:					return DXGI_FORMAT_R16_FLOAT;
@@ -59,7 +59,7 @@ namespace RoseGold::DirectX12
 		case GraphicsFormat::R16G16B16A16_SFloat:			return DXGI_FORMAT_R16G16B16A16_FLOAT;
 		case GraphicsFormat::R32_SFloat:					return DXGI_FORMAT_R32_FLOAT;
 		case GraphicsFormat::R32G32_SFloat:					return DXGI_FORMAT_R32G32_FLOAT;
-		case GraphicsFormat::R32G32B32_SFloat:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
+		case GraphicsFormat::R32G32B32_SFloat:				return DXGI_FORMAT_R32G32B32_FLOAT;
 		case GraphicsFormat::R32G32B32A32_SFloat:			return DXGI_FORMAT_R32G32B32A32_FLOAT;
 
 		case GraphicsFormat::B8G8R8_UNorm:					return DXGI_FORMAT_UNKNOWN;				// Not supported.
