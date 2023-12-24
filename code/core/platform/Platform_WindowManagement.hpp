@@ -35,7 +35,11 @@ namespace RoseGold::Core::Platform
 		/// <returns>An std::any containing the native handle.</returns>
 		virtual std::any GetNativeHandle() const = 0;
 
+		virtual void GetPosition(int& outX, int& outY) const = 0;
 		virtual void GetSize(int& outWidth, int& outHeight) const = 0;
+
+		virtual void SetPosition(int aX, int aY) = 0;
+		virtual void SetSize(int aWidth, int aHeight) = 0;
 	};
 
 	class WindowManager
@@ -44,6 +48,7 @@ namespace RoseGold::Core::Platform
 		struct CreationParameters
 		{
 			std::string Title = "New window";
+			std::optional<std::pair<unsigned int, unsigned int>> Position;
 			std::optional<std::pair<unsigned int, unsigned int>> Size;
 		};
 

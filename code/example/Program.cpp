@@ -26,6 +26,7 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 	RoseGold::Core::Platform::WindowManager::CreationParameters windowParams;
 
 	windowParams.Title = "Window 1";
+	windowParams.Position = { 200, 200 };
 	windowParams.Size = { 200, 200 };
 	auto window1 = roseGold.WindowManager->NewWindow(windowParams);
 	ourRT1 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window1);
@@ -34,7 +35,8 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 		});
 
 	windowParams.Title = "Window 2";
-	windowParams.Size = { 200, 200 };
+	windowParams.Position = { 410, 200 };
+	windowParams.Size = { 400, 200 };
 	auto window2 = roseGold.WindowManager->NewWindow(windowParams);
 	ourRT2 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window2);
 	window2->OnClosed.Connect(nullptr, [&]() {
@@ -42,7 +44,8 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 		});
 
 	windowParams.Title = "Window 3";
-	windowParams.Size = { 200, 200 };
+	windowParams.Position = { 200, 440 };
+	windowParams.Size = { 200, 400 };
 	auto window3 = roseGold.WindowManager->NewWindow(windowParams);
 	ourRT3 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window3);
 	window3->OnClosed.Connect(nullptr, [&]() {

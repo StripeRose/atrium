@@ -21,28 +21,38 @@ namespace RoseGold::Win32
 		return myWindowHandle;
 	}
 
+	void Window::GetPosition(int& outX, int& outY) const
+	{
+		const RECT windowRect = GetRect();
+		outX = windowRect.left;
+		outY = windowRect.top;
+	}
+
 	void Window::GetSize(int& aWidthOut, int& aHeightOut) const
 	{
-		RECT windowRect;
-		if (!::GetWindowRect(myWindowHandle, &windowRect))
-		{
-			aWidthOut = 0;
-			aHeightOut = 0;
-			return;
-		}
-
-		RECT adjustReference;
-		::SetRectEmpty(&adjustReference);
-		if (::AdjustWindowRect(&adjustReference, WS_OVERLAPPEDWINDOW, FALSE) == TRUE)
-		{
-			windowRect.left -= adjustReference.left;
-			windowRect.top -= adjustReference.top;
-			windowRect.right -= adjustReference.right;
-			windowRect.bottom -= adjustReference.bottom;
-		}
-
+		const RECT windowRect = GetRect();
 		aWidthOut = windowRect.right - windowRect.left;
 		aHeightOut = windowRect.bottom - windowRect.top;
+	}
+
+	void Window::SetPosition(int aX, int aY)
+	{
+		RECT rect(aX, aY, 0, 0);
+		::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+
+		::SetWindowPos(myWindowHandle, NULL,
+			rect.left, rect.top, 0, 0,
+			SWP_NOACTIVATE | SWP_NOSIZE);
+	}
+
+	void Window::SetSize(int aWidth, int aHeight)
+	{
+		RECT rect(0, 0, aWidth, aHeight);
+		::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+
+		::SetWindowPos(myWindowHandle, NULL,
+			0, 0, rect.right - rect.left, rect.bottom - rect.top,
+			SWP_NOACTIVATE | SWP_NOMOVE);
 	}
 
 	Window::Window(const Core::Platform::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass)
@@ -58,26 +68,51 @@ namespace RoseGold::Win32
 			std::placeholders::_3,
 			std::placeholders::_4
 		);
+		
+		LONG windowX = 100;
+		LONG windowY = 100;
+		LONG windowWidth = 640;
+		LONG windowHeight = 480;
 
-		LONG windowWidth = CW_USEDEFAULT;
-		LONG windowHeight = CW_USEDEFAULT;
+		if (someParameters.Position.has_value())
+		{
+			windowX = someParameters.Position.value().first;
+			windowY = someParameters.Position.value().second;
+		}
 
 		if (someParameters.Size.has_value())
 		{
 			windowWidth = someParameters.Size.value().first;
 			windowHeight = someParameters.Size.value().second;
+		}
 
-			RECT windowRectangle(0, 0, windowWidth, windowHeight);
+		{
+			RECT windowRectangle(windowX, windowY, windowX + windowWidth, windowY + windowHeight);
 			::AdjustWindowRect(&windowRectangle, WS_OVERLAPPEDWINDOW, FALSE);
+			windowX = windowRectangle.left;
+			windowY = windowRectangle.top;
 			windowWidth = windowRectangle.right - windowRectangle.left;
 			windowHeight = windowRectangle.bottom - windowRectangle.top;
+		}
+
+		if (!someParameters.Position.has_value())
+		{
+			windowX = CW_USEDEFAULT;
+			windowY = CW_USEDEFAULT;
+		}
+
+		if (!someParameters.Size.has_value())
+		{
+			windowWidth = CW_USEDEFAULT;
+			windowHeight = CW_USEDEFAULT;
 		}
 
 		myWindowHandle = ::CreateWindow(
 			aWindowClass.lpszClassName,
 			someParameters.Title.c_str(),
 			WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT, CW_USEDEFAULT,
+			windowX,
+			windowY,
 			windowWidth,
 			windowHeight,
 			nullptr,
@@ -135,6 +170,26 @@ namespace RoseGold::Win32
 		}
 
 		return ::DefWindowProc(hWnd, msg, wParam, lParam);
+	}
+
+	RECT Window::GetRect() const
+	{
+		RECT windowRect;
+		ZeroMemory(&windowRect, sizeof(RECT));
+		if (!::GetWindowRect(myWindowHandle, &windowRect))
+			return windowRect;
+
+		RECT adjustReference;
+		::SetRectEmpty(&adjustReference);
+		if (::AdjustWindowRect(&adjustReference, WS_OVERLAPPEDWINDOW, FALSE) == TRUE)
+		{
+			windowRect.left -= adjustReference.left;
+			windowRect.top -= adjustReference.top;
+			windowRect.right -= adjustReference.right;
+			windowRect.bottom -= adjustReference.bottom;
+		}
+
+		return windowRect;
 	}
 
 	void Window::DestroyWindow()

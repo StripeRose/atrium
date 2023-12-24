@@ -18,12 +18,18 @@ namespace RoseGold::Win32
 		
 		std::any GetNativeHandle() const override;
 
+		void GetPosition(int& outX, int& outY) const override;
 		void GetSize(int& aWidthOut, int& aHeightOut) const override;
+
+		void SetPosition(int aX, int aY) override;
+		void SetSize(int aWidth, int aHeight) override;
 
 	private:
 		Window(const Core::Platform::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass);
 
 		LRESULT HandleWindowMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+		RECT GetRect() const;
 
 		void DestroyWindow();
 
