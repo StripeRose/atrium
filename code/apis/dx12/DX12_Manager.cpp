@@ -5,8 +5,8 @@
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_GraphicsBuffer.hpp"
-#include "DX12_Mesh.hpp"
 #include "DX12_Pipeline.hpp"
+#include "DX12_Shader.hpp"
 
 #include "Common_Debug.hpp"
 
@@ -62,7 +62,7 @@ namespace RoseGold::DirectX12
 
 	std::shared_ptr<Core::Graphics::Mesh> Manager::CreateMesh()
 	{
-		return std::shared_ptr<Core::Graphics::Mesh>(new Mesh(*this));
+		return std::make_shared<Core::Graphics::Mesh>(*this);
 	}
 
 	std::shared_ptr<Core::Graphics::CachedPipelineState> Manager::CreateOrGetPipelineState(const Core::Graphics::PipelineState& aPipelineState)

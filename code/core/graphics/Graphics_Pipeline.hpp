@@ -1,6 +1,10 @@
 #pragma once
 
+#include "Graphics_Enums.hpp"
+
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace RoseGold::Core::Graphics
 {
@@ -17,6 +21,22 @@ namespace RoseGold::Core::Graphics
 	class PipelineState
 	{
 	public:
+		struct InputLayoutEntry
+		{
+		public:
+			InputLayoutEntry(std::string aSemanticName, GraphicsFormat aFormat)
+				: SemanticName(aSemanticName)
+				, Format(aFormat)
+			{ }
+
+			std::string SemanticName;
+			unsigned int SemanticIndex = 0;
+			GraphicsFormat Format;
+		};
+
+	public:
+		std::vector<InputLayoutEntry> InputLayout;
+
 		// (IA) Input assembler
 
 		// (VS) Vertex shader

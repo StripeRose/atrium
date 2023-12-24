@@ -72,10 +72,13 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 	}
 
 	{
+		using namespace RoseGold::Core::Graphics;
 		ourVertexShader = roseGold.GraphicsManager->CreateShader("shaders/MeshVertex.hlsl", RoseGold::Core::Graphics::Shader::Type::Vertex);
 		ourPixelShader = roseGold.GraphicsManager->CreateShader("shaders/MeshPixel.hlsl", RoseGold::Core::Graphics::Shader::Type::Pixel);
 
 		RoseGold::Core::Graphics::PipelineState pipelineState;
+		pipelineState.InputLayout = ourMesh->GetInputLayout();
+
 		pipelineState.VertexShader = ourVertexShader;
 		pipelineState.PixelShader = ourPixelShader;
 

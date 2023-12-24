@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Graphics_Buffer.hpp"
+#include "Graphics_Pipeline.hpp"
 
 #include "Common_Color.hpp"
 #include "Common_Math.hpp"
@@ -46,15 +47,17 @@ namespace RoseGold::Core::Graphics
 	class Mesh
 	{
 	public:
-		virtual ~Mesh() = default;
-
-		virtual void SetFromList(const std::span<Vertex> someVertices);
-		virtual void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
-
-	protected:
 		Mesh(Manager& aGraphicsManager)
 			: myGraphicsManager(aGraphicsManager)
 		{ }
+		virtual ~Mesh() = default;
+
+		virtual std::vector<PipelineState::InputLayoutEntry> GetInputLayout() const;
+		virtual std::shared_ptr<const GraphicsBuffer> GetVertexBuffer() const { return myVertexBuffer; }
+
+		virtual void SetFromList(const std::span<Vertex> someVertices);
+		virtual void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
+		
 
 	protected:
 		std::shared_ptr<GraphicsBuffer> myVertexBuffer;

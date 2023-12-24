@@ -21,13 +21,51 @@ namespace RoseGold::Core::Graphics
 		return vertex;
 	}*/
 
+	std::vector<PipelineState::InputLayoutEntry> Mesh::GetInputLayout() const
+	{
+		std::vector<PipelineState::InputLayoutEntry> inputLayout;
+
+		inputLayout.emplace_back("POSITION", GraphicsFormat::R32G32B32_SFloat);
+		inputLayout.emplace_back("NORMAL", GraphicsFormat::R32G32B32_SFloat);
+		inputLayout.emplace_back("TEXCOORD", GraphicsFormat::R32G32_SFloat);
+		inputLayout.emplace_back("COLOR", GraphicsFormat::R32G32B32_SFloat);
+		inputLayout.emplace_back("BINORMAL", GraphicsFormat::R32G32B32_SFloat);
+		inputLayout.emplace_back("TANGENT", GraphicsFormat::R32G32B32_SFloat);
+
+		return inputLayout;
+	}
+
 	void Mesh::SetFromList(const std::span<Vertex> someVertices)
 	{
+		struct ConvertedVertex
+		{
+			Math::Vector3 Position;
+			Math::Vector3 Normal;
+			Math::Vector2 UV;
+			Math::Vector3 Color;
+			Math::Vector3 Binormal;
+			Math::Vector3 Tangent;
+		};
+
+		std::vector<ConvertedVertex> convertedVertices;
+		convertedVertices.reserve(someVertices.size());
+
+		for (const Core::Graphics::Vertex& vertex : someVertices)
+		{
+			ConvertedVertex& convertedVertex = convertedVertices.emplace_back();
+			convertedVertex.Position = vertex.Position;
+			convertedVertex.Normal = vertex.Normal;
+			convertedVertex.UV = vertex.UV;
+			convertedVertex.Color = Math::Vector3(vertex.Color.R, vertex.Color.G, vertex.Color.B);
+			convertedVertex.Binormal = vertex.Binormal;
+			convertedVertex.Tangent = vertex.Tangent;
+		}
+
 		myVertexBuffer = myGraphicsManager.CreateGraphicsBuffer(
 			GraphicsBuffer::Target::Vertex,
-			static_cast<std::uint32_t>(someVertices.size()), sizeof(Vertex)
+			static_cast<std::uint32_t>(convertedVertices.size()), sizeof(ConvertedVertex)
 		);
-		myVertexBuffer->SetData<Vertex>(someVertices);
+		myVertexBuffer->SetData<ConvertedVertex>(convertedVertices);
 	}
 
 	void Mesh::SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles)

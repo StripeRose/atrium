@@ -19,16 +19,22 @@ namespace RoseGold::DirectX12
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 
 		// Input Assembly
-		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs;
+		for (const auto& inputLayoutEntry : aPipelineState.InputLayout)
+		{
+			inputElementDescs.emplace_back(D3D12_INPUT_ELEMENT_DESC {
+				inputLayoutEntry.SemanticName.c_str(),
+				inputLayoutEntry.SemanticIndex,
+				ToDXGIFormat(inputLayoutEntry.Format),
+				0,
+				D3D12_APPEND_ALIGNED_ELEMENT,
+				D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+				0
+			});
+		}
 
-			{ "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-			{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 52, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-		};
-		psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+		psoDesc.InputLayout.pInputElementDescs = &inputElementDescs.front();
+		psoDesc.InputLayout.NumElements = static_cast<UINT>(inputElementDescs.size());
 
 		// Resources
 		psoDesc.pRootSignature = myRootSignature.Get();

@@ -2,7 +2,7 @@
 
 #include "DX12_CommandBuffer.hpp"
 #include "DX12_Diagnostics.hpp"
-#include "DX12_Mesh.hpp"
+#include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Pipeline.hpp"
 
 namespace RoseGold::DirectX12
@@ -55,8 +55,7 @@ namespace RoseGold::DirectX12
 		CachedPipelineState* pso = static_cast<CachedPipelineState*>(aPipelineState.get());
 		myCommandList->SetPipelineState(pso->myPipelineState.Get());
 
-		Mesh* dxMesh = static_cast<Mesh*>(aMesh.get());
-		std::shared_ptr<VertexBuffer> vertexBuffer = dxMesh->GetVertexBuffer();
+		std::shared_ptr<const VertexBuffer> vertexBuffer = std::static_pointer_cast<const VertexBuffer>(aMesh->GetVertexBuffer());
 
 		myCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		myCommandList->IASetVertexBuffers(0, 1, &vertexBuffer->GetBufferView());
