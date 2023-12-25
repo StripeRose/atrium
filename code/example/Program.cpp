@@ -130,17 +130,23 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 		{
 			CommandBuffer& buffer = drawMesh.AddWork();
 
-			buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT1->GetWidth()), static_cast<float>(ourRT1->GetHeight()) }));
-			buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT1->GetWidth()), static_cast<int>(ourRT1->GetHeight()) }));
+			if (ourRT1)
+			{
+				buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT1->GetWidth()), static_cast<float>(ourRT1->GetHeight()) }));
+				buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT1->GetWidth()), static_cast<int>(ourRT1->GetHeight()) }));
 
-			buffer.SetRenderTarget(ourRT1);
-			buffer.DrawMesh(ourMesh, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
+				buffer.SetRenderTarget(ourRT1);
+				buffer.DrawMesh(ourMesh, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
+			}
 
-			buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT2->GetWidth() / 2), static_cast<float>(ourRT2->GetHeight() / 2) }));
-			buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT2->GetWidth() / 2), static_cast<int>(ourRT2->GetHeight() / 2) }));
+			if (ourRT2)
+			{
+				buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT2->GetWidth() / 2), static_cast<float>(ourRT2->GetHeight() / 2) }));
+				buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT2->GetWidth() / 2), static_cast<int>(ourRT2->GetHeight() / 2) }));
 
-			buffer.SetRenderTarget(ourRT2);
-			buffer.DrawMesh(ourMesh, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
+				buffer.SetRenderTarget(ourRT2);
+				buffer.DrawMesh(ourMesh, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
+			}
 		}
 	}
 
