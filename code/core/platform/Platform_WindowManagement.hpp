@@ -2,6 +2,8 @@
 
 #include <rose-common/EventSlot.hpp>
 
+#include <Common_Math.hpp>
+
 #include <any>
 #include <memory>
 #include <optional>
@@ -16,11 +18,12 @@ namespace RoseGold::Core::Platform
 		virtual ~Window() = default;
 
 	public:
-		RoseCommon::EventSlot<> OnClosed;
-		RoseCommon::EventSlot<bool&> OnClosing;
-		RoseCommon::EventSlot<bool> OnFocusChanged;
-		RoseCommon::EventSlot<int, int> OnMove;
-		RoseCommon::EventSlot<int, int> OnSizeChanged;
+		RoseCommon::EventSlot<Window&> Closed;
+		RoseCommon::EventSlot<Window&, bool&> Closing;
+		RoseCommon::EventSlot<Window&> GotFocus;
+		RoseCommon::EventSlot<Window&> LostFocus;
+		RoseCommon::EventSlot<Window&> Moved;
+		RoseCommon::EventSlot<Window&> SizeChanged;
 
 	public:
 		/// <summary>
@@ -35,11 +38,13 @@ namespace RoseGold::Core::Platform
 		/// <returns>An std::any containing the native handle.</returns>
 		virtual std::any GetNativeHandle() const = 0;
 
-		virtual void GetPosition(int& outX, int& outY) const = 0;
-		virtual void GetSize(int& outWidth, int& outHeight) const = 0;
+		virtual Point GetPosition() const = 0;
+		virtual Size GetSize() const = 0;
 
-		virtual void SetPosition(int aX, int aY) = 0;
-		virtual void SetSize(int aWidth, int aHeight) = 0;
+		virtual bool IsFocused() const = 0;
+
+		virtual void SetPosition(const Point& aPoint) = 0;
+		virtual void SetSize(const Size& aSize) = 0;
 	};
 
 	class WindowManager

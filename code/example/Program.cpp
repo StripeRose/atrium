@@ -30,7 +30,7 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 	windowParams.Size = { 200, 200 };
 	auto window1 = roseGold.WindowManager->NewWindow(windowParams);
 	ourRT1 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window1);
-	window1->OnClosed.Connect(nullptr, [&]() {
+	window1->Closed.Connect(nullptr, [&](RoseGold::Core::Platform::Window&) {
 		ourRT1.reset();
 		});
 
@@ -39,7 +39,7 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 	windowParams.Size = { 400, 200 };
 	auto window2 = roseGold.WindowManager->NewWindow(windowParams);
 	ourRT2 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window2);
-	window2->OnClosed.Connect(nullptr, [&]() {
+	window2->Closed.Connect(nullptr, [&](RoseGold::Core::Platform::Window&) {
 		ourRT2.reset();
 		});
 
@@ -48,9 +48,21 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 	windowParams.Size = { 200, 400 };
 	auto window3 = roseGold.WindowManager->NewWindow(windowParams);
 	ourRT3 = roseGold.GraphicsManager->CreateRenderTextureForWindow(*window3);
-	window3->OnClosed.Connect(nullptr, [&]() {
+	window3->Closed.Connect(nullptr, [&](RoseGold::Core::Platform::Window&) {
 		ourRT3.reset();
 		});
+
+	auto onWindowRectChange = [window2, window3](RoseGold::Core::Platform::Window& aWindow) {
+		const RoseGold::Point point = aWindow.GetPosition();
+		const RoseGold::Size size = aWindow.GetSize();
+		const RoseGold::Point bottomRight = point + size;
+
+		window2->SetPosition({ bottomRight.X + 10, point.Y });
+		window3->SetPosition({ point.X, bottomRight.Y + 40 });
+	};
+
+	window1->Moved		.Connect(nullptr, onWindowRectChange);
+	window1->SizeChanged.Connect(nullptr, onWindowRectChange);
 
 	{
 		std::vector<RoseGold::Core::Graphics::Vertex> vertices;

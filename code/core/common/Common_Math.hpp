@@ -10,6 +10,9 @@
 
 namespace RoseGold
 {
+	using Point = RoseCommon::Math::Vector2<int>;
+	using Size = RoseCommon::Math::Vector2<int>;
+
 	namespace Math
 	{
 		using Vector2 = RoseCommon::Math::Vector2<float>;

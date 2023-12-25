@@ -50,7 +50,7 @@ namespace RoseGold::DirectX12
 		std::shared_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
 		swapChain.reset(new SwapChain(*this, aWindow));
 
-		aWindow.OnClosed.Connect(this, [&]() {
+		aWindow.Closed.Connect(this, [&](Core::Platform::Window& aWindow) {
 			myDrawSurfaceSwapChain.at(&aWindow)->Invalidate();
 			myDrawSurfaceSwapChain.erase(&aWindow);
 			});

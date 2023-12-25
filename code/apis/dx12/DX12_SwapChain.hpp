@@ -61,9 +61,9 @@ namespace RoseGold::DirectX12
 		void CreateRenderTextureForWindow();
 		void DoBufferResizing();
 		void UpdateColorSpace();
-		void GetBackBuffers(int aWidth, int aHeight);
+		void GetBackBuffers(const Size& aSize);
 
-		void OnDrawSurfaceResize(int aWidth, int aHeight);
+		void OnDrawSurfaceResize(const Size& aSize);
 
 		Core::Graphics::RenderTextureFormat GetRenderTextureFormat() const;
 
@@ -86,6 +86,6 @@ namespace RoseGold::DirectX12
 		Core::Platform::Window* myWindow;
 
 		std::vector<std::shared_ptr<SwapChainBackBuffer>> myBackBuffers;
-		std::optional<std::pair<int, int>> myDesiredResolution;
+		std::optional<Size> myDesiredResolution;
 	};
 }

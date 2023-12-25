@@ -13,7 +13,7 @@ namespace RoseGold::Win32
 	void Window::Close()
 	{
 		myHasRequestedClose = true;
-		OnClosing.Invoke(myHasRequestedClose);
+		Closing.Invoke(*this, myHasRequestedClose);
 	}
 
 	std::any Window::GetNativeHandle() const
@@ -21,23 +21,29 @@ namespace RoseGold::Win32
 		return myWindowHandle;
 	}
 
-	void Window::GetPosition(int& outX, int& outY) const
+	Point Window::GetPosition() const
 	{
 		const RECT windowRect = GetRect();
-		outX = windowRect.left;
-		outY = windowRect.top;
+		return { windowRect.left, windowRect.top };
 	}
 
-	void Window::GetSize(int& aWidthOut, int& aHeightOut) const
+	Size Window::GetSize() const
 	{
 		const RECT windowRect = GetRect();
-		aWidthOut = windowRect.right - windowRect.left;
-		aHeightOut = windowRect.bottom - windowRect.top;
+		return {
+			windowRect.right - windowRect.left,
+			windowRect.bottom - windowRect.top
+		};
 	}
 
-	void Window::SetPosition(int aX, int aY)
+	bool Window::IsFocused() const
 	{
-		RECT rect(aX, aY, 0, 0);
+		return myWindowHandle == ::GetActiveWindow();
+	}
+
+	void Window::SetPosition(const Point& aPoint)
+	{
+		RECT rect(aPoint.X, aPoint.Y, 0, 0);
 		::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
 
 		::SetWindowPos(myWindowHandle, NULL,
@@ -45,9 +51,9 @@ namespace RoseGold::Win32
 			SWP_NOACTIVATE | SWP_NOSIZE);
 	}
 
-	void Window::SetSize(int aWidth, int aHeight)
+	void Window::SetSize(const Size& aSize)
 	{
-		RECT rect(0, 0, aWidth, aHeight);
+		RECT rect(0, 0, aSize.X, aSize.Y);
 		::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
 
 		::SetWindowPos(myWindowHandle, NULL,
@@ -137,22 +143,19 @@ namespace RoseGold::Win32
 			break;
 
 		case WM_SIZE:
-			OnSizeChanged.Invoke(
-				static_cast<unsigned int>(LOWORD(lParam)),
-				static_cast<unsigned int>(HIWORD(lParam))
-			);
+			SizeChanged.Invoke(*this);
 			break;
 
 		case WM_MOVE:
-			OnMove.Invoke(
-				static_cast<unsigned int>(LOWORD(lParam)),
-				static_cast<unsigned int>(HIWORD(lParam))
-			);
+			Moved.Invoke(*this);
 			break;
 
 		case WM_KILLFOCUS:
+			LostFocus.Invoke(*this);
+			break;
+
 		case WM_SETFOCUS:
-			OnFocusChanged.Invoke(msg == WM_SETFOCUS);
+			GotFocus.Invoke(*this);
 			break;
 
 		case WM_SYSCOMMAND:
@@ -197,7 +200,7 @@ namespace RoseGold::Win32
 		if (myWindowHandle == NULL)
 			return;
 
-		OnClosed.Invoke();
+		Closed.Invoke(*this);
 		::DestroyWindow(myWindowHandle);
 		myWindowHandle = NULL;
 	}

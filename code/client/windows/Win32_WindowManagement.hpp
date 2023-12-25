@@ -18,11 +18,13 @@ namespace RoseGold::Win32
 		
 		std::any GetNativeHandle() const override;
 
-		void GetPosition(int& outX, int& outY) const override;
-		void GetSize(int& aWidthOut, int& aHeightOut) const override;
+		Point GetPosition() const override;
+		Size GetSize() const override;
 
-		void SetPosition(int aX, int aY) override;
-		void SetSize(int aWidth, int aHeight) override;
+		bool IsFocused() const override;
+
+		void SetPosition(const Point& aPoint) override;
+		void SetSize(const Size& aSize) override;
 
 	private:
 		Window(const Core::Platform::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass);

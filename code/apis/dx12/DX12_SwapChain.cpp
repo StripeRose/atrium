@@ -15,12 +15,11 @@ namespace RoseGold::DirectX12
 		CreateRenderTextureForWindow();
 		UpdateColorSpace();
 
-		int windowWidth, windowHeight;
-		aWindow.GetSize(windowWidth, windowHeight);
-		GetBackBuffers(windowWidth, windowHeight);
+		Size windowSize = aWindow.GetSize();
+		GetBackBuffers(windowSize);
 
-		aWindow.OnSizeChanged.Connect(this, [&](int aWidth, int aHeight) {
-			OnDrawSurfaceResize(aWidth, aHeight);
+		aWindow.SizeChanged.Connect(this, [&](Core::Platform::Window& aWindow) {
+			OnDrawSurfaceResize(aWindow.GetSize());
 			});
 	}
 
@@ -28,7 +27,7 @@ namespace RoseGold::DirectX12
 	{
 		if (myWindow != nullptr)
 		{
-			myWindow->OnSizeChanged.Disconnect(this);
+			myWindow->SizeChanged.Disconnect(this);
 			myWindow = nullptr;
 		}
 
@@ -198,10 +197,9 @@ namespace RoseGold::DirectX12
 	void SwapChain::CreateRenderTextureForWindow()
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDescriptor = {};
-		int windowWidth, windowHeight;
-		myWindow->GetSize(windowWidth, windowHeight);
-		swapChainDescriptor.Width = windowWidth;
-		swapChainDescriptor.Height = windowHeight;
+		const Size windowSize = myWindow->GetSize();
+		swapChainDescriptor.Width = windowSize.X;
+		swapChainDescriptor.Height = windowSize.Y;
 		swapChainDescriptor.Format = ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat()));
 		swapChainDescriptor.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDescriptor.BufferCount = 2;
@@ -241,10 +239,10 @@ namespace RoseGold::DirectX12
 		if (!myDesiredResolution.has_value())
 			return;
 
-		const std::pair<unsigned int, unsigned int> newResolution = myDesiredResolution.value();
+		const Size newResolution = myDesiredResolution.value();
 		myDesiredResolution.reset();
 
-		if ((newResolution.first * newResolution.second) == 0)
+		if (newResolution.LengthSquared() == 0)
 			return;
 
 		CommandQueue& queue = myDevice->GetCommandQueueManager().GetGraphicsQueue();
@@ -260,8 +258,8 @@ namespace RoseGold::DirectX12
 		Debug::Assert(mySwapChain, "Resizing a draw surface without a swapchain.");
 		HRESULT hr = mySwapChain->ResizeBuffers(
 			static_cast<UINT>(myBackBuffers.size()),
-			newResolution.first,
-			newResolution.second,
+			static_cast<UINT>(newResolution.X),
+			static_cast<UINT>(newResolution.Y),
 			ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat())),
 			myDevice->GetParameters().AllowTearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u
 		);
@@ -285,7 +283,7 @@ namespace RoseGold::DirectX12
 			AssertSuccess(hr);
 		}
 
-		GetBackBuffers(newResolution.first, newResolution.second);
+		GetBackBuffers(newResolution);
 	}
 
 	void SwapChain::UpdateColorSpace()
@@ -386,7 +384,7 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	void SwapChain::GetBackBuffers(int aWidth, int aHeight)
+	void SwapChain::GetBackBuffers(const Size& aSize)
 	{
 		myBackBuffers.clear();
 
@@ -403,17 +401,17 @@ namespace RoseGold::DirectX12
 			rtDesc.DepthStencilFormat = Core::Graphics::GraphicsFormat::D32_SFloat;
 			rtDesc.Dimension = Core::Graphics::TextureDimension::Tex2D;
 			rtDesc.IsSRGB = false;
-			rtDesc.Size_Width = aWidth;
-			rtDesc.Size_Height = aHeight;
+			rtDesc.Size_Width = aSize.X;
+			rtDesc.Size_Height = aSize.Y;
 			rtDesc.Size_Depth = 1;
 
 			myBackBuffers.emplace_back(new SwapChainBackBuffer(*myDevice, rtDesc, backBufferResource, nullptr));
 		}
 	}
 
-	void SwapChain::OnDrawSurfaceResize(int aWidth, int aHeight)
+	void SwapChain::OnDrawSurfaceResize(const Size& aSize)
 	{
-		myDesiredResolution = std::make_pair(aWidth, aHeight);
+		myDesiredResolution = aSize;
 	}
 
 	Core::Graphics::RenderTextureFormat SwapChain::GetRenderTextureFormat() const
