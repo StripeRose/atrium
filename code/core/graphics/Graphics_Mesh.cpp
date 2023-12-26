@@ -37,6 +37,9 @@ namespace RoseGold::Core::Graphics
 
 	void Mesh::SetFromList(const std::span<Vertex> someVertices)
 	{
+		if (someVertices.empty())
+			return;
+
 		struct ConvertedVertex
 		{
 			Math::Vector3 Position;
@@ -70,6 +73,12 @@ namespace RoseGold::Core::Graphics
 
 	void Mesh::SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles)
 	{
+		if (someTriangles.empty() && !someVertices.empty())
+		{
+			SetFromList(someVertices);
+			return;
+		}
+
 		std::vector<Vertex> vertexList;
 		for (const Triangle& tri : someTriangles)
 		{
