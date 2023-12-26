@@ -44,6 +44,12 @@ namespace RoseGold::DirectX12
 			swapChain.second->UpdateResolution();
 	}
 
+	void Device::MarkFrameEnd()
+	{
+		myPipeline->MarkFrameEnd();
+		myDescriptorHeapManager->GetFrameHeap().Reset();
+	}
+
 	std::shared_ptr<SwapChain> Device::CreateRenderTextureForWindow(Core::Platform::Window& aWindow)
 	{
 		const std::scoped_lock lock(mySwapChainMutex);

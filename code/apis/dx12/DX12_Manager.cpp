@@ -116,7 +116,6 @@ namespace RoseGold::DirectX12
 	void Manager::MarkFrameStart()
 	{
 		myDevice->MarkFrameStart();
-		myCommandAllocator->Reset();
 	}
 
 	void Manager::MarkFrameEnd()
@@ -136,6 +135,7 @@ namespace RoseGold::DirectX12
 
 		myCommandAllocator->Reset();
 		myFrameTargets.clear();
+		myDevice->MarkFrameEnd();
 	}
 
 	void Manager::ReportUnreleasedObjects()

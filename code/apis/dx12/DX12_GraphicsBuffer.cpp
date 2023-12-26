@@ -154,7 +154,7 @@ namespace RoseGold::DirectX12
 
 	void ConstantBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize)
 	{
-		Debug::Assert(aDataSize <= myBufferSize, "Tried to assign %i bytes to a buffer of size %i.", aDataSize, myBufferSize);
+		Debug::Assert(aDataSize >= myBufferSize, "Tried to assign %i bytes to a buffer of size %i.", aDataSize, myBufferSize);
 		std::memcpy(myMappedBuffer, aDataPtr, aDataSize);
 	}
 
@@ -187,7 +187,7 @@ namespace RoseGold::DirectX12
 			&uploadHeapProperties,
 			D3D12_HEAP_FLAG_NONE,
 			&constantBufferDesc,
-			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
 			NULL,
 			IID_PPV_ARGS(bufferResource.ReleaseAndGetAddressOf()))))
 			return nullptr;

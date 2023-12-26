@@ -30,22 +30,13 @@ namespace RoseGold::DirectX12
 		void Clear(Color aClearColor) override;
 		void Clear(float aClearDepth) override;
 		void Clear(Color aClearColor, float aClearDepth) override;
+		void DisableScissorRect() override;
 		void DrawMesh(std::shared_ptr<Core::Graphics::Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<Core::Graphics::CachedPipelineState> aPipelineState, int aSubmeshIndex) override;
 		void SetScissorRect(const Math::RectangleT<int>& aRectangle) override;
+		void SetProjectionMatrix(const Math::Matrix& aMatrix) override;
 		void SetRenderTarget(std::shared_ptr<Core::Graphics::RenderTexture> aTexture) override;
+		void SetViewMatrix(const Math::Matrix& aMatrix) override;
 		void SetViewport(const Math::Rectangle& aRectangle) override;
-
-		/*void Clear(System::Color aClearColor) override;
-		void Clear(float aClearDepth) override;
-		void Clear(System::Color aClearColor, float aClearDepth) override;
-		void CustomCommand(std::function<void(CommandBuffer&)> aCallback) override;
-		void DisableScissorRect() override;
-		void SetScissorRect(const System::Math::Rectangle<float>& aRectangle) override;
-		void SetProjectionMatrix(const System::Math::Matrix& aMatrix) override;
-		void SetRenderTarget(Resource<RenderTexture> aTexture) override;
-		void SetViewMatrix(const System::Math::Matrix& aMatrix) override;
-		void SetViewport(const System::Math::Rectangle<float>& aRectangle) override;
-		void Reset() override;*/
 
 	private:
 		void Clear_Internal(Color aClearColor);
@@ -59,6 +50,9 @@ namespace RoseGold::DirectX12
 
 		D3D12_CPU_DESCRIPTOR_HANDLE myLastColorHandle;
 		D3D12_CPU_DESCRIPTOR_HANDLE myLastDepthHandle;
+
+		Math::Matrix myLastProjectionMatrix;
+		Math::Matrix myLastViewMatrix;
 
 		std::vector<std::shared_ptr<Core::Graphics::RenderTexture>> myTargetTextures;
 	};

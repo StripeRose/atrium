@@ -4,10 +4,12 @@
 
 #include "DX12_ComPtr.hpp"
 
+#include <Graphics_Buffer.hpp>
 #include <Graphics_Pipeline.hpp>
 
 #include <map>
 #include <memory>
+#include <vector>
 
 namespace RoseGold::DirectX12
 {
@@ -23,9 +25,13 @@ namespace RoseGold::DirectX12
 	public:
 		Pipeline(Device& aDevice);
 
+		void MarkFrameEnd();
+
 		std::shared_ptr<CachedPipelineState> CreateOrGetState(const Core::Graphics::PipelineState& aPipelineState);
 
 		ID3D12RootSignature* GetRootSignature() { return myRootSignature.Get(); }
+
+		std::shared_ptr<Core::Graphics::GraphicsBuffer> CreateFrameConstantBuffer(std::uint32_t aBufferSize);
 		
 	private:
 		void SetupRootSignature();
@@ -33,5 +39,6 @@ namespace RoseGold::DirectX12
 		Device& myDevice;
 
 		ComPtr<ID3D12RootSignature> myRootSignature;
+		std::vector<std::shared_ptr<Core::Graphics::GraphicsBuffer>> myFrameConstantBuffers;
 	};
 }

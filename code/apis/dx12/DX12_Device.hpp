@@ -31,6 +31,7 @@ namespace RoseGold::DirectX12
 		~Device();
 
 		void MarkFrameStart();
+		void MarkFrameEnd();
 
 		std::shared_ptr<SwapChain> CreateRenderTextureForWindow(Core::Platform::Window& aWindow);
 		std::shared_ptr<SwapChain> GetSwapChain(Core::Platform::Window& aWindow);

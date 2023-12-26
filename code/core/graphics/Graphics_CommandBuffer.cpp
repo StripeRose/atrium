@@ -38,6 +38,16 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
+	void CommandBuffer::DisableScissorRect()
+	{
+		myRecordedCommands.emplace_back(
+			[](CommandBuffer& aBuffer)
+			{
+				aBuffer.DisableScissorRect();
+			}
+		);
+	}
+
 	void CommandBuffer::DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<CachedPipelineState> aPipelineState, int aSubmeshIndex)
 	{
 		myRecordedCommands.emplace_back(
@@ -58,12 +68,32 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
+	void CommandBuffer::SetProjectionMatrix(const Math::Matrix& aMatrix)
+	{
+		myRecordedCommands.emplace_back(
+			[aMatrix](CommandBuffer& aBuffer)
+			{
+				aBuffer.SetProjectionMatrix(aMatrix);
+			}
+		);
+	}
+
 	void CommandBuffer::SetRenderTarget(std::shared_ptr<RenderTexture> aTexture)
 	{
 		myRecordedCommands.emplace_back(
 			[aTexture](CommandBuffer& aBuffer)
 			{
 				aBuffer.SetRenderTarget(aTexture);
+			}
+		);
+	}
+
+	void CommandBuffer::SetViewMatrix(const Math::Matrix& aMatrix)
+	{
+		myRecordedCommands.emplace_back(
+			[aMatrix](CommandBuffer& aBuffer)
+			{
+				aBuffer.SetViewMatrix(aMatrix);
 			}
 		);
 	}

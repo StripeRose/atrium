@@ -14,6 +14,7 @@ namespace RoseGold::DirectX12
 			, mySamplerHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 128)
 			, myRTVHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 32)
 			, myDSVHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 32)
+			, myFrameHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 32)
 		{ }
 
 		StagingDescriptorHeap& GetShaderResourceViewHeap() { return mySRVHeap; }
@@ -24,6 +25,8 @@ namespace RoseGold::DirectX12
 		StagingDescriptorHeap& GetRTVHeap() { return myRTVHeap; }
 		StagingDescriptorHeap& GetDSVHeap() { return myDSVHeap; }
 
+		RenderPassDescriptorHeap& GetFrameHeap() { return myFrameHeap; }
+
 	private:
 		StagingDescriptorHeap mySRVHeap;
 		StagingDescriptorHeap myCBVHeap;
@@ -31,5 +34,7 @@ namespace RoseGold::DirectX12
 		StagingDescriptorHeap mySamplerHeap;
 		StagingDescriptorHeap myRTVHeap;
 		StagingDescriptorHeap myDSVHeap;
+
+		RenderPassDescriptorHeap myFrameHeap;
 	};
 }

@@ -11,6 +11,8 @@ namespace RoseGold::DirectX12
 		: myLastColorHandle({ NULL })
 		, myLastDepthHandle({ NULL })
 		, myDevice(&aDevice)
+		, myLastProjectionMatrix(Math::Matrix::Identity())
+		, myLastViewMatrix(Math::Matrix::Identity())
 	{
 		AssertSuccess(
 			aDevice.GetDevice()->CreateCommandList(
@@ -45,12 +47,46 @@ namespace RoseGold::DirectX12
 		Clear_Internal(aClearDepth);
 	}
 
+	void ResolvedCommandBuffer::DisableScissorRect()
+	{
+		myCommandList->RSSetScissorRects(0, nullptr);
+	}
+
 	void ResolvedCommandBuffer::DrawMesh(std::shared_ptr<Core::Graphics::Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<Core::Graphics::CachedPipelineState> aPipelineState, int aSubmeshIndex)
 	{
-		aMatrix;
 		aSubmeshIndex;
 
 		myCommandList->SetGraphicsRootSignature(myDevice->GetPipeline().GetRootSignature());
+
+		{
+			struct CameraConstants
+			{
+				Math::Matrix Projection;
+				Math::Matrix Model;
+				Math::Matrix View;
+			} cameraConstants;
+
+			cameraConstants.Model = aMatrix;
+			cameraConstants.Projection = myLastProjectionMatrix;
+			cameraConstants.View = myLastViewMatrix;
+
+			std::shared_ptr<ConstantBuffer> cameraConstantBuffer = std::static_pointer_cast<ConstantBuffer>(myDevice->GetPipeline().CreateFrameConstantBuffer(sizeof(CameraConstants)));
+			cameraConstantBuffer->SetData(&cameraConstants, sizeof(CameraConstants));
+
+			RenderPassDescriptorHeap& renderPassHeap = myDevice->GetDescriptorHeapManager().GetFrameHeap();
+			std::shared_ptr<DescriptorHeapHandle> mvpBufferHandle = renderPassHeap.GetHeapHandleBlock(1);
+
+			myDevice->GetDevice()->CopyDescriptorsSimple(
+				1,
+				mvpBufferHandle->GetCPUHandle(),
+				cameraConstantBuffer->GetViewHandle().GetCPUHandle(),
+				renderPassHeap.GetHeapType()
+			);
+
+			ID3D12DescriptorHeap* descriptorHeaps[] = { renderPassHeap.GetHeap().Get() };
+			myCommandList->SetDescriptorHeaps(1, descriptorHeaps);
+			myCommandList->SetGraphicsRootDescriptorTable(0, mvpBufferHandle->GetGPUHandle());
+		}
 
 		CachedPipelineState* pso = static_cast<CachedPipelineState*>(aPipelineState.get());
 		myCommandList->SetPipelineState(pso->myPipelineState.Get());
@@ -61,7 +97,6 @@ namespace RoseGold::DirectX12
 		myCommandList->IASetVertexBuffers(0, 1, &vertexBuffer->GetBufferView());
 
 		//myCommandList->IASetIndexBuffer(&indexBufferView);
-		//myCommandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
 		myCommandList->DrawInstanced(vertexBuffer->GetCount(), 1, 0, 0);
 	}
 
@@ -76,6 +111,11 @@ namespace RoseGold::DirectX12
 		rect.bottom = aRectangle.Center.Y + halfSize.Y;
 
 		myCommandList->RSSetScissorRects(1, &rect);
+	}
+
+	void ResolvedCommandBuffer::SetProjectionMatrix(const Math::Matrix& aMatrix)
+	{
+		myLastProjectionMatrix = aMatrix;
 	}
 
 	void ResolvedCommandBuffer::SetRenderTarget(std::shared_ptr<Core::Graphics::RenderTexture> aTexture)
@@ -105,6 +145,11 @@ namespace RoseGold::DirectX12
 			D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = target->GetDepthStencilView()->GetCPUHandle();
 			myCommandList->OMSetRenderTargets(1, &colorHandle, false, &depthStencilHandle);
 		}
+	}
+
+	void ResolvedCommandBuffer::SetViewMatrix(const Math::Matrix& aMatrix)
+	{
+		myLastViewMatrix = aMatrix.Invert().value_or(Math::Matrix::Identity());
 	}
 
 	void ResolvedCommandBuffer::SetViewport(const Math::Rectangle& aRectangle)

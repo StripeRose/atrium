@@ -2,6 +2,7 @@
 
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
+#include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Pipeline.hpp"
 #include "DX12_Shader.hpp"
 
@@ -11,6 +12,11 @@ namespace RoseGold::DirectX12
 		: myDevice(aDevice)
 	{
 		SetupRootSignature();
+	}
+
+	void Pipeline::MarkFrameEnd()
+	{
+		myFrameConstantBuffers.clear();
 	}
 
 	std::shared_ptr<CachedPipelineState> Pipeline::CreateOrGetState(const Core::Graphics::PipelineState& aPipelineState)
@@ -106,6 +112,13 @@ namespace RoseGold::DirectX12
 		{
 			return nullptr;
 		}
+	}
+
+	std::shared_ptr<Core::Graphics::GraphicsBuffer> Pipeline::CreateFrameConstantBuffer(std::uint32_t aBufferSize)
+	{
+		return myFrameConstantBuffers.emplace_back(
+			std::make_shared<ConstantBuffer>(myDevice, aBufferSize)
+		);
 	}
 
 	void Pipeline::SetupRootSignature()

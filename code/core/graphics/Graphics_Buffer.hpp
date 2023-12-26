@@ -8,7 +8,7 @@ namespace RoseGold::Core::Graphics
 	class GraphicsBuffer
 	{
 	public:
-		enum class Target { Index, Vertex };
+		enum class Target { Constant, Index, Vertex };
 
 	public:
 		virtual ~GraphicsBuffer() = default;

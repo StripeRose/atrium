@@ -38,7 +38,7 @@ namespace RoseGold::Core::Graphics
 
 		//virtual void CustomCommand(std::function<void(CommandBuffer&)> aCallback);
 
-		//virtual void DisableScissorRect();
+		virtual void DisableScissorRect();
 
 		// virtual void DispatchCompute(ComputeShader aShader);
 
@@ -54,13 +54,13 @@ namespace RoseGold::Core::Graphics
 		// virtual void SetBufferData(GraphicsBuffer aBuffer, void* someData, size_t aDataSize);
 		// template <typename T> virtual void SetBufferData(GraphicsBuffer aBuffer, const List<T>& someData);
 
-		//virtual void SetProjectionMatrix(const System::Math::Matrix& aMatrix);
+		virtual void SetProjectionMatrix(const Math::Matrix& aMatrix);
 
 		virtual void SetRenderTarget(std::shared_ptr<RenderTexture> aTexture);
 		//virtual void SetRenderTarget(RenderTexture& aTexture, unsigned int aMipLevel);
 
 		// Transforms world space into camera space.
-		//virtual void SetViewMatrix(const System::Math::Matrix& aMatrix);
+		virtual void SetViewMatrix(const Math::Matrix& aMatrix);
 
 		virtual void SetViewport(const Math::Rectangle& aRectangle);
 
