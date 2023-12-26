@@ -65,25 +65,8 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 	window1->SizeChanged.Connect(nullptr, onWindowRectChange);
 
 	{
-		std::vector<RoseGold::Core::Graphics::Vertex> vertices;
-
-		auto& v1 = vertices.emplace_back();
-		v1.Position = { 0.f, 0.25f, 0.f };
-		v1.Normal = { 1, 0, 0 };
-		v1.Color = 0xFFFF0000;
-
-		auto& v2 = vertices.emplace_back();
-		v2.Position = { 0.25f, -0.25f, 0.f };
-		v2.Normal = { 0, 1, 0 };
-		v2.Color = 0xFF00FF00;
-
-		auto& v3 = vertices.emplace_back();
-		v3.Position = { -0.25f, -0.25f, 0.f };
-		v3.Normal = { 0, 0, 1 };
-		v3.Color = 0xFF0000FF;
-
 		ourMesh = roseGold.GraphicsManager->CreateMesh();
-		ourMesh->SetFromList(vertices);
+		ourMesh->SetFromPrimitive(RoseGold::Core::Graphics::MeshPrimitiveType::Cube);
 	}
 
 	{
@@ -133,8 +116,8 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 			if (ourRT1)
 			{
 				const float aspectRatio = static_cast<float>(ourRT1->GetWidth()) / static_cast<float>(ourRT1->GetHeight());
-				buffer.SetProjectionMatrix(RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseCommon::Math::ToRadians<float>(60.f), aspectRatio, 0, 100.f));
-				buffer.SetViewMatrix(RoseGold::Math::MakeMatrix::Translation(0, 0, -1));
+				buffer.SetProjectionMatrix(RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseCommon::Math::ToRadians<float>(60.f), aspectRatio, 0, 50.f));
+				buffer.SetViewMatrix(RoseGold::Math::MakeMatrix::LookAt({ 2, 2, -3 }, { 0, 0, 0 }, RoseGold::Math::Vector3::Up()));
 
 				buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT1->GetWidth()), static_cast<float>(ourRT1->GetHeight()) }));
 				buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT1->GetWidth()), static_cast<int>(ourRT1->GetHeight()) }));
@@ -146,8 +129,8 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 			if (ourRT2)
 			{
 				const float aspectRatio = static_cast<float>(ourRT2->GetWidth()) / static_cast<float>(ourRT2->GetHeight());
-				buffer.SetProjectionMatrix(RoseGold::Math::MakeMatrix::Orthographic(aspectRatio, 1, 0, 100.f));
-				buffer.SetViewMatrix(RoseGold::Math::MakeMatrix::LookAt({ -5, 5, -5 }, { 0, 0, 0 }, RoseGold::Math::Vector3::Up()));
+				buffer.SetProjectionMatrix(RoseGold::Math::MakeMatrix::Orthographic(aspectRatio * 3, 3, 0, 50.f));
+				buffer.SetViewMatrix(RoseGold::Math::MakeMatrix::LookAt({ -5, 3, -5 }, { 0, 0, 0 }, RoseGold::Math::Vector3::Up()));
 				
 				buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT2->GetWidth()), static_cast<float>(ourRT2->GetHeight()) }));
 				buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT2->GetWidth()), static_cast<int>(ourRT2->GetHeight()) }));

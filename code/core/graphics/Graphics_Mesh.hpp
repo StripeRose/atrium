@@ -11,7 +11,7 @@
 
 namespace RoseGold::Core::Graphics
 {
-	enum class MeshPrimitive
+	enum class MeshPrimitiveType
 	{
 		Capsule,
 		Cube,
@@ -57,7 +57,7 @@ namespace RoseGold::Core::Graphics
 
 		virtual void SetFromList(const std::span<Vertex> someVertices);
 		virtual void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
-		
+		void SetFromPrimitive(MeshPrimitiveType aPrimitive);
 
 	protected:
 		std::shared_ptr<GraphicsBuffer> myVertexBuffer;
