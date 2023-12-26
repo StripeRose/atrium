@@ -50,7 +50,7 @@ namespace RoseGold::DirectX12
 		// Rasterization
 		D3D12_RASTERIZER_DESC rasterDesc;
 		rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
-		rasterDesc.CullMode = D3D12_CULL_MODE_NONE;
+		rasterDesc.CullMode = D3D12_CULL_MODE_BACK;
 		rasterDesc.FrontCounterClockwise = FALSE;
 		rasterDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
 		rasterDesc.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
