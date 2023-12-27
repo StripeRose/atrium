@@ -216,7 +216,7 @@ namespace RoseGold::Core::Graphics
 				static constexpr std::size_t numSegments = 24;
 				for (std::size_t i = 0; i < numSegments; i++)
 				{
-					const float theta = RoseCommon::Math::TwoPi<float> * static_cast<float>(i) / static_cast<float>(numSegments);
+					const float theta = Math::TwoPi<float> * static_cast<float>(i) / static_cast<float>(numSegments);
 
 					const float x = cosf(theta);
 					const float y = sinf(theta);
@@ -256,7 +256,7 @@ namespace RoseGold::Core::Graphics
 
 		void PopulateIcosphere(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
 		{
-			constexpr float t = (1.0f + RoseCommon::Math::Squareroot<float>(5.0f)) / 2.0f;
+			constexpr float t = (1.0f + Math::Squareroot<float>(5.0f)) / 2.0f;
 
 			{
 				Vertex* v = nullptr;

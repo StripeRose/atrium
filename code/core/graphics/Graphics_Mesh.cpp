@@ -17,7 +17,7 @@ namespace RoseGold::Core::Graphics
 
 		vertex.Binormal = Math::Vector3::Slerp(aVertex.Binormal, anOtherVertex.Binormal, anAmount);
 		vertex.Tangent = Math::Vector3::Slerp(aVertex.Tangent, anOtherVertex.Tangent, anAmount);
-		vertex.Color = RoseCommon::Math::Lerp(aVertex.Color, anOtherVertex.Color, anAmount);
+		vertex.Color = Math::Lerp(aVertex.Color, anOtherVertex.Color, anAmount);
 
 		return vertex;
 	}

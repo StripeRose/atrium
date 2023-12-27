@@ -15,6 +15,8 @@ namespace RoseGold
 
 	namespace Math
 	{
+		using namespace RoseCommon::Math;
+
 		using Vector2 = RoseCommon::Math::Vector2<float>;
 		using Vector3 = RoseCommon::Math::Vector3<float>;
 		using Vector4 = RoseCommon::Math::Vector4<float>;

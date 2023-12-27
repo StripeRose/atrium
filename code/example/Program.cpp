@@ -1,9 +1,9 @@
 
 #include <rose-common/CommandLineParser.hpp>
-#include <rose-common/math/Common.hpp>
-#include <rose-common/math/Trigonometry.hpp>
 
 #include <Bootstrapper.hpp>
+
+#include <Common_Math.hpp>
 
 #include <Graphics_Mesh.hpp>
 #include <Graphics_Pipeline.hpp>
@@ -100,7 +100,7 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 			if (ourRT1)
 			{
 				const float aspectRatio = static_cast<float>(ourRT1->GetWidth()) / static_cast<float>(ourRT1->GetHeight());
-				buffer.SetProjectionMatrix(RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseCommon::Math::ToRadians<float>(60.f), aspectRatio, 0.01f, 50.f));
+				buffer.SetProjectionMatrix(RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseGold::Math::ToRadians<float>(60.f), aspectRatio, 0.01f, 50.f));
 				buffer.SetViewMatrix(RoseGold::Math::MakeMatrix::LookAt({ 2, 2, -3 }, { 0, 0, 0 }, RoseGold::Math::Vector3::Up()));
 
 				buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT1->GetWidth()), static_cast<float>(ourRT1->GetHeight()) }));
