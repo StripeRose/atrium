@@ -411,6 +411,9 @@ namespace RoseGold::DirectX12
 
 	void SwapChain::OnDrawSurfaceResize(const Size& aSize)
 	{
+		if (aSize.X <= 0 || aSize.Y <= 0)
+			return;
+
 		myDesiredResolution = aSize;
 	}
 
