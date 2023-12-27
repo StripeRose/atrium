@@ -8,18 +8,19 @@
 
 namespace RoseGold::Core::Graphics
 {
-	/*Vertex Vertex::Lerp(const Vertex& aVertex, const Vertex& anOtherVertex, const float anAmount)
+	Vertex Vertex::Lerp(const Vertex& aVertex, const Vertex& anOtherVertex, const float anAmount)
 	{
 		Vertex vertex;
-		vertex.Position = RoseCommon::Math::Lerp(aVertex.Position, anOtherVertex.Position, anAmount);
-		vertex.Normal = System::Math::Vector3::Slerp(aVertex.Normal, anOtherVertex.Normal, anAmount);
-		vertex.UV = RoseCommon::Math::Lerp(aVertex.UV, anOtherVertex.UV, anAmount);
+		vertex.Position = Math::Vector3::Lerp(aVertex.Position, anOtherVertex.Position, anAmount);
+		vertex.Normal = Math::Vector3::Slerp(aVertex.Normal, anOtherVertex.Normal, anAmount);
+		vertex.UV = Math::Vector2::Lerp(aVertex.UV, anOtherVertex.UV, anAmount);
 
-		vertex.Binormal = System::Math::Vector3::Slerp(aVertex.Binormal, anOtherVertex.Binormal, anAmount);
-		vertex.Tangent = System::Math::Vector3::Slerp(aVertex.Tangent, anOtherVertex.Tangent, anAmount);
+		vertex.Binormal = Math::Vector3::Slerp(aVertex.Binormal, anOtherVertex.Binormal, anAmount);
+		vertex.Tangent = Math::Vector3::Slerp(aVertex.Tangent, anOtherVertex.Tangent, anAmount);
+		vertex.Color = RoseCommon::Math::Lerp(aVertex.Color, anOtherVertex.Color, anAmount);
 
 		return vertex;
-	}*/
+	}
 
 	std::vector<PipelineState::InputLayoutEntry> Mesh::GetInputLayout() const
 	{

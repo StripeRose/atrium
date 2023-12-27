@@ -19,7 +19,7 @@ std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> ourRT1, ourRT2, ourRT3;
 std::shared_ptr<RoseGold::Core::Graphics::CachedPipelineState> ourMeshPipelineState;
 std::shared_ptr<RoseGold::Core::Graphics::Shader> ourVertexShader, ourPixelShader;
 
-std::shared_ptr<RoseGold::Core::Graphics::Mesh> ourMesh1, ourMesh2;
+std::shared_ptr<RoseGold::Core::Graphics::Mesh> ourMesh1, ourMesh2, ourMesh3;
 
 void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 {
@@ -70,6 +70,9 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 
 		ourMesh2 = roseGold.GraphicsManager->CreateMesh();
 		ourMesh2->SetFromPrimitive(RoseGold::Core::Graphics::MeshPrimitiveType::Plane);
+
+		ourMesh3 = roseGold.GraphicsManager->CreateMesh();
+		ourMesh3->SetFromPrimitive(RoseGold::Core::Graphics::MeshPrimitiveType::Icosphere);
 	}
 
 	{
@@ -94,6 +97,7 @@ void CleanupResources()
 	ourPixelShader.reset();
 	ourMesh1.reset();
 	ourMesh2.reset();
+	ourMesh3.reset();
 	ourRT1.reset();
 	ourRT2.reset();
 	ourRT3.reset();
@@ -129,6 +133,7 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 				buffer.SetRenderTarget(ourRT1);
 				buffer.DrawMesh(ourMesh2, RoseGold::Math::MakeMatrix::Translation(0, -1.5f, 0), ourMeshPipelineState, 0);
 				buffer.DrawMesh(ourMesh1, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
+				buffer.DrawMesh(ourMesh3, RoseGold::Math::MakeMatrix::Scale(0.5f) * RoseGold::Math::MakeMatrix::Translation(0, 1.5f, 0), ourMeshPipelineState, 0);
 			}
 
 			if (ourRT2)
@@ -143,6 +148,7 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 				buffer.SetRenderTarget(ourRT2);
 				buffer.DrawMesh(ourMesh1, RoseGold::Math::MakeMatrix::RotationX(secondsSinceStart), ourMeshPipelineState, 0);
 				buffer.DrawMesh(ourMesh2, RoseGold::Math::MakeMatrix::Translation(0, 1.5f, 0), ourMeshPipelineState, 0);
+				buffer.DrawMesh(ourMesh3, RoseGold::Math::MakeMatrix::Translation(2.f, 0, 0), ourMeshPipelineState, 0);
 			}
 		}
 	}

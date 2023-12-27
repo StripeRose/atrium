@@ -25,7 +25,7 @@ namespace RoseGold::Core::Graphics
 
 		void PopulateQuad(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles);
 
-		/*void AddTriangle(const Vertex aTriangle[3], bool mergeVertices, std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void AddTriangle(const Vertex aTriangle[3], bool mergeVertices, std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
 		{
 			auto findOrAddVertex = [&someVertices, mergeVertices](const Vertex& aVertex) -> std::uint32_t {
 				std::size_t vertexIndex = someVertices.size();
@@ -50,7 +50,7 @@ namespace RoseGold::Core::Graphics
 			newTriangle.V2 = findOrAddVertex(aTriangle[1]);
 			newTriangle.V3 = findOrAddVertex(aTriangle[2]);
 			someTriangles.push_back(newTriangle);
-		}*/
+		}
 
 		void GenerateNormals_Flat(std::vector<Vertex>& someVertices, const std::vector<Triangle>& someTriangles)
 		{
@@ -113,7 +113,7 @@ namespace RoseGold::Core::Graphics
 			}
 		}
 
-		/*void Subdivide(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void Subdivide(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
 		{
 			const std::vector<Triangle> trianglesToSubdivide = someTriangles;
 			someTriangles.clear();
@@ -138,7 +138,7 @@ namespace RoseGold::Core::Graphics
 				AddTriangle(tri3, true, someVertices, someTriangles);
 				AddTriangle(tri4, true, someVertices, someTriangles);
 			}
-		}*/
+		}
 
 		void PopulateCapsule(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
 		{
@@ -244,8 +244,7 @@ namespace RoseGold::Core::Graphics
 			someTriangles.emplace_back(Triangle { 0, 1, 2 });
 			someTriangles.emplace_back(Triangle { 2, 1, 3 });
 
-			/*Subdivide(someVertices, someTriangles);
-			Subdivide(someVertices, someTriangles);*/
+			Subdivide(someVertices, someTriangles);
 
 			GenerateNormals_Flat(someVertices, someTriangles);
 		}
@@ -255,26 +254,26 @@ namespace RoseGold::Core::Graphics
 			PopulateQuad(someVertices, someTriangles);
 		}
 
-		/*void PopulateIcosphere(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void PopulateIcosphere(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
 		{
-			const float t = (1.0f + RoseCommon::Math::Squareroot(5.0f)) / 2.0f;
+			constexpr float t = (1.0f + RoseCommon::Math::Squareroot<float>(5.0f)) / 2.0f;
 
 			{
 				Vertex* v = nullptr;
-				v = &someVertices.emplace_back(); v->Position = { -1, t, 0 }; v->UV = { 0, 0 };
-				v = &someVertices.emplace_back(); v->Position = { 1, t, 0 }; v->UV = { 0, 0 };
-				v = &someVertices.emplace_back(); v->Position = { -1,-t, 0 }; v->UV = { 0, 0 };
-				v = &someVertices.emplace_back(); v->Position = { 1,-t, 0 }; v->UV = { 0, 0 };
+				v = &someVertices.emplace_back(); v->Position = {-1, t, 0 }; v->UV = { 0, 0 }; v->Color = 0xFF00FFFF;
+				v = &someVertices.emplace_back(); v->Position = { 1, t, 0 }; v->UV = { 0, 0 }; v->Color = 0xFFFFFFFF;
+				v = &someVertices.emplace_back(); v->Position = {-1,-t, 0 }; v->UV = { 0, 0 }; v->Color = 0xFF0000FF;
+				v = &someVertices.emplace_back(); v->Position = { 1,-t, 0 }; v->UV = { 0, 0 }; v->Color = 0xFFFF00FF;
 
-				v = &someVertices.emplace_back(); v->Position = { 0,-1, t }; v->UV = { 0, 0 };
-				v = &someVertices.emplace_back(); v->Position = { 0, 1, t }; v->UV = { 0, 0 };
-				v = &someVertices.emplace_back(); v->Position = { 0,-1,-t }; v->UV = { 0, 0 };
-				v = &someVertices.emplace_back(); v->Position = { 0, 1,-t }; v->UV = { 0, 0 };
+				v = &someVertices.emplace_back(); v->Position = { 0,-1, t }; v->UV = { 0, 0 }; v->Color = 0xFF00FFFF;
+				v = &someVertices.emplace_back(); v->Position = { 0, 1, t }; v->UV = { 0, 0 }; v->Color = 0xFFFFFFFF;
+				v = &someVertices.emplace_back(); v->Position = { 0,-1,-t }; v->UV = { 0, 0 }; v->Color = 0xFF0000FF;
+				v = &someVertices.emplace_back(); v->Position = { 0, 1,-t }; v->UV = { 0, 0 }; v->Color = 0xFFFF00FF;
 
-				v = &someVertices.emplace_back(); v->Position = { t, 0,-1 }; v->UV = { 0, 0 };
-				v = &someVertices.emplace_back(); v->Position = { t, 0, 1 }; v->UV = { 0, 0 };
-				v = &someVertices.emplace_back(); v->Position = { -t, 0,-1 }; v->UV = { 0, 0 };
-				v = &someVertices.emplace_back(); v->Position = { -t, 0, 1 }; v->UV = { 0, 0 };
+				v = &someVertices.emplace_back(); v->Position = { t, 0,-1 }; v->UV = { 0, 0 }; v->Color = 0xFFFF00FF;
+				v = &someVertices.emplace_back(); v->Position = { t, 0, 1 }; v->UV = { 0, 0 }; v->Color = 0xFFFFFFFF;
+				v = &someVertices.emplace_back(); v->Position = {-t, 0,-1 }; v->UV = { 0, 0 }; v->Color = 0xFF0000FF;
+				v = &someVertices.emplace_back(); v->Position = {-t, 0, 1 }; v->UV = { 0, 0 }; v->Color = 0xFF00FFFF;
 			}
 
 			{
@@ -304,13 +303,12 @@ namespace RoseGold::Core::Graphics
 			}
 
 			Subdivide(someVertices, someTriangles);
-			Subdivide(someVertices, someTriangles);
 
 			for (Vertex& v : someVertices)
 				v.Position.Normalize();
 
 			GenerateNormals_Smooth(someVertices, someTriangles);
-		}*/
+		}
 
 		void PopulateQuad(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
 		{
@@ -354,7 +352,7 @@ namespace RoseGold::Core::Graphics
 			MakeMeshPrimitives::PopulateSphere(vertices, triangles);
 			break;
 		case MeshPrimitiveType::Icosphere:
-			//MakeMeshPrimitives::PopulateIcosphere(vertices, triangles);
+			MakeMeshPrimitives::PopulateIcosphere(vertices, triangles);
 			break;
 		case MeshPrimitiveType::Quad:
 			MakeMeshPrimitives::PopulateQuad(vertices, triangles);

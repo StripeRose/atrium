@@ -32,7 +32,7 @@ namespace RoseGold::Core::Graphics
 
 	struct Vertex
 	{
-		//static Vertex Lerp(const Vertex& aVertex, const Vertex& anOtherVertex, const float anAmount);
+		static Vertex Lerp(const Vertex& aVertex, const Vertex& anOtherVertex, const float anAmount);
 
 		Math::Vector3 Position;
 		Math::Vector3 Normal;
