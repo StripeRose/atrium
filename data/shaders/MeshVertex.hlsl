@@ -33,6 +33,7 @@ VertexOutput main(VertexInput anInput)
     
     VertexOutput output;
     output.Position = mul(float4(anInput.Position, 1.0f), modelViewProjection);
+    output.Position /= output.Position.w;
     output.Normal = anInput.Normal;
     output.UV = anInput.UV;
     output.Color = anInput.Color;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Graphics_Enums.hpp"
+#include "Graphics_RenderTexture.hpp"
 
 #include <memory>
 #include <string>
@@ -58,6 +59,7 @@ namespace RoseGold::Core::Graphics
 		std::shared_ptr<Shader> PixelShader;
 
 		// (OM) Output merger
+		std::vector<std::shared_ptr<RenderTexture>> Outputs;
 	};
 
 	class CachedPipelineState

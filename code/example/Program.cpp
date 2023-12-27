@@ -85,6 +85,7 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 
 		pipelineState.VertexShader = ourVertexShader;
 		pipelineState.PixelShader = ourPixelShader;
+		pipelineState.Outputs.push_back(ourRT1);
 
 		ourMeshPipelineState = roseGold.GraphicsManager->CreateOrGetPipelineState(pipelineState);
 	}
@@ -124,7 +125,7 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 			if (ourRT1)
 			{
 				const float aspectRatio = static_cast<float>(ourRT1->GetWidth()) / static_cast<float>(ourRT1->GetHeight());
-				buffer.SetProjectionMatrix(RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseCommon::Math::ToRadians<float>(60.f), aspectRatio, 0, 50.f));
+				buffer.SetProjectionMatrix(RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseCommon::Math::ToRadians<float>(60.f), aspectRatio, 0.01f, 50.f));
 				buffer.SetViewMatrix(RoseGold::Math::MakeMatrix::LookAt({ 2, 2, -3 }, { 0, 0, 0 }, RoseGold::Math::Vector3::Up()));
 
 				buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT1->GetWidth()), static_cast<float>(ourRT1->GetHeight()) }));
@@ -133,7 +134,7 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 				buffer.SetRenderTarget(ourRT1);
 				buffer.DrawMesh(ourMesh2, RoseGold::Math::MakeMatrix::Translation(0, -1.5f, 0), ourMeshPipelineState, 0);
 				buffer.DrawMesh(ourMesh1, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourMeshPipelineState, 0);
-				buffer.DrawMesh(ourMesh3, RoseGold::Math::MakeMatrix::Scale(0.5f) * RoseGold::Math::MakeMatrix::Translation(0, 1.5f, 0), ourMeshPipelineState, 0);
+				buffer.DrawMesh(ourMesh3, RoseGold::Math::MakeMatrix::Scale(0.5f) * RoseGold::Math::MakeMatrix::Translation(0, 1, 0), ourMeshPipelineState, 0);
 			}
 
 			if (ourRT2)
@@ -162,7 +163,7 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 				RoseGold::Color::Predefined::Aqua,
 				RoseGold::Color::Predefined::Tan,
 				lerp
-			));
+			), 1.f);
 		}
 
 		GraphicsTask& clearWindow2 = clearTask.CreateTask("Clear window 2");
@@ -173,7 +174,7 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 				RoseGold::Color::Predefined::Tomato,
 				RoseGold::Color::Predefined::LightGreen,
 				lerp
-			));
+			), 1.f);
 		}
 
 		GraphicsTask& clearWindow3 = clearTask.CreateTask("Clear window 3");
@@ -184,7 +185,7 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 				RoseGold::Color::Predefined::LightYellow,
 				RoseGold::Color::Predefined::CornflowerBlue,
 				lerp
-			));
+			), 1.f);
 		}
 	}
 

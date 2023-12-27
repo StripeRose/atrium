@@ -21,7 +21,7 @@ namespace RoseGold::DirectX12
 
 	std::shared_ptr<CachedPipelineState> Pipeline::CreateOrGetState(const Core::Graphics::PipelineState& aPipelineState)
 	{
-		//  Define the Graphics Pipeline
+		// Define the Graphics Pipeline
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 
 		// Input Assembly
@@ -84,14 +84,42 @@ namespace RoseGold::DirectX12
 		psoDesc.BlendState = blendDesc;
 
 		// Depth/Stencil State
-		psoDesc.DepthStencilState.DepthEnable = FALSE;
+		psoDesc.DepthStencilState.DepthEnable = TRUE;
+		psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+
 		psoDesc.DepthStencilState.StencilEnable = FALSE;
+
+		psoDesc.DepthStencilState.BackFace = psoDesc.DepthStencilState.FrontFace = {
+			D3D12_STENCIL_OP_KEEP,
+			D3D12_STENCIL_OP_KEEP,
+			D3D12_STENCIL_OP_KEEP,
+			D3D12_COMPARISON_FUNC_ALWAYS
+		};
+
 		psoDesc.SampleMask = UINT_MAX;
 
 		// Output
-		psoDesc.NumRenderTargets = 1;
-		psoDesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
-		psoDesc.SampleDesc.Count = 1;
+		{
+			psoDesc.NumRenderTargets = 0;
+			psoDesc.SampleDesc.Count = 1;
+
+			psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
+
+			for (std::size_t i = 0; i < aPipelineState.Outputs.size(); ++i)
+			{
+				const std::shared_ptr<Core::Graphics::RenderTexture>& target = aPipelineState.Outputs[i];
+				if (!target)
+					continue;
+
+				const Core::Graphics::RenderTextureDescriptor& targetDescriptor = target->GetDescriptor();
+				psoDesc.RTVFormats[psoDesc.NumRenderTargets] = ToDXGIFormat(targetDescriptor.ColorGraphicsFormat);
+				psoDesc.NumRenderTargets += 1;
+
+				if (psoDesc.DSVFormat == DXGI_FORMAT_UNKNOWN)
+					psoDesc.DSVFormat = ToDXGIFormat(targetDescriptor.DepthStencilFormat);
+			}
+		}
 
 		std::shared_ptr<CachedPipelineState> cachedState = std::make_shared<CachedPipelineState>();
 
