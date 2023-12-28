@@ -66,32 +66,62 @@ namespace RoseGold::DirectX12
 		{
 			friend RootSignatureCreator;
 		public:
-			DescriptorTable() { myType = Type::Table; }
+			DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister) { return AddCBVRange(aCount, aRegister, 0); }
+			DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { return AddRange(Parameter::Type::CBV, aCount, aRegister, aSpace); }
 
-			void AddCBVRange(unsigned int aCount, unsigned int aRegister) { AddCBVRange(aCount, aRegister, 0); }
-			void AddCBVRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { AddRange(Parameter::Type::CBV, aCount, aRegister, aSpace); }
+			DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister) { return AddSRVRange(aCount, aRegister, 0); }
+			DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { return AddRange(Parameter::Type::SRV, aCount, aRegister, aSpace); }
 
-			void AddSRVRange(unsigned int aCount, unsigned int aRegister) { AddSRVRange(aCount, aRegister, 0); }
-			void AddSRVRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { AddRange(Parameter::Type::SRV, aCount, aRegister, aSpace); }
+			DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister) { return AddUAVRange(aCount, aRegister, 0); }
+			DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { return AddRange(Parameter::Type::UAV, aCount, aRegister, aSpace); }
 
-			void AddUAVRange(unsigned int aCount, unsigned int aRegister) { AddUAVRange(aCount, aRegister, 0); }
-			void AddUAVRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { AddRange(Parameter::Type::UAV, aCount, aRegister, aSpace); }
-
-			void AddSamplerRange(unsigned int aCount, unsigned int aRegister) { AddSamplerRange(aCount, aRegister, 0); }
-			void AddSamplerRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { AddRange(Parameter::Type::Sampler, aCount, aRegister, aSpace); }
+			DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister) { return AddSamplerRange(aCount, aRegister, 0); }
+			DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { return AddRange(Parameter::Type::Sampler, aCount, aRegister, aSpace); }
 
 		private:
-			Parameter& AddRange(Parameter::Type aType, unsigned int aCount, unsigned int aRegister, unsigned int aSpace)
+			DescriptorTable() { myType = Type::Table; }
+
+			DescriptorTable& AddRange(Parameter::Type aType, unsigned int aCount, unsigned int aRegister, unsigned int aSpace)
 			{
 				Parameter& param = myRanges.emplace_back();
 				param.myType = aType;
 				param.myShaderRegister = aRegister;
 				param.myCount = aCount;
 				param.myRegisterSpace = aSpace;
-				return param;
+
+				return *this;
 			}
 
 			std::vector<Parameter> myRanges;
+		};
+
+		class Sampler : public D3D12_STATIC_SAMPLER_DESC
+		{
+			friend RootSignatureCreator;
+		public:
+			Sampler()
+			{
+				ZeroMemory(this, sizeof(Sampler));
+				D3D12_STATIC_SAMPLER_DESC::MaxLOD = D3D12_FLOAT32_MAX;
+				D3D12_STATIC_SAMPLER_DESC::MaxAnisotropy = 16;
+			}
+
+			Sampler& Address(D3D12_TEXTURE_ADDRESS_MODE aMode) { return AddressU(aMode).AddressV(aMode).AddressW(aMode); }
+			Sampler& AddressU(D3D12_TEXTURE_ADDRESS_MODE aMode) { D3D12_STATIC_SAMPLER_DESC::AddressU = aMode; return *this; }
+			Sampler& AddressV(D3D12_TEXTURE_ADDRESS_MODE aMode) { D3D12_STATIC_SAMPLER_DESC::AddressV = aMode; return *this; }
+			Sampler& AddressW(D3D12_TEXTURE_ADDRESS_MODE aMode) { D3D12_STATIC_SAMPLER_DESC::AddressW = aMode; return *this; }
+
+			Sampler& Filter(D3D12_FILTER aFilter) { D3D12_STATIC_SAMPLER_DESC::Filter = aFilter; return *this; }
+
+			Sampler& Lod(FLOAT aLodLevel) { return Lod({ aLodLevel, aLodLevel }); }
+			Sampler& Lod(std::pair<FLOAT, FLOAT> aLodRange)
+			{
+				D3D12_STATIC_SAMPLER_DESC::MinLOD = aLodRange.first;
+				D3D12_STATIC_SAMPLER_DESC::MaxLOD = aLodRange.second;
+				return *this;
+			}
+
+			Sampler& MaxAnisotropy(UINT aMax) { D3D12_STATIC_SAMPLER_DESC::MaxAnisotropy = aMax; return *this; }
 		};
 
 	public:
@@ -106,7 +136,15 @@ namespace RoseGold::DirectX12
 
 		DescriptorTable& AddDescriptorTable() { return AddParameter<DescriptorTable>(); }
 
-		D3D12_STATIC_SAMPLER_DESC& AddSampler() { return myStaticSamplers.emplace_back(); }
+		Sampler& AddSampler(unsigned int aRegister) { return AddSampler(aRegister, 0); }
+		Sampler& AddSampler(unsigned int aRegister, unsigned int aSpace)
+		{
+			Sampler& sampler = myStaticSamplers.emplace_back();
+			sampler.ShaderVisibility = myCurrentVisibility;
+			sampler.ShaderRegister = aRegister;
+			sampler.RegisterSpace = aSpace;
+			return sampler;
+		}
 
 		void AddSRV(unsigned int aRegister) { AddSRV(aRegister, 0); }
 		void AddSRV(unsigned int aRegister, unsigned int aSpace) { AddParameter(Parameter::Type::SRV, aRegister, aSpace); }
@@ -141,7 +179,7 @@ namespace RoseGold::DirectX12
 		}
 
 		std::vector<std::unique_ptr<Parameter>> myParameters;
-		std::vector<D3D12_STATIC_SAMPLER_DESC> myStaticSamplers;
+		std::vector<Sampler> myStaticSamplers;
 
 		D3D12_SHADER_VISIBILITY myCurrentVisibility;
 	};

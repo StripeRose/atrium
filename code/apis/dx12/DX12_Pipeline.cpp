@@ -161,9 +161,27 @@ namespace RoseGold::DirectX12
 		RootSignatureCreator signature;
 
 		signature.SetVisibility(D3D12_SHADER_VISIBILITY_VERTEX);
+		{
+			signature.AddDescriptorTable()
+				.AddCBVRange(1, 0) // Model, View, Projection data.
+				;
+		}
 
-		RootSignatureCreator::DescriptorTable& vertexShaderTable = signature.AddDescriptorTable();
-		vertexShaderTable.AddCBVRange(1, 0);
+		signature.SetVisibility(D3D12_SHADER_VISIBILITY_PIXEL);
+		{
+			signature.AddSampler(0, 1) // Wrapping Point
+				.Filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
+				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
+				;
+			signature.AddSampler(1, 1) // Wrapping Linear
+				.Filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
+				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
+				;
+			signature.AddSampler(2, 1) // Wrapping Anisotropic
+				.Filter(D3D12_FILTER_ANISOTROPIC)
+				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
+				;
+		}
 
 		myRootSignature = signature.Finalize(myDevice.GetDevice().Get());
 	}
