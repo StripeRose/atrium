@@ -158,52 +158,163 @@ namespace RoseGold::DirectX12
 
 	void Pipeline::SetupRootSignature()
 	{
-		ID3D12Device* dxDevice = myDevice.GetDevice().Get();
+		RootSignatureCreator signature;
 
+		signature.SetVisibility(D3D12_SHADER_VISIBILITY_VERTEX);
+
+		RootSignatureCreator::DescriptorTable& vertexShaderTable = signature.AddDescriptorTable();
+		vertexShaderTable.AddCBVRange(1, 0);
+
+		myRootSignature = signature.Finalize(myDevice.GetDevice().Get());
+	}
+
+	ComPtr<ID3D12RootSignature> RootSignatureCreator::Finalize(ID3D12Device* aDevice) const
+	{
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = { };
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-		
-		if (FAILED(dxDevice->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
+
+		if (FAILED(aDevice->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
 		{
 			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 		}
 
-		D3D12_DESCRIPTOR_RANGE1 ranges[1];
-		ranges[0].BaseShaderRegister = 0;
-		ranges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-		ranges[0].NumDescriptors = 1;
-		ranges[0].RegisterSpace = 0;
-		ranges[0].OffsetInDescriptorsFromTableStart = 0;
-		ranges[0].Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
+		std::vector<D3D12_DESCRIPTOR_RANGE1> descriptorRanges;
+		{
+			// Count the total amount of descriptor ranges.
+			unsigned int descriptorRangeCount = 0;
+			for (const std::unique_ptr<Parameter>& param : myParameters)
+			{
+				if (param->myType != Parameter::Type::Table)
+					continue;
 
-		D3D12_ROOT_PARAMETER1 rootParameters[1];
-		rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+				DescriptorTable* table = static_cast<DescriptorTable*>(param.get());
+				descriptorRangeCount += static_cast<UINT>(table->myRanges.size());
+			}
 
-		rootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
-		rootParameters[0].DescriptorTable.pDescriptorRanges = ranges;
+			descriptorRanges.reserve(descriptorRangeCount);
+		}
+
+		std::vector<D3D12_ROOT_PARAMETER1> parameters;
+		{
+			parameters.reserve(myParameters.size());
+
+			for (const std::unique_ptr<Parameter>& param : myParameters)
+			{
+				D3D12_ROOT_PARAMETER1& rootParameter = parameters.emplace_back();
+				rootParameter.ShaderVisibility = param->myVisibility;
+
+				switch (param->myType)
+				{
+				case Parameter::Type::Constant:
+				{
+					rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+					rootParameter.Constants.ShaderRegister = param->myShaderRegister;
+					rootParameter.Constants.RegisterSpace = param->myRegisterSpace;
+					rootParameter.Constants.Num32BitValues = param->myCount;
+
+					break;
+				}
+				case Parameter::Type::Table:
+				{
+					rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+					if (!PopulateTable(descriptorRanges, rootParameter, *static_cast<DescriptorTable*>(param.get())))
+						return nullptr; // Table details were wrong, abort.
+					break;
+				}
+				case Parameter::Type::CBV:
+				case Parameter::Type::SRV:
+				case Parameter::Type::UAV:
+				{
+					switch (param->myType)
+					{
+					case Parameter::Type::CBV:
+						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+						break;
+					case Parameter::Type::SRV:
+						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+						break;
+					case Parameter::Type::UAV:
+						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
+						break;
+					}
+
+					Debug::Assert(param->myCount == 1, "Only 1 descriptor per root parameter. Use tables if you need more.");
+					rootParameter.Descriptor.ShaderRegister = param->myShaderRegister;
+					rootParameter.Descriptor.RegisterSpace = param->myRegisterSpace;
+					rootParameter.Descriptor.Flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE;
+
+					break;
+				}
+				case Parameter::Type::Sampler:
+					Debug::LogError("Cannot have sampler root parameter. Use a descriptor table pointing to a range of samplers.");
+					return nullptr;
+				}
+			}
+		}
 
 		D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 		rootSignatureDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1_1;
-		rootSignatureDesc.Desc_1_1.Flags =
-			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-		rootSignatureDesc.Desc_1_1.NumParameters = 1;
-		rootSignatureDesc.Desc_1_1.pParameters = rootParameters;
-		rootSignatureDesc.Desc_1_1.NumStaticSamplers = 0;
-		rootSignatureDesc.Desc_1_1.pStaticSamplers = nullptr;
+		rootSignatureDesc.Desc_1_1.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+		rootSignatureDesc.Desc_1_1.NumParameters = static_cast<UINT>(parameters.size());
+		rootSignatureDesc.Desc_1_1.pParameters = parameters.empty() ? nullptr : &parameters.front();
+
+		rootSignatureDesc.Desc_1_1.NumStaticSamplers = static_cast<UINT>(myStaticSamplers.size());
+		rootSignatureDesc.Desc_1_1.pStaticSamplers = myStaticSamplers.empty() ? nullptr : &myStaticSamplers.front();
 
 		ComPtr<ID3DBlob> signature;
 		ComPtr<ID3DBlob> error;
+		ComPtr<ID3D12RootSignature> rootSignature;
 
 		HRESULT result = S_OK;
 		result = D3D12SerializeVersionedRootSignature(&rootSignatureDesc, &signature, &error);
 		if (SUCCEEDED(result))
-			result = dxDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(myRootSignature.ReleaseAndGetAddressOf()));
+			result = aDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(rootSignature.ReleaseAndGetAddressOf()));
 
 		if (FAILED(result))
 		{
 			LogError(result, error.Get());
-			return;
+			return nullptr;
 		}
+
+		return rootSignature;
+	}
+
+	bool RootSignatureCreator::PopulateTable(std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable)
+	{
+		for (const Parameter& range : aTable.myRanges)
+		{
+			D3D12_DESCRIPTOR_RANGE1& descriptorRange = someRanges.emplace_back();
+			descriptorRange.BaseShaderRegister = range.myShaderRegister;
+			descriptorRange.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
+			descriptorRange.NumDescriptors = static_cast<UINT>(range.myCount);
+			descriptorRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+			switch (range.myType)
+			{
+			case Parameter::Type::CBV:
+				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+				break;
+			case Parameter::Type::SRV:
+				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+				break;
+			case Parameter::Type::UAV:
+				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+				break;
+			case Parameter::Type::Sampler:
+				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+				break;
+			default:
+				Debug::LogError("Incorrect descriptor range type.");
+				return false;
+			}
+
+			descriptorRange.RegisterSpace = range.myRegisterSpace;
+		}
+
+		aResult.DescriptorTable.NumDescriptorRanges = static_cast<UINT>(aTable.myRanges.size());
+		aResult.DescriptorTable.pDescriptorRanges = &someRanges.at(someRanges.size() - aTable.myRanges.size());
+
+		return true;
 	}
 }
