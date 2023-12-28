@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Graphics_Buffer.hpp"
+#include "Graphics_MeshPrimitives.hpp"
 #include "Graphics_Pipeline.hpp"
 
 #include "Common_Color.hpp"
@@ -11,36 +12,11 @@
 
 namespace RoseGold::Core::Graphics
 {
-	enum class MeshPrimitiveType
-	{
-		Capsule,
-		Cube,
-		Cylinder,
-		Disc,
-		Plane,
-		Sphere,
-		Icosphere,
-		Quad
-	};
-
 	struct Triangle
 	{
 		std::uint32_t V1;
 		std::uint32_t V2;
 		std::uint32_t V3;
-	};
-
-	struct Vertex
-	{
-		static Vertex Lerp(const Vertex& aVertex, const Vertex& anOtherVertex, const float anAmount);
-
-		Math::Vector3 Position;
-		Math::Vector3 Normal;
-		Math::Vector2 UV;
-		Color Color;
-
-		Math::Vector3 Binormal;
-		Math::Vector3 Tangent;
 	};
 
 	class Manager;
@@ -52,15 +28,86 @@ namespace RoseGold::Core::Graphics
 		{ }
 		virtual ~Mesh() = default;
 
-		virtual std::vector<PipelineState::InputLayoutEntry> GetInputLayout() const;
-		virtual std::shared_ptr<const GraphicsBuffer> GetVertexBuffer() const { return myVertexBuffer; }
+		virtual std::vector<PipelineState::InputLayoutEntry> GetInputLayout() const = 0;
 
-		virtual void SetFromList(const std::span<Vertex> someVertices);
-		virtual void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
-		void SetFromPrimitive(MeshPrimitiveType aPrimitive);
+		std::shared_ptr<const GraphicsBuffer> GetVertexBuffer() const { return myVertexBuffer; }
+
+		virtual void SetFromPrimitive(MeshPrimitiveType aPrimitive) = 0;
 
 	protected:
 		std::shared_ptr<GraphicsBuffer> myVertexBuffer;
 		Manager& myGraphicsManager;
 	};
+
+	class GenericMesh : public Mesh
+	{
+	public:
+		struct Vertex
+		{
+			Math::Vector3 Position;
+			Math::Vector3 Normal;
+			Math::Vector3 Binormal;
+			Math::Vector3 Tangent;
+			Math::Vector2 UV;
+		};
+
+	public:
+		GenericMesh(Manager& aGraphicsManager);
+
+		std::vector<PipelineState::InputLayoutEntry> GetInputLayout() const override;
+
+		void SetFromList(const std::span<Vertex> someVertices);
+		void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
+
+		void SetFromPrimitive(MeshPrimitiveType aType) override;
+	};
+
+	class ColoredMesh : public Mesh
+	{
+	public:
+		struct Vertex
+		{
+			Math::Vector3 Position;
+			Math::Vector3 Normal;
+			Math::Vector3 Binormal;
+			Math::Vector3 Tangent;
+			Math::Vector2 UV;
+			Color Color;
+		};
+
+	public:
+		ColoredMesh(Manager& aGraphicsManager);
+
+		std::vector<PipelineState::InputLayoutEntry> GetInputLayout() const override;
+
+		void SetFromList(const std::span<Vertex> someVertices);
+		void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
+
+		void SetFromPrimitive(MeshPrimitiveType aType) override;
+	};
+
+	class SimpleMesh : public Mesh
+	{
+	public:
+		struct Vertex
+		{
+			Math::Vector3 Position;
+		};
+
+	public:
+		SimpleMesh(Manager& aGraphicsManager);
+
+		std::vector<PipelineState::InputLayoutEntry> GetInputLayout() const override;
+
+		void SetFromList(const std::span<Vertex> someVertices);
+		void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
+
+		void SetFromPrimitive(MeshPrimitiveType aType) override;
+	};
+
+	/*class FullscreenMesh : public SimpleMesh
+	{
+	public:
+		FullscreenMesh(Manager& aGraphicsManager);
+	};*/
 }

@@ -9,7 +9,7 @@ struct PixelInput
     float3 Tangent : TANGENT;
     
     float2 UV : TEXCOORD;
-    float3 Color : COLOR;
+    float4 Color : COLOR;
 };
 
 float4 main(PixelInput anInput) : SV_TARGET
@@ -22,7 +22,7 @@ float4 main(PixelInput anInput) : SV_TARGET
     const float skyDiffuse = saturate((dot(anInput.Normal, float3(0, 1, 0)) * 0.5f) + 0.5f);
     const float ambientLight = 0.1f;
     
-    const float3 totalColor = saturate((skyColor * skyDiffuse) + (sunColor * sunDiffuse) + (ambientColor * ambientLight));
+    const float3 totalLight = saturate((skyColor * skyDiffuse) + (sunColor * sunDiffuse) + (ambientColor * ambientLight));
     
-    return float4(totalColor, 1.0f);
+    return float4(totalLight * anInput.Color.rgb, 1.0f);
 }

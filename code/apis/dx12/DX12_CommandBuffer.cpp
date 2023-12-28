@@ -89,7 +89,7 @@ namespace RoseGold::DirectX12
 		}
 
 		CachedPipelineState* pso = static_cast<CachedPipelineState*>(aPipelineState.get());
-		myCommandList->SetPipelineState(pso->myPipelineState.Get());
+		myCommandList->SetPipelineState(pso->PipelineState.Get());
 
 		std::shared_ptr<const VertexBuffer> vertexBuffer = std::static_pointer_cast<const VertexBuffer>(aMesh->GetVertexBuffer());
 

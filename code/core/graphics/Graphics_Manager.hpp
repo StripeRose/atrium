@@ -22,11 +22,11 @@ namespace RoseGold::Core::Graphics
 
 		virtual std::shared_ptr<GraphicsBuffer> CreateGraphicsBuffer(GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) = 0;
 
-		virtual std::shared_ptr<Mesh> CreateMesh() = 0;
-
 		virtual std::shared_ptr<CachedPipelineState> CreateOrGetPipelineState(const PipelineState& aPipelineState) = 0;
 
-		virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& aShaderSource, Shader::Type aShaderType) = 0;
+		inline std::shared_ptr<Shader> CreateShader(const std::filesystem::path& aShaderSource, Shader::Type aShaderType) { return CreateShader(aShaderSource, aShaderType, "main"); }
+
+		virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& aShaderSource, Shader::Type aShaderType, const char* anEntryPoint) = 0;
 		
 
 		virtual void ExecuteCommandBuffer(const CommandBuffer& aCommandBuffer) = 0;

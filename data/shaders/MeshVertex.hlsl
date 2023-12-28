@@ -5,15 +5,28 @@ cbuffer Camera : register(b0)
     row_major float4x4 ViewMatrix : packoffset(c8);
 };
 
-struct VertexInput
+struct GenericMeshInput
 {
     float3 Position : POSITION;
     float3 Normal : NORMAL;
-    float2 UV : TEXCOORD;
-    float3 Color : COLOR;
-    
     float3 Binormal : BINORMAL;
     float3 Tangent : TANGENT;
+    float2 UV : TEXCOORD;
+};
+
+struct ColoredMeshInput
+{
+    float3 Position : POSITION;
+    float3 Normal : NORMAL;
+    float3 Binormal : BINORMAL;
+    float3 Tangent : TANGENT;
+    float2 UV : TEXCOORD;
+    float4 Color : COLOR;
+};
+
+struct SimpleMeshInput
+{
+    float3 Position : POSITION;
 };
 
 struct VertexOutput
@@ -27,35 +40,90 @@ struct VertexOutput
     float3 Tangent : TANGENT;
     
     float2 UV : TEXCOORD;
-    float3 Color : COLOR;
+    float4 Color : COLOR;
 };
 
-VertexOutput main(VertexInput anInput)
+VertexOutput DefaultOutput()
 {
-    const float4 worldPosition = mul(float4(anInput.Position, 1.0f), ModelMatrix);
+    VertexOutput output;
+    
+    output.ScreenPosition = float4(0, 0, 0, 1);
+    output.WorldPosition = float3(0, 0, 0);
+    output.ScreenCoordinate = float2(0.5f, 0.5f);
+    
+    output.Normal = float3(1, 0, 0);
+    output.Tangent = float3(0, 1, 0);
+    output.Binormal = float3(0, 0, 1);
+    
+    output.UV = float2(0, 0);
+    output.Color = float4(1, 1, 1, 1);
+    
+    return output;
+}
+
+void Populate_Position(inout VertexOutput aVertex, in float3 aPosition)
+{
+    const float4 worldPosition = mul(float4(aPosition, 1.0f), ModelMatrix);
     const float4 cameraSpacePosition = mul(worldPosition, ViewMatrix);
     const float4 projectionPosition = mul(cameraSpacePosition, ProjectionMatrix);
     
-    const float3 worldNormal = normalize(float3(mul(float4(anInput.Normal, 0), ModelMatrix).xyz));
-    const float3 worldBiNormal = normalize(float3(mul(float4(anInput.Binormal, 0), ModelMatrix).xyz));
-    const float3 worldTangentNormal = normalize(float3(mul(float4(anInput.Tangent, 0), ModelMatrix).xyz));
+    aVertex.WorldPosition = worldPosition.xyz;
+    aVertex.ScreenPosition = projectionPosition / projectionPosition.w;
+    aVertex.ScreenCoordinate = aVertex.ScreenPosition.xy;
+    aVertex.ScreenCoordinate.y *= -1;
+    aVertex.ScreenCoordinate /= 2;
+    aVertex.ScreenCoordinate += 0.5;
+}
+
+void Populate_Normal(inout VertexOutput aVertex, in float3 aNormal)
+{
+    aVertex.Normal = normalize(float3(mul(float4(aNormal, 0), ModelMatrix).xyz));
+}
+
+void Populate_Binormal(inout VertexOutput aVertex, in float3 aBinormal)
+{
+    aVertex.Binormal = normalize(float3(mul(float4(aBinormal, 0), ModelMatrix).xyz));
+}
+
+void Populate_Tangent(inout VertexOutput aVertex, in float3 aTangent)
+{
+    aVertex.Tangent = normalize(float3(mul(float4(aTangent, 0), ModelMatrix).xyz));
+}
+
+VertexOutput GenericMesh(GenericMeshInput anInput)
+{
+    VertexOutput output = DefaultOutput();
     
-    VertexOutput output;
+    Populate_Position(output, anInput.Position);
+    Populate_Normal(output, anInput.Normal);
+    Populate_Binormal(output, anInput.Binormal);
+    Populate_Tangent(output, anInput.Tangent);
     
-    output.WorldPosition = worldPosition.xyz;
-    output.ScreenPosition = projectionPosition / projectionPosition.w;
+    output.UV = anInput.UV;
     
-    output.ScreenCoordinate = output.ScreenPosition.xy;
-    output.ScreenCoordinate.y *= -1;
-    output.ScreenCoordinate /= 2;
-    output.ScreenCoordinate += 0.5;
+    return output;
+}
+
+VertexOutput ColoredMesh(ColoredMeshInput anInput)
+{
+    VertexOutput output = DefaultOutput();
     
-    output.Normal = worldNormal;
-    output.Binormal = worldBiNormal;
-    output.Tangent = worldTangentNormal;
+    Populate_Position(output, anInput.Position);
+    Populate_Normal(output, anInput.Normal);
+    Populate_Binormal(output, anInput.Binormal);
+    Populate_Tangent(output, anInput.Tangent);
     
     output.UV = anInput.UV;
     output.Color = anInput.Color;
+    
+    return output;
+}
+
+VertexOutput SimpleMesh(SimpleMeshInput anInput)
+{
+    VertexOutput output = DefaultOutput();
+    
+    Populate_Position(output, anInput.Position);
     
     return output;
 }

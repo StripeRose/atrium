@@ -1,4 +1,4 @@
-#include "Graphics_Mesh.hpp"
+#include "Graphics_MeshPrimitives.hpp"
 
 #include <vector>
 
@@ -7,6 +7,19 @@ namespace RoseGold::Core::Graphics
 	namespace MakeMeshPrimitives
 	{
 		using namespace RoseGold::Math;
+
+		MeshPrimitive::Vertex LerpVertex(const MeshPrimitive::Vertex& aVertex, const MeshPrimitive::Vertex& anOtherVertex, const float anAmount)
+		{
+			MeshPrimitive::Vertex vertex;
+			vertex.Position = Math::Vector3::Lerp(aVertex.Position, anOtherVertex.Position, anAmount);
+			vertex.Normal = Math::Vector3::Slerp(aVertex.Normal, anOtherVertex.Normal, anAmount);
+			vertex.UV = Math::Vector2::Lerp(aVertex.UV, anOtherVertex.UV, anAmount);
+
+			vertex.Binormal = Math::Vector3::Slerp(aVertex.Binormal, anOtherVertex.Binormal, anAmount);
+			vertex.Tangent = Math::Vector3::Slerp(aVertex.Tangent, anOtherVertex.Tangent, anAmount);
+
+			return vertex;
+		}
 
 		struct GeneratedTriangle
 		{
@@ -23,42 +36,42 @@ namespace RoseGold::Core::Graphics
 			Vector2 UV[3];
 		};
 
-		void PopulateQuad(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles);
+		void PopulateQuad(MeshPrimitive& aPrimitive);
 
-		void AddTriangle(const Vertex aTriangle[3], bool mergeVertices, std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void AddTriangle(const MeshPrimitive::Vertex aTriangle[3], bool mergeVertices, MeshPrimitive& aPrimitive)
 		{
-			auto findOrAddVertex = [&someVertices, mergeVertices](const Vertex& aVertex) -> std::uint32_t {
-				std::size_t vertexIndex = someVertices.size();
+			auto findOrAddVertex = [&aPrimitive, mergeVertices](const MeshPrimitive::Vertex& aVertex) -> std::uint32_t {
+				std::size_t vertexIndex = aPrimitive.Vertices.size();
 				if (mergeVertices)
 				{
-					for (std::size_t i = 0; i < someVertices.size(); ++i)
+					for (std::size_t i = 0; i < aPrimitive.Vertices.size(); ++i)
 					{
-						const Vertex& v = someVertices[i];
+						const MeshPrimitive::Vertex& v = aPrimitive.Vertices[i];
 						if (v.Position == aVertex.Position && v.UV == aVertex.UV && v.Normal == aVertex.Normal)
 							vertexIndex = i;
 					}
 				}
 
-				if (vertexIndex == someVertices.size())
-					someVertices.push_back(aVertex);
+				if (vertexIndex == aPrimitive.Vertices.size())
+					aPrimitive.Vertices.push_back(aVertex);
 
 				return static_cast<std::uint32_t>(vertexIndex);
 			};
 
-			Triangle newTriangle;
+			MeshPrimitive::Triangle newTriangle;
 			newTriangle.V1 = findOrAddVertex(aTriangle[0]);
 			newTriangle.V2 = findOrAddVertex(aTriangle[1]);
 			newTriangle.V3 = findOrAddVertex(aTriangle[2]);
-			someTriangles.push_back(newTriangle);
+			aPrimitive.Triangles.push_back(newTriangle);
 		}
 
-		void GenerateNormals_Flat(std::vector<Vertex>& someVertices, const std::vector<Triangle>& someTriangles)
+		void GenerateNormals_Flat(MeshPrimitive& aPrimitive)
 		{
-			for (const Triangle& tri : someTriangles)
+			for (const MeshPrimitive::Triangle& tri : aPrimitive.Triangles)
 			{
-				Vertex& v1 = someVertices[tri.V1];
-				Vertex& v2 = someVertices[tri.V2];
-				Vertex& v3 = someVertices[tri.V3];
+				MeshPrimitive::Vertex& v1 = aPrimitive.Vertices[tri.V1];
+				MeshPrimitive::Vertex& v2 = aPrimitive.Vertices[tri.V2];
+				MeshPrimitive::Vertex& v3 = aPrimitive.Vertices[tri.V3];
 
 				const Vector3 A = Vector3(v1.Position.X, v1.Position.Y, v1.Position.Z);
 				const Vector3 B = Vector3(v2.Position.X, v2.Position.Y, v2.Position.Z);
@@ -74,20 +87,20 @@ namespace RoseGold::Core::Graphics
 			}
 		}
 
-		void GenerateNormals_Smooth(std::vector<Vertex>& someVertices, const std::vector<Triangle>& someTriangles)
+		void GenerateNormals_Smooth(MeshPrimitive& aPrimitive)
 		{
-			for (Vertex& vert : someVertices)
+			for (MeshPrimitive::Vertex& vert : aPrimitive.Vertices)
 			{
 				vert.Normal = Vector3::Zero();
 				vert.Binormal = Vector3::Zero();
 				vert.Tangent = Vector3::Zero();
 			}
 
-			for (const Triangle& tri : someTriangles)
+			for (const MeshPrimitive::Triangle& tri : aPrimitive.Triangles)
 			{
-				Vertex& v1 = someVertices[tri.V1];
-				Vertex& v2 = someVertices[tri.V2];
-				Vertex& v3 = someVertices[tri.V3];
+				MeshPrimitive::Vertex& v1 = aPrimitive.Vertices[tri.V1];
+				MeshPrimitive::Vertex& v2 = aPrimitive.Vertices[tri.V2];
+				MeshPrimitive::Vertex& v3 = aPrimitive.Vertices[tri.V3];
 
 				const Vector3 A = Vector3(v1.Position.X, v1.Position.Y, v1.Position.Z);
 				const Vector3 B = Vector3(v2.Position.X, v2.Position.Y, v2.Position.Z);
@@ -105,7 +118,7 @@ namespace RoseGold::Core::Graphics
 				v3.Binormal = v2.Binormal = v1.Binormal;
 			}
 
-			for (Vertex& vert : someVertices)
+			for (MeshPrimitive::Vertex& vert : aPrimitive.Vertices)
 			{
 				vert.Normal.Normalize();
 				vert.Binormal.Normalize();
@@ -113,105 +126,105 @@ namespace RoseGold::Core::Graphics
 			}
 		}
 
-		void Subdivide(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void Subdivide(MeshPrimitive& aPrimitive)
 		{
-			const std::vector<Triangle> trianglesToSubdivide = someTriangles;
-			someTriangles.clear();
+			const std::vector<MeshPrimitive::Triangle> trianglesToSubdivide = aPrimitive.Triangles;
+			aPrimitive.Triangles.clear();
 
-			for (const Triangle& triangle : trianglesToSubdivide)
+			for (const MeshPrimitive::Triangle& triangle : trianglesToSubdivide)
 			{
-				const Vertex v1 = someVertices[triangle.V1];
-				const Vertex v2 = someVertices[triangle.V2];
-				const Vertex v3 = someVertices[triangle.V3];
+				const MeshPrimitive::Vertex v1 = aPrimitive.Vertices[triangle.V1];
+				const MeshPrimitive::Vertex v2 = aPrimitive.Vertices[triangle.V2];
+				const MeshPrimitive::Vertex v3 = aPrimitive.Vertices[triangle.V3];
 
-				const Vertex midpoint12 = Vertex::Lerp(v1, v2, 0.5f);
-				const Vertex midpoint23 = Vertex::Lerp(v2, v3, 0.5f);
-				const Vertex midpoint31 = Vertex::Lerp(v3, v1, 0.5f);
+				const MeshPrimitive::Vertex midpoint12 = LerpVertex(v1, v2, 0.5f);
+				const MeshPrimitive::Vertex midpoint23 = LerpVertex(v2, v3, 0.5f);
+				const MeshPrimitive::Vertex midpoint31 = LerpVertex(v3, v1, 0.5f);
 
-				const Vertex tri1[3] = { v1, midpoint12, midpoint31 };
-				const Vertex tri2[3] = { v2, midpoint23, midpoint12 };
-				const Vertex tri3[3] = { v3, midpoint31, midpoint23 };
-				const Vertex tri4[3] = { midpoint12, midpoint23, midpoint31 };
+				const MeshPrimitive::Vertex tri1[3] = { v1, midpoint12, midpoint31 };
+				const MeshPrimitive::Vertex tri2[3] = { v2, midpoint23, midpoint12 };
+				const MeshPrimitive::Vertex tri3[3] = { v3, midpoint31, midpoint23 };
+				const MeshPrimitive::Vertex tri4[3] = { midpoint12, midpoint23, midpoint31 };
 
-				AddTriangle(tri1, true, someVertices, someTriangles);
-				AddTriangle(tri2, true, someVertices, someTriangles);
-				AddTriangle(tri3, true, someVertices, someTriangles);
-				AddTriangle(tri4, true, someVertices, someTriangles);
+				AddTriangle(tri1, true, aPrimitive);
+				AddTriangle(tri2, true, aPrimitive);
+				AddTriangle(tri3, true, aPrimitive);
+				AddTriangle(tri4, true, aPrimitive);
 			}
 		}
 
-		void PopulateCapsule(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void PopulateCapsule(MeshPrimitive& aPrimitive)
 		{
-			PopulateQuad(someVertices, someTriangles);
+			PopulateQuad(aPrimitive);
 		}
 
-		void PopulateCube(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void PopulateCube(MeshPrimitive& aPrimitive)
 		{
-			Vertex* v = nullptr;
+			MeshPrimitive::Vertex* v = nullptr;
 
 			// Z-
-			v = &someVertices.emplace_back(); v->Position = {-1,  1, -1 }; v->UV = { 0, 1 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF00FFFF;
-			v = &someVertices.emplace_back(); v->Position = { 1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = {-1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = {-1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = { 1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = { 1, -1, -1 }; v->UV = { 1, 0 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFF00FF;
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 0, 1 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, -1 }; v->UV = { 1, 0 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
 
-			// Z+
-			v = &someVertices.emplace_back(); v->Position = { 1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = { 0, 0,  1 }; v->Tangent = { -1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF00FFFF;
-			v = &someVertices.emplace_back(); v->Position = {-1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 0, 0,  1 }; v->Tangent = { -1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = { 1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { 0, 0,  1 }; v->Tangent = { -1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = { 1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { 0, 0,  1 }; v->Tangent = { -1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = {-1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 0, 0,  1 }; v->Tangent = { -1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = {-1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = { 0, 0,  1 }; v->Tangent = { -1, 0, 0 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFF00FF;
+ 			//  Z+
+ 			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
 
-			// X+
-			v = &someVertices.emplace_back(); v->Position = { 1,  1, -1 }; v->UV = { 0, 1 }; v->Normal = { 1, 0, 0 }; v->Tangent = { 0, 0,  1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF00FFFF;
-			v = &someVertices.emplace_back(); v->Position = { 1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 1, 0, 0 }; v->Tangent = { 0, 0,  1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = { 1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = { 1, 0, 0 }; v->Tangent = { 0, 0,  1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = { 1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = { 1, 0, 0 }; v->Tangent = { 0, 0,  1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = { 1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 1, 0, 0 }; v->Tangent = { 0, 0,  1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = { 1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = { 1, 0, 0 }; v->Tangent = { 0, 0,  1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFF00FF;
+ 			//  X+
+ 			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1, -1 }; v->UV = { 0, 1 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
 
-			// X-
-			v = &someVertices.emplace_back(); v->Position = {-1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = { -1, 0, 0 }; v->Tangent = { 0, 0, -1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF00FFFF;
-			v = &someVertices.emplace_back(); v->Position = {-1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { -1, 0, 0 }; v->Tangent = { 0, 0, -1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = {-1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { -1, 0, 0 }; v->Tangent = { 0, 0, -1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = {-1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { -1, 0, 0 }; v->Tangent = { 0, 0, -1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = {-1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { -1, 0, 0 }; v->Tangent = { 0, 0, -1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = {-1, -1, -1 }; v->UV = { 1, 0 }; v->Normal = { -1, 0, 0 }; v->Tangent = { 0, 0, -1 }; v->Binormal = { 0,  1, 0 }; v->Color = 0xFFFF00FF;
+ 			//  X-
+ 			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 1, 0 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
 
-			// Y+
-			v = &someVertices.emplace_back(); v->Position = {-1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = { 0,  1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0,  1 }; v->Color = 0xFF00FFFF;
-			v = &someVertices.emplace_back(); v->Position = { 1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 0,  1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0,  1 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = {-1,  1, -1 }; v->UV = { 0, 0 }; v->Normal = { 0,  1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0,  1 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = {-1,  1, -1 }; v->UV = { 0, 0 }; v->Normal = { 0,  1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0,  1 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = { 1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 0,  1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0,  1 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = { 1,  1, -1 }; v->UV = { 1, 0 }; v->Normal = { 0,  1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0,  1 }; v->Color = 0xFFFF00FF;
+ 			//  Y+
+ 			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 0, 0 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 0, 0 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1, -1 }; v->UV = { 1, 0 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
 
-			// Y-
-			v = &someVertices.emplace_back(); v->Position = {-1, -1, -1 }; v->UV = { 0, 1 }; v->Normal = { 0, -1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0, -1 }; v->Color = 0xFF00FFFF;
-			v = &someVertices.emplace_back(); v->Position = { 1, -1, -1 }; v->UV = { 1, 1 }; v->Normal = { 0, -1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0, -1 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = {-1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { 0, -1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0, -1 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = {-1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { 0, -1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0, -1 }; v->Color = 0xFF0000FF;
-			v = &someVertices.emplace_back(); v->Position = { 1, -1, -1 }; v->UV = { 1, 1 }; v->Normal = { 0, -1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0, -1 }; v->Color = 0xFFFFFFFF;
-			v = &someVertices.emplace_back(); v->Position = { 1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = { 0, -1, 0 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 0, -1 }; v->Color = 0xFFFF00FF;
+ 			//  Y-
+ 			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 0, 1 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, -1 }; v->UV = { 1, 1 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, -1 }; v->UV = { 1, 1 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
 
-			GenerateNormals_Flat(someVertices, someTriangles);
+			GenerateNormals_Flat(aPrimitive);
 		}
 
-		void PopulateCylinder(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void PopulateCylinder(MeshPrimitive& aPrimitive)
 		{
-			PopulateQuad(someVertices, someTriangles);
+			PopulateQuad(aPrimitive);
 		}
 
-		void PopulateDisc(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void PopulateDisc(MeshPrimitive& aPrimitive)
 		{
-			const std::size_t first = someVertices.size();
+			const std::size_t first = aPrimitive.Vertices.size();
 
 			{
-				Vertex* v = nullptr;
-				v = &someVertices.emplace_back(); v->Position = { 0, 0, 0 }; v->UV = { 0, 0 };
+				MeshPrimitive::Vertex* v = nullptr;
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { 0, 0, 0 }; v->UV = { 0, 0 };
 
 				static constexpr std::size_t numSegments = 24;
 				for (std::size_t i = 0; i < numSegments; i++)
@@ -220,145 +233,140 @@ namespace RoseGold::Core::Graphics
 
 					const float x = cosf(theta);
 					const float y = sinf(theta);
-					v = &someVertices.emplace_back(); v->Position = { x, 0, -y }; v->UV = { 0, 0 }; v->Color = 0xFF0000FF;
+					v = &aPrimitive.Vertices.emplace_back(); v->Position = { x, 0, -y }; v->UV = { 0, 0 };
 				}
 			}
 
-			for (std::size_t i = 1; i < someVertices.size() - 1; ++i)
-				someTriangles.emplace_back(Triangle { static_cast<std::uint32_t>(first + 0), static_cast<std::uint32_t>(first + i), static_cast<std::uint32_t>(first + i + 1) });
-			someTriangles.emplace_back(Triangle { static_cast<std::uint32_t>(first + 0), static_cast<std::uint32_t>(first + someVertices.size() - 1), static_cast<std::uint32_t>(first + 1) });
+			for (std::size_t i = 1; i < aPrimitive.Vertices.size() - 1; ++i)
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { static_cast<std::uint32_t>(first + 0), static_cast<std::uint32_t>(first + i), static_cast<std::uint32_t>(first + i + 1) });
+			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { static_cast<std::uint32_t>(first + 0), static_cast<std::uint32_t>(first + aPrimitive.Vertices.size() - 1), static_cast<std::uint32_t>(first + 1) });
 
-			GenerateNormals_Flat(someVertices, someTriangles);
+			GenerateNormals_Flat(aPrimitive);
 		}
 
-		void PopulatePlane(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void PopulatePlane(MeshPrimitive& aPrimitive)
 		{
-			{
-				Vertex* v = nullptr;
-				v = &someVertices.emplace_back(); v->Position = {-1, 0, 1 }; v->UV = { 0, 1 }; v->Color = 0xFF00FFFF;
-				v = &someVertices.emplace_back(); v->Position = { 1, 0, 1 }; v->UV = { 1, 1 }; v->Color = 0xFFFFFFFF;
-				v = &someVertices.emplace_back(); v->Position = {-1, 0,-1 }; v->UV = { 0, 0 }; v->Color = 0xFF0000FF;
-				v = &someVertices.emplace_back(); v->Position = { 1, 0,-1 }; v->UV = { 1, 0 }; v->Color = 0xFFFF00FF;
-			}
+			MeshPrimitive::Vertex* v = nullptr;
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  0,  1 }; v->UV = { 0, 1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  0,  1 }; v->UV = { 1, 1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  0, -1 }; v->UV = { 0, 0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  0, -1 }; v->UV = { 1, 0 };
 
-			someTriangles.emplace_back(Triangle { 0, 1, 2 });
-			someTriangles.emplace_back(Triangle { 2, 1, 3 });
+			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 0, 1, 2 });
+			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 2, 1, 3 });
 
-			Subdivide(someVertices, someTriangles);
+			Subdivide(aPrimitive);
 
-			GenerateNormals_Flat(someVertices, someTriangles);
+			GenerateNormals_Flat(aPrimitive);
 		}
 
-		void PopulateSphere(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void PopulateSphere(MeshPrimitive& aPrimitive)
 		{
-			PopulateQuad(someVertices, someTriangles);
+			PopulateQuad(aPrimitive);
 		}
 
-		void PopulateIcosphere(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void PopulateIcosphere(MeshPrimitive& aPrimitive)
 		{
 			constexpr float t = (1.0f + Math::Squareroot<float>(5.0f)) / 2.0f;
 
 			{
-				Vertex* v = nullptr;
-				v = &someVertices.emplace_back(); v->Position = {-1, t, 0 }; v->UV = { 0, 0 }; v->Color = 0xFF00FFFF;
-				v = &someVertices.emplace_back(); v->Position = { 1, t, 0 }; v->UV = { 0, 0 }; v->Color = 0xFFFFFFFF;
-				v = &someVertices.emplace_back(); v->Position = {-1,-t, 0 }; v->UV = { 0, 0 }; v->Color = 0xFF0000FF;
-				v = &someVertices.emplace_back(); v->Position = { 1,-t, 0 }; v->UV = { 0, 0 }; v->Color = 0xFFFF00FF;
+				MeshPrimitive::Vertex* v = nullptr;
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  t,  0 }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  t,  0 }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -t,  0 }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -t,  0 }; v->UV = { 0, 0 };
 
-				v = &someVertices.emplace_back(); v->Position = { 0,-1, t }; v->UV = { 0, 0 }; v->Color = 0xFF00FFFF;
-				v = &someVertices.emplace_back(); v->Position = { 0, 1, t }; v->UV = { 0, 0 }; v->Color = 0xFFFFFFFF;
-				v = &someVertices.emplace_back(); v->Position = { 0,-1,-t }; v->UV = { 0, 0 }; v->Color = 0xFF0000FF;
-				v = &someVertices.emplace_back(); v->Position = { 0, 1,-t }; v->UV = { 0, 0 }; v->Color = 0xFFFF00FF;
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  0, -1,  t }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  0,  1,  t }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  0, -1, -t }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  0,  1, -t }; v->UV = { 0, 0 };
 
-				v = &someVertices.emplace_back(); v->Position = { t, 0,-1 }; v->UV = { 0, 0 }; v->Color = 0xFFFF00FF;
-				v = &someVertices.emplace_back(); v->Position = { t, 0, 1 }; v->UV = { 0, 0 }; v->Color = 0xFFFFFFFF;
-				v = &someVertices.emplace_back(); v->Position = {-t, 0,-1 }; v->UV = { 0, 0 }; v->Color = 0xFF0000FF;
-				v = &someVertices.emplace_back(); v->Position = {-t, 0, 1 }; v->UV = { 0, 0 }; v->Color = 0xFF00FFFF;
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  t,  0, -1 }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  t,  0,  1 }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { -t,  0, -1 }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { -t,  0,  1 }; v->UV = { 0, 0 };
 			}
 
 			{
-				someTriangles.emplace_back(Triangle { 0, 11,  5 });
-				someTriangles.emplace_back(Triangle { 0,  5,  1 });
-				someTriangles.emplace_back(Triangle { 0,  1,  7 });
-				someTriangles.emplace_back(Triangle { 0,  7, 10 });
-				someTriangles.emplace_back(Triangle { 0, 10, 11 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  0, 11,  5 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  0,  5,  1 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  0,  1,  7 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  0,  7, 10 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  0, 10, 11 });
 
-				someTriangles.emplace_back(Triangle { 1,  5,  9 });
-				someTriangles.emplace_back(Triangle { 5, 11,  4 });
-				someTriangles.emplace_back(Triangle { 11, 10,  2 });
-				someTriangles.emplace_back(Triangle { 10,  7,  6 });
-				someTriangles.emplace_back(Triangle { 7,  1,  8 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  1,  5,  9 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  5, 11,  4 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 11, 10,  2 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 10,  7,  6 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  7,  1,  8 });
 
-				someTriangles.emplace_back(Triangle { 3,  9,  4 });
-				someTriangles.emplace_back(Triangle { 3,  4,  2 });
-				someTriangles.emplace_back(Triangle { 3,  2,  6 });
-				someTriangles.emplace_back(Triangle { 3,  6,  8 });
-				someTriangles.emplace_back(Triangle { 3,  8,  9 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  3,  9,  4 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  3,  4,  2 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  3,  2,  6 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  3,  6,  8 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  3,  8,  9 });
 
-				someTriangles.emplace_back(Triangle { 4,  9,  5 });
-				someTriangles.emplace_back(Triangle { 2,  4, 11 });
-				someTriangles.emplace_back(Triangle { 6,  2, 10 });
-				someTriangles.emplace_back(Triangle { 8,  6,  7 });
-				someTriangles.emplace_back(Triangle { 9,  8,  1 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  4,  9,  5 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  2,  4, 11 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  6,  2, 10 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  8,  6,  7 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  9,  8,  1 });
 			}
 
-			Subdivide(someVertices, someTriangles);
+			Subdivide(aPrimitive);
 
-			for (Vertex& v : someVertices)
+			for (MeshPrimitive::Vertex& v : aPrimitive.Vertices)
 				v.Position.Normalize();
 
-			GenerateNormals_Smooth(someVertices, someTriangles);
+			GenerateNormals_Smooth(aPrimitive);
 		}
 
-		void PopulateQuad(std::vector<Vertex>& someVertices, std::vector<Triangle>& someTriangles)
+		void PopulateQuad(MeshPrimitive& aPrimitive)
 		{
-			{
-				Vertex* v = nullptr;
-				v = &someVertices.emplace_back(); v->Position = {-1, 1, 0 }; v->UV = { 0, 1 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 }; v->Color = 0xFF00FFFF;
-				v = &someVertices.emplace_back(); v->Position = { 1, 1, 0 }; v->UV = { 1, 1 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 }; v->Color = 0xFFFFFFFF;
-				v = &someVertices.emplace_back(); v->Position = {-1,-1, 0 }; v->UV = { 0, 0 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 }; v->Color = 0xFF0000FF;
-				v = &someVertices.emplace_back(); v->Position = { 1,-1, 0 }; v->UV = { 1, 0 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 }; v->Color = 0xFFFF00FF;
-			}
+			MeshPrimitive::Vertex* v = nullptr;
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, 0 }; v->UV = { 0, 1 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1, 0 }; v->UV = { 1, 1 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, 0 }; v->UV = { 0, 0 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, 0 }; v->UV = { 1, 0 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 };
 
-			someTriangles.emplace_back(Triangle { 0, 1, 2 });
-			someTriangles.emplace_back(Triangle { 2, 1, 3 });
+			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 0, 1, 2 });
+			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 2, 1, 3 });
 		}
 
 	}
 
-	void Mesh::SetFromPrimitive(MeshPrimitiveType aPrimitive)
+	MeshPrimitive MeshPrimitive::Generate(MeshPrimitiveType aType)
 	{
-		std::vector<Vertex> vertices;
-		std::vector<Triangle> triangles;
+		MeshPrimitive primitive;
 
-		switch (aPrimitive)
+		switch (aType)
 		{
 		case MeshPrimitiveType::Capsule:
-			MakeMeshPrimitives::PopulateCapsule(vertices, triangles);
+			MakeMeshPrimitives::PopulateCapsule(primitive);
 			break;
 		case MeshPrimitiveType::Cube:
-			MakeMeshPrimitives::PopulateCube(vertices, triangles);
+			MakeMeshPrimitives::PopulateCube(primitive);
 			break;
 		case MeshPrimitiveType::Cylinder:
-			MakeMeshPrimitives::PopulateCylinder(vertices, triangles);
+			MakeMeshPrimitives::PopulateCylinder(primitive);
 			break;
 		case MeshPrimitiveType::Disc:
-			MakeMeshPrimitives::PopulateDisc(vertices, triangles);
+			MakeMeshPrimitives::PopulateDisc(primitive);
 			break;
 		case MeshPrimitiveType::Plane:
-			MakeMeshPrimitives::PopulatePlane(vertices, triangles);
+			MakeMeshPrimitives::PopulatePlane(primitive);
 			break;
 		case MeshPrimitiveType::Sphere:
-			MakeMeshPrimitives::PopulateSphere(vertices, triangles);
+			MakeMeshPrimitives::PopulateSphere(primitive);
 			break;
 		case MeshPrimitiveType::Icosphere:
-			MakeMeshPrimitives::PopulateIcosphere(vertices, triangles);
+			MakeMeshPrimitives::PopulateIcosphere(primitive);
 			break;
 		case MeshPrimitiveType::Quad:
-			MakeMeshPrimitives::PopulateQuad(vertices, triangles);
+			MakeMeshPrimitives::PopulateQuad(primitive);
 			break;
 		}
 
-		SetFromList(vertices, triangles);
+		return primitive;
 	}
 }

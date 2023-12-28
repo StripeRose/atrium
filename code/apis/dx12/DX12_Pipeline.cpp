@@ -4,7 +4,6 @@
 #include "DX12_Diagnostics.hpp"
 #include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Pipeline.hpp"
-#include "DX12_Shader.hpp"
 
 namespace RoseGold::DirectX12
 {
@@ -21,6 +20,9 @@ namespace RoseGold::DirectX12
 
 	std::shared_ptr<CachedPipelineState> Pipeline::CreateOrGetState(const Core::Graphics::PipelineState& aPipelineState)
 	{
+		if (!aPipelineState.IsValid())
+			return nullptr;
+
 		// Define the Graphics Pipeline
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 
@@ -44,8 +46,11 @@ namespace RoseGold::DirectX12
 
 		// Resources
 		psoDesc.pRootSignature = myRootSignature.Get();
-		psoDesc.VS = std::static_pointer_cast<DirectX12::Shader>(aPipelineState.VertexShader)->GetByteCode();
-		psoDesc.PS = std::static_pointer_cast<DirectX12::Shader>(aPipelineState.PixelShader)->GetByteCode();
+
+		std::shared_ptr<DirectX12::Shader> vertexShader = std::static_pointer_cast<DirectX12::Shader>(aPipelineState.VertexShader);
+		std::shared_ptr<DirectX12::Shader> pixelShader = std::static_pointer_cast<DirectX12::Shader>(aPipelineState.PixelShader);
+		psoDesc.VS = vertexShader->GetByteCode();
+		psoDesc.PS = pixelShader->GetByteCode();
 
 		// Rasterization
 		D3D12_RASTERIZER_DESC rasterDesc;
@@ -122,6 +127,8 @@ namespace RoseGold::DirectX12
 		}
 
 		std::shared_ptr<CachedPipelineState> cachedState = std::make_shared<CachedPipelineState>();
+		cachedState->VertexShader = vertexShader;
+		cachedState->PixelShader = pixelShader;
 
 		// Create the raster pipeline state
 		if (
@@ -129,7 +136,7 @@ namespace RoseGold::DirectX12
 				myDevice.GetDevice()->CreateGraphicsPipelineState(
 					&psoDesc,
 					IID_PPV_ARGS(
-						cachedState->myPipelineState.ReleaseAndGetAddressOf()
+						cachedState->PipelineState.ReleaseAndGetAddressOf()
 					)
 				), "Create pipeline state")
 			)

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DX12_ComPtr.hpp"
+#include "DX12_Shader.hpp"
 
 #include <Graphics_Buffer.hpp>
 #include <Graphics_Pipeline.hpp>
@@ -16,7 +17,8 @@ namespace RoseGold::DirectX12
 	class CachedPipelineState : public Core::Graphics::CachedPipelineState
 	{
 	public:
-		ComPtr<ID3D12PipelineState> myPipelineState;
+		ComPtr<ID3D12PipelineState> PipelineState;
+		std::shared_ptr<DirectX12::Shader> VertexShader, PixelShader;
 	};
 
 	class Device;

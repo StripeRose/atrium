@@ -60,25 +60,20 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::Graphics::Mesh> Manager::CreateMesh()
-	{
-		return std::make_shared<Core::Graphics::Mesh>(*this);
-	}
-
 	std::shared_ptr<Core::Graphics::CachedPipelineState> Manager::CreateOrGetPipelineState(const Core::Graphics::PipelineState& aPipelineState)
 	{
 		return myDevice->GetPipeline().CreateOrGetState(aPipelineState);
 	}
 
-	std::shared_ptr<Core::Graphics::Shader> Manager::CreateShader(const std::filesystem::path& aSource, Core::Graphics::Shader::Type aType)
+	std::shared_ptr<Core::Graphics::Shader> Manager::CreateShader(const std::filesystem::path& aSource, Core::Graphics::Shader::Type aType, const char* anEntryPoint)
 	{
 		switch (aType)
 		{
 		case Shader::Type::Vertex:
-			return Shader::CreateFromSource(aSource, "main", "vs_5_0");
+			return Shader::CreateFromSource(aSource, anEntryPoint, "vs_5_0");
 
 		case Shader::Type::Pixel:
-			return Shader::CreateFromSource(aSource, "main", "ps_5_0");
+			return Shader::CreateFromSource(aSource, anEntryPoint, "ps_5_0");
 
 		default:
 			return nullptr;

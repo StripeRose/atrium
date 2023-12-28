@@ -36,6 +36,9 @@ namespace RoseGold::Core::Graphics
 		};
 
 	public:
+		inline bool IsValid() const { return VertexShader && PixelShader; }
+
+	public:
 		std::vector<InputLayoutEntry> InputLayout;
 
 		// (IA) Input assembler
