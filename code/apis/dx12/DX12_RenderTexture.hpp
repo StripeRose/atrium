@@ -4,6 +4,7 @@
 
 #include "DX12_ComPtr.hpp"
 #include "DX12_DescriptorHeap.hpp"
+#include "DX12_GPUResource.hpp"
 
 #include <Graphics_RenderTexture.hpp>
 
@@ -12,17 +13,17 @@ namespace RoseGold::DirectX12
 	class RenderTarget : public Core::Graphics::RenderTexture
 	{
 	public:
-		virtual bool IsSwapChain() const = 0;
-
 		virtual const DescriptorHeapHandle* GetColorView() const = 0;
 		virtual const DescriptorHeapHandle* GetDepthStencilView() const = 0;
 
 		virtual ID3D12Resource* GetColorResource() const = 0;
 		virtual ID3D12Resource* GetDepthResource() const = 0;
+
+		virtual bool IsSwapChain() const = 0;
 	};
 
 	class Device;
-	class RenderTexture : public RenderTarget
+	class RenderTexture : public RenderTarget, public GPUResource
 	{
 	public:
 		RenderTexture(
@@ -37,10 +38,12 @@ namespace RoseGold::DirectX12
 		);
 		~RenderTexture() override = default;
 
+		// Implementing RenderTarget
+	public:
 		const DescriptorHeapHandle* GetColorView() const override { return myRSVHandle.get(); }
 		const DescriptorHeapHandle* GetDepthStencilView() const override { return myDSVHandle.get(); }
 
-		ID3D12Resource* GetColorResource() const override { return myColorBuffer.Get(); }
+		ID3D12Resource* GetColorResource() const override { return myResource.Get(); }
 		ID3D12Resource* GetDepthResource() const override { return myDepthBuffer.Get(); }
 
 		bool IsSwapChain() const override { return false; }
@@ -70,14 +73,13 @@ namespace RoseGold::DirectX12
 		void SetWrapModeV(Core::Graphics::TextureWrapMode aWrapMode) const override;
 		void SetWrapModeW(Core::Graphics::TextureWrapMode aWrapMode) const override;
 
-		void* GetNativeTexturePtr() const override { return myColorBuffer.Get(); }
+		void* GetNativeTexturePtr() const override { return myResource.Get(); }
 
 	protected:
 		Device* myDevicePtr;
 
 		Core::Graphics::RenderTextureDescriptor myDescriptor;
 
-		ComPtr<ID3D12Resource> myColorBuffer;
 		ComPtr<ID3D12Resource> myDepthBuffer;
 
 		std::shared_ptr<DescriptorHeapHandle> myRSVHandle;

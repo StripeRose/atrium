@@ -431,7 +431,7 @@ namespace RoseGold::DirectX12
 
 	void SwapChain::SwapChainBackBuffer::Invalidate()
 	{
-		myColorBuffer.Reset();
+		myResource.Reset();
 		myDepthBuffer.Reset();
 		myRSVHandle.reset();
 		myDSVHandle.reset();

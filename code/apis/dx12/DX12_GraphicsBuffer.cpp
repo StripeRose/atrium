@@ -7,8 +7,10 @@
 namespace RoseGold::DirectX12
 {
 	GraphicsBuffer::GraphicsBuffer(ComPtr<ID3D12Resource> aResource, D3D12_RESOURCE_STATES aUsageState)
-		: GPUResource(aResource, aUsageState)
-	{ }
+	{
+		myResource = aResource;
+		myUsageState = aUsageState;
+	}
 
 	std::uint32_t GraphicsBuffer::Align(std::uint32_t aLocation, std::uint32_t anAlignment)
 	{
@@ -20,7 +22,7 @@ namespace RoseGold::DirectX12
 	{
 		myBufferView.StrideInBytes = aVertexStride;
 		myBufferView.SizeInBytes = (aVertexCount * aVertexStride);
-		myBufferView.BufferLocation = myGPUAddress;
+		myBufferView.BufferLocation = GetGPUAddress();
 
 		/*
 		* VertexBufferBackgroundUpload *vertexBufferUpload = new VertexBufferBackgroundUpload(this, vertexBuffer, vertexData);
@@ -78,7 +80,7 @@ namespace RoseGold::DirectX12
 	{
 		myBufferView.SizeInBytes = anIndexCount * sizeof(std::uint32_t);
 		myBufferView.Format = DXGI_FORMAT_R32_UINT;
-		myBufferView.BufferLocation = myGPUAddress;
+		myBufferView.BufferLocation = GetGPUAddress();
 	}
 
 	void IndexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize)

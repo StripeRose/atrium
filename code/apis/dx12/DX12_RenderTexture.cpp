@@ -15,9 +15,10 @@ namespace RoseGold::DirectX12
 	RenderTexture::RenderTexture(Device& aDevice, const Core::Graphics::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
 		: myDescriptor(aDescriptor)
 		, myDevicePtr(&aDevice)
-		, myColorBuffer(aColorBuffer)
 		, myDepthBuffer(aDepthBuffer)
 	{
+		myResource = aColorBuffer;
+
 		Debug::Assert(
 			(myDescriptor.Size_Width * myDescriptor.Size_Height * myDescriptor.Size_Depth) > 0,
 			"Attempted to create a render target without a size."
@@ -63,10 +64,10 @@ namespace RoseGold::DirectX12
 					&colorBufferDesc,
 					D3D12_RESOURCE_STATE_RENDER_TARGET,
 					&clearValue,
-					IID_PPV_ARGS(myColorBuffer.ReleaseAndGetAddressOf())
+					IID_PPV_ARGS(myResource.ReleaseAndGetAddressOf())
 				));
 
-				myColorBuffer->SetName(L"RenderTexture Depth");
+				myResource->SetName(L"RenderTexture Depth");
 			}
 
 			D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = { };
@@ -74,7 +75,7 @@ namespace RoseGold::DirectX12
 			rtvDesc.ViewDimension = ToRTVTextureDimension(myDescriptor.Dimension);
 
 			myRSVHandle = aDevice.GetDescriptorHeapManager().GetRTVHeap().GetNewHeapHandle();
-			aDevice.GetDevice()->CreateRenderTargetView(myColorBuffer.Get(), &rtvDesc, myRSVHandle->GetCPUHandle());
+			aDevice.GetDevice()->CreateRenderTargetView(myResource.Get(), &rtvDesc, myRSVHandle->GetCPUHandle());
 		}
 
 		if (myDescriptor.DepthStencilFormat != Core::Graphics::GraphicsFormat::None)

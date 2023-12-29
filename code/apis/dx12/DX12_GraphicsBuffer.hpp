@@ -4,6 +4,7 @@
 
 #include "DX12_ComPtr.hpp"
 #include "DX12_DescriptorHeap.hpp"
+#include "DX12_GPUResource.hpp"
 
 #include <Graphics_Buffer.hpp>
 
@@ -11,30 +12,6 @@
 
 namespace RoseGold::DirectX12
 {
-	class GPUResource
-	{
-	public:
-		inline GPUResource(ComPtr<ID3D12Resource> aResource, D3D12_RESOURCE_STATES aUsageState)
-			: myResource(aResource)
-			, myUsageState(aUsageState)
-			, myGPUAddress(aResource->GetGPUVirtualAddress())
-			, myIsReady(false)
-		{ }
-		virtual ~GPUResource() = default;
-
-		ComPtr<ID3D12Resource> GetResource() { return myResource; }
-		D3D12_GPU_VIRTUAL_ADDRESS GetGPUAddress() const { return myGPUAddress; }
-		D3D12_RESOURCE_STATES GetUsageState() const { return myUsageState; }
-
-		bool IsReady() const { return myIsReady; }
-
-	protected:
-		ComPtr<ID3D12Resource> myResource;
-		D3D12_GPU_VIRTUAL_ADDRESS myGPUAddress;
-		D3D12_RESOURCE_STATES myUsageState;
-		bool myIsReady;
-	};
-
 	class Device;
 	class GraphicsBuffer : public Core::Graphics::GraphicsBuffer, public GPUResource
 	{
