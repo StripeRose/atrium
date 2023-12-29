@@ -1,4 +1,4 @@
-// Filter "Resource"
+// Filter "Resources"
 
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
