@@ -18,6 +18,7 @@ namespace RoseGold::DirectX12
 		, myDepthBuffer(aDepthBuffer)
 	{
 		myResource = aColorBuffer;
+		myUsageState = D3D12_RESOURCE_STATE_PRESENT;
 
 		Debug::Assert(
 			(myDescriptor.Size_Width * myDescriptor.Size_Height * myDescriptor.Size_Depth) > 0,

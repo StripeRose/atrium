@@ -96,6 +96,11 @@ namespace RoseGold::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthResource();
 	}
 
+	GPUResource& SwapChain::GetGPUResource()
+	{
+		return *myBackBuffers.at(GetCurrentBufferIndex());
+	}
+
 	const Core::Graphics::RenderTextureDescriptor& SwapChain::GetDescriptor() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDescriptor();

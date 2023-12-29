@@ -134,12 +134,8 @@ namespace RoseGold::DirectX12
 
 		if (target->GetColorResource())
 		{
-			D3D12_RESOURCE_BARRIER targetBarrier = { };
-			targetBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-			targetBarrier.Transition.pResource = target->GetColorResource();
-			targetBarrier.Transition.StateBefore = target->IsSwapChain() ? D3D12_RESOURCE_STATE_PRESENT : D3D12_RESOURCE_STATE_COMMON;
-			targetBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-			myCommandList->ResourceBarrier(1, &targetBarrier);
+			D3D12_RESOURCE_BARRIER barrier = target->GetGPUResource().UpdateUsageState(D3D12_RESOURCE_STATE_RENDER_TARGET);
+			myCommandList->ResourceBarrier(1, &barrier);
 
 			D3D12_CPU_DESCRIPTOR_HANDLE colorHandle = target->GetColorView()->GetCPUHandle();
 			D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = target->GetDepthStencilView()->GetCPUHandle();
@@ -208,11 +204,10 @@ namespace RoseGold::DirectX12
 		for (const auto& target : myTargetTextures)
 		{
 			RenderTarget* renderTarget = static_cast<RenderTarget*>(target.get());
-
-			D3D12_RESOURCE_BARRIER& barrier = barriers.emplace_back();
-			barrier.Transition.pResource = renderTarget->GetColorResource();
-			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-			barrier.Transition.StateAfter = renderTarget->IsSwapChain() ? D3D12_RESOURCE_STATE_PRESENT : D3D12_RESOURCE_STATE_COMMON;
+			barriers.push_back(
+				renderTarget->GetGPUResource().UpdateUsageState(
+					renderTarget->IsSwapChain() ? D3D12_RESOURCE_STATE_PRESENT : D3D12_RESOURCE_STATE_COMMON
+				));
 		}
 
 		myCommandList->ResourceBarrier(static_cast<UINT>(barriers.size()), &barriers.front());

@@ -19,6 +19,8 @@ namespace RoseGold::DirectX12
 		virtual ID3D12Resource* GetColorResource() const = 0;
 		virtual ID3D12Resource* GetDepthResource() const = 0;
 
+		virtual GPUResource& GetGPUResource() = 0;
+
 		virtual bool IsSwapChain() const = 0;
 	};
 
@@ -45,6 +47,8 @@ namespace RoseGold::DirectX12
 
 		ID3D12Resource* GetColorResource() const override { return myResource.Get(); }
 		ID3D12Resource* GetDepthResource() const override { return myDepthBuffer.Get(); }
+
+		GPUResource& GetGPUResource() override { return *this; }
 
 		bool IsSwapChain() const override { return false; }
 
