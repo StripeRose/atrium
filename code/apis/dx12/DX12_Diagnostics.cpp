@@ -15,10 +15,9 @@ namespace RoseGold::DirectX12
 			_com_error error(aResult);
 
 			Debug::LogError(
-				"[DX12] %s\nDirectX 12 Error: %s\n\n%s",
+				"[DX12] %s\nDirectX 12 Error: %s",
 				aMessage,
-				static_cast<const char*>(error.ErrorMessage()),
-				static_cast<const char*>(error.Description())
+				static_cast<const char*>(error.ErrorMessage())
 			);
 		}
 
@@ -32,10 +31,9 @@ namespace RoseGold::DirectX12
 			_com_error error(aResult);
 
 			Debug::LogError(
-				"[DX12] %s\nDirectX 12 Error: %s\n\n%s",
+				"[DX12] %s\nDirectX 12 Error: %s",
 				aMessage,
-				static_cast<const char*>(error.ErrorMessage()),
-				static_cast<const char*>(error.Description())
+				static_cast<const char*>(error.ErrorMessage())
 			);
 		}
 
@@ -49,10 +47,9 @@ namespace RoseGold::DirectX12
 			_com_error error(aResult);
 
 			Debug::LogError(
-				"[DX12] %s\nDirectX 12 Error: %s\n\n%s",
+				"[DX12] %s\nDirectX 12 Error: %s",
 				(const char*) anErrorBlob->GetBufferPointer(),
-				static_cast<const char*>(error.ErrorMessage()),
-				static_cast<const char*>(error.Description())
+				static_cast<const char*>(error.ErrorMessage())
 			);
 		}
 
@@ -70,10 +67,9 @@ namespace RoseGold::DirectX12
 			_com_error error(aResult);
 
 			Debug::LogFatal(
-				"[DX12] %s\nDirectX 12 Error: %s\n\n%s",
+				"[DX12] %s\nDirectX 12 Error: %s",
 				aMessage,
-				static_cast<const char*>(error.ErrorMessage()),
-				static_cast<const char*>(error.Description())
+				static_cast<const char*>(error.ErrorMessage())
 			);
 		}
 
@@ -84,9 +80,8 @@ namespace RoseGold::DirectX12
 	{
 		_com_error error(aResult);
 		Debug::Assert(SUCCEEDED(aResult),
-			"DirectX 12 Error: %s\n\n%s",
-			static_cast<const char*>(error.ErrorMessage()),
-			static_cast<const char*>(error.Description())
+			"DirectX 12 Error: %s",
+			static_cast<const char*>(error.ErrorMessage())
 		);
 
 		return SUCCEEDED(aResult);
