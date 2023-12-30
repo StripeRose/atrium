@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DX12_ComPtr.hpp"
+#include "DX12_FrameContext.hpp"
 
 #include <Graphics_Manager.hpp>
 
@@ -38,8 +39,8 @@ namespace RoseGold::DirectX12
 
 	private:
 		std::unique_ptr<Device> myDevice;
+		std::unique_ptr<FrameGraphicsContext> myFrameGraphicsContext;
 
-		ComPtr<ID3D12CommandAllocator> myCommandAllocator;
 		std::vector<std::shared_ptr<Core::Graphics::RenderTexture>> myFrameTargets;
 	};
 }

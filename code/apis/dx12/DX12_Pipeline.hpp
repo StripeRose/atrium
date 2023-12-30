@@ -5,8 +5,8 @@
 #include "DX12_ComPtr.hpp"
 #include "DX12_Shader.hpp"
 
-#include <Graphics_Buffer.hpp>
 #include <Graphics_Pipeline.hpp>
+#include <Graphics_RenderTexture.hpp>
 
 #include <d3d12.h>
 
@@ -21,6 +21,8 @@ namespace RoseGold::DirectX12
 	public:
 		ComPtr<ID3D12PipelineState> PipelineState;
 		std::shared_ptr<DirectX12::Shader> VertexShader, PixelShader;
+		std::vector<std::shared_ptr<Core::Graphics::RenderTexture>> Outputs;
+		std::shared_ptr<Core::Graphics::RenderTexture> DepthTarget;
 	};
 
 	class Device;
@@ -29,13 +31,9 @@ namespace RoseGold::DirectX12
 	public:
 		Pipeline(Device& aDevice);
 
-		void MarkFrameEnd();
-
 		std::shared_ptr<CachedPipelineState> CreateOrGetState(const Core::Graphics::PipelineState& aPipelineState);
 
 		ID3D12RootSignature* GetRootSignature() { return myRootSignature.Get(); }
-
-		std::shared_ptr<Core::Graphics::GraphicsBuffer> CreateFrameConstantBuffer(std::uint32_t aBufferSize);
 		
 	private:
 		void SetupRootSignature();
@@ -43,7 +41,6 @@ namespace RoseGold::DirectX12
 		Device& myDevice;
 
 		ComPtr<ID3D12RootSignature> myRootSignature;
-		std::vector<std::shared_ptr<Core::Graphics::GraphicsBuffer>> myFrameConstantBuffers;
 	};
 
 	class RootSignatureCreator

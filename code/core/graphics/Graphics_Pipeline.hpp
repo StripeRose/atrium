@@ -63,6 +63,7 @@ namespace RoseGold::Core::Graphics
 
 		// (OM) Output merger
 		std::vector<std::shared_ptr<RenderTexture>> Outputs;
+		std::shared_ptr<RenderTexture> DepthTarget;
 	};
 
 	class CachedPipelineState

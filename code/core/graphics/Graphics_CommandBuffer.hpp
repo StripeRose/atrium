@@ -23,9 +23,9 @@ namespace RoseGold::Core::Graphics
 		// virtual void Blit(RenderTarget aSource, RenderTarget aTarget, Material aMaterial);
 		// virtual void Blit(RenderTarget aSource, RenderTarget aTarget, Vector2 aScale, Vector2 anOffset);
 
-		virtual void Clear(Color aClearColor);
-		virtual void Clear(float aClearDepth);
-		virtual void Clear(Color aClearColor, float aClearDepth);
+		virtual void Clear(std::shared_ptr<RenderTexture> aTarget, Color aClearColor);
+		virtual void Clear(std::shared_ptr<RenderTexture> aTarget, float aClearDepth);
+		virtual void Clear(std::shared_ptr<RenderTexture> aTarget, Color aClearColor, float aClearDepth);
 
 		// virtual void ConvertTexture(Texture aSource, Texture aDestination);
 
@@ -42,22 +42,21 @@ namespace RoseGold::Core::Graphics
 
 		// virtual void DispatchCompute(ComputeShader aShader);
 
-		virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<CachedPipelineState> aPipelineState, int aSubmeshIndex);
+		virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, int aSubmeshIndex);
 		//virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<Material> aMaterial, int aSubmeshIndex);
 
 		// Todo: Figure out mesh instancing.
-
-		virtual void SetScissorRect(const Math::RectangleT<int>& aRectangle);
 
 		// virtual void SetBufferData(ComputeBuffer aBuffer, void* someData, size_t aDataSize);
 		// template <typename T> virtual void SetBufferData(ComputeBuffer aBuffer, const List<T>& someData);
 		// virtual void SetBufferData(GraphicsBuffer aBuffer, void* someData, size_t aDataSize);
 		// template <typename T> virtual void SetBufferData(GraphicsBuffer aBuffer, const List<T>& someData);
 
+		virtual void SetPipelineState(std::shared_ptr<CachedPipelineState> aPipelineState);
+
 		virtual void SetProjectionMatrix(const Math::Matrix& aMatrix);
 
-		virtual void SetRenderTarget(std::shared_ptr<RenderTexture> aTexture);
-		//virtual void SetRenderTarget(RenderTexture& aTexture, unsigned int aMipLevel);
+		virtual void SetScissorRect(const Math::RectangleT<int>& aRectangle);
 
 		// Transforms world space into camera space.
 		virtual void SetViewMatrix(const Math::Matrix& aMatrix);

@@ -22,22 +22,16 @@ namespace RoseGold::DirectX12
 	Manager::Manager()
 	{
 		Debug::Log("DX12 start");
-		myDevice.reset(new Device());
 
-		AssertSuccess(
-			myDevice->GetDevice()->CreateCommandAllocator(
-				D3D12_COMMAND_LIST_TYPE_DIRECT,
-				IID_PPV_ARGS(myCommandAllocator.ReleaseAndGetAddressOf())
-			)
-		);
+		myDevice.reset(new Device());
+		myFrameGraphicsContext.reset(new FrameGraphicsContext(*myDevice));
 	}
 
 	Manager::~Manager()
 	{
 		Debug::Log("DX12 stop");
 
-		myCommandAllocator->Reset();
-		myCommandAllocator.Reset();
+		myFrameGraphicsContext.reset();
 		myDevice.reset();
 		ReportUnreleasedObjects();
 	}
@@ -82,18 +76,8 @@ namespace RoseGold::DirectX12
 
 	void Manager::ExecuteCommandBuffer(const Core::Graphics::CommandBuffer& aCommandBuffer)
 	{
-		ResolvedCommandBuffer resolvedBuffer(*myDevice, myCommandAllocator.Get());
+		ResolvedCommandBuffer resolvedBuffer(*myFrameGraphicsContext);
 		resolvedBuffer.Resolve(aCommandBuffer);
-
-		for (const auto& target : resolvedBuffer.GetUsedTargets())
-		{
-			if (std::find(myFrameTargets.begin(), myFrameTargets.end(), target) == myFrameTargets.end())
-				myFrameTargets.push_back(target);
-		}
-
-		myDevice->GetCommandQueueManager().GetGraphicsQueue().ExecuteCommandList(
-			resolvedBuffer.GetCommandList()
-		);
 	}
 
 	void Manager::ExecuteTask(const Core::Graphics::GraphicsTask& aGraphicsTask)
@@ -115,21 +99,30 @@ namespace RoseGold::DirectX12
 
 	void Manager::MarkFrameEnd()
 	{
-		for (const std::shared_ptr<Core::Graphics::RenderTexture>& renderTarget : myFrameTargets)
+		// Record used swapchains and make them ready to present.
+		std::vector<std::shared_ptr<SwapChain>> frameSwapChains;
+		for (const std::shared_ptr<SwapChain>& swapChain : myDevice->GetSwapChains())
 		{
-			RenderTarget* target = static_cast<RenderTarget*>(renderTarget.get());
-			if (target->IsSwapChain())
-			{
-				SwapChain* swapChain = static_cast<SwapChain*>(target);
-				swapChain->Present();
-			}
+			if (swapChain->GetGPUResource().GetUsageState() == D3D12_RESOURCE_STATE_PRESENT)
+				continue; // Swapchain hasn't been drawn to, skip it.
+
+			frameSwapChains.push_back(swapChain);
+			myFrameGraphicsContext->AddBarrier(swapChain->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
 		}
+		myFrameGraphicsContext->FlushBarriers();
+
+		// Submit the frame's work.
+		myDevice->GetCommandQueueManager().GetGraphicsQueue().ExecuteCommandList(
+			myFrameGraphicsContext->GetCommandList()
+		);
+
+		for (const std::shared_ptr<SwapChain>& swapChain : frameSwapChains)
+			swapChain->Present();
 
 		CommandQueue& queue = myDevice->GetCommandQueueManager().GetGraphicsQueue();
 		queue.WaitForFenceCPUBlocking(queue.InsertSignal());
 
-		myCommandAllocator->Reset();
-		myFrameTargets.clear();
+		myFrameGraphicsContext->Reset();
 		myDevice->MarkFrameEnd();
 	}
 

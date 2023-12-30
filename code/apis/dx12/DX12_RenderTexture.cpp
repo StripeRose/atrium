@@ -18,7 +18,7 @@ namespace RoseGold::DirectX12
 		, myDepthBuffer(aDepthBuffer)
 	{
 		myResource = aColorBuffer;
-		myUsageState = D3D12_RESOURCE_STATE_PRESENT;
+		myUsageState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
 		Debug::Assert(
 			(myDescriptor.Size_Width * myDescriptor.Size_Height * myDescriptor.Size_Depth) > 0,
@@ -63,7 +63,7 @@ namespace RoseGold::DirectX12
 					&defaultHeapProperties,
 					D3D12_HEAP_FLAG_NONE,
 					&colorBufferDesc,
-					D3D12_RESOURCE_STATE_RENDER_TARGET,
+					myUsageState,
 					&clearValue,
 					IID_PPV_ARGS(myResource.ReleaseAndGetAddressOf())
 				));

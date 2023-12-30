@@ -432,7 +432,9 @@ namespace RoseGold::DirectX12
 
 	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const Core::Graphics::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
 		: RenderTexture(aDevice, aDescriptor, aColorBuffer, aDepthBuffer)
-	{ }
+	{
+		myUsageState = D3D12_RESOURCE_STATE_PRESENT;
+	}
 
 	void SwapChain::SwapChainBackBuffer::Invalidate()
 	{

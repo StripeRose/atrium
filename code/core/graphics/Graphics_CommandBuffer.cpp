@@ -8,32 +8,41 @@ namespace RoseGold::Core::Graphics
 			commands(anOtherCommandBuffer);
 	}
 
-	void CommandBuffer::Clear(Color aClearColor)
+	void CommandBuffer::Clear(std::shared_ptr<RenderTexture> aTarget, Color aClearColor)
 	{
+		if (!aTarget)
+			return;
+
 		myRecordedCommands.emplace_back(
-			[aClearColor](CommandBuffer& aBuffer)
+			[aTarget, aClearColor](CommandBuffer& aBuffer)
 			{
-				aBuffer.Clear(aClearColor);
+				aBuffer.Clear(aTarget, aClearColor);
 			}
 		);
 	}
 
-	void CommandBuffer::Clear(float aClearDepth)
+	void CommandBuffer::Clear(std::shared_ptr<RenderTexture> aTarget, float aClearDepth)
 	{
+		if (!aTarget)
+			return;
+
 		myRecordedCommands.emplace_back(
-			[aClearDepth](CommandBuffer& aBuffer)
+			[aTarget, aClearDepth](CommandBuffer& aBuffer)
 			{
-				aBuffer.Clear(aClearDepth);
+				aBuffer.Clear(aTarget, aClearDepth);
 			}
 		);
 	}
 
-	void CommandBuffer::Clear(Color aClearColor, float aClearDepth)
+	void CommandBuffer::Clear(std::shared_ptr<RenderTexture> aTarget, Color aClearColor, float aClearDepth)
 	{
+		if (!aTarget)
+			return;
+
 		myRecordedCommands.emplace_back(
-			[aClearColor, aClearDepth](CommandBuffer& aBuffer)
+			[aTarget, aClearColor, aClearDepth](CommandBuffer& aBuffer)
 			{
-				aBuffer.Clear(aClearColor, aClearDepth);
+				aBuffer.Clear(aTarget, aClearColor, aClearDepth);
 			}
 		);
 	}
@@ -48,12 +57,12 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
-	void CommandBuffer::DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<CachedPipelineState> aPipelineState, int aSubmeshIndex)
+	void CommandBuffer::DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, int aSubmeshIndex)
 	{
 		myRecordedCommands.emplace_back(
-			[aMesh, aMatrix, aPipelineState, aSubmeshIndex](CommandBuffer& aBuffer)
+			[aMesh, aMatrix, aSubmeshIndex](CommandBuffer& aBuffer)
 			{
-				aBuffer.DrawMesh(aMesh, aMatrix, aPipelineState, aSubmeshIndex);
+				aBuffer.DrawMesh(aMesh, aMatrix, aSubmeshIndex);
 			}
 		);
 	}
@@ -68,22 +77,22 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
+	void CommandBuffer::SetPipelineState(std::shared_ptr<CachedPipelineState> aPipelineState)
+	{
+		myRecordedCommands.emplace_back(
+			[aPipelineState](CommandBuffer& aBuffer)
+			{
+				aBuffer.SetPipelineState(aPipelineState);
+			}
+		);
+	}
+
 	void CommandBuffer::SetProjectionMatrix(const Math::Matrix& aMatrix)
 	{
 		myRecordedCommands.emplace_back(
 			[aMatrix](CommandBuffer& aBuffer)
 			{
 				aBuffer.SetProjectionMatrix(aMatrix);
-			}
-		);
-	}
-
-	void CommandBuffer::SetRenderTarget(std::shared_ptr<RenderTexture> aTexture)
-	{
-		myRecordedCommands.emplace_back(
-			[aTexture](CommandBuffer& aBuffer)
-			{
-				aBuffer.SetRenderTarget(aTexture);
 			}
 		);
 	}

@@ -46,7 +46,6 @@ namespace RoseGold::DirectX12
 
 	void Device::MarkFrameEnd()
 	{
-		myPipeline->MarkFrameEnd();
 		myDescriptorHeapManager->GetFrameHeap().Reset();
 	}
 
