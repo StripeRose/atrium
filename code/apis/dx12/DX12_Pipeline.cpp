@@ -12,7 +12,7 @@ namespace RoseGold::DirectX12
 		SetupRootSignature();
 	}
 
-	std::shared_ptr<CachedPipelineState> Pipeline::CreateOrGetState(const Core::Graphics::PipelineState& aPipelineState)
+	std::shared_ptr<PipelineState> Pipeline::CreateOrGetState(const Core::Graphics::PipelineStateDescription& aPipelineState)
 	{
 		if (!aPipelineState.IsValid())
 			return nullptr;
@@ -98,7 +98,7 @@ namespace RoseGold::DirectX12
 
 		psoDesc.SampleMask = UINT_MAX;
 
-		std::shared_ptr<CachedPipelineState> cachedState = std::make_shared<CachedPipelineState>();
+		std::shared_ptr<PipelineState> cachedState = std::make_shared<PipelineState>();
 		cachedState->VertexShader = vertexShader;
 		cachedState->PixelShader = pixelShader;
 

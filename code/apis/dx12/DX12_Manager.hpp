@@ -22,7 +22,7 @@ namespace RoseGold::DirectX12
 
 		std::shared_ptr<Core::Graphics::GraphicsBuffer> CreateGraphicsBuffer(Core::Graphics::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) override;
 
-		std::shared_ptr<Core::Graphics::CachedPipelineState> CreateOrGetPipelineState(const Core::Graphics::PipelineState& aPipelineState) override;
+		std::shared_ptr<Core::Graphics::PipelineState> CreateOrGetPipelineState(const Core::Graphics::PipelineStateDescription& aPipelineState) override;
 
 		std::shared_ptr<Core::Graphics::Shader> CreateShader(const std::filesystem::path& aSource, Core::Graphics::Shader::Type aType, const char* anEntryPoint) override;
 

@@ -54,7 +54,7 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::Graphics::CachedPipelineState> Manager::CreateOrGetPipelineState(const Core::Graphics::PipelineState& aPipelineState)
+	std::shared_ptr<Core::Graphics::PipelineState> Manager::CreateOrGetPipelineState(const Core::Graphics::PipelineStateDescription& aPipelineState)
 	{
 		return myDevice->GetPipeline().CreateOrGetState(aPipelineState);
 	}

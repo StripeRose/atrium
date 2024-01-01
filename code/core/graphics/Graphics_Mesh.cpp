@@ -12,9 +12,9 @@ namespace RoseGold::Core::Graphics
 		: Mesh(aGraphicsManager)
 	{ }
 
-	std::vector<PipelineState::InputLayoutEntry> GenericMesh::GetInputLayout() const
+	std::vector<PipelineStateDescription::InputLayoutEntry> GenericMesh::GetInputLayout() const
 	{
-		std::vector<PipelineState::InputLayoutEntry> inputLayout;
+		std::vector<PipelineStateDescription::InputLayoutEntry> inputLayout;
 
 		inputLayout.emplace_back("POSITION", GraphicsFormat::R32G32B32_SFloat);
 		inputLayout.emplace_back("NORMAL", GraphicsFormat::R32G32B32_SFloat);
@@ -92,9 +92,9 @@ namespace RoseGold::Core::Graphics
 		: Mesh(aGraphicsManager)
 	{ }
 
-	std::vector<PipelineState::InputLayoutEntry> ColoredMesh::GetInputLayout() const
+	std::vector<PipelineStateDescription::InputLayoutEntry> ColoredMesh::GetInputLayout() const
 	{
-		std::vector<PipelineState::InputLayoutEntry> inputLayout;
+		std::vector<PipelineStateDescription::InputLayoutEntry> inputLayout;
 
 		inputLayout.emplace_back("POSITION", GraphicsFormat::R32G32B32_SFloat);
 		inputLayout.emplace_back("NORMAL", GraphicsFormat::R32G32B32_SFloat);
@@ -179,9 +179,9 @@ namespace RoseGold::Core::Graphics
 		: Mesh(aGraphicsManager)
 	{ }
 
-	std::vector<PipelineState::InputLayoutEntry> SimpleMesh::GetInputLayout() const
+	std::vector<PipelineStateDescription::InputLayoutEntry> SimpleMesh::GetInputLayout() const
 	{
-		std::vector<PipelineState::InputLayoutEntry> inputLayout;
+		std::vector<PipelineStateDescription::InputLayoutEntry> inputLayout;
 
 		inputLayout.emplace_back("POSITION", GraphicsFormat::R32G32B32_SFloat);
 

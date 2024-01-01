@@ -19,7 +19,7 @@ namespace RoseGold::Core::Graphics
 		};
 	};
 
-	class PipelineState
+	class PipelineStateDescription
 	{
 	public:
 		struct InputLayoutEntry
@@ -66,7 +66,7 @@ namespace RoseGold::Core::Graphics
 		std::shared_ptr<RenderTexture> DepthTarget;
 	};
 
-	class CachedPipelineState
+	class PipelineState
 	{
 
 	};

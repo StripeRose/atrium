@@ -16,8 +16,8 @@
 std::chrono::high_resolution_clock::time_point ourStartTime;
 std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> ourRT1, ourRT2;
 
-std::shared_ptr<RoseGold::Core::Graphics::CachedPipelineState> ourRT1GenericMeshPipelineState, ourRT2GenericMeshPipelineState;
-std::shared_ptr<RoseGold::Core::Graphics::CachedPipelineState> ourRT1ColoredMeshPipelineState, ourRT2ColoredMeshPipelineState;
+std::shared_ptr<RoseGold::Core::Graphics::PipelineState> ourRT1GenericMeshPipelineState, ourRT2GenericMeshPipelineState;
+std::shared_ptr<RoseGold::Core::Graphics::PipelineState> ourRT1ColoredMeshPipelineState, ourRT2ColoredMeshPipelineState;
 
 std::shared_ptr<RoseGold::Core::Graphics::Mesh> ourColoredCube, ourGenericPlane, ourGenericSphere;
 
@@ -54,7 +54,7 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 
 	{
 		using namespace RoseGold::Core::Graphics;
-		RoseGold::Core::Graphics::PipelineState pipelineState;
+		RoseGold::Core::Graphics::PipelineStateDescription pipelineState;
 		pipelineState.InputLayout = ourColoredCube->GetInputLayout();
 
 		pipelineState.VertexShader = roseGold.GraphicsManager->CreateShader("shaders/MeshVertex.hlsl", RoseGold::Core::Graphics::Shader::Type::Vertex, "ColoredMesh");

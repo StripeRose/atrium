@@ -77,7 +77,7 @@ namespace RoseGold::DirectX12
 		void DrawIndexedInstanced(std::uint32_t anIndexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation, std::uint32_t aStartInstanceLocation);
 
 		void SetBlendFactor(Color aBlendFactor);
-		void SetPipelineState(CachedPipelineState& aPipelineState);
+		void SetPipelineState(PipelineState& aPipelineState);
 		void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY aTopology);
 		void SetScissorRect(const Math::RectangleT<int>& aRectangle);
 		void SetStencilRef(std::uint32_t aStencilRef);

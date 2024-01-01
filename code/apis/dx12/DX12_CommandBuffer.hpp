@@ -28,7 +28,7 @@ namespace RoseGold::DirectX12
 		void Clear(std::shared_ptr<Core::Graphics::RenderTexture> aTarget, Color aClearColor, float aClearDepth) override;
 		void DisableScissorRect() override;
 		void DrawMesh(std::shared_ptr<Core::Graphics::Mesh> aMesh, Math::Matrix aMatrix, int aSubmeshIndex) override;
-		void SetPipelineState(std::shared_ptr<Core::Graphics::CachedPipelineState> aPipelineState) override;
+		void SetPipelineState(std::shared_ptr<Core::Graphics::PipelineState> aPipelineState) override;
 		void SetProjectionMatrix(const Math::Matrix& aMatrix) override;
 		void SetScissorRect(const Math::RectangleT<int>& aRectangle) override;
 		void SetViewMatrix(const Math::Matrix& aMatrix) override;

@@ -16,7 +16,7 @@
 
 namespace RoseGold::DirectX12
 {
-	class CachedPipelineState : public Core::Graphics::CachedPipelineState
+	class PipelineState : public Core::Graphics::PipelineState
 	{
 	public:
 		ComPtr<ID3D12PipelineState> PipelineState;
@@ -31,7 +31,7 @@ namespace RoseGold::DirectX12
 	public:
 		Pipeline(Device& aDevice);
 
-		std::shared_ptr<CachedPipelineState> CreateOrGetState(const Core::Graphics::PipelineState& aPipelineState);
+		std::shared_ptr<PipelineState> CreateOrGetState(const Core::Graphics::PipelineStateDescription& aPipelineState);
 
 		ID3D12RootSignature* GetRootSignature() { return myRootSignature.Get(); }
 		

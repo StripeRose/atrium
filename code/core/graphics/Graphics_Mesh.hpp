@@ -28,7 +28,7 @@ namespace RoseGold::Core::Graphics
 		{ }
 		virtual ~Mesh() = default;
 
-		virtual std::vector<PipelineState::InputLayoutEntry> GetInputLayout() const = 0;
+		virtual std::vector<PipelineStateDescription::InputLayoutEntry> GetInputLayout() const = 0;
 
 		std::shared_ptr<const GraphicsBuffer> GetVertexBuffer() const { return myVertexBuffer; }
 
@@ -54,7 +54,7 @@ namespace RoseGold::Core::Graphics
 	public:
 		GenericMesh(Manager& aGraphicsManager);
 
-		std::vector<PipelineState::InputLayoutEntry> GetInputLayout() const override;
+		std::vector<PipelineStateDescription::InputLayoutEntry> GetInputLayout() const override;
 
 		void SetFromList(const std::span<Vertex> someVertices);
 		void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
@@ -78,7 +78,7 @@ namespace RoseGold::Core::Graphics
 	public:
 		ColoredMesh(Manager& aGraphicsManager);
 
-		std::vector<PipelineState::InputLayoutEntry> GetInputLayout() const override;
+		std::vector<PipelineStateDescription::InputLayoutEntry> GetInputLayout() const override;
 
 		void SetFromList(const std::span<Vertex> someVertices);
 		void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);
@@ -97,7 +97,7 @@ namespace RoseGold::Core::Graphics
 	public:
 		SimpleMesh(Manager& aGraphicsManager);
 
-		std::vector<PipelineState::InputLayoutEntry> GetInputLayout() const override;
+		std::vector<PipelineStateDescription::InputLayoutEntry> GetInputLayout() const override;
 
 		void SetFromList(const std::span<Vertex> someVertices);
 		void SetFromList(const std::span<Vertex> someVertices, const std::span<Triangle> someTriangles);

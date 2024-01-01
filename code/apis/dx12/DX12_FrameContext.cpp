@@ -240,7 +240,7 @@ namespace RoseGold::DirectX12
 		myCommandList->IASetPrimitiveTopology(aTopology);
 	}
 
-	void FrameGraphicsContext::SetPipelineState(CachedPipelineState& aPipelineState)
+	void FrameGraphicsContext::SetPipelineState(PipelineState& aPipelineState)
 	{
 		myCommandList->SetPipelineState(aPipelineState.PipelineState.Get());
 		myCommandList->SetGraphicsRootSignature(myDevice.GetPipeline().GetRootSignature());

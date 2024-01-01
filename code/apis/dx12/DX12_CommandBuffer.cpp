@@ -73,9 +73,9 @@ namespace RoseGold::DirectX12
 		myGraphicsContext.Draw(vertexBuffer->GetCount(), 0);
 	}
 
-	void ResolvedCommandBuffer::SetPipelineState(std::shared_ptr<Core::Graphics::CachedPipelineState> aPipelineState)
+	void ResolvedCommandBuffer::SetPipelineState(std::shared_ptr<Core::Graphics::PipelineState> aPipelineState)
 	{
-		DirectX12::CachedPipelineState& pipelineState = static_cast<DirectX12::CachedPipelineState&>(*aPipelineState);
+		DirectX12::PipelineState& pipelineState = static_cast<DirectX12::PipelineState&>(*aPipelineState);
 
 		for (const std::shared_ptr<Core::Graphics::RenderTexture>& outputTexture : pipelineState.Outputs)
 		{

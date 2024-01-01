@@ -52,7 +52,7 @@ namespace RoseGold::Core::Graphics
 		// virtual void SetBufferData(GraphicsBuffer aBuffer, void* someData, size_t aDataSize);
 		// template <typename T> virtual void SetBufferData(GraphicsBuffer aBuffer, const List<T>& someData);
 
-		virtual void SetPipelineState(std::shared_ptr<CachedPipelineState> aPipelineState);
+		virtual void SetPipelineState(std::shared_ptr<PipelineState> aPipelineState);
 
 		virtual void SetProjectionMatrix(const Math::Matrix& aMatrix);
 

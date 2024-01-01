@@ -77,7 +77,7 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
-	void CommandBuffer::SetPipelineState(std::shared_ptr<CachedPipelineState> aPipelineState)
+	void CommandBuffer::SetPipelineState(std::shared_ptr<PipelineState> aPipelineState)
 	{
 		myRecordedCommands.emplace_back(
 			[aPipelineState](CommandBuffer& aBuffer)
