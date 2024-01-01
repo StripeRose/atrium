@@ -6,184 +6,7 @@
 
 namespace RoseGold::DirectX12
 {
-	Pipeline::Pipeline(Device& aDevice)
-		: myDevice(aDevice)
-	{
-		SetupRootSignature();
-	}
-
-	std::shared_ptr<PipelineState> Pipeline::CreateOrGetState(const Core::Graphics::PipelineStateDescription& aPipelineState)
-	{
-		if (!aPipelineState.IsValid())
-			return nullptr;
-
-		// Define the Graphics Pipeline
-		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-
-		// Input Assembly
-		std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs;
-		for (const auto& inputLayoutEntry : aPipelineState.InputLayout)
-		{
-			inputElementDescs.emplace_back(D3D12_INPUT_ELEMENT_DESC {
-				inputLayoutEntry.SemanticName.c_str(),
-				inputLayoutEntry.SemanticIndex,
-				ToDXGIFormat(inputLayoutEntry.Format),
-				0,
-				D3D12_APPEND_ALIGNED_ELEMENT,
-				D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-				0
-			});
-		}
-
-		psoDesc.InputLayout.pInputElementDescs = &inputElementDescs.front();
-		psoDesc.InputLayout.NumElements = static_cast<UINT>(inputElementDescs.size());
-
-		// Resources
-		psoDesc.pRootSignature = myRootSignature.Get();
-
-		std::shared_ptr<DirectX12::Shader> vertexShader = std::static_pointer_cast<DirectX12::Shader>(aPipelineState.VertexShader);
-		std::shared_ptr<DirectX12::Shader> pixelShader = std::static_pointer_cast<DirectX12::Shader>(aPipelineState.PixelShader);
-		psoDesc.VS = vertexShader->GetByteCode();
-		psoDesc.PS = pixelShader->GetByteCode();
-
-		// Rasterization
-		D3D12_RASTERIZER_DESC rasterDesc;
-		rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
-		rasterDesc.CullMode = D3D12_CULL_MODE_BACK;
-		rasterDesc.FrontCounterClockwise = FALSE;
-		rasterDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
-		rasterDesc.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
-		rasterDesc.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
-		rasterDesc.DepthClipEnable = TRUE;
-		rasterDesc.MultisampleEnable = FALSE;
-		rasterDesc.AntialiasedLineEnable = FALSE;
-		rasterDesc.ForcedSampleCount = 0;
-		rasterDesc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-		psoDesc.RasterizerState = rasterDesc;
-		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-
-		// Color/Blend
-		D3D12_BLEND_DESC blendDesc;
-		blendDesc.AlphaToCoverageEnable = FALSE;
-		blendDesc.IndependentBlendEnable = FALSE;
-		const D3D12_RENDER_TARGET_BLEND_DESC defaultRenderTargetBlendDesc = {
-			FALSE,
-			FALSE,
-			D3D12_BLEND_ONE,
-			D3D12_BLEND_ZERO,
-			D3D12_BLEND_OP_ADD,
-			D3D12_BLEND_ONE,
-			D3D12_BLEND_ZERO,
-			D3D12_BLEND_OP_ADD,
-			D3D12_LOGIC_OP_NOOP,
-			D3D12_COLOR_WRITE_ENABLE_ALL,
-		};
-		for (UINT i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
-			blendDesc.RenderTarget[i] = defaultRenderTargetBlendDesc;
-		psoDesc.BlendState = blendDesc;
-
-		// Depth/Stencil State
-		psoDesc.DepthStencilState.DepthEnable = TRUE;
-		psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-		psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
-
-		psoDesc.DepthStencilState.StencilEnable = FALSE;
-
-		psoDesc.DepthStencilState.BackFace = psoDesc.DepthStencilState.FrontFace = {
-			D3D12_STENCIL_OP_KEEP,
-			D3D12_STENCIL_OP_KEEP,
-			D3D12_STENCIL_OP_KEEP,
-			D3D12_COMPARISON_FUNC_ALWAYS
-		};
-
-		psoDesc.SampleMask = UINT_MAX;
-
-		std::shared_ptr<PipelineState> cachedState = std::make_shared<PipelineState>();
-		cachedState->VertexShader = vertexShader;
-		cachedState->PixelShader = pixelShader;
-
-		// Output
-		{
-			psoDesc.NumRenderTargets = 0;
-			psoDesc.SampleDesc.Count = 1;
-
-			psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
-			if (aPipelineState.DepthTarget)
-			{
-				psoDesc.DSVFormat = ToDXGIFormat(aPipelineState.DepthTarget->GetDescriptor().DepthStencilFormat);
-				cachedState->DepthTarget = aPipelineState.DepthTarget;
-			}
-
-			for (std::size_t i = 0; i < aPipelineState.Outputs.size(); ++i)
-			{
-				const std::shared_ptr<Core::Graphics::RenderTexture>& target = aPipelineState.Outputs[i];
-				if (!target)
-					continue;
-
-				const Core::Graphics::RenderTextureDescriptor& targetDescriptor = target->GetDescriptor();
-				psoDesc.RTVFormats[psoDesc.NumRenderTargets] = ToDXGIFormat(targetDescriptor.ColorGraphicsFormat);
-				psoDesc.NumRenderTargets += 1;
-				cachedState->Outputs.push_back(target);
-
-				// If no depth-stencil has been defined, use the first one available.
-				if (psoDesc.DSVFormat == DXGI_FORMAT_UNKNOWN)
-				{
-					psoDesc.DSVFormat = ToDXGIFormat(targetDescriptor.DepthStencilFormat);
-					cachedState->DepthTarget = target;
-				}
-			}
-		}
-
-		// Create the raster pipeline state
-		if (
-			LogIfError(
-				myDevice.GetDevice()->CreateGraphicsPipelineState(
-					&psoDesc,
-					IID_PPV_ARGS(
-						cachedState->PipelineState.ReleaseAndGetAddressOf()
-					)
-				), "Create pipeline state")
-			)
-		{
-			return cachedState;
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
-
-	void Pipeline::SetupRootSignature()
-	{
-		RootSignatureCreator signature;
-
-		signature.SetVisibility(D3D12_SHADER_VISIBILITY_VERTEX);
-		{
-			signature.AddDescriptorTable()
-				.AddCBVRange(1, 0) // Model, View, Projection data.
-				;
-		}
-
-		signature.SetVisibility(D3D12_SHADER_VISIBILITY_PIXEL);
-		{
-			signature.AddSampler(0, 1) // Wrapping Point
-				.Filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
-				;
-			signature.AddSampler(1, 1) // Wrapping Linear
-				.Filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
-				;
-			signature.AddSampler(2, 1) // Wrapping Anisotropic
-				.Filter(D3D12_FILTER_ANISOTROPIC)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
-				;
-		}
-
-		myRootSignature = signature.Finalize(myDevice.GetDevice().Get());
-	}
-
-	ComPtr<ID3D12RootSignature> RootSignatureCreator::Finalize(ID3D12Device* aDevice) const
+	std::shared_ptr<RootSignature> RootSignatureCreator::Finalize(ID3D12Device* aDevice) const
 	{
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = { };
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
@@ -292,7 +115,9 @@ namespace RoseGold::DirectX12
 			return nullptr;
 		}
 
-		return rootSignature;
+		auto finalRootSignature = std::make_shared<RootSignature>();
+		finalRootSignature->myRootSignature = rootSignature;
+		return finalRootSignature;
 	}
 
 	bool RootSignatureCreator::PopulateTable(std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable)
@@ -331,5 +156,147 @@ namespace RoseGold::DirectX12
 		aResult.DescriptorTable.pDescriptorRanges = &someRanges.at(someRanges.size() - aTable.myRanges.size());
 
 		return true;
+	}
+
+	std::shared_ptr<PipelineState> PipelineState::CreateFrom(ID3D12Device& aDevice, const std::shared_ptr<DirectX12::RootSignature>& aRootSignature, const Core::Graphics::PipelineStateDescription& aPipelineStateDescription)
+	{
+		if (!aPipelineStateDescription.IsValid())
+			return nullptr;
+
+		// Define the Graphics Pipeline
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+
+		// Input Assembly
+		std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs;
+		for (const auto& inputLayoutEntry : aPipelineStateDescription.InputLayout)
+		{
+			inputElementDescs.emplace_back(D3D12_INPUT_ELEMENT_DESC{
+				inputLayoutEntry.SemanticName.c_str(),
+				inputLayoutEntry.SemanticIndex,
+				ToDXGIFormat(inputLayoutEntry.Format),
+				0,
+				D3D12_APPEND_ALIGNED_ELEMENT,
+				D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+				0
+				});
+		}
+
+		psoDesc.InputLayout.pInputElementDescs = &inputElementDescs.front();
+		psoDesc.InputLayout.NumElements = static_cast<UINT>(inputElementDescs.size());
+
+		// Resources
+		psoDesc.pRootSignature = aRootSignature->GetRootSignatureObject().Get();
+
+		std::shared_ptr<DirectX12::Shader> vertexShader = std::static_pointer_cast<DirectX12::Shader>(aPipelineStateDescription.VertexShader);
+		std::shared_ptr<DirectX12::Shader> pixelShader = std::static_pointer_cast<DirectX12::Shader>(aPipelineStateDescription.PixelShader);
+		psoDesc.VS = vertexShader->GetByteCode();
+		psoDesc.PS = pixelShader->GetByteCode();
+
+		// Rasterization
+		D3D12_RASTERIZER_DESC rasterDesc;
+		rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
+		rasterDesc.CullMode = D3D12_CULL_MODE_BACK;
+		rasterDesc.FrontCounterClockwise = FALSE;
+		rasterDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
+		rasterDesc.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
+		rasterDesc.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+		rasterDesc.DepthClipEnable = TRUE;
+		rasterDesc.MultisampleEnable = FALSE;
+		rasterDesc.AntialiasedLineEnable = FALSE;
+		rasterDesc.ForcedSampleCount = 0;
+		rasterDesc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+		psoDesc.RasterizerState = rasterDesc;
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+		// Color/Blend
+		D3D12_BLEND_DESC blendDesc;
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		const D3D12_RENDER_TARGET_BLEND_DESC defaultRenderTargetBlendDesc = {
+			FALSE,
+			FALSE,
+			D3D12_BLEND_ONE,
+			D3D12_BLEND_ZERO,
+			D3D12_BLEND_OP_ADD,
+			D3D12_BLEND_ONE,
+			D3D12_BLEND_ZERO,
+			D3D12_BLEND_OP_ADD,
+			D3D12_LOGIC_OP_NOOP,
+			D3D12_COLOR_WRITE_ENABLE_ALL,
+		};
+		for (UINT i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
+			blendDesc.RenderTarget[i] = defaultRenderTargetBlendDesc;
+		psoDesc.BlendState = blendDesc;
+
+		// Depth/Stencil State
+		psoDesc.DepthStencilState.DepthEnable = TRUE;
+		psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+
+		psoDesc.DepthStencilState.StencilEnable = FALSE;
+
+		psoDesc.DepthStencilState.BackFace = psoDesc.DepthStencilState.FrontFace = {
+			D3D12_STENCIL_OP_KEEP,
+			D3D12_STENCIL_OP_KEEP,
+			D3D12_STENCIL_OP_KEEP,
+			D3D12_COMPARISON_FUNC_ALWAYS
+		};
+
+		psoDesc.SampleMask = UINT_MAX;
+
+		std::shared_ptr<PipelineState> createdPipelineState(new PipelineState());
+		createdPipelineState->myRootSignature = aRootSignature;
+		createdPipelineState->myVertexShader = vertexShader;
+		createdPipelineState->myPixelShader = pixelShader;
+
+		// Output
+		{
+			psoDesc.NumRenderTargets = 0;
+			psoDesc.SampleDesc.Count = 1;
+
+			psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
+			if (aPipelineStateDescription.DepthTarget)
+			{
+				psoDesc.DSVFormat = ToDXGIFormat(aPipelineStateDescription.DepthTarget->GetDescriptor().DepthStencilFormat);
+				createdPipelineState->myDepthTarget = aPipelineStateDescription.DepthTarget;
+			}
+
+			for (std::size_t i = 0; i < aPipelineStateDescription.Outputs.size(); ++i)
+			{
+				const std::shared_ptr<Core::Graphics::RenderTexture>& target = aPipelineStateDescription.Outputs[i];
+				if (!target)
+					continue;
+
+				const Core::Graphics::RenderTextureDescriptor& targetDescriptor = target->GetDescriptor();
+				psoDesc.RTVFormats[psoDesc.NumRenderTargets] = ToDXGIFormat(targetDescriptor.ColorGraphicsFormat);
+				psoDesc.NumRenderTargets += 1;
+				createdPipelineState->myOutputs.push_back(target);
+
+				// If no depth-stencil has been defined, use the first one available.
+				if (psoDesc.DSVFormat == DXGI_FORMAT_UNKNOWN)
+				{
+					psoDesc.DSVFormat = ToDXGIFormat(targetDescriptor.DepthStencilFormat);
+					createdPipelineState->myDepthTarget = target;
+				}
+			}
+		}
+
+		// Create the raster pipeline state
+		if (
+			LogIfError(
+				aDevice.CreateGraphicsPipelineState(
+					&psoDesc,
+					IID_PPV_ARGS(
+						createdPipelineState->myPipelineState.ReleaseAndGetAddressOf()
+					)
+				), "Create pipeline state")
+			)
+		{
+			return createdPipelineState;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 }

@@ -3,7 +3,6 @@
 #include "DX12_CommandQueue.hpp"
 #include "DX12_ComPtr.hpp"
 #include "DX12_DescriptorHeapManager.hpp"
-#include "DX12_Pipeline.hpp"
 #include "DX12_SwapChain.hpp"
 
 #include <Platform_WindowManagement.hpp>
@@ -43,7 +42,6 @@ namespace RoseGold::DirectX12
 		ComPtr<IDXGIFactory4> GetFactory() { return myDXGIFactory; }
 		DescriptorHeapManager& GetDescriptorHeapManager() { return *myDescriptorHeapManager; }
 		CommandQueueManager& GetCommandQueueManager() { return *myCommandQueues.get(); }
-		Pipeline& GetPipeline() { return *myPipeline; }
 
 	private:
 #ifdef _DEBUG
@@ -64,7 +62,6 @@ namespace RoseGold::DirectX12
 		ComPtr<ID3D12InfoQueue> myInfoQueue;
 		std::unique_ptr<CommandQueueManager> myCommandQueues;
 		std::unique_ptr<DescriptorHeapManager> myDescriptorHeapManager;
-		std::unique_ptr<Pipeline> myPipeline;
 
 		std::mutex mySwapChainMutex;
 		std::map<Core::Platform::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;

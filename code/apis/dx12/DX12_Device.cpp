@@ -26,8 +26,6 @@ namespace RoseGold::DirectX12
 		SetupInfoQueue();
 		SetupCommandQueue();
 		SetupHeapManager();
-
-		myPipeline.reset(new Pipeline(*this));
 	}
 
 	Device::~Device()

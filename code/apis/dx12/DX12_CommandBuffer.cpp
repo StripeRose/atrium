@@ -77,7 +77,7 @@ namespace RoseGold::DirectX12
 	{
 		DirectX12::PipelineState& pipelineState = static_cast<DirectX12::PipelineState&>(*aPipelineState);
 
-		for (const std::shared_ptr<Core::Graphics::RenderTexture>& outputTexture : pipelineState.Outputs)
+		for (const std::shared_ptr<Core::Graphics::RenderTexture>& outputTexture : pipelineState.GetOutputs())
 		{
 			RenderTarget* renderTarget = static_cast<RenderTarget*>(outputTexture.get());
 			myGraphicsContext.AddBarrier(renderTarget->GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);

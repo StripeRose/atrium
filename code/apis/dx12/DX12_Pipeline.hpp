@@ -16,30 +16,14 @@
 
 namespace RoseGold::DirectX12
 {
-	class PipelineState : public Core::Graphics::PipelineState
+	class RootSignature
 	{
+		friend class RootSignatureCreator;
+
 	public:
-		ComPtr<ID3D12PipelineState> PipelineState;
-		std::shared_ptr<DirectX12::Shader> VertexShader, PixelShader;
-		std::vector<std::shared_ptr<Core::Graphics::RenderTexture>> Outputs;
-		std::shared_ptr<Core::Graphics::RenderTexture> DepthTarget;
-	};
+		const ComPtr<ID3D12RootSignature>& GetRootSignatureObject() const { return myRootSignature; }
 
-	class Device;
-	class Pipeline
-	{
-	public:
-		Pipeline(Device& aDevice);
-
-		std::shared_ptr<PipelineState> CreateOrGetState(const Core::Graphics::PipelineStateDescription& aPipelineState);
-
-		ID3D12RootSignature* GetRootSignature() { return myRootSignature.Get(); }
-		
 	private:
-		void SetupRootSignature();
-
-		Device& myDevice;
-
 		ComPtr<ID3D12RootSignature> myRootSignature;
 	};
 
@@ -149,7 +133,7 @@ namespace RoseGold::DirectX12
 		void AddUAV(unsigned int aRegister) { AddUAV(aRegister, 0); }
 		void AddUAV(unsigned int aRegister, unsigned int aSpace) { AddParameter(Parameter::Type::UAV, aRegister, aSpace); }
 
-		ComPtr<ID3D12RootSignature> Finalize(ID3D12Device* aDevice) const;
+		std::shared_ptr<RootSignature> Finalize(ID3D12Device* aDevice) const;
 
 		void SetVisibility(D3D12_SHADER_VISIBILITY aVisibility) { myCurrentVisibility = aVisibility; }
 
@@ -179,5 +163,30 @@ namespace RoseGold::DirectX12
 		std::vector<Sampler> myStaticSamplers;
 
 		D3D12_SHADER_VISIBILITY myCurrentVisibility;
+	};
+
+	class PipelineState : public Core::Graphics::PipelineState
+	{
+	public:
+		static std::shared_ptr<PipelineState> CreateFrom(ID3D12Device& aDevice, const std::shared_ptr<RootSignature>& aRootSignature, const Core::Graphics::PipelineStateDescription& aPipelineStateDescription);
+
+		const ComPtr<ID3D12PipelineState>& GetPipelineStateObject() const { return myPipelineState; }
+		const std::shared_ptr<RootSignature>& GetRootSignature() const { return myRootSignature; }
+
+		const std::shared_ptr<DirectX12::Shader>& GetVertexShader() const { return myVertexShader; }
+		const std::shared_ptr<DirectX12::Shader>& GetPixelShader() const { return myPixelShader; }
+
+		const std::vector<std::shared_ptr<Core::Graphics::RenderTexture>>& GetOutputs() const { return myOutputs; }
+		const std::shared_ptr<Core::Graphics::RenderTexture>& GetDepthTarget() const { return myDepthTarget; }
+
+	private:
+		PipelineState() = default;
+
+		ComPtr<ID3D12PipelineState> myPipelineState;
+
+		std::shared_ptr<RootSignature> myRootSignature;
+		std::shared_ptr<DirectX12::Shader> myVertexShader, myPixelShader;
+		std::vector<std::shared_ptr<Core::Graphics::RenderTexture>> myOutputs;
+		std::shared_ptr<Core::Graphics::RenderTexture> myDepthTarget;
 	};
 }

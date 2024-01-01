@@ -12,6 +12,8 @@
 namespace RoseGold::DirectX12
 {
 	class Device;
+	class RootSignature;
+
 	class Manager final : public Core::Graphics::Manager
 	{
 	public:
@@ -35,6 +37,8 @@ namespace RoseGold::DirectX12
 		void MarkFrameEnd() override;
 
 	private:
+		void SetupRootSignature();
+
 		void ReportUnreleasedObjects();
 
 	private:
@@ -42,5 +46,7 @@ namespace RoseGold::DirectX12
 		std::unique_ptr<FrameGraphicsContext> myFrameGraphicsContext;
 
 		std::vector<std::shared_ptr<Core::Graphics::RenderTexture>> myFrameTargets;
+
+		std::shared_ptr<RootSignature> myDefaultRootSignature;
 	};
 }
