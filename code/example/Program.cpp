@@ -12,6 +12,7 @@
 #include <Windows.h>
 
 #include <chrono>
+#include <thread>
 
 std::chrono::high_resolution_clock::time_point ourStartTime;
 std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> ourRT1, ourRT2;
