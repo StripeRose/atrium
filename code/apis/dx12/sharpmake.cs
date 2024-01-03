@@ -5,6 +5,7 @@ using Sharpmake;
 [module: Sharpmake.Include("../../core/graphics/sharpmake.cs")]
 [module: Sharpmake.Include("../../core/platform/sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
+[module: Sharpmake.Include("../../libraries/directxtex.sharpmake.cs")]
 
 namespace RoseGold
 {
@@ -26,6 +27,7 @@ namespace RoseGold
             conf.SolutionFolder = "rose-gold/apis";
 
             conf.AddPublicDependency<RoseCommon>(target);
+            conf.AddPublicDependency<DirectXTex>(target);
             conf.AddPublicDependency<Core.Graphics>(target);
             conf.AddPrivateDependency<Core.Platform>(target);
 

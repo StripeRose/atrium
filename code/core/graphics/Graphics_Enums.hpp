@@ -211,6 +211,7 @@ namespace RoseGold::Core::Graphics
 		RGB565,
 		R16,
 		DXT1,
+		DXT3,
 		DXT5,
 		RGBA4444,
 		BGRA32,

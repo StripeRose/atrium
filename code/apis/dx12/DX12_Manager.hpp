@@ -31,6 +31,8 @@ namespace RoseGold::DirectX12
 		void ExecuteCommandBuffer(const Core::Graphics::CommandBuffer& aCommandBuffer) override;
 		void ExecuteTask(const Core::Graphics::GraphicsTask& aGraphicsTask) override;
 
+		virtual std::shared_ptr<Core::Graphics::Texture> LoadTexture(const std::filesystem::path& aPath) override;
+
 		bool SupportsMultipleWindows() const override { return true; }
 
 		void MarkFrameStart() override;

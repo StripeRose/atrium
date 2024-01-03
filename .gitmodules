@@ -4,3 +4,6 @@
 [submodule "code/libraries/rose-common"]
 	path = code/libraries/rose-common
 	url = https://github.com/StripeRose/rose-common.git
+[submodule "code/libraries/DirectXTex"]
+	path = code/libraries/DirectXTex
+	url = https://github.com/Microsoft/DirectXTex

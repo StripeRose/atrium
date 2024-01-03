@@ -9,7 +9,6 @@ namespace RoseGold::Core::Graphics
 	public:
 		virtual ~Texture() = default;
 
-		virtual void SetFilterMode(FilterMode aFilterMode) = 0;
 		virtual TextureDimension GetDimensions() const = 0;
 		virtual unsigned int GetDepth() const = 0;
 		virtual FilterMode GetFilterMode() const = 0;
@@ -22,6 +21,7 @@ namespace RoseGold::Core::Graphics
 		virtual TextureWrapMode GetWrapModeV() const = 0;
 		virtual TextureWrapMode GetWrapModeW() const = 0;
 
+		virtual void SetFilterMode(FilterMode aFilterMode) = 0;
 		virtual void SetWrapMode(TextureWrapMode aWrapMode) = 0;
 		virtual void SetWrapModeU(TextureWrapMode aWrapMode) const = 0;
 		virtual void SetWrapModeV(TextureWrapMode aWrapMode) const = 0;

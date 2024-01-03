@@ -28,9 +28,10 @@ namespace RoseGold::Core::Graphics
 
 		virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& aShaderSource, Shader::Type aShaderType, const char* anEntryPoint) = 0;
 		
-
 		virtual void ExecuteCommandBuffer(const CommandBuffer& aCommandBuffer) = 0;
 		virtual void ExecuteTask(const GraphicsTask& aGraphicsTask) = 0;
+
+		virtual std::shared_ptr<Texture> LoadTexture(const std::filesystem::path& aPath) = 0;
 
 		virtual bool SupportsMultipleWindows() const = 0;
 

@@ -1,5 +1,7 @@
 #include "DX12_Enums.hpp"
 
+#include "DX12_Diagnostics.hpp"
+
 namespace RoseGold::DirectX12
 {
 	using namespace Core::Graphics;
@@ -237,6 +239,53 @@ namespace RoseGold::DirectX12
 			return D3D12_DSV_DIMENSION_TEXTURE2D;
 		default:
 			return D3D12_DSV_DIMENSION_UNKNOWN;
+		}
+	}
+
+	Core::Graphics::TextureFormat ToTextureFormat(const DXGI_FORMAT& aFormat)
+	{
+		using namespace Core::Graphics;
+
+		switch (aFormat)
+		{
+		case DXGI_FORMAT_BC1_TYPELESS:
+		case DXGI_FORMAT_BC1_UNORM:
+		case DXGI_FORMAT_BC1_UNORM_SRGB:
+			return TextureFormat::DXT1;
+
+		case DXGI_FORMAT_BC2_TYPELESS:
+		case DXGI_FORMAT_BC2_UNORM:
+		case DXGI_FORMAT_BC2_UNORM_SRGB:
+			return TextureFormat::DXT3;
+
+		case DXGI_FORMAT_BC3_TYPELESS:
+		case DXGI_FORMAT_BC3_UNORM:
+		case DXGI_FORMAT_BC3_UNORM_SRGB:
+			return TextureFormat::DXT5;
+
+		case DXGI_FORMAT_BC4_TYPELESS:
+		case DXGI_FORMAT_BC4_UNORM:
+		case DXGI_FORMAT_BC4_SNORM:
+			return TextureFormat::BC4;
+
+		case DXGI_FORMAT_BC5_TYPELESS:
+		case DXGI_FORMAT_BC5_UNORM:
+		case DXGI_FORMAT_BC5_SNORM:
+			return TextureFormat::BC5;
+
+		case DXGI_FORMAT_BC6H_TYPELESS:
+		case DXGI_FORMAT_BC6H_UF16:
+		case DXGI_FORMAT_BC6H_SF16:
+			return TextureFormat::BC6H;
+
+		case DXGI_FORMAT_BC7_TYPELESS:
+		case DXGI_FORMAT_BC7_UNORM:
+		case DXGI_FORMAT_BC7_UNORM_SRGB:
+			return TextureFormat::BC7;
+
+		default:
+			Debug::LogFatal("Unsupported format.");
+			return Core::Graphics::TextureFormat(0);
 		}
 	}
 }

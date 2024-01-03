@@ -2,6 +2,7 @@
 
 #include "DX12_CommandBuffer.hpp"
 #include "DX12_ComPtr.hpp"
+#include "DX12_DDS.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_GraphicsBuffer.hpp"
@@ -92,6 +93,15 @@ namespace RoseGold::DirectX12
 			for (const std::shared_ptr<Core::Graphics::CommandBuffer>& commandBuffer : taskWork)
 				ExecuteCommandBuffer(*commandBuffer);
 		}
+	}
+
+	std::shared_ptr<Core::Graphics::Texture> Manager::LoadTexture(const std::filesystem::path& aPath)
+	{
+		const std::filesystem::path extension = aPath.extension();
+		if (extension == ".dds")
+			return LoadDDSTextureFromFile(*myDevice, aPath);
+		else
+			return nullptr;
 	}
 
 	void Manager::MarkFrameStart()

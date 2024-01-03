@@ -31,8 +31,7 @@ namespace RoseGold::Core::Graphics
 
 		void SetPixel(unsigned int anX, unsigned int aY, Color aColor, unsigned int aMipLevel = 0);
 		void SetPixels(const System::Collections::List<Color>& someColors, unsigned int aMipLevel = 0) const;
-
-		void UpdateNativeTexturePtr(NativePtr aNativeTexturePtr);*/
+		*/
 
 		// Implementing Texture
 	public:
