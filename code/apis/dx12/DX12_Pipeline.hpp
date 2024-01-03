@@ -12,10 +12,72 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace RoseGold::DirectX12
 {
+	enum class RootParameterUpdateFrequency { PerObject, PerMaterial, PerPass, PerFrame, Constant };
+
+	class RootParameterMapping
+	{
+	public:
+		enum class RegisterType
+		{
+			ConstantBuffer, // HLSL register type B
+			Sampler, // HLSL register type S
+			Texture, // HLSL register type T
+			Unordered // HLSL register type U
+		};
+
+	private:
+		struct Parameter
+		{
+			RootParameterUpdateFrequency myUpdateFrequency;
+			RegisterType myRegisterType;
+			unsigned int myRegisterIndex;
+			unsigned int myCount;
+		};
+
+	public:
+		struct Table
+		{
+			friend RootParameterMapping;
+		public:
+			void AddMapping(
+				RootParameterUpdateFrequency anUpdateFrequency,
+				RegisterType aRegisterType,
+				unsigned int aRegisterIndex,
+				unsigned int aCount
+			);
+
+		private:
+			std::vector<Parameter> myRanges;
+			unsigned int myRootParameterIndex;
+		};
+
+	public:
+		void AddMapping(
+			RootParameterUpdateFrequency anUpdateFrequency,
+			RegisterType aRegisterType,
+			unsigned int aRegisterIndex
+		);
+
+		Table& AddTable();
+		
+		std::optional<unsigned int> GetParameterIndex(
+			RootParameterUpdateFrequency anUpdateFrequency,
+			RegisterType aRegisterType,
+			unsigned int aRegisterIndex
+		) const;
+
+	private:
+		unsigned int GetNextParameterIndex() const;
+
+		std::vector<std::pair<Parameter, unsigned int>> mySingleParameters;
+		std::vector<Table> myTableParameters;
+	};
+
 	class RootSignature
 	{
 		friend class RootSignatureCreator;
@@ -23,8 +85,23 @@ namespace RoseGold::DirectX12
 	public:
 		const ComPtr<ID3D12RootSignature>& GetRootSignatureObject() const { return myRootSignature; }
 
+		std::optional<unsigned int> GetParameterIndex(
+			RootParameterUpdateFrequency anUpdateFrequency,
+			RootParameterMapping::RegisterType aRegisterType,
+			unsigned int aRegisterIndex
+		) const
+		{
+			return myParameterMapping.GetParameterIndex(anUpdateFrequency, aRegisterType, aRegisterIndex);
+		}
+
 	private:
-		ComPtr<ID3D12RootSignature> myRootSignature;
+		RootSignature(ComPtr<ID3D12RootSignature> aRootSignature, const RootParameterMapping& aParameterMapping)
+			: myRootSignature(aRootSignature)
+			, myParameterMapping(aParameterMapping)
+		{ }
+
+		const ComPtr<ID3D12RootSignature> myRootSignature;
+		const RootParameterMapping myParameterMapping;
 	};
 
 	class RootSignatureCreator
@@ -34,10 +111,10 @@ namespace RoseGold::DirectX12
 		{
 			friend RootSignatureCreator;
 		protected:
-			enum class Type { Table, Constant, CBV, SRV, UAV, Sampler } myType;
+			enum class Type { Table, Constant, CBV, SRV, UAV, Sampler } myType = Type::Constant;
 
 			unsigned int myShaderRegister = 0;
-			unsigned int myRegisterSpace = 0;
+			RootParameterUpdateFrequency myUpdateFrequency = RootParameterUpdateFrequency::PerObject;
 			unsigned int myCount = 0;
 			D3D12_SHADER_VISIBILITY myVisibility = D3D12_SHADER_VISIBILITY_ALL;
 		};
@@ -47,28 +124,21 @@ namespace RoseGold::DirectX12
 		{
 			friend RootSignatureCreator;
 		public:
-			DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister) { return AddCBVRange(aCount, aRegister, 0); }
-			DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { return AddRange(Parameter::Type::CBV, aCount, aRegister, aSpace); }
-
-			DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister) { return AddSRVRange(aCount, aRegister, 0); }
-			DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { return AddRange(Parameter::Type::SRV, aCount, aRegister, aSpace); }
-
-			DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister) { return AddUAVRange(aCount, aRegister, 0); }
-			DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { return AddRange(Parameter::Type::UAV, aCount, aRegister, aSpace); }
-
-			DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister) { return AddSamplerRange(aCount, aRegister, 0); }
-			DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { return AddRange(Parameter::Type::Sampler, aCount, aRegister, aSpace); }
+			DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::CBV, aCount, aRegister, anUpdateFrequency); }
+			DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::SRV, aCount, aRegister, anUpdateFrequency); }
+			DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::UAV, aCount, aRegister, anUpdateFrequency); }
+			DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::Sampler, aCount, aRegister, anUpdateFrequency); }
 
 		private:
 			DescriptorTable() { myType = Type::Table; }
 
-			DescriptorTable& AddRange(Parameter::Type aType, unsigned int aCount, unsigned int aRegister, unsigned int aSpace)
+			DescriptorTable& AddRange(Parameter::Type aType, unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency)
 			{
 				Parameter& param = myRanges.emplace_back();
 				param.myType = aType;
 				param.myShaderRegister = aRegister;
 				param.myCount = aCount;
-				param.myRegisterSpace = aSpace;
+				param.myUpdateFrequency = anUpdateFrequency;
 
 				return *this;
 			}
@@ -106,47 +176,38 @@ namespace RoseGold::DirectX12
 		};
 
 	public:
-		void AddCBV(unsigned int aRegister) { AddCBV(aRegister, 0); }
-		void AddCBV(unsigned int aRegister, unsigned int aSpace) { AddParameter(Parameter::Type::CBV, aRegister, aSpace); }
-
-		void AddConstant(unsigned int aRegister) { AddConstant(aRegister, 0); }
-		void AddConstant(unsigned int aRegister, unsigned int aSpace) { AddParameter(Parameter::Type::Constant, aRegister, aSpace); }
-
-		void AddConstants(unsigned int aCount, unsigned int aRegister) { AddConstants(aCount, aRegister, 0); }
-		void AddConstants(unsigned int aCount, unsigned int aRegister, unsigned int aSpace) { AddParameter(Parameter::Type::Constant, aRegister, aSpace).myCount = aCount; }
+		void AddCBV(unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::CBV, aRegister, anUpdateFrequency); }
+		void AddConstant(unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency); }
+		void AddConstants(unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency).myCount = aCount; }
 
 		DescriptorTable& AddDescriptorTable() { return AddParameter<DescriptorTable>(); }
 
-		Sampler& AddSampler(unsigned int aRegister) { return AddSampler(aRegister, 0); }
-		Sampler& AddSampler(unsigned int aRegister, unsigned int aSpace)
+		Sampler& AddSampler(unsigned int aRegister)
 		{
 			Sampler& sampler = myStaticSamplers.emplace_back();
 			sampler.ShaderVisibility = myCurrentVisibility;
 			sampler.ShaderRegister = aRegister;
-			sampler.RegisterSpace = aSpace;
+			sampler.RegisterSpace = static_cast<unsigned int>(RootParameterUpdateFrequency::Constant);
 			return sampler;
 		}
 
-		void AddSRV(unsigned int aRegister) { AddSRV(aRegister, 0); }
-		void AddSRV(unsigned int aRegister, unsigned int aSpace) { AddParameter(Parameter::Type::SRV, aRegister, aSpace); }
-
-		void AddUAV(unsigned int aRegister) { AddUAV(aRegister, 0); }
-		void AddUAV(unsigned int aRegister, unsigned int aSpace) { AddParameter(Parameter::Type::UAV, aRegister, aSpace); }
+		void AddSRV(unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::SRV, aRegister, anUpdateFrequency); }
+		void AddUAV(unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::UAV, aRegister, anUpdateFrequency); }
 
 		std::shared_ptr<RootSignature> Finalize(ID3D12Device* aDevice) const;
 
 		void SetVisibility(D3D12_SHADER_VISIBILITY aVisibility) { myCurrentVisibility = aVisibility; }
 
 	private:
-		static bool PopulateTable(std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable);
+		static bool PopulateTable(RootParameterMapping& aParameterMapping, std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable);
 
-		Parameter& AddParameter(Parameter::Type aType, unsigned int aRegister, unsigned int aSpace)
+		Parameter& AddParameter(Parameter::Type aType, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency)
 		{
 			Parameter& param = *myParameters.emplace_back(new Parameter());
 			param.myType = aType;
 			param.myShaderRegister = aRegister;
 			param.myCount = 1;
-			param.myRegisterSpace = aSpace;
+			param.myUpdateFrequency = anUpdateFrequency;
 			param.myVisibility = myCurrentVisibility;
 			return param;
 		}

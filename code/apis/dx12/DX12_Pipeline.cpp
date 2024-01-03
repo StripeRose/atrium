@@ -6,6 +6,65 @@
 
 namespace RoseGold::DirectX12
 {
+	void RootParameterMapping::Table::AddMapping(RootParameterUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex, unsigned int aCount)
+	{
+		Parameter& p = myRanges.emplace_back();
+		p.myUpdateFrequency = anUpdateFrequency;
+		p.myRegisterType = aRegisterType;
+		p.myRegisterIndex = aRegisterIndex;
+		p.myCount = aCount;
+	}
+
+	void RootParameterMapping::AddMapping(RootParameterUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex)
+	{
+		Parameter& p = mySingleParameters.emplace_back(Parameter(), GetNextParameterIndex()).first;
+		p.myUpdateFrequency = anUpdateFrequency;
+		p.myRegisterType = aRegisterType;
+		p.myRegisterIndex = aRegisterIndex;
+		p.myCount = 1;
+	}
+
+	RootParameterMapping::Table& RootParameterMapping::AddTable()
+	{
+		const unsigned int nextIndex = GetNextParameterIndex();
+		Table& table = myTableParameters.emplace_back();
+		table.myRootParameterIndex = nextIndex;
+		return table;
+	}
+
+	std::optional<unsigned int> RootParameterMapping::GetParameterIndex(RootParameterUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex) const
+	{
+		for (const auto& param : mySingleParameters)
+		{
+			const Parameter& p = param.first;
+			if (p.myUpdateFrequency == anUpdateFrequency &&
+				p.myRegisterType == aRegisterType &&
+				p.myRegisterIndex == aRegisterIndex)
+				return param.second;
+		}
+
+		for (const auto& table : myTableParameters)
+		{
+			for (const auto& range : table.myRanges)
+			{
+				if (range.myUpdateFrequency != anUpdateFrequency &&
+					range.myRegisterType != aRegisterType)
+					continue;
+
+				if (aRegisterIndex >= range.myRegisterIndex &&
+					aRegisterIndex < (range.myRegisterIndex + range.myCount))
+					return table.myRootParameterIndex;
+			}
+		}
+
+		return { };
+	}
+
+	unsigned int RootParameterMapping::GetNextParameterIndex() const
+	{
+		return static_cast<unsigned int>(mySingleParameters.size() + myTableParameters.size());
+	}
+
 	std::shared_ptr<RootSignature> RootSignatureCreator::Finalize(ID3D12Device* aDevice) const
 	{
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = { };
@@ -32,6 +91,8 @@ namespace RoseGold::DirectX12
 			descriptorRanges.reserve(descriptorRangeCount);
 		}
 
+		RootParameterMapping parameterMapping;
+
 		std::vector<D3D12_ROOT_PARAMETER1> parameters;
 		{
 			parameters.reserve(myParameters.size());
@@ -47,15 +108,21 @@ namespace RoseGold::DirectX12
 				{
 					rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 					rootParameter.Constants.ShaderRegister = param->myShaderRegister;
-					rootParameter.Constants.RegisterSpace = param->myRegisterSpace;
+					rootParameter.Constants.RegisterSpace = static_cast<UINT>(param->myUpdateFrequency);
 					rootParameter.Constants.Num32BitValues = param->myCount;
+
+					parameterMapping.AddMapping(
+						param->myUpdateFrequency,
+						RootParameterMapping::RegisterType::ConstantBuffer,
+						param->myShaderRegister
+					);
 
 					break;
 				}
 				case Parameter::Type::Table:
 				{
 					rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-					if (!PopulateTable(descriptorRanges, rootParameter, *static_cast<DescriptorTable*>(param.get())))
+					if (!PopulateTable(parameterMapping, descriptorRanges, rootParameter, *static_cast<DescriptorTable*>(param.get())))
 						return nullptr; // Table details were wrong, abort.
 					break;
 				}
@@ -63,22 +130,44 @@ namespace RoseGold::DirectX12
 				case Parameter::Type::SRV:
 				case Parameter::Type::UAV:
 				{
+					Debug::Assert(param->myCount == 1, "Only 1 descriptor per root parameter. Use tables if you need more.");
+
 					switch (param->myType)
 					{
 					case Parameter::Type::CBV:
 						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+
+						parameterMapping.AddMapping(
+							param->myUpdateFrequency,
+							RootParameterMapping::RegisterType::ConstantBuffer,
+							param->myShaderRegister
+						);
+
 						break;
 					case Parameter::Type::SRV:
 						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+
+						parameterMapping.AddMapping(
+							param->myUpdateFrequency,
+							RootParameterMapping::RegisterType::Texture,
+							param->myShaderRegister
+						);
+
 						break;
 					case Parameter::Type::UAV:
 						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
+
+						parameterMapping.AddMapping(
+							param->myUpdateFrequency,
+							RootParameterMapping::RegisterType::Unordered,
+							param->myShaderRegister
+						);
+
 						break;
 					}
 
-					Debug::Assert(param->myCount == 1, "Only 1 descriptor per root parameter. Use tables if you need more.");
 					rootParameter.Descriptor.ShaderRegister = param->myShaderRegister;
-					rootParameter.Descriptor.RegisterSpace = param->myRegisterSpace;
+					rootParameter.Descriptor.RegisterSpace = static_cast<unsigned int>(param->myUpdateFrequency);
 					rootParameter.Descriptor.Flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE;
 
 					break;
@@ -102,26 +191,29 @@ namespace RoseGold::DirectX12
 
 		ComPtr<ID3DBlob> signature;
 		ComPtr<ID3DBlob> error;
-		ComPtr<ID3D12RootSignature> rootSignature;
+		ComPtr<ID3D12RootSignature> dxRootSignature;
 
 		HRESULT result = S_OK;
 		result = D3D12SerializeVersionedRootSignature(&rootSignatureDesc, &signature, &error);
 		if (SUCCEEDED(result))
-			result = aDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(rootSignature.ReleaseAndGetAddressOf()));
-
+			result = aDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(dxRootSignature.ReleaseAndGetAddressOf()));
+		
 		if (FAILED(result))
 		{
 			LogError(result, error.Get());
 			return nullptr;
 		}
 
-		auto finalRootSignature = std::make_shared<RootSignature>();
-		finalRootSignature->myRootSignature = rootSignature;
-		return finalRootSignature;
+		return std::shared_ptr<RootSignature>(new RootSignature(dxRootSignature, parameterMapping));
 	}
 
-	bool RootSignatureCreator::PopulateTable(std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable)
+	bool RootSignatureCreator::PopulateTable(RootParameterMapping& aParameterMapping, std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable)
 	{
+		if (aTable.myRanges.empty())
+			return true;
+
+		RootParameterMapping::Table& mappingTable = aParameterMapping.AddTable();
+
 		for (const Parameter& range : aTable.myRanges)
 		{
 			D3D12_DESCRIPTOR_RANGE1& descriptorRange = someRanges.emplace_back();
@@ -134,22 +226,54 @@ namespace RoseGold::DirectX12
 			{
 			case Parameter::Type::CBV:
 				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+
+				mappingTable.AddMapping(
+					range.myUpdateFrequency,
+					RootParameterMapping::RegisterType::ConstantBuffer,
+					range.myShaderRegister,
+					range.myCount
+				);
+
 				break;
 			case Parameter::Type::SRV:
 				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+
+				mappingTable.AddMapping(
+					range.myUpdateFrequency,
+					RootParameterMapping::RegisterType::Texture,
+					range.myShaderRegister,
+					range.myCount
+				);
+
 				break;
 			case Parameter::Type::UAV:
 				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+
+				mappingTable.AddMapping(
+					range.myUpdateFrequency,
+					RootParameterMapping::RegisterType::Unordered,
+					range.myShaderRegister,
+					range.myCount
+				);
+
 				break;
 			case Parameter::Type::Sampler:
 				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+
+				mappingTable.AddMapping(
+					range.myUpdateFrequency,
+					RootParameterMapping::RegisterType::Sampler,
+					range.myShaderRegister,
+					range.myCount
+				);
+
 				break;
 			default:
 				Debug::LogError("Incorrect descriptor range type.");
 				return false;
 			}
 
-			descriptorRange.RegisterSpace = range.myRegisterSpace;
+			descriptorRange.RegisterSpace = static_cast<unsigned int>(range.myUpdateFrequency);
 		}
 
 		aResult.DescriptorTable.NumDescriptorRanges = static_cast<UINT>(aTable.myRanges.size());

@@ -18,13 +18,16 @@
 #include <array>
 #include <cstddef>
 
+// https://alextardif.com/D3D11To12P3.html
+// https://alextardif.com/DX12Tutorial.html
+
 namespace RoseGold::DirectX12
 {
 	class Device;
+
 	class FrameContext
 	{
 		static constexpr std::size_t ourMaxQueuedBarriers = 16u;
-
 	public:
 		FrameContext(Device& aDevice, D3D12_COMMAND_LIST_TYPE aCommandType);
 		virtual ~FrameContext() = default;
@@ -32,12 +35,11 @@ namespace RoseGold::DirectX12
 		D3D12_COMMAND_LIST_TYPE GetCommandType() const { return myCommandType; }
 		ID3D12GraphicsCommandList* GetCommandList() { return myCommandList.Get(); }
 
-		void Reset();
+		virtual void Reset();
 		void AddBarrier(GPUResource& aResource, D3D12_RESOURCE_STATES aNewState);
 		void FlushBarriers();
 		void CopyResource(const GPUResource& aSource, GPUResource& aDestination);
 		void CopyBufferRegion(const GPUResource& aSource, std::size_t aSourceOffset, GPUResource& aDestination, std::size_t aDestinationOffset, std::size_t aByteCountToCopy);
-		void SetConstantBufferData(void* someData, std::size_t aDataSize);
 
 	protected:
 		void BindDescriptorHeaps();
@@ -52,14 +54,14 @@ namespace RoseGold::DirectX12
 
 		std::array<D3D12_RESOURCE_BARRIER, ourMaxQueuedBarriers> myResourceBarrierQueue;
 		std::size_t myQueuedBarriers = 0;
-
-		std::vector<std::shared_ptr<ConstantBuffer>> myFrameConstantBuffers;
 	};
 
 	class FrameGraphicsContext final : public FrameContext
 	{
 	public:
 		FrameGraphicsContext(Device& aDevice);
+
+		void Reset() override;
 
 		void ClearColor(const Core::Graphics::RenderTexture& aTarget, Color aClearColor);
 		void ClearDepth(const Core::Graphics::RenderTexture& aTarget, float aDepth, std::uint8_t aStencil);
@@ -78,14 +80,18 @@ namespace RoseGold::DirectX12
 
 		void SetBlendFactor(Color aBlendFactor);
 		void SetPipelineState(PipelineState& aPipelineState);
+		void SetPipelineResource(const VertexBuffer& aBuffer);
+		void SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, void* someData, std::size_t aDataSize);
 		void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY aTopology);
 		void SetScissorRect(const Math::RectangleT<int>& aRectangle);
 		void SetStencilRef(std::uint32_t aStencilRef);
-		void SetVertexBuffer(unsigned int aStartSlot, const VertexBuffer& aBuffer);
 		void SetViewportAndScissorRect(const Size& aScreenSize);
 		void SetViewport(const Math::Rectangle& aRectangle);
 
 	private:
 		inline std::uint32_t GetGroupCount(std::uint32_t threadCount, std::uint32_t groupSize) { return (threadCount + groupSize - 1) / groupSize; }
+
+		PipelineState* myCurrentPipelineState;
+		std::vector<std::shared_ptr<ConstantBuffer>> myFrameConstantBuffers;
 	};
 }

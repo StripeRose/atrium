@@ -135,21 +135,21 @@ namespace RoseGold::DirectX12
 		signature.SetVisibility(D3D12_SHADER_VISIBILITY_VERTEX);
 		{
 			signature.AddDescriptorTable()
-				.AddCBVRange(1, 0) // Model, View, Projection data.
+				.AddCBVRange(1, 0, RootParameterUpdateFrequency::PerObject) // Model, View, Projection data.
 				;
 		}
 
 		signature.SetVisibility(D3D12_SHADER_VISIBILITY_PIXEL);
 		{
-			signature.AddSampler(0, 1) // Wrapping Point
+			signature.AddSampler(0) // Wrapping Point
 				.Filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
 				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
 				;
-			signature.AddSampler(1, 1) // Wrapping Linear
+			signature.AddSampler(1) // Wrapping Linear
 				.Filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
 				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
 				;
-			signature.AddSampler(2, 1) // Wrapping Anisotropic
+			signature.AddSampler(2) // Wrapping Anisotropic
 				.Filter(D3D12_FILTER_ANISOTROPIC)
 				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
 				;

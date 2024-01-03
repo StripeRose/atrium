@@ -36,7 +36,6 @@ namespace RoseGold::DirectX12
 	{
 		myCommandAllocator->Reset();
 		myCommandList->Reset(myCommandAllocator.Get(), nullptr);
-		myFrameConstantBuffers.clear();
 
 		if (myCommandType != D3D12_COMMAND_LIST_TYPE_COPY)
 			BindDescriptorHeaps();
@@ -90,31 +89,6 @@ namespace RoseGold::DirectX12
 		);
 	}
 
-	void FrameContext::SetConstantBufferData(void* someData, std::size_t aDataSize)
-	{
-		const std::uint32_t dataSize = static_cast<std::uint32_t>(aDataSize);
-		ConstantBuffer& cpuBuffer = *myFrameConstantBuffers.emplace_back(
-			std::make_shared<ConstantBuffer>(
-				myDevice,
-				dataSize
-			)
-		);
-
-		cpuBuffer.SetData(someData, dataSize);
-
-		RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
-		std::shared_ptr<DescriptorHeapHandle> gpuBuffer = renderPassHeap.GetHeapHandleBlock(1);
-
-		myDevice.GetDevice()->CopyDescriptorsSimple(
-			1,
-			gpuBuffer->GetCPUHandle(),
-			cpuBuffer.GetViewHandle().GetCPUHandle(),
-			renderPassHeap.GetHeapType()
-		);
-
-		myCommandList->SetGraphicsRootDescriptorTable(0, gpuBuffer->GetGPUHandle());
-	}
-
 	void FrameContext::BindDescriptorHeaps()
 	{
 		DescriptorHeapManager& heapManager = myDevice.GetDescriptorHeapManager();
@@ -131,7 +105,14 @@ namespace RoseGold::DirectX12
 
 	FrameGraphicsContext::FrameGraphicsContext(Device& aDevice)
 		: FrameContext(aDevice, D3D12_COMMAND_LIST_TYPE_DIRECT)
+		, myCurrentPipelineState(nullptr)
 	{ }
+
+	void FrameGraphicsContext::Reset()
+	{
+		FrameContext::Reset();
+		myFrameConstantBuffers.clear();
+	}
 
 	void FrameGraphicsContext::ClearColor(const Core::Graphics::RenderTexture& aTarget, Color aClearColor)
 	{
@@ -242,6 +223,7 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::SetPipelineState(PipelineState& aPipelineState)
 	{
+		myCurrentPipelineState = &aPipelineState;
 		myCommandList->SetPipelineState(aPipelineState.GetPipelineStateObject().Get());
 		myCommandList->SetGraphicsRootSignature(aPipelineState.GetRootSignature()->GetRootSignatureObject().Get());
 
@@ -263,14 +245,51 @@ namespace RoseGold::DirectX12
 			&depthStencilHandle);
 	}
 
+	void FrameGraphicsContext::SetPipelineResource(const VertexBuffer& aBuffer)
+	{
+		myCommandList->IASetVertexBuffers(0, 1, &aBuffer.GetBufferView());
+	}
+
+	void FrameGraphicsContext::SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, void* someData, std::size_t aDataSize)
+	{
+		const std::optional<unsigned int> parameterIndex = myCurrentPipelineState->GetRootSignature()->GetParameterIndex(
+			anUpdateFrequency,
+			RootParameterMapping::RegisterType::ConstantBuffer,
+			aRegisterIndex
+		);
+
+		if (!parameterIndex.has_value())
+		{
+			Debug::LogError("Root parameter missing for register c%i, space%i", aRegisterIndex, static_cast<unsigned int>(anUpdateFrequency));
+			return;
+		}
+
+		const std::uint32_t dataSize = static_cast<std::uint32_t>(aDataSize);
+		std::shared_ptr<ConstantBuffer> cpuBuffer = myFrameConstantBuffers.emplace_back(
+			std::make_shared<ConstantBuffer>(
+				myDevice,
+				dataSize
+			)
+		);
+
+		cpuBuffer->SetData(someData, dataSize);
+
+		RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
+		std::shared_ptr<DescriptorHeapHandle> gpuBuffer = renderPassHeap.GetHeapHandleBlock(1);
+
+		myDevice.GetDevice()->CopyDescriptorsSimple(
+			1,
+			gpuBuffer->GetCPUHandle(),
+			cpuBuffer->GetViewHandle().GetCPUHandle(),
+			renderPassHeap.GetHeapType()
+		);
+
+		myCommandList->SetGraphicsRootDescriptorTable(parameterIndex.value(), gpuBuffer->GetGPUHandle());
+	}
+
 	void FrameGraphicsContext::SetStencilRef(std::uint32_t aStencilRef)
 	{
 		myCommandList->OMSetStencilRef(aStencilRef);
-	}
-
-	void FrameGraphicsContext::SetVertexBuffer(unsigned int aStartSlot, const VertexBuffer& aBuffer)
-	{
-		myCommandList->IASetVertexBuffers(aStartSlot, 1, &aBuffer.GetBufferView());
 	}
 
 	void FrameGraphicsContext::SetViewportAndScissorRect(const Size& aScreenSize)

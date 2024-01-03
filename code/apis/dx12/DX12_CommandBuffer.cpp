@@ -63,11 +63,15 @@ namespace RoseGold::DirectX12
 		cameraConstants.Projection = myLastProjectionMatrix;
 		cameraConstants.View = myLastViewMatrix;
 
-		myGraphicsContext.SetConstantBufferData(&cameraConstants, sizeof(CameraConstants));
+		myGraphicsContext.SetPipelineResource(
+			RootParameterUpdateFrequency::PerObject,
+			0,
+			&cameraConstants,
+			sizeof(CameraConstants));
 
 		std::shared_ptr<const VertexBuffer> vertexBuffer = std::static_pointer_cast<const VertexBuffer>(aMesh->GetVertexBuffer());
 		myGraphicsContext.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		myGraphicsContext.SetVertexBuffer(0, *vertexBuffer);
+		myGraphicsContext.SetPipelineResource(*vertexBuffer);
 		//myGraphicsContext.SetIndexBuffer(&indexBufferView);
 
 		myGraphicsContext.Draw(vertexBuffer->GetCount(), 0);
