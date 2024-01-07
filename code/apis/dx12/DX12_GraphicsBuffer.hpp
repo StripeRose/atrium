@@ -24,6 +24,8 @@ namespace RoseGold::DirectX12
 
 	protected:
 		std::uint32_t Align(std::uint32_t aLocation, std::uint32_t anAlignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+
+		ComPtr<ID3D12Resource> CreateResource(Device& aDevice, std::uint32_t aBufferSize);
 	};
 
 	class VertexBuffer : public GraphicsBuffer
@@ -40,9 +42,6 @@ namespace RoseGold::DirectX12
 		std::uint32_t GetCount() const override { return myBufferView.SizeInBytes / myBufferView.StrideInBytes; }
 		std::uint32_t GetStride() const override { return myBufferView.StrideInBytes; }
 		Target GetTarget() const override { return Target::Vertex; }
-
-	private:
-		ComPtr<ID3D12Resource> CreateResource(Device& aDevice, std::uint32_t aVertexCount, std::uint32_t aVertexStride);
 
 	private:
 		D3D12_VERTEX_BUFFER_VIEW myBufferView;
@@ -64,9 +63,6 @@ namespace RoseGold::DirectX12
 		Target GetTarget() const override { return Target::Index; }
 
 	private:
-		ComPtr<ID3D12Resource> CreateResource(Device& aDevice, std::uint32_t anIndexCount);
-
-	private:
 		D3D12_INDEX_BUFFER_VIEW myBufferView;
 	};
 
@@ -82,9 +78,6 @@ namespace RoseGold::DirectX12
 		std::uint32_t GetCount() const { return 1; }
 		std::uint32_t GetStride() const { return myBufferSize; }
 		Target GetTarget() const override { return Target::Constant; }
-
-	private:
-		ComPtr<ID3D12Resource> CreateResource(Device& aDevice, std::uint32_t aBufferSize);
 
 	private:
 		void* myMappedBuffer;
