@@ -4,6 +4,7 @@
 #include "DX12_Diagnostics.hpp"
 #include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Pipeline.hpp"
+#include "DX12_RenderTexture.hpp"
 
 namespace RoseGold::DirectX12
 {

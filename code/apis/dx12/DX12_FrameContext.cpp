@@ -3,6 +3,7 @@
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_FrameContext.hpp"
+#include "DX12_RenderTexture.hpp"
 
 namespace RoseGold::DirectX12
 {
@@ -19,17 +20,18 @@ namespace RoseGold::DirectX12
 			)
 		);
 
+		ComPtr<ID3D12Device4> device4;
+		AssertSuccess(aDevice.GetDevice().As<ID3D12Device4>(&device4));
+		
+		// Create a closed command list.
 		AssertSuccess(
-			aDevice.GetDevice()->CreateCommandList(
+			device4->CreateCommandList1(
 				0,
 				aCommandType,
-				myCommandAllocator.Get(),
-				nullptr,
-				IID_PPV_ARGS(myCommandList.ReleaseAndGetAddressOf()))
+				D3D12_COMMAND_LIST_FLAG_NONE,
+				IID_PPV_ARGS(myCommandList.ReleaseAndGetAddressOf())
+			)
 		);
-
-		if (myCommandType != D3D12_COMMAND_LIST_TYPE_COPY)
-			BindDescriptorHeaps();
 	}
 
 	void FrameContext::Reset()

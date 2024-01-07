@@ -1,9 +1,13 @@
 #pragma once
 
+#include "DX12_CommandQueue.hpp"
 #include "DX12_ComPtr.hpp"
 #include "DX12_FrameContext.hpp"
+#include "DX12_SwapChain.hpp"
 
 #include <Graphics_Manager.hpp>
+
+#include <Platform_WindowManagement.hpp>
 
 #include <d3d12.h>
 
@@ -31,6 +35,12 @@ namespace RoseGold::DirectX12
 		void ExecuteCommandBuffer(const Core::Graphics::CommandBuffer& aCommandBuffer) override;
 		void ExecuteTask(const Core::Graphics::GraphicsTask& aGraphicsTask) override;
 
+		CommandQueueManager& GetCommandQueueManager() { return *myCommandQueueManager.get(); }
+
+		std::shared_ptr<SwapChain> GetSwapChain(Core::Platform::Window& aWindow);
+
+		std::vector<std::shared_ptr<SwapChain>> GetSwapChains();
+
 		virtual std::shared_ptr<Core::Graphics::Texture> LoadTexture(const std::filesystem::path& aPath) override;
 
 		bool SupportsMultipleWindows() const override { return true; }
@@ -45,9 +55,20 @@ namespace RoseGold::DirectX12
 
 	private:
 		std::unique_ptr<Device> myDevice;
+
+		std::mutex mySwapChainMutex;
+		std::map<Core::Platform::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
+
+		std::unique_ptr<CommandQueueManager> myCommandQueueManager;
+
 		std::unique_ptr<FrameGraphicsContext> myFrameGraphicsContext;
 
 		std::vector<std::shared_ptr<Core::Graphics::RenderTexture>> myFrameTargets;
+		std::uint64_t myComputeQueueFrameEndFence;
+		std::uint64_t myCopyQueueFrameEndFence;
+		std::uint64_t myGraphicsQueueFrameEndFence;
+
+		std::uint64_t myFrameIndex;
 
 		std::shared_ptr<RootSignature> myDefaultRootSignature;
 	};

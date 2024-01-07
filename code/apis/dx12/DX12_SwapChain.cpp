@@ -1,5 +1,6 @@
 // Filter "Resources"
 
+#include "DX12_CommandQueue.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_SwapChain.hpp"
@@ -8,11 +9,11 @@
 
 namespace RoseGold::DirectX12
 {
-	SwapChain::SwapChain(Device& aDevice, Core::Platform::Window& aWindow)
+	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Platform::Window& aWindow)
 		: myDevice(&aDevice)
 		, myWindow(&aWindow)
 	{
-		CreateRenderTextureForWindow();
+		CreateRenderTextureForWindow(aDirectCommandQueue);
 		UpdateColorSpace();
 
 		Size windowSize = aWindow.GetSize();
@@ -47,7 +48,6 @@ namespace RoseGold::DirectX12
 		if (myBackBuffers.empty())
 			return;
 
-		myDevice->GetCommandQueueManager().GetGraphicsQueue().InsertSignal();
 		mySwapChain->Present(1, 0);
 	}
 
@@ -199,7 +199,7 @@ namespace RoseGold::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetNativeTexturePtr();
 	}
 
-	void SwapChain::CreateRenderTextureForWindow()
+	void SwapChain::CreateRenderTextureForWindow(CommandQueue& aDirectCommandQueue)
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDescriptor = {};
 		const Size windowSize = myWindow->GetSize();
@@ -225,7 +225,7 @@ namespace RoseGold::DirectX12
 		HWND windowHandle = std::any_cast<HWND>(surfaceHandle);
 
 		AssertSuccess(myDevice->GetFactory()->CreateSwapChainForHwnd(
-			myDevice->GetCommandQueueManager().GetGraphicsQueue().GetCommandQueue().Get(),
+			aDirectCommandQueue.GetCommandQueue().Get(),
 			windowHandle,
 			&swapChainDescriptor,
 			&fsSwapChainDesc,
@@ -249,9 +249,6 @@ namespace RoseGold::DirectX12
 
 		if (newResolution.LengthSquared() == 0)
 			return;
-
-		CommandQueue& queue = myDevice->GetCommandQueueManager().GetGraphicsQueue();
-		queue.WaitForFenceCPUBlocking(queue.InsertSignal());
 
 		for (std::shared_ptr<SwapChainBackBuffer>& backBuffer : myBackBuffers)
 			backBuffer->Invalidate();

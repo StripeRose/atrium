@@ -24,57 +24,17 @@ namespace RoseGold::DirectX12
 		SetupAdapter();
 		SetupDevice();
 		SetupInfoQueue();
-		SetupCommandQueue();
 		SetupHeapManager();
 	}
 
 	Device::~Device()
 	{
-		myCommandQueues.reset();
-		myDrawSurfaceSwapChain.clear();
 		myDescriptorHeapManager.reset();
 	}
 
 	void Device::MarkFrameStart()
 	{
-		const std::scoped_lock lock(mySwapChainMutex);
-		for (auto& swapChain : myDrawSurfaceSwapChain)
-			swapChain.second->UpdateResolution();
-	}
-
-	void Device::MarkFrameEnd()
-	{
 		myDescriptorHeapManager->GetFrameHeap().Reset();
-	}
-
-	std::shared_ptr<SwapChain> Device::CreateRenderTextureForWindow(Core::Platform::Window& aWindow)
-	{
-		const std::scoped_lock lock(mySwapChainMutex);
-		std::shared_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
-		swapChain.reset(new SwapChain(*this, aWindow));
-
-		aWindow.Closed.Connect(this, [&](Core::Platform::Window& aWindow) {
-			myDrawSurfaceSwapChain.at(&aWindow)->Invalidate();
-			myDrawSurfaceSwapChain.erase(&aWindow);
-			});
-
-		return swapChain;
-	}
-
-	std::shared_ptr<SwapChain> Device::GetSwapChain(Core::Platform::Window& aWindow)
-	{
-		const std::scoped_lock lock(mySwapChainMutex);
-		auto it = myDrawSurfaceSwapChain.find(&aWindow);
-		return (it != myDrawSurfaceSwapChain.end()) ? it->second : nullptr;
-	}
-
-	std::vector<std::shared_ptr<SwapChain>> Device::GetSwapChains()
-	{
-		const std::scoped_lock lock(mySwapChainMutex);
-		std::vector<std::shared_ptr<SwapChain>> swapChains;
-		for (auto& swapChain : myDrawSurfaceSwapChain)
-			swapChains.push_back(swapChain.second);
-		return swapChains;
 	}
 
 #if _DEBUG
@@ -274,15 +234,6 @@ namespace RoseGold::DirectX12
 			myFeatureLevel = myParameters.MinimumFeatureLevel;
 
 		return true;
-	}
-
-	bool Device::SetupCommandQueue()
-	{
-		if (!myDevice)
-			return false;
-
-		myCommandQueues.reset(new CommandQueueManager(myDevice));
-		return myCommandQueues.get() != nullptr;
 	}
 
 	bool Device::SetupHeapManager()

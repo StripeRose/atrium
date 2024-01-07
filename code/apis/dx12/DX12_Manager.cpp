@@ -21,10 +21,17 @@
 namespace RoseGold::DirectX12
 {
 	Manager::Manager()
+		: myComputeQueueFrameEndFence(0)
+		, myCopyQueueFrameEndFence(0)
+		, myGraphicsQueueFrameEndFence(0)
+		, myFrameIndex(static_cast<std::uint64_t>(-1))
 	{
 		Debug::Log("DX12 start");
 
 		myDevice.reset(new Device());
+
+		myCommandQueueManager.reset(new CommandQueueManager(myDevice->GetDevice()));
+
 		myFrameGraphicsContext.reset(new FrameGraphicsContext(*myDevice));
 
 		SetupRootSignature();
@@ -35,13 +42,27 @@ namespace RoseGold::DirectX12
 		Debug::Log("DX12 stop");
 
 		myFrameGraphicsContext.reset();
+
+		myCommandQueueManager.reset();
+
+		myDrawSurfaceSwapChain.clear();
 		myDevice.reset();
+
 		ReportUnreleasedObjects();
 	}
 
 	std::shared_ptr<Core::Graphics::RenderTexture> Manager::CreateRenderTextureForWindow(Core::Platform::Window& aWindow)
 	{
-		return myDevice->CreateRenderTextureForWindow(aWindow);
+		const std::scoped_lock lock(mySwapChainMutex);
+		std::shared_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
+		swapChain.reset(new SwapChain(*myDevice, myCommandQueueManager->GetGraphicsQueue(), aWindow));
+
+		aWindow.Closed.Connect(this, [&](Core::Platform::Window& aWindow) {
+			myDrawSurfaceSwapChain.at(&aWindow)->Invalidate();
+			myDrawSurfaceSwapChain.erase(&aWindow);
+			});
+
+		return swapChain;
 	}
 
 	std::shared_ptr<Core::Graphics::GraphicsBuffer> Manager::CreateGraphicsBuffer(Core::Graphics::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
@@ -95,6 +116,22 @@ namespace RoseGold::DirectX12
 		}
 	}
 
+	std::shared_ptr<SwapChain> Manager::GetSwapChain(Core::Platform::Window& aWindow)
+	{
+		const std::scoped_lock lock(mySwapChainMutex);
+		auto it = myDrawSurfaceSwapChain.find(&aWindow);
+		return (it != myDrawSurfaceSwapChain.end()) ? it->second : nullptr;
+	}
+
+	std::vector<std::shared_ptr<SwapChain>> Manager::GetSwapChains()
+	{
+		const std::scoped_lock lock(mySwapChainMutex);
+		std::vector<std::shared_ptr<SwapChain>> swapChains;
+		for (auto& swapChain : myDrawSurfaceSwapChain)
+			swapChains.push_back(swapChain.second);
+		return swapChains;
+	}
+
 	std::shared_ptr<Core::Graphics::Texture> Manager::LoadTexture(const std::filesystem::path& aPath)
 	{
 		const std::filesystem::path extension = aPath.extension();
@@ -106,6 +143,18 @@ namespace RoseGold::DirectX12
 
 	void Manager::MarkFrameStart()
 	{
+		myFrameIndex += 1;
+
+		myCommandQueueManager->GetComputeQueue().WaitForFenceCPUBlocking(myComputeQueueFrameEndFence);
+		myCommandQueueManager->GetCopyQueue().WaitForFenceCPUBlocking(myCopyQueueFrameEndFence);
+		myCommandQueueManager->GetGraphicsQueue().WaitForFenceCPUBlocking(myGraphicsQueueFrameEndFence);
+
+		myFrameGraphicsContext->Reset();
+
+		const std::scoped_lock lock(mySwapChainMutex);
+		for (auto& swapChain : myDrawSurfaceSwapChain)
+			swapChain.second->UpdateResolution();
+
 		myDevice->MarkFrameStart();
 	}
 
@@ -113,29 +162,28 @@ namespace RoseGold::DirectX12
 	{
 		// Record used swapchains and make them ready to present.
 		std::vector<std::shared_ptr<SwapChain>> frameSwapChains;
-		for (const std::shared_ptr<SwapChain>& swapChain : myDevice->GetSwapChains())
+		for (const auto& swapChainIterator : myDrawSurfaceSwapChain)
 		{
-			if (swapChain->GetGPUResource().GetUsageState() == D3D12_RESOURCE_STATE_PRESENT)
+			if (swapChainIterator.second->GetGPUResource().GetUsageState() == D3D12_RESOURCE_STATE_PRESENT)
 				continue; // Swapchain hasn't been drawn to, skip it.
 
-			frameSwapChains.push_back(swapChain);
-			myFrameGraphicsContext->AddBarrier(swapChain->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
+			frameSwapChains.push_back(swapChainIterator.second);
+			myFrameGraphicsContext->AddBarrier(swapChainIterator.second->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
 		}
 		myFrameGraphicsContext->FlushBarriers();
 
 		// Submit the frame's work.
-		myDevice->GetCommandQueueManager().GetGraphicsQueue().ExecuteCommandList(
+		CommandQueue& graphicsQueue = myCommandQueueManager->GetGraphicsQueue();
+		graphicsQueue.ExecuteCommandList(
 			myFrameGraphicsContext->GetCommandList()
 		);
 
 		for (const std::shared_ptr<SwapChain>& swapChain : frameSwapChains)
 			swapChain->Present();
 
-		CommandQueue& queue = myDevice->GetCommandQueueManager().GetGraphicsQueue();
-		queue.WaitForFenceCPUBlocking(queue.InsertSignal());
-
-		myFrameGraphicsContext->Reset();
-		myDevice->MarkFrameEnd();
+		myComputeQueueFrameEndFence = myCommandQueueManager->GetComputeQueue().InsertSignal();
+		myCopyQueueFrameEndFence = myCommandQueueManager->GetCopyQueue().InsertSignal();
+		myGraphicsQueueFrameEndFence = myCommandQueueManager->GetGraphicsQueue().InsertSignal();
 	}
 
 	void Manager::SetupRootSignature()

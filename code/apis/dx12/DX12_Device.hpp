@@ -1,11 +1,7 @@
 #pragma once
 
-#include "DX12_CommandQueue.hpp"
 #include "DX12_ComPtr.hpp"
 #include "DX12_DescriptorHeapManager.hpp"
-#include "DX12_SwapChain.hpp"
-
-#include <Platform_WindowManagement.hpp>
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -30,18 +26,12 @@ namespace RoseGold::DirectX12
 		~Device();
 
 		void MarkFrameStart();
-		void MarkFrameEnd();
-
-		std::shared_ptr<SwapChain> CreateRenderTextureForWindow(Core::Platform::Window& aWindow);
-		std::shared_ptr<SwapChain> GetSwapChain(Core::Platform::Window& aWindow);
-		std::vector<std::shared_ptr<SwapChain>> GetSwapChains();
 
 		const DeviceParameters& GetParameters() const { return myParameters; }
 
 		ComPtr<ID3D12Device> GetDevice() { return myDevice; }
 		ComPtr<IDXGIFactory4> GetFactory() { return myDXGIFactory; }
 		DescriptorHeapManager& GetDescriptorHeapManager() { return *myDescriptorHeapManager; }
-		CommandQueueManager& GetCommandQueueManager() { return *myCommandQueues.get(); }
 
 	private:
 #ifdef _DEBUG
@@ -52,7 +42,6 @@ namespace RoseGold::DirectX12
 		bool SetupDevice();
 		bool SetupInfoQueue();
 		bool FindMaximumFeatureLevel();
-		bool SetupCommandQueue();
 		bool SetupHeapManager();
 
 	private:
@@ -60,11 +49,7 @@ namespace RoseGold::DirectX12
 		ComPtr<IDXGIAdapter1> myAdapter;
 		ComPtr<ID3D12Device> myDevice;
 		ComPtr<ID3D12InfoQueue> myInfoQueue;
-		std::unique_ptr<CommandQueueManager> myCommandQueues;
 		std::unique_ptr<DescriptorHeapManager> myDescriptorHeapManager;
-
-		std::mutex mySwapChainMutex;
-		std::map<Core::Platform::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
 
 		DeviceParameters myParameters;
 		D3D_FEATURE_LEVEL myFeatureLevel;

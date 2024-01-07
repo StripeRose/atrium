@@ -9,11 +9,12 @@
 
 namespace RoseGold::DirectX12
 {
+	class CommandQueue;
 	class Device;
 	class SwapChain : public RenderTarget
 	{
 	public:
-		SwapChain(Device& aDevice, Core::Platform::Window& aWindow);
+		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Platform::Window& aWindow);
 
 		void Invalidate();
 		void UpdateResolution();
@@ -62,7 +63,7 @@ namespace RoseGold::DirectX12
 		void* GetNativeTexturePtr() const override;
 
 	private:
-		void CreateRenderTextureForWindow();
+		void CreateRenderTextureForWindow(CommandQueue& aDirectCommandQueue);
 		void DoBufferResizing();
 		void UpdateColorSpace();
 		void GetBackBuffers(const Size& aSize);
