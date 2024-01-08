@@ -7,9 +7,16 @@
 
 namespace RoseGold::DirectX12
 {
-	bool LogAction(HRESULT aResult, const char* aMessage);
-	bool LogIfError(HRESULT aResult, const char* aMessage);
-	bool LogError(HRESULT aResult, ID3DBlob* anErrorBlob);
-	bool AssertAction(HRESULT aResult, const char* aMessage);
-	bool AssertSuccess(HRESULT aResult);
+	// Asserts that the result was successful, with no message otherwise.
+	void AssertAction(HRESULT aResult, const char* anAction);
+
+	// Asserts that the result was successful and logs that it happened.
+	void AssertActionWithLog(HRESULT aResult, const char* anAction);
+
+	// Logs message if a result failed and returns whether the action was successful.
+	bool VerifyAction(HRESULT aResult, const char* aMessage);
+	bool VerifyAction(HRESULT aResult, const char* aMessage, ID3DBlob* anErrorBlob);
+
+	// Logs an action with an error if applicable, and returns whether the action was successful.
+	bool VerifyActionWithLog(HRESULT aResult, const char* aMessage);
 }

@@ -20,27 +20,25 @@ namespace RoseGold::Core::Graphics
 
 	void GraphicsTask::AddDependency(GraphicsTask& aTask)
 	{
-		Debug::Assert(
-			!aTask.DependsOn(*this),
-			"GraphicsTask circular dependency.");
+		Debug::Assert(!aTask.DependsOn(*this), "Tasks doesn't create a circular dependency.");
 		myDependencies.push_back(&aTask);
 	}
 
 	CommandBuffer& GraphicsTask::AddWork()
 	{
-		Debug::Assert(myTasks.empty(), "A group task cannot itself contain any work.");
+		Debug::Assert(myTasks.empty(), "The task doesn't contain sub-tasks.");
 		return *myCommandBuffers.emplace_back(new CommandBuffer()).get();
 	}
 
 	GraphicsTask& GraphicsTask::CreateTask()
 	{
-		Debug::Assert(myCommandBuffers.empty(), "A work-task cannot contain any sub-tasks.");
+		Debug::Assert(myCommandBuffers.empty(), "The task doesn't contain work.");
 		return *myTasks.emplace_back(std::make_unique<GraphicsTask>()).get();
 	}
 
 	GraphicsTask& GraphicsTask::CreateTask(const char* aTaskName)
 	{
-		Debug::Assert(myCommandBuffers.empty(), "A work-task cannot contain any sub-tasks.");
+		Debug::Assert(myCommandBuffers.empty(), "The task doesn't contain work.");
 		return *myTasks.emplace_back(std::make_unique<GraphicsTask>(aTaskName)).get();
 	}
 

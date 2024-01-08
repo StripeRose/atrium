@@ -22,7 +22,7 @@ namespace RoseGold::DirectX12
 
 		Debug::Assert(
 			(myDescriptor.Size_Width * myDescriptor.Size_Height * myDescriptor.Size_Depth) > 0,
-			"Attempted to create a render target without a size."
+			"The render-texture has a size."
 		);
 
 		if (myDescriptor.ColorGraphicsFormat == Core::Graphics::GraphicsFormat::None)
@@ -59,14 +59,14 @@ namespace RoseGold::DirectX12
 				clearValue.Color[2] = 0.1f;
 				clearValue.Color[3] = 1.f;
 
-				AssertSuccess(aDevice.GetDevice()->CreateCommittedResource(
+				AssertAction(aDevice.GetDevice()->CreateCommittedResource(
 					&defaultHeapProperties,
 					D3D12_HEAP_FLAG_NONE,
 					&colorBufferDesc,
 					myUsageState,
 					&clearValue,
 					IID_PPV_ARGS(myResource.ReleaseAndGetAddressOf())
-				));
+				), "Create render texture color buffer.");
 
 				myResource->SetName(L"RenderTexture Depth");
 			}
@@ -108,14 +108,14 @@ namespace RoseGold::DirectX12
 				clearValue.DepthStencil.Depth = 1.f; // Farthest distance.
 				clearValue.DepthStencil.Stencil = 0u;
 
-				AssertSuccess(aDevice.GetDevice()->CreateCommittedResource(
+				AssertAction(aDevice.GetDevice()->CreateCommittedResource(
 					&defaultHeapProperties,
 					D3D12_HEAP_FLAG_NONE,
 					&depthBufferDesc,
 					D3D12_RESOURCE_STATE_DEPTH_WRITE,
 					&clearValue,
 					IID_PPV_ARGS(myDepthBuffer.ReleaseAndGetAddressOf())
-				));
+				), "Create render texture depth buffer.");
 
 				myDepthBuffer->SetName(L"RenderTexture Depth");
 			}

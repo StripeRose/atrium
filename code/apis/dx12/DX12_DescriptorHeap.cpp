@@ -24,10 +24,10 @@ namespace RoseGold::DirectX12
 		heapDescriptor.Flags = myIsReferencedByShader ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 		heapDescriptor.NodeMask = 0;
 
-		if (!AssertSuccess(aDevice->CreateDescriptorHeap(
+		if (!VerifyAction(aDevice->CreateDescriptorHeap(
 			&heapDescriptor,
-			IID_PPV_ARGS(myDescriptorHeap.ReleaseAndGetAddressOf())
-		)))
+			IID_PPV_ARGS(myDescriptorHeap.ReleaseAndGetAddressOf())),
+			"Create descriptor heap."))
 			return;
 
 		myDescriptorHeapCPUStart = myDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
@@ -50,7 +50,7 @@ namespace RoseGold::DirectX12
 
 	StagingDescriptorHeap::~StagingDescriptorHeap()
 	{
-		Debug::Assert(myActiveHandleCount == 0, "Active handles when descriptor heap was destroyed.");
+		Debug::Assert(myActiveHandleCount == 0, "No active handles remain.");
 		myFreeDescriptors.clear();
 	}
 
@@ -85,7 +85,7 @@ namespace RoseGold::DirectX12
 
 	void StagingDescriptorHeap::FreeHeapHandle(const DescriptorHeapHandle& handle)
 	{
-		Debug::Assert(myActiveHandleCount != 0, "Freeing heap handle when none left.");
+		Debug::Assert(myActiveHandleCount != 0, "Still have handles left to free.");
 		myFreeDescriptors.push_back(handle.GetHeapIndex());
 
 		myActiveHandleCount--;

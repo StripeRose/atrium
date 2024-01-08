@@ -15,24 +15,26 @@ namespace RoseGold::DirectX12
 		, myCurrentFrameHeap(nullptr)
 		, myResourceBarrierQueue()
 	{
-		AssertSuccess(
+		AssertAction(
 			aDevice.GetDevice()->CreateCommandAllocator(
 				aCommandType,
 				IID_PPV_ARGS(myCommandAllocator.ReleaseAndGetAddressOf())
-			)
+			),
+			"Create frame context command allocator."
 		);
 
 		ComPtr<ID3D12Device4> device4;
-		AssertSuccess(aDevice.GetDevice().As<ID3D12Device4>(&device4));
+		AssertAction(aDevice.GetDevice().As<ID3D12Device4>(&device4), "Get ID3D12Device4.");
 		
 		// Create a closed command list.
-		AssertSuccess(
+		AssertAction(
 			device4->CreateCommandList1(
 				0,
 				aCommandType,
 				D3D12_COMMAND_LIST_FLAG_NONE,
 				IID_PPV_ARGS(myCommandList.ReleaseAndGetAddressOf())
-			)
+			),
+			"Create closed command list."
 		);
 	}
 
@@ -56,8 +58,8 @@ namespace RoseGold::DirectX12
 				D3D12_RESOURCE_STATE_COPY_DEST | D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 			const D3D12_RESOURCE_STATES oldState = aResource.GetUsageState();
-			Debug::Assert((oldState & VALID_COMPUTE_CONTEXT_STATES) == oldState, "Old resource state not valid for compute queues.");
-			Debug::Assert((aNewState & VALID_COMPUTE_CONTEXT_STATES) == aNewState, "New resource state not valid for compute queues.");
+			Debug::Assert((oldState & VALID_COMPUTE_CONTEXT_STATES) == oldState, "Current state is valid for compute contexts.");
+			Debug::Assert((aNewState & VALID_COMPUTE_CONTEXT_STATES) == aNewState, "Target state is valid for compute contexts.");
 		}
 
 		std::optional<D3D12_RESOURCE_BARRIER> barrier = aResource.UpdateUsageState(aNewState);

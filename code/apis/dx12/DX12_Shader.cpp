@@ -33,7 +33,7 @@ namespace RoseGold::DirectX12
             aProfile, flags, 0, shaderBlob.ReleaseAndGetAddressOf(), errorBlob.ReleaseAndGetAddressOf()
         );
 
-        if (!LogError(hr, errorBlob.Get()))
+        if (!VerifyAction(hr, "Compile shader from file.", errorBlob.Get()))
             return nullptr;
 
         std::shared_ptr<Shader> shader(new Shader());

@@ -37,13 +37,14 @@ namespace RoseGold::DirectX12
 		uploadHeapProperties.VisibleNodeMask = 0;
 
 		ComPtr<ID3D12Resource> bufferResource;
-		if (!AssertSuccess(aDevice.GetDevice()->CreateCommittedResource(
+		if (!VerifyAction(aDevice.GetDevice()->CreateCommittedResource(
 			&uploadHeapProperties,
 			D3D12_HEAP_FLAG_NONE,
 			&bufferDesc,
 			aUsageState,
 			NULL,
-			IID_PPV_ARGS(bufferResource.ReleaseAndGetAddressOf()))))
+			IID_PPV_ARGS(bufferResource.ReleaseAndGetAddressOf())),
+			"Create graphic buffer resource."))
 			return nullptr;
 
 		return bufferResource;
@@ -60,7 +61,7 @@ namespace RoseGold::DirectX12
 	void VertexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize)
 	{
 		void* mappedBuffer;
-		if (!LogIfError(myResource->Map(0, nullptr, &mappedBuffer), "Mapping vertex buffer to CPU."))
+		if (!VerifyAction(myResource->Map(0, nullptr, &mappedBuffer), "Mapping vertex buffer to CPU."))
 			return;
 
 		std::memcpy(mappedBuffer, aDataPtr, aDataSize);
@@ -80,7 +81,7 @@ namespace RoseGold::DirectX12
 	void IndexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize)
 	{
 		void* mappedBuffer;
-		if (!LogIfError(myResource->Map(0, nullptr, &mappedBuffer), "Mapping index buffer to CPU."))
+		if (!VerifyAction(myResource->Map(0, nullptr, &mappedBuffer), "Mapping index buffer to CPU."))
 			return;
 
 		std::memcpy(mappedBuffer, aDataPtr, aDataSize);
@@ -114,7 +115,7 @@ namespace RoseGold::DirectX12
 
 	void ConstantBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize)
 	{
-		Debug::Assert(aDataSize <= myBufferSize, "Tried to assign %i bytes to a buffer of size %i.", aDataSize, myBufferSize);
+		Debug::Assert(aDataSize <= myBufferSize, "Data size(%i bytes) less or equal to buffer size(%i bytes).", aDataSize, myBufferSize);
 		std::memcpy(myMappedBuffer, aDataPtr, aDataSize);
 	}
 
@@ -136,13 +137,13 @@ namespace RoseGold::DirectX12
 
 	void UploadBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize)
 	{
-		Debug::Assert(aDataSize <= myBufferSize, "Tried to assign %i bytes to a buffer of size %i.", aDataSize, myBufferSize);
+		Debug::Assert(aDataSize <= myBufferSize, "Data size(%i bytes) less or equal to buffer size(%i bytes).", aDataSize, myBufferSize);
 		std::memcpy(myMappedBuffer, aDataPtr, aDataSize);
 	}
 
 	void UploadBuffer::SetData(std::size_t aDestinationOffset, const void* aDataPtr, std::uint32_t aDataSize)
 	{
-		Debug::Assert(aDataSize <= (myBufferSize - aDestinationOffset), "Tried to write %i bytes to a buffer of size %i.", aDataSize, myBufferSize - aDestinationOffset);
+		Debug::Assert(aDataSize <= (myBufferSize - aDestinationOffset), "Data size(%i bytes) less or equal to the remaining buffer size(%i bytes).", aDataSize, myBufferSize - aDestinationOffset);
 
 		std::uint8_t* mappedData = static_cast<std::uint8_t*>(myMappedBuffer);
 		std::memcpy(&mappedData[aDestinationOffset], aDataPtr, aDataSize);

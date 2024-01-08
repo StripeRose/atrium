@@ -17,7 +17,7 @@ namespace RoseGold::DirectX12
 
 		HRESULT loadResult = LoadFromDDSFile(aPath.c_str(), DDS_FLAGS_NONE, nullptr, *image);
 
-		if (!LogIfError(loadResult, "Load DDS file"))
+		if (!VerifyAction(loadResult, "Load DDS file from disk."))
 			return nullptr;
 
 		if (image->GetMetadata().arraySize != 1)

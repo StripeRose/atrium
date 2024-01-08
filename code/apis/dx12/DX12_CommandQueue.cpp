@@ -15,18 +15,23 @@ namespace RoseGold::DirectX12
 		D3D12_COMMAND_QUEUE_DESC queueDescriptor = { };
 		queueDescriptor.Type = aQueueType;
 		queueDescriptor.NodeMask = 0;
-		aDevice->CreateCommandQueue(&queueDescriptor, IID_PPV_ARGS(myCommandQueue.ReleaseAndGetAddressOf()));
+		AssertAction(
+			aDevice->CreateCommandQueue(&queueDescriptor, IID_PPV_ARGS(myCommandQueue.ReleaseAndGetAddressOf())),
+			"Create command queue."
+		);
 
 		myCommandQueue->SetName(L"CommandQueue");
 
-		if (!AssertSuccess(aDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(myFence.ReleaseAndGetAddressOf()))))
-			return;
+		AssertAction(
+			aDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(myFence.ReleaseAndGetAddressOf())),
+			"Create command queue fence."
+		);
 
 		myFence->SetName(L"CommandQueue");
 		myFence->Signal(myLastCompletedFenceValue);
 
 		myFenceEventHandle = CreateEventEx(NULL, nullptr, false, EVENT_ALL_ACCESS);
-		Debug::Assert(myFenceEventHandle != INVALID_HANDLE_VALUE, "Command-queue fence event failed creation.");
+		Debug::Assert(myFenceEventHandle != INVALID_HANDLE_VALUE, "Event handle is valid.");
 	}
 
 	std::uint64_t CommandQueue::InsertSignal()
@@ -79,11 +84,9 @@ namespace RoseGold::DirectX12
 	std::uint64_t CommandQueue::ExecuteCommandList(ComPtr<ID3D12CommandList> aCommandList)
 	{
 		ComPtr<ID3D12GraphicsCommandList> graphicsCommandList;
-		if (!AssertSuccess(aCommandList.As(&graphicsCommandList)) ||
-			!AssertSuccess(graphicsCommandList->Close()))
-		{
+		if (!VerifyAction(aCommandList.As(&graphicsCommandList), "Convert to graphics command list.") ||
+			!VerifyAction(graphicsCommandList->Close(), "Close command list."))
 			return 0;
-		}
 
 		myCommandQueue->ExecuteCommandLists(1, aCommandList.GetAddressOf());
 

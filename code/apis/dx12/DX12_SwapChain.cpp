@@ -224,14 +224,14 @@ namespace RoseGold::DirectX12
 		std::any surfaceHandle = myWindow->GetNativeHandle();
 		HWND windowHandle = std::any_cast<HWND>(surfaceHandle);
 
-		AssertSuccess(myDevice->GetFactory()->CreateSwapChainForHwnd(
+		AssertAction(myDevice->GetFactory()->CreateSwapChainForHwnd(
 			aDirectCommandQueue.GetCommandQueue().Get(),
 			windowHandle,
 			&swapChainDescriptor,
 			&fsSwapChainDesc,
 			nullptr,
 			swapChain.ReleaseAndGetAddressOf()
-		));
+		), "Create swapchain for window.");
 
 		swapChain.As(&mySwapChain);
 
@@ -257,7 +257,7 @@ namespace RoseGold::DirectX12
 
 		myBackBuffers.clear();
 
-		Debug::Assert(mySwapChain, "Resizing a draw surface without a swapchain.");
+		Debug::Assert(mySwapChain, "There is a swap-chain to resize.");
 		HRESULT hr = mySwapChain->ResizeBuffers(
 			static_cast<UINT>(myBackBuffers.size()),
 			static_cast<UINT>(newResolution.X),
@@ -282,7 +282,7 @@ namespace RoseGold::DirectX12
 		}
 		else
 		{
-			AssertSuccess(hr);
+			AssertAction(hr, "Unknown error when resizing swapchain.");
 		}
 
 		GetBackBuffers(newResolution);
@@ -325,7 +325,7 @@ namespace RoseGold::DirectX12
 				{
 					// Get the rectangle bounds of current output.
 					DXGI_OUTPUT_DESC desc;
-					AssertSuccess(output->GetDesc(&desc));
+					AssertAction(output->GetDesc(&desc), "Get adapter output description.");
 					const Math::RectangleT<LONG> desktopCoordinates = Math::RectangleT<LONG>::FromExtents(
 						{ desc.DesktopCoordinates.left, desc.DesktopCoordinates.top },
 						{ desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom });
@@ -347,7 +347,7 @@ namespace RoseGold::DirectX12
 				if (SUCCEEDED(bestOutput.As(&output6)))
 				{
 					DXGI_OUTPUT_DESC1 desc;
-					AssertSuccess(output6->GetDesc1(&desc));
+					AssertAction(output6->GetDesc1(&desc), "Get adapter output description.");
 
 					if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020)
 					{
@@ -382,7 +382,7 @@ namespace RoseGold::DirectX12
 			&& SUCCEEDED(mySwapChain->CheckColorSpaceSupport(colorSpace, &colorSpaceSupport))
 			&& (colorSpaceSupport & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT))
 		{
-			AssertSuccess(mySwapChain->SetColorSpace1(colorSpace));
+			AssertAction(mySwapChain->SetColorSpace1(colorSpace), "Set swapchain color space.");
 		}
 	}
 
@@ -394,7 +394,7 @@ namespace RoseGold::DirectX12
 
 		for (unsigned int i = 0; i < 2; ++i)
 		{
-			AssertSuccess(mySwapChain->GetBuffer(i, IID_PPV_ARGS(backBufferResource.ReleaseAndGetAddressOf())));
+			AssertAction(mySwapChain->GetBuffer(i, IID_PPV_ARGS(backBufferResource.ReleaseAndGetAddressOf())), "Get swapchain back buffer.");
 			//backBufferResource->SetName(BasicString<wchar_t>::Format(L"Backbuffer Texture #%i", i).ToCharArray());
 
 			Core::Graphics::RenderTextureDescriptor rtDesc;

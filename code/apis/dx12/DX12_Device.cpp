@@ -41,7 +41,7 @@ namespace RoseGold::DirectX12
 	void Device::SetupDebug(UINT& someDXGIFlagsOut)
 	{
 		ComPtr<ID3D12Debug> debugController;
-		if (LogAction(D3D12GetDebugInterface(IID_PPV_ARGS(debugController.GetAddressOf())), "Enable debug layer"))
+		if (VerifyActionWithLog(D3D12GetDebugInterface(IID_PPV_ARGS(debugController.GetAddressOf())), "Enable debug layer"))
 			debugController->EnableDebugLayer();
 
 		ComPtr<IDXGIInfoQueue> dxgiInfoQueue;
@@ -65,7 +65,7 @@ namespace RoseGold::DirectX12
 
 	bool Device::SetupFactory(UINT someDXGIFlags)
 	{
-		if (!AssertAction(CreateDXGIFactory2(someDXGIFlags, IID_PPV_ARGS(myDXGIFactory.GetAddressOf())), "Create DXGI Factory"))
+		if (!VerifyActionWithLog(CreateDXGIFactory2(someDXGIFlags, IID_PPV_ARGS(myDXGIFactory.GetAddressOf())), "Create DXGI Factory"))
 			return false;
 
 		if (myParameters.AllowTearing)
@@ -98,7 +98,7 @@ namespace RoseGold::DirectX12
 				adapterIndex++)
 			{
 				DXGI_ADAPTER_DESC1 adapterDescription;
-				if (!AssertSuccess(myAdapter->GetDesc1(&adapterDescription)))
+				if (FAILED(myAdapter->GetDesc1(&adapterDescription)))
 					continue;
 
 				if ((adapterDescription.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) != 0)
@@ -129,7 +129,7 @@ namespace RoseGold::DirectX12
 				++adapterIndex)
 			{
 				DXGI_ADAPTER_DESC1 adapterDescription;
-				if (!AssertSuccess(myAdapter->GetDesc1(&adapterDescription)))
+				if (FAILED(myAdapter->GetDesc1(&adapterDescription)))
 					continue;
 
 				if ((adapterDescription.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) != 0)
@@ -169,7 +169,7 @@ namespace RoseGold::DirectX12
 
 	bool Device::SetupDevice()
 	{
-		if (!AssertAction(D3D12CreateDevice(
+		if (!VerifyActionWithLog(D3D12CreateDevice(
 			myAdapter.Get(),
 			myParameters.MinimumFeatureLevel,
 			IID_PPV_ARGS(myDevice.ReleaseAndGetAddressOf())), "Create DirectX 12 device."))
@@ -183,7 +183,7 @@ namespace RoseGold::DirectX12
 	bool Device::SetupInfoQueue()
 	{
 #ifndef NDEBUG
-		if (!AssertAction(myDevice.As(&myInfoQueue), "Get info queue."))
+		if (!VerifyAction(myDevice.As(&myInfoQueue), "Get info queue."))
 			return false;
 
 		//D3D12_MESSAGE_ID hide[] =

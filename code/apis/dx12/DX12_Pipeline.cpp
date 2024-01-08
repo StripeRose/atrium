@@ -131,7 +131,7 @@ namespace RoseGold::DirectX12
 				case Parameter::Type::SRV:
 				case Parameter::Type::UAV:
 				{
-					Debug::Assert(param->myCount == 1, "Only 1 descriptor per root parameter. Use tables if you need more.");
+					Debug::Assert(param->myCount == 1, "Only 1 descriptor per root parameter.");
 
 					switch (param->myType)
 					{
@@ -199,11 +199,8 @@ namespace RoseGold::DirectX12
 		if (SUCCEEDED(result))
 			result = aDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(dxRootSignature.ReleaseAndGetAddressOf()));
 		
-		if (FAILED(result))
-		{
-			LogError(result, error.Get());
+		if (!VerifyAction(result, "Create root signature", error.Get()))
 			return nullptr;
-		}
 
 		return std::shared_ptr<RootSignature>(new RootSignature(dxRootSignature, parameterMapping));
 	}
@@ -408,7 +405,7 @@ namespace RoseGold::DirectX12
 
 		// Create the raster pipeline state
 		if (
-			LogIfError(
+			VerifyAction(
 				aDevice.CreateGraphicsPipelineState(
 					&psoDesc,
 					IID_PPV_ARGS(
