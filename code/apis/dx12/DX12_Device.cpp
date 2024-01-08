@@ -49,7 +49,6 @@ namespace RoseGold::DirectX12
 		{
 			someDXGIFlagsOut |= DXGI_CREATE_FACTORY_DEBUG;
 
-			dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true);
 			dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true);
 
 			//DXGI_INFO_QUEUE_MESSAGE_ID hide[] =
@@ -186,11 +185,6 @@ namespace RoseGold::DirectX12
 #ifndef NDEBUG
 		if (!AssertAction(myDevice.As(&myInfoQueue), "Get info queue."))
 			return false;
-
-#ifdef _DEBUG
-		myInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
-		myInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
-#endif
 
 		//D3D12_MESSAGE_ID hide[] =
 		//{
