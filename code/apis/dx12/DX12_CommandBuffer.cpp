@@ -51,6 +51,10 @@ namespace RoseGold::DirectX12
 
 	void ResolvedCommandBuffer::DrawMesh(std::shared_ptr<Core::Graphics::Mesh> aMesh, Math::Matrix aMatrix, int aSubmeshIndex)
 	{
+		std::shared_ptr<const VertexBuffer> vertexBuffer = std::static_pointer_cast<const VertexBuffer>(aMesh->GetVertexBuffer());
+		if (!vertexBuffer->IsReady())
+			return;
+
 		aSubmeshIndex;
 
 		struct CameraConstants
@@ -70,7 +74,6 @@ namespace RoseGold::DirectX12
 			&cameraConstants,
 			sizeof(CameraConstants));
 
-		std::shared_ptr<const VertexBuffer> vertexBuffer = std::static_pointer_cast<const VertexBuffer>(aMesh->GetVertexBuffer());
 		myGraphicsContext.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		myGraphicsContext.SetPipelineResource(*vertexBuffer);
 		//myGraphicsContext.SetIndexBuffer(&indexBufferView);

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "DX12_ComPtr.hpp"
-#include "DX12_Device.hpp"
+#include "DX12_DescriptorHeap.hpp"
 #include "DX12_GPUResource.hpp"
 
 #include <Graphics_Texture.hpp>
@@ -17,14 +17,12 @@
 
 namespace RoseGold::DirectX12
 {
-	std::shared_ptr<Core::Graphics::Texture> LoadDDSTextureFromFile(Device& aDevice, const std::filesystem::path& aPath);
-
-	class Texture2D_DDS : public Core::Graphics::Texture2D, public GPUResource
+	class Device;
+	class UploadContext;
+	class Texture2D_DDS : public Core::Graphics::Texture2D, public GPUResource, public std::enable_shared_from_this<Texture2D_DDS>
 	{
-		friend std::shared_ptr<Core::Graphics::Texture> LoadDDSTextureFromFile(Device& aDevice, const std::filesystem::path& aPath);
-
-	private:
-		Texture2D_DDS(Device& aDevice, std::unique_ptr<DirectX::ScratchImage>&& anImage);
+	public:
+		static std::shared_ptr<Texture2D_DDS> LoadFromFile(const std::filesystem::path& aPath, Device& aDevice, UploadContext& anUploader);
 
 		// Implements Texture
 	public:
@@ -57,10 +55,16 @@ namespace RoseGold::DirectX12
 		Core::Graphics::TextureFormat GetFormat() const override;
 
 	private:
+		Texture2D_DDS(Device& aDevice, UploadContext& anUploader);
+		void ApplyImage(std::unique_ptr<DirectX::ScratchImage>&& anImage);
+
+	private:
+		UploadContext& myUploader;
+		Device& myDevice;
+
 		std::unique_ptr<DirectX::ScratchImage> myImage;
 		DirectX::TexMetadata myMetadata;
 
-		Device& myDevice;
 		std::shared_ptr<DescriptorHeapHandle> mySRVHandle;
 	};
 }

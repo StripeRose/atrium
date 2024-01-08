@@ -1,14 +1,17 @@
 // Filter "Resources"
 
 #include "DX12_DDS.hpp"
+#include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_Enums.hpp"
+#include "DX12_Manager.hpp"
+#include "DX12_MemoryAlignment.hpp"
 
 namespace RoseGold::DirectX12
 {
 	using namespace DirectX;
 
-	std::shared_ptr<Core::Graphics::Texture> LoadDDSTextureFromFile(Device& aDevice, const std::filesystem::path& aPath)
+	std::shared_ptr<Texture2D_DDS> Texture2D_DDS::LoadFromFile(const std::filesystem::path& aPath, Device& aDevice, UploadContext& anUploader)
 	{
 		std::unique_ptr<ScratchImage> image = std::make_unique<ScratchImage>();
 
@@ -27,22 +30,17 @@ namespace RoseGold::DirectX12
 		{
 		case TEX_DIMENSION_TEXTURE1D:
 		case TEX_DIMENSION_TEXTURE2D:
-			return std::shared_ptr<Core::Graphics::Texture>(new Texture2D_DDS(aDevice, std::move(image)));
+		{
+			std::shared_ptr<Texture2D_DDS> ddsInstance(new Texture2D_DDS(aDevice, anUploader));
+			ddsInstance->ApplyImage(std::move(image));
+			return ddsInstance;
+		}
 		case TEX_DIMENSION_TEXTURE3D:
 			Debug::LogError("No support for 3-dimensional DDS textures.");
 			break;
 		}
 
 		return nullptr;
-	}
-
-	Texture2D_DDS::Texture2D_DDS(Device& aDevice, std::unique_ptr<ScratchImage>&& anImage)
-		: myDevice(aDevice)
-	{
-		std::swap(myImage, anImage);
-		myMetadata = myImage->GetMetadata();
-
-		Apply(false, false);
 	}
 
 	Core::Graphics::TextureDimension Texture2D_DDS::GetDimensions() const
@@ -213,7 +211,53 @@ namespace RoseGold::DirectX12
 
 	void Texture2D_DDS::Apply_BeginImageUpload()
 	{
+		UploadContext::TextureUpload& textureUpload = myUploader.AddTextureUpload();
+		textureUpload.Resource = shared_from_this();
+		textureUpload.SubresourceCount = static_cast<std::uint32_t>(myMetadata.mipLevels * myMetadata.arraySize);
 
+		UINT numRows[UploadContext::MaxTextureSubresourceCount];
+		std::uint64_t rowSizeInBytes[UploadContext::MaxTextureSubresourceCount];
+
+		D3D12_RESOURCE_DESC resourceDesc = myResource->GetDesc();
+		myDevice.GetDevice()->GetCopyableFootprints(
+			&resourceDesc,
+			0,
+			textureUpload.SubresourceCount,
+			0,
+			textureUpload.SubresourceLayouts.data(),
+			numRows,
+			rowSizeInBytes,
+			&textureUpload.BufferSize
+		);
+
+		textureUpload.BufferData.reset(new std::uint8_t[textureUpload.BufferSize]);
+
+		for (uint64_t arrayIndex = 0; arrayIndex < myMetadata.arraySize; arrayIndex++)
+		{
+			for (uint64_t mipIndex = 0; mipIndex < myMetadata.mipLevels; mipIndex++)
+			{
+				const uint64_t subResourceIndex = mipIndex + (arrayIndex * myMetadata.mipLevels);
+
+				const D3D12_PLACED_SUBRESOURCE_FOOTPRINT& subResourceLayout = textureUpload.SubresourceLayouts[subResourceIndex];
+				const uint64_t subResourceHeight = numRows[subResourceIndex];
+				const uint64_t subResourcePitch = Align<UINT>(subResourceLayout.Footprint.RowPitch, D3D12_TEXTURE_DATA_PITCH_ALIGNMENT);
+				const uint64_t subResourceDepth = subResourceLayout.Footprint.Depth;
+				uint8_t* destinationSubResourceMemory = &textureUpload.BufferData.get()[subResourceLayout.Offset];
+
+				for (uint64_t sliceIndex = 0; sliceIndex < subResourceDepth; sliceIndex++)
+				{
+					const DirectX::Image* subImage = myImage->GetImage(mipIndex, arrayIndex, sliceIndex);
+					const uint8_t* sourceSubResourceMemory = subImage->pixels;
+
+					for (uint64_t height = 0; height < subResourceHeight; height++)
+					{
+						memcpy(destinationSubResourceMemory, sourceSubResourceMemory, (std::min)(subResourcePitch, subImage->rowPitch));
+						destinationSubResourceMemory += subResourcePitch;
+						sourceSubResourceMemory += subImage->rowPitch;
+					}
+				}
+			}
+		}
 	}
 
 	Core::Graphics::TextureFormat Texture2D_DDS::GetFormat() const
@@ -221,37 +265,15 @@ namespace RoseGold::DirectX12
 		return ToTextureFormat(myMetadata.format);
 	}
 
-	//void Texture2D_DDS::UpdateNativeTexturePtr(void* aNativeTexturePtr)
-	//{
-	//	// Assumes the resource is in D3D12_RESOURCE_STATE_COPY_DEST.
+	Texture2D_DDS::Texture2D_DDS(Device& aDevice, UploadContext& anUploader)
+		: myDevice(aDevice)
+		, myUploader(anUploader)
+	{ }
 
-	//	ComPtr<ID3D12Resource> newResource = static_cast<ID3D12Resource*>(aNativeTexturePtr);
-
-	//	D3D12_RESOURCE_DESC resourceDescriptor = newResource->GetDesc();
-	//	resourceDescriptor.Flags = D3D12_RESOURCE_FLAG_NONE;
-
-	//	D3D12_RESOURCE_STATES  = D3D12_RESOURCE_STATE_COPY_DEST;
-
-	//	//std::shared_ptr<DescriptorHeapHandle> newSRVHandle = myDevice.GetDescriptorHeapManager().GetShaderResourceViewHeap().GetNewHeapHandle();
-	//	//myDevice.GetDevice()->CreateShaderResourceView(newResource.Get(), nullptr, newSRVHandle->GetCPUHandle());
-
-	//	//// Upload the resource.
-	//	//{
-	//	//	constexpr std::size_t maxTextureSubresourceCount = 128;
-
-	//	//	std::uint64_t textureMemorySize = 0;
-	//	//	UINT numRows[maxTextureSubresourceCount];
-	//	//	UINT64 rowSizesInBytes[maxTextureSubresourceCount];
-	//	//	D3D12_PLACED_SUBRESOURCE_FOOTPRINT layouts[maxTextureSubresourceCount];
-	//	//	const UINT32 numSubResources = resourceDescriptor.MipLevels * resourceDescriptor.DepthOrArraySize;
-
-	//	//	myDevice.GetDevice()->GetCopyableFootprints(
-	//	//		&resourceDescriptor, 0, numSubResources, 0,
-	//	//		layouts, numRows, rowSizesInBytes, &textureMemorySize);
-	//	//}
-
-	//	//myUsageState = D3D12_RESOURCE_STATE_COPY_DEST;
-	//	//myResource = newResource;
-	//	//mySRVHandle = newSRVHandle;
-	//}
+	void Texture2D_DDS::ApplyImage(std::unique_ptr<DirectX::ScratchImage>&& anImage)
+	{
+		std::swap(myImage, anImage);
+		myMetadata = myImage->GetMetadata();
+		Apply(false, false);
+	}
 }

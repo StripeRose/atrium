@@ -12,6 +12,7 @@ namespace RoseGold::DirectX12
 {
 	class GPUResource
 	{
+		friend class UploadContext;
 	public:
 		virtual ~GPUResource() = default;
 

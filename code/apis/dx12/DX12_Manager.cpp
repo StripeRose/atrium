@@ -33,6 +33,7 @@ namespace RoseGold::DirectX12
 		myCommandQueueManager.reset(new CommandQueueManager(myDevice->GetDevice()));
 
 		myFrameGraphicsContext.reset(new FrameGraphicsContext(*myDevice));
+		myUploadContext.reset(new UploadContext(*myDevice));
 
 		SetupRootSignature();
 	}
@@ -41,6 +42,7 @@ namespace RoseGold::DirectX12
 	{
 		Debug::Log("DX12 stop");
 
+		myUploadContext.reset();
 		myFrameGraphicsContext.reset();
 
 		myCommandQueueManager.reset();
@@ -136,7 +138,7 @@ namespace RoseGold::DirectX12
 	{
 		const std::filesystem::path extension = aPath.extension();
 		if (extension == ".dds")
-			return LoadDDSTextureFromFile(*myDevice, aPath);
+			return Texture2D_DDS::LoadFromFile(aPath, *myDevice, *myUploadContext);
 		else
 			return nullptr;
 	}
@@ -149,6 +151,8 @@ namespace RoseGold::DirectX12
 		myCommandQueueManager->GetCopyQueue().WaitForFenceCPUBlocking(myCopyQueueFrameEndFence);
 		myCommandQueueManager->GetGraphicsQueue().WaitForFenceCPUBlocking(myGraphicsQueueFrameEndFence);
 
+		myUploadContext->ResolveUploads();
+		myUploadContext->Reset();
 		myFrameGraphicsContext->Reset();
 
 		const std::scoped_lock lock(mySwapChainMutex);
@@ -160,6 +164,11 @@ namespace RoseGold::DirectX12
 
 	void Manager::MarkFrameEnd()
 	{
+		myUploadContext->ProcessUploads();
+		myCommandQueueManager->GetCopyQueue().ExecuteCommandList(
+			myUploadContext->GetCommandList()
+		);
+
 		// Record used swapchains and make them ready to present.
 		std::vector<std::shared_ptr<SwapChain>> frameSwapChains;
 		for (const auto& swapChainIterator : myDrawSurfaceSwapChain)

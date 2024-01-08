@@ -16,16 +16,17 @@ namespace RoseGold::DirectX12
 	class GraphicsBuffer : public Core::Graphics::GraphicsBuffer, public GPUResource
 	{
 	public:
-		GraphicsBuffer(ComPtr<ID3D12Resource> aResource, D3D12_RESOURCE_STATES aUsageState);
+		GraphicsBuffer(Device& aDevice, std::uint32_t aBufferSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType);
 
 		// Implementing GraphicsBuffer
 	public:
 		void* GetNativeBufferPtr() override { return myResource.Get(); }
 
 	protected:
-		std::uint32_t Align(std::uint32_t aLocation, std::uint32_t anAlignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+		std::uint32_t myBufferSize;
 
-		ComPtr<ID3D12Resource> CreateResource(Device& aDevice, std::uint32_t aBufferSize);
+	private:
+		static ComPtr<ID3D12Resource> CreateResource(Device& aDevice, std::uint32_t anAlignedSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType);
 	};
 
 	class VertexBuffer : public GraphicsBuffer
@@ -70,7 +71,7 @@ namespace RoseGold::DirectX12
 	{
 	public:
 		ConstantBuffer(Device& aDevice, std::uint32_t aBufferSize);
-		virtual ~ConstantBuffer() override;
+		~ConstantBuffer() override;
 
 		void SetData(const void* aDataPtr, std::uint32_t aDataSize) override;
 		const DescriptorHeapHandle& GetViewHandle() const { return *myConstantBufferViewHandle; }
@@ -81,8 +82,24 @@ namespace RoseGold::DirectX12
 
 	private:
 		void* myMappedBuffer;
-		std::uint32_t myBufferSize;
 
 		std::shared_ptr<DescriptorHeapHandle> myConstantBufferViewHandle;
+	};
+
+	class UploadBuffer : public GraphicsBuffer
+	{
+	public:
+		UploadBuffer(Device& aDevice, std::uint32_t aBufferSize);
+		~UploadBuffer() override;
+
+		void SetData(const void* aDataPtr, std::uint32_t aDataSize) override;
+		void SetData(std::size_t aDestinationOffset, const void* aDataPtr, std::uint32_t aDataSize);
+
+		std::uint32_t GetCount() const { return 1; }
+		std::uint32_t GetStride() const { return myBufferSize; }
+		Target GetTarget() const override { return Target::Constant; }
+
+	private:
+		void* myMappedBuffer;
 	};
 }

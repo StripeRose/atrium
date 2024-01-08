@@ -3,6 +3,8 @@
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_FrameContext.hpp"
+#include "DX12_Manager.hpp"
+#include "DX12_MemoryAlignment.hpp"
 #include "DX12_RenderTexture.hpp"
 
 namespace RoseGold::DirectX12
@@ -91,6 +93,25 @@ namespace RoseGold::DirectX12
 		);
 	}
 
+	void FrameContext::CopyTextureRegion(GPUResource& aSource, std::size_t aSourceOffset, SubresourceLayouts& someSubResourceLayouts, std::uint32_t aSubresourceCount, GPUResource& aDestination)
+	{
+		for (std::uint32_t subResourceIndex = 0; subResourceIndex < aSubresourceCount; subResourceIndex++)
+		{
+			D3D12_TEXTURE_COPY_LOCATION destinationLocation = {};
+			destinationLocation.pResource = aDestination.GetResource().Get();
+			destinationLocation.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+			destinationLocation.SubresourceIndex = subResourceIndex;
+
+			D3D12_TEXTURE_COPY_LOCATION sourceLocation = {};
+			sourceLocation.pResource = aSource.GetResource().Get();
+			sourceLocation.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+			sourceLocation.PlacedFootprint = someSubResourceLayouts[subResourceIndex];
+			sourceLocation.PlacedFootprint.Offset += aSourceOffset;
+
+			myCommandList->CopyTextureRegion(&destinationLocation, 0, 0, 0, &sourceLocation, nullptr);
+		}
+	}
+
 	void FrameContext::BindDescriptorHeaps()
 	{
 		DescriptorHeapManager& heapManager = myDevice.GetDescriptorHeapManager();
@@ -103,6 +124,76 @@ namespace RoseGold::DirectX12
 		//heapsToBind[1] = heapManager.GetFrameSamplerHeap().GetHeap().Get();
 
 		myCommandList->SetDescriptorHeaps(1, heapsToBind);
+	}
+
+	UploadContext::UploadContext(Device& aDevice)
+		: FrameContext(aDevice, D3D12_COMMAND_LIST_TYPE_COPY)
+	{
+		myBufferUploadHeap.reset(new UploadBuffer(aDevice, 10 * 1024 * 1024));
+		myTextureUploadHeap.reset(new UploadBuffer(aDevice, 40 * 1024 * 1024));
+	}
+
+	UploadContext::TextureUpload& UploadContext::AddTextureUpload()
+	{
+		return myTextureUploads.emplace_back();
+	}
+
+	void UploadContext::ProcessUploads()
+	{
+		const uint32_t numBufferUploads = static_cast<uint32_t>(myBufferUploads.size());
+		const uint32_t numTextureUploads = static_cast<uint32_t>(myTextureUploads.size());
+		uint32_t numBuffersProcessed = 0;
+		uint32_t numTexturesProcessed = 0;
+		size_t bufferUploadHeapOffset = 0;
+		size_t textureUploadHeapOffset = 0;
+
+		for (numBuffersProcessed; numBuffersProcessed < numBufferUploads; numBuffersProcessed++)
+		{
+			BufferUpload& currentUpload = myBufferUploads[numBuffersProcessed];
+
+			if ((bufferUploadHeapOffset + currentUpload.BufferSize) > myBufferUploadHeap->GetStride())
+				break;
+
+			myBufferUploadHeap->SetData(bufferUploadHeapOffset, currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize));
+			CopyBufferRegion(*currentUpload.Resource, 0, *myBufferUploadHeap, bufferUploadHeapOffset, currentUpload.BufferSize);
+
+			bufferUploadHeapOffset += currentUpload.BufferSize;
+			myBufferUploadsInProgress.push_back(currentUpload.Resource);
+		}
+
+		for (numTexturesProcessed; numTexturesProcessed < numTextureUploads; numTexturesProcessed++)
+		{
+			TextureUpload& currentUpload = myTextureUploads[numTexturesProcessed];
+
+			if ((textureUploadHeapOffset + currentUpload.BufferSize) > myTextureUploadHeap->GetStride())
+				break;
+
+			myTextureUploadHeap->SetData(textureUploadHeapOffset, currentUpload.Resource.get(), static_cast<std::uint32_t>(currentUpload.BufferSize));
+			CopyTextureRegion(*myTextureUploadHeap, textureUploadHeapOffset, currentUpload.SubresourceLayouts, currentUpload.SubresourceCount, *currentUpload.Resource);
+
+			textureUploadHeapOffset += currentUpload.BufferSize;
+			textureUploadHeapOffset = Align<std::size_t>(textureUploadHeapOffset, 512);
+
+			myTextureUploadsInProgress.push_back(currentUpload.Resource);
+		}
+
+		if (numBuffersProcessed > 0)
+			myBufferUploads.erase(myBufferUploads.begin(), myBufferUploads.begin() + numBuffersProcessed);
+
+		if (numTexturesProcessed > 0)
+			myTextureUploads.erase(myTextureUploads.begin(), myTextureUploads.begin() + numTexturesProcessed);
+	}
+
+	void UploadContext::ResolveUploads()
+	{
+		for (auto& bufferUploadInProgress : myBufferUploadsInProgress)
+			bufferUploadInProgress->myIsReady = true;
+
+		for (auto& textureUploadInProgress : myTextureUploadsInProgress)
+			textureUploadInProgress->myIsReady = true;
+
+		myBufferUploadsInProgress.clear();
+		myTextureUploadsInProgress.clear();
 	}
 
 	FrameGraphicsContext::FrameGraphicsContext(Device& aDevice)

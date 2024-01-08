@@ -8,6 +8,7 @@
 #include <Graphics_Mesh.hpp>
 #include <Graphics_Pipeline.hpp>
 #include <Graphics_Tasks.hpp>
+#include <Graphics_Texture2D.hpp>
 
 #include <Windows.h>
 
@@ -20,10 +21,15 @@ std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> ourRT1, ourRT2;
 std::shared_ptr<RoseGold::Core::Graphics::PipelineState> ourRT1GenericMeshPipelineState, ourRT2GenericMeshPipelineState;
 std::shared_ptr<RoseGold::Core::Graphics::PipelineState> ourRT1ColoredMeshPipelineState, ourRT2ColoredMeshPipelineState;
 
+std::shared_ptr<RoseGold::Core::Graphics::Texture2D> ourDDSFile;
 std::shared_ptr<RoseGold::Core::Graphics::Mesh> ourColoredCube, ourGenericPlane, ourGenericSphere;
 
 void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 {
+	ourDDSFile = std::static_pointer_cast<RoseGold::Core::Graphics::Texture2D>(
+		roseGold.GraphicsManager->LoadTexture(L"debug/images/checkered2.dds")
+	);
+
 	RoseGold::Core::Platform::WindowManager::CreationParameters windowParams;
 
 	windowParams.Title = "Window 1";
