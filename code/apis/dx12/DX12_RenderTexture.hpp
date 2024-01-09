@@ -20,6 +20,7 @@ namespace RoseGold::DirectX12
 		virtual ID3D12Resource* GetDepthResource() const = 0;
 
 		virtual GPUResource& GetGPUResource() = 0;
+		virtual GPUResource& GetDepthGPUResource() = 0;
 
 		virtual bool IsSwapChain() const = 0;
 	};
@@ -46,16 +47,17 @@ namespace RoseGold::DirectX12
 		const DescriptorHeapHandle* GetDepthStencilView() const override { return myDSVHandle.get(); }
 
 		ID3D12Resource* GetColorResource() const override { return myResource.Get(); }
-		ID3D12Resource* GetDepthResource() const override { return myDepthBuffer.Get(); }
+		ID3D12Resource* GetDepthResource() const override { return myDepthResource.GetResource().Get(); }
 
 		GPUResource& GetGPUResource() override { return *this; }
+		GPUResource& GetDepthGPUResource() override { return myDepthResource; }
 
 		bool IsSwapChain() const override { return false; }
 
 		// Implementing RenderTexture
 	public:
 		const Core::Graphics::RenderTextureDescriptor& GetDescriptor() const override { return myDescriptor; }
-		void* GetNativeDepthBufferPtr() const override { return myDepthBuffer.Get(); }
+		void* GetNativeDepthBufferPtr() const override { return myDepthResource.GetResource().Get(); }
 
 		// Implementing Texture
 	public:
@@ -84,7 +86,7 @@ namespace RoseGold::DirectX12
 
 		Core::Graphics::RenderTextureDescriptor myDescriptor;
 
-		ComPtr<ID3D12Resource> myDepthBuffer;
+		GPUResource myDepthResource;
 
 		std::shared_ptr<DescriptorHeapHandle> myRSVHandle;
 		std::shared_ptr<DescriptorHeapHandle> myDSVHandle;

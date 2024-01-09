@@ -23,13 +23,17 @@ namespace RoseGold::DirectX12
 
 		// Implements CommandBuffer
 	private:
-		void Clear(std::shared_ptr<Core::Graphics::RenderTexture> aTarget, Color aClearColor) override;
-		void Clear(std::shared_ptr<Core::Graphics::RenderTexture> aTarget, float aClearDepth) override;
-		void Clear(std::shared_ptr<Core::Graphics::RenderTexture> aTarget, Color aClearColor, float aClearDepth) override;
+		void Clear(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, Color aClearColor) override;
+		void Clear(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, float aClearDepth) override;
+		void Clear(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, Color aClearColor, float aClearDepth) override;
 		void DisableScissorRect() override;
-		void DrawMesh(std::shared_ptr<Core::Graphics::Mesh> aMesh, Math::Matrix aMatrix, int aSubmeshIndex) override;
-		void SetPipelineState(std::shared_ptr<Core::Graphics::PipelineState> aPipelineState) override;
+		void DrawMesh(const std::shared_ptr<Core::Graphics::Mesh>& aMesh, Math::Matrix aMatrix, int aSubmeshIndex) override;
+		void SetPipelineState(const std::shared_ptr<Core::Graphics::PipelineState>& aPipelineState) override;
 		void SetProjectionMatrix(const Math::Matrix& aMatrix) override;
+		void SetRenderTarget(const std::shared_ptr<Core::Graphics::RenderTexture>& aRenderTarget) override;
+		void SetRenderTarget(const std::shared_ptr<Core::Graphics::RenderTexture>& aRenderTarget, const std::shared_ptr<Core::Graphics::RenderTexture>& aDepthTarget) override;
+		void SetRenderTarget(const std::initializer_list<const std::shared_ptr<Core::Graphics::RenderTexture>>& someRenderTargets) override;
+		void SetRenderTarget(const std::initializer_list<const std::shared_ptr<Core::Graphics::RenderTexture>>& someRenderTargets, const std::shared_ptr<Core::Graphics::RenderTexture>& aDepthTarget) override;
 		void SetScissorRect(const Math::RectangleT<int>& aRectangle) override;
 		void SetViewMatrix(const Math::Matrix& aMatrix) override;
 		void SetViewport(const Math::Rectangle& aRectangle) override;

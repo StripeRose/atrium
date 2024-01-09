@@ -14,6 +14,11 @@ namespace RoseGold::DirectX12
 	{
 		friend class UploadContext;
 	public:
+		GPUResource() = default;
+		GPUResource(ComPtr<ID3D12Resource> aResource, D3D12_RESOURCE_STATES anInitialUsageState)
+			: myResource(aResource)
+			, myUsageState(anInitialUsageState)
+		{ }
 		virtual ~GPUResource() = default;
 
 		ComPtr<ID3D12Resource> GetResource() const { return myResource; }

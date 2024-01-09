@@ -32,6 +32,7 @@ namespace RoseGold::DirectX12
 		ID3D12Resource* GetDepthResource() const override;
 
 		GPUResource& GetGPUResource() override;
+		GPUResource& GetDepthGPUResource() override;
 
 		bool IsSwapChain() const override { return true; }
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Graphics_Enums.hpp"
-#include "Graphics_RenderTexture.hpp"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -62,8 +62,8 @@ namespace RoseGold::Core::Graphics
 		std::shared_ptr<Shader> PixelShader;
 
 		// (OM) Output merger
-		std::vector<std::shared_ptr<RenderTexture>> Outputs;
-		std::shared_ptr<RenderTexture> DepthTarget;
+		std::vector<GraphicsFormat> OutputFormats;
+		std::optional<GraphicsFormat> DepthTargetFormat;
 	};
 
 	class PipelineState

@@ -23,9 +23,9 @@ namespace RoseGold::Core::Graphics
 		// virtual void Blit(RenderTarget aSource, RenderTarget aTarget, Material aMaterial);
 		// virtual void Blit(RenderTarget aSource, RenderTarget aTarget, Vector2 aScale, Vector2 anOffset);
 
-		virtual void Clear(std::shared_ptr<RenderTexture> aTarget, Color aClearColor);
-		virtual void Clear(std::shared_ptr<RenderTexture> aTarget, float aClearDepth);
-		virtual void Clear(std::shared_ptr<RenderTexture> aTarget, Color aClearColor, float aClearDepth);
+		virtual void Clear(const std::shared_ptr<RenderTexture>& aTarget, Color aClearColor);
+		virtual void Clear(const std::shared_ptr<RenderTexture>& aTarget, float aClearDepth);
+		virtual void Clear(const std::shared_ptr<RenderTexture>& aTarget, Color aClearColor, float aClearDepth);
 
 		// virtual void ConvertTexture(Texture aSource, Texture aDestination);
 
@@ -42,7 +42,7 @@ namespace RoseGold::Core::Graphics
 
 		// virtual void DispatchCompute(ComputeShader aShader);
 
-		virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, int aSubmeshIndex);
+		virtual void DrawMesh(const std::shared_ptr<Mesh>& aMesh, Math::Matrix aMatrix, int aSubmeshIndex);
 		//virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<Material> aMaterial, int aSubmeshIndex);
 
 		// Todo: Figure out mesh instancing.
@@ -52,9 +52,14 @@ namespace RoseGold::Core::Graphics
 		// virtual void SetBufferData(GraphicsBuffer aBuffer, void* someData, size_t aDataSize);
 		// template <typename T> virtual void SetBufferData(GraphicsBuffer aBuffer, const List<T>& someData);
 
-		virtual void SetPipelineState(std::shared_ptr<PipelineState> aPipelineState);
+		virtual void SetPipelineState(const std::shared_ptr<PipelineState>& aPipelineState);
 
 		virtual void SetProjectionMatrix(const Math::Matrix& aMatrix);
+
+		virtual void SetRenderTarget(const std::shared_ptr<RenderTexture>& aRenderTarget);
+		virtual void SetRenderTarget(const std::shared_ptr<RenderTexture>& aRenderTarget, const std::shared_ptr<RenderTexture>& aDepthTarget);
+		virtual void SetRenderTarget(const std::initializer_list<const std::shared_ptr<RenderTexture>>& someRenderTargets);
+		virtual void SetRenderTarget(const std::initializer_list<const std::shared_ptr<RenderTexture>>& someRenderTargets, const std::shared_ptr<RenderTexture>& aDepthTarget);
 
 		virtual void SetScissorRect(const Math::RectangleT<int>& aRectangle);
 

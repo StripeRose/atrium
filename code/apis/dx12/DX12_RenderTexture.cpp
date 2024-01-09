@@ -15,7 +15,7 @@ namespace RoseGold::DirectX12
 	RenderTexture::RenderTexture(Device& aDevice, const Core::Graphics::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
 		: myDescriptor(aDescriptor)
 		, myDevicePtr(&aDevice)
-		, myDepthBuffer(aDepthBuffer)
+		, myDepthResource(aDepthBuffer, D3D12_RESOURCE_STATE_DEPTH_WRITE)
 	{
 		myResource = aColorBuffer;
 		myUsageState = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -81,7 +81,7 @@ namespace RoseGold::DirectX12
 
 		if (myDescriptor.DepthStencilFormat != Core::Graphics::GraphicsFormat::None)
 		{
-			if (!myDepthBuffer)
+			if (!myDepthResource.GetResource())
 			{
 				D3D12_RESOURCE_DESC depthBufferDesc = { };
 				depthBufferDesc.Dimension = ToD3DTextureDimension(myDescriptor.Dimension);
@@ -108,16 +108,20 @@ namespace RoseGold::DirectX12
 				clearValue.DepthStencil.Depth = 1.f; // Farthest distance.
 				clearValue.DepthStencil.Stencil = 0u;
 
+				ComPtr<ID3D12Resource> depthBufferResource;
+
 				AssertAction(aDevice.GetDevice()->CreateCommittedResource(
 					&defaultHeapProperties,
 					D3D12_HEAP_FLAG_NONE,
 					&depthBufferDesc,
 					D3D12_RESOURCE_STATE_DEPTH_WRITE,
 					&clearValue,
-					IID_PPV_ARGS(myDepthBuffer.ReleaseAndGetAddressOf())
+					IID_PPV_ARGS(depthBufferResource.ReleaseAndGetAddressOf())
 				), "Create render texture depth buffer.");
 
-				myDepthBuffer->SetName(L"RenderTexture Depth");
+				depthBufferResource->SetName(L"RenderTexture Depth");
+
+				myDepthResource = GPUResource(depthBufferResource, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 			}
 
 			D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
@@ -125,7 +129,7 @@ namespace RoseGold::DirectX12
 			dsvDesc.ViewDimension = ToDSVTextureDimension(myDescriptor.Dimension);
 
 			myDSVHandle = aDevice.GetDescriptorHeapManager().GetDSVHeap().GetNewHeapHandle();
-			aDevice.GetDevice()->CreateDepthStencilView(myDepthBuffer.Get(), &dsvDesc, myDSVHandle->GetCPUHandle());
+			aDevice.GetDevice()->CreateDepthStencilView(myDepthResource.GetResource().Get(), &dsvDesc, myDSVHandle->GetCPUHandle());
 		}
 	}
 

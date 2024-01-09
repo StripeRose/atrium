@@ -321,23 +321,6 @@ namespace RoseGold::DirectX12
 		myCurrentPipelineState = &aPipelineState;
 		myCommandList->SetPipelineState(aPipelineState.GetPipelineStateObject().Get());
 		myCommandList->SetGraphicsRootSignature(aPipelineState.GetRootSignature()->GetRootSignatureObject().Get());
-
-		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> colorHandles;
-
-		for (std::size_t i = 0; i < aPipelineState.GetOutputs().size(); ++i)
-		{
-			RenderTarget* target = static_cast<RenderTarget*>(aPipelineState.GetOutputs().at(i).get());
-			colorHandles.at(i) = target->GetColorView()->GetCPUHandle();
-		}
-
-		RenderTarget* depthTarget = static_cast<RenderTarget*>(aPipelineState.GetDepthTarget().get());
-		const D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = depthTarget->GetDepthStencilView()->GetCPUHandle();
-
-		myCommandList->OMSetRenderTargets(
-			static_cast<UINT>(aPipelineState.GetOutputs().size()),
-			colorHandles.data(),
-			false,
-			&depthStencilHandle);
 	}
 
 	void FrameGraphicsContext::SetPipelineResource(const VertexBuffer& aBuffer)
@@ -385,6 +368,22 @@ namespace RoseGold::DirectX12
 	void FrameGraphicsContext::SetStencilRef(std::uint32_t aStencilRef)
 	{
 		myCommandList->OMSetStencilRef(aStencilRef);
+	}
+
+	void FrameGraphicsContext::SetRenderTargets(const std::vector<RenderTarget*>& someTargets, RenderTarget* aDepthTarget)
+	{
+		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> colorHandles;
+
+		for (std::size_t i = 0; i < someTargets.size(); ++i)
+			colorHandles.at(i) = someTargets[i]->GetColorView()->GetCPUHandle();
+
+		const D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = aDepthTarget ? aDepthTarget->GetDepthStencilView()->GetCPUHandle() : D3D12_CPU_DESCRIPTOR_HANDLE();
+
+		myCommandList->OMSetRenderTargets(
+			static_cast<UINT>(someTargets.size()),
+			colorHandles.data(),
+			false,
+			&depthStencilHandle);
 	}
 
 	void FrameGraphicsContext::SetViewportAndScissorRect(const Size& aScreenSize)

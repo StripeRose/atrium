@@ -237,9 +237,6 @@ namespace RoseGold::DirectX12
 		const std::shared_ptr<DirectX12::Shader>& GetVertexShader() const { return myVertexShader; }
 		const std::shared_ptr<DirectX12::Shader>& GetPixelShader() const { return myPixelShader; }
 
-		const std::vector<std::shared_ptr<Core::Graphics::RenderTexture>>& GetOutputs() const { return myOutputs; }
-		const std::shared_ptr<Core::Graphics::RenderTexture>& GetDepthTarget() const { return myDepthTarget; }
-
 	private:
 		PipelineState() = default;
 
@@ -247,7 +244,5 @@ namespace RoseGold::DirectX12
 
 		std::shared_ptr<RootSignature> myRootSignature;
 		std::shared_ptr<DirectX12::Shader> myVertexShader, myPixelShader;
-		std::vector<std::shared_ptr<Core::Graphics::RenderTexture>> myOutputs;
-		std::shared_ptr<Core::Graphics::RenderTexture> myDepthTarget;
 	};
 }

@@ -98,7 +98,12 @@ namespace RoseGold::DirectX12
 
 	GPUResource& SwapChain::GetGPUResource()
 	{
-		return *myBackBuffers.at(GetCurrentBufferIndex());
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetGPUResource();
+	}
+
+	GPUResource& SwapChain::GetDepthGPUResource()
+	{
+		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthGPUResource();
 	}
 
 	const Core::Graphics::RenderTextureDescriptor& SwapChain::GetDescriptor() const
@@ -436,7 +441,7 @@ namespace RoseGold::DirectX12
 	void SwapChain::SwapChainBackBuffer::Invalidate()
 	{
 		myResource.Reset();
-		myDepthBuffer.Reset();
+		myDepthResource = GPUResource();
 		myRSVHandle.reset();
 		myDSVHandle.reset();
 	}

@@ -7,6 +7,7 @@
 #include "DX12_GPUResource.hpp"
 #include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Pipeline.hpp"
+#include "DX12_RenderTexture.hpp"
 
 #include <Common_Color.hpp>
 #include <Common_Math.hpp>
@@ -129,6 +130,7 @@ namespace RoseGold::DirectX12
 		void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY aTopology);
 		void SetScissorRect(const Math::RectangleT<int>& aRectangle);
 		void SetStencilRef(std::uint32_t aStencilRef);
+		void SetRenderTargets(const std::vector<RenderTarget*>& someTargets, RenderTarget* aDepthTarget);
 		void SetViewportAndScissorRect(const Size& aScreenSize);
 		void SetViewport(const Math::Rectangle& aRectangle);
 

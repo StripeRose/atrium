@@ -373,34 +373,15 @@ namespace RoseGold::DirectX12
 
 		// Output
 		{
-			psoDesc.NumRenderTargets = 0;
+			psoDesc.NumRenderTargets = static_cast<UINT>(aPipelineStateDescription.OutputFormats.size());
 			psoDesc.SampleDesc.Count = 1;
 
 			psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
-			if (aPipelineStateDescription.DepthTarget)
-			{
-				psoDesc.DSVFormat = ToDXGIFormat(aPipelineStateDescription.DepthTarget->GetDescriptor().DepthStencilFormat);
-				createdPipelineState->myDepthTarget = aPipelineStateDescription.DepthTarget;
-			}
+			if (aPipelineStateDescription.DepthTargetFormat.has_value())
+				psoDesc.DSVFormat = ToDXGIFormat(aPipelineStateDescription.DepthTargetFormat.value());
 
-			for (std::size_t i = 0; i < aPipelineStateDescription.Outputs.size(); ++i)
-			{
-				const std::shared_ptr<Core::Graphics::RenderTexture>& target = aPipelineStateDescription.Outputs[i];
-				if (!target)
-					continue;
-
-				const Core::Graphics::RenderTextureDescriptor& targetDescriptor = target->GetDescriptor();
-				psoDesc.RTVFormats[psoDesc.NumRenderTargets] = ToDXGIFormat(targetDescriptor.ColorGraphicsFormat);
-				psoDesc.NumRenderTargets += 1;
-				createdPipelineState->myOutputs.push_back(target);
-
-				// If no depth-stencil has been defined, use the first one available.
-				if (psoDesc.DSVFormat == DXGI_FORMAT_UNKNOWN)
-				{
-					psoDesc.DSVFormat = ToDXGIFormat(targetDescriptor.DepthStencilFormat);
-					createdPipelineState->myDepthTarget = target;
-				}
-			}
+			for (std::size_t i = 0; i < aPipelineStateDescription.OutputFormats.size(); ++i)
+				psoDesc.RTVFormats[i] = ToDXGIFormat(aPipelineStateDescription.OutputFormats[i]);
 		}
 
 		// Create the raster pipeline state

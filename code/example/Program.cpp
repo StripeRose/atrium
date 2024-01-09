@@ -18,8 +18,8 @@
 std::chrono::high_resolution_clock::time_point ourStartTime;
 std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> ourRT1, ourRT2;
 
-std::shared_ptr<RoseGold::Core::Graphics::PipelineState> ourRT1GenericMeshPipelineState, ourRT2GenericMeshPipelineState;
-std::shared_ptr<RoseGold::Core::Graphics::PipelineState> ourRT1ColoredMeshPipelineState, ourRT2ColoredMeshPipelineState;
+std::shared_ptr<RoseGold::Core::Graphics::PipelineState> ourGenericMeshPipelineState;
+std::shared_ptr<RoseGold::Core::Graphics::PipelineState> ourColoredMeshPipelineState;
 
 std::shared_ptr<RoseGold::Core::Graphics::Texture2D> ourDDSFile;
 std::shared_ptr<RoseGold::Core::Graphics::Mesh> ourColoredCube, ourGenericPlane, ourGenericSphere;
@@ -63,32 +63,23 @@ void SetupResources(RoseGold::Client::BootstrapResult& roseGold)
 		using namespace RoseGold::Core::Graphics;
 		RoseGold::Core::Graphics::PipelineStateDescription pipelineState;
 		pipelineState.InputLayout = ourColoredCube->GetInputLayout();
+		pipelineState.OutputFormats = { ourRT1->GetDescriptor().ColorGraphicsFormat };
+		pipelineState.DepthTargetFormat = ourRT1->GetDescriptor().DepthStencilFormat;
 
 		pipelineState.VertexShader = roseGold.GraphicsManager->CreateShader("shaders/MeshVertex.hlsl", RoseGold::Core::Graphics::Shader::Type::Vertex, "ColoredMesh");
 		pipelineState.PixelShader = roseGold.GraphicsManager->CreateShader("shaders/MeshPixel.hlsl", RoseGold::Core::Graphics::Shader::Type::Pixel);
-		
-		pipelineState.Outputs = { ourRT1 };
-		ourRT1ColoredMeshPipelineState = roseGold.GraphicsManager->CreateOrGetPipelineState(pipelineState);
-
-		pipelineState.Outputs = { ourRT2 };
-		ourRT2ColoredMeshPipelineState = roseGold.GraphicsManager->CreateOrGetPipelineState(pipelineState);
+		ourColoredMeshPipelineState = roseGold.GraphicsManager->CreateOrGetPipelineState(pipelineState);
 
 		pipelineState.InputLayout = ourGenericPlane->GetInputLayout();
 		pipelineState.VertexShader = roseGold.GraphicsManager->CreateShader("shaders/MeshVertex.hlsl", RoseGold::Core::Graphics::Shader::Type::Vertex, "GenericMesh");
-		pipelineState.Outputs = { ourRT1 };
-		ourRT1GenericMeshPipelineState = roseGold.GraphicsManager->CreateOrGetPipelineState(pipelineState);
-
-		pipelineState.Outputs = { ourRT2 };
-		ourRT2GenericMeshPipelineState = roseGold.GraphicsManager->CreateOrGetPipelineState(pipelineState);
+		ourGenericMeshPipelineState = roseGold.GraphicsManager->CreateOrGetPipelineState(pipelineState);
 	}
 }
 
 void CleanupResources()
 {
-	ourRT1GenericMeshPipelineState.reset();
-	ourRT2GenericMeshPipelineState.reset();
-	ourRT1ColoredMeshPipelineState.reset();
-	ourRT2ColoredMeshPipelineState.reset();
+	ourGenericMeshPipelineState.reset();
+	ourColoredMeshPipelineState.reset();
 	ourColoredCube.reset();
 	ourGenericPlane.reset();
 	ourGenericSphere.reset();
@@ -123,10 +114,11 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 				buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT1->GetWidth()), static_cast<float>(ourRT1->GetHeight()) }));
 				buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT1->GetWidth()), static_cast<int>(ourRT1->GetHeight()) }));
 
-				buffer.SetPipelineState(ourRT1GenericMeshPipelineState);
+				buffer.SetPipelineState(ourGenericMeshPipelineState);
+				buffer.SetRenderTarget(ourRT1);
 				buffer.DrawMesh(ourGenericPlane, RoseGold::Math::MakeMatrix::Translation(0, -1.5f, 0), 0);
 				buffer.DrawMesh(ourGenericSphere, RoseGold::Math::MakeMatrix::Scale(0.5f) * RoseGold::Math::MakeMatrix::Translation(0, 1, 0), 0);
-				buffer.SetPipelineState(ourRT1ColoredMeshPipelineState);
+				buffer.SetPipelineState(ourColoredMeshPipelineState);
 				buffer.DrawMesh(ourColoredCube, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), 0);
 			}
 
@@ -139,9 +131,10 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 				buffer.SetViewport(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, { static_cast<float>(ourRT2->GetWidth()), static_cast<float>(ourRT2->GetHeight()) }));
 				buffer.SetScissorRect(RoseGold::Math::RectangleT<int>::FromExtents({ 0, 0 }, { static_cast<int>(ourRT2->GetWidth()), static_cast<int>(ourRT2->GetHeight()) }));
 
-				buffer.SetPipelineState(ourRT2ColoredMeshPipelineState);
+				buffer.SetPipelineState(ourColoredMeshPipelineState);
+				buffer.SetRenderTarget(ourRT2);
 				buffer.DrawMesh(ourColoredCube, RoseGold::Math::MakeMatrix::RotationX(secondsSinceStart), 0);
-				buffer.SetPipelineState(ourRT2GenericMeshPipelineState);
+				buffer.SetPipelineState(ourGenericMeshPipelineState);
 				buffer.DrawMesh(ourGenericPlane, RoseGold::Math::MakeMatrix::Translation(0, 1.5f, 0), 0);
 				buffer.DrawMesh(ourGenericSphere, RoseGold::Math::MakeMatrix::Translation(2.f, 0, 0), 0);
 			}
@@ -150,12 +143,14 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 
 	{
 		GraphicsTask& clearWindow1 = clearTask.CreateTask("Clear window 1");
+		if (ourRT1)
 		{
 			CommandBuffer& buffer = clearWindow1.AddWork();
 			buffer.Clear(ourRT1, RoseGold::Color::Predefined::CornflowerBlue, 1.f);
 		}
 
 		GraphicsTask& clearWindow2 = clearTask.CreateTask("Clear window 2");
+		if (ourRT2)
 		{
 			CommandBuffer& buffer = clearWindow2.AddWork();
 			buffer.Clear(ourRT2, RoseGold::Color::Predefined::Black, 1.f);
