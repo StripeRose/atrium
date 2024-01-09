@@ -170,7 +170,7 @@ namespace RoseGold::DirectX12
 			if ((textureUploadHeapOffset + currentUpload.BufferSize) > myTextureUploadHeap->GetStride())
 				break;
 
-			myTextureUploadHeap->SetData(textureUploadHeapOffset, currentUpload.Resource.get(), static_cast<std::uint32_t>(currentUpload.BufferSize));
+			myTextureUploadHeap->SetData(textureUploadHeapOffset, currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize));
 			CopyTextureRegion(*myTextureUploadHeap, textureUploadHeapOffset, currentUpload.SubresourceLayouts, currentUpload.SubresourceCount, *currentUpload.Resource);
 
 			textureUploadHeapOffset += currentUpload.BufferSize;
