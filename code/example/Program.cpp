@@ -94,6 +94,7 @@ void CleanupResources()
 	ourGenericSphere.reset();
 	ourRT1.reset();
 	ourRT2.reset();
+	ourDDSFile.reset();
 }
 
 void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)

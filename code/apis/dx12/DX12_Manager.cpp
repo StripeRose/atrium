@@ -42,6 +42,8 @@ namespace RoseGold::DirectX12
 	{
 		Debug::Log("DX12 stop");
 
+		myDefaultRootSignature.reset();
+
 		myUploadContext.reset();
 		myFrameGraphicsContext.reset();
 
