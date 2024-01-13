@@ -68,7 +68,7 @@ void Populate_Position(inout VertexOutput aVertex, in float3 aPosition)
     const float4 projectionPosition = mul(cameraSpacePosition, ProjectionMatrix);
     
     aVertex.WorldPosition = worldPosition.xyz;
-    aVertex.ScreenPosition = projectionPosition / projectionPosition.w;
+    aVertex.ScreenPosition = projectionPosition;
     aVertex.ScreenCoordinate = aVertex.ScreenPosition.xy;
     aVertex.ScreenCoordinate.y *= -1;
     aVertex.ScreenCoordinate /= 2;
