@@ -92,10 +92,10 @@ namespace RoseGold::DirectX12
 		switch (aType)
 		{
 		case Shader::Type::Vertex:
-			return Shader::CreateFromSource(aSource, anEntryPoint, "vs_5_0");
+			return Shader::CreateFromSource(aSource, anEntryPoint, "vs_5_1");
 
 		case Shader::Type::Pixel:
-			return Shader::CreateFromSource(aSource, anEntryPoint, "ps_5_0");
+			return Shader::CreateFromSource(aSource, anEntryPoint, "ps_5_1");
 
 		default:
 			return nullptr;
@@ -210,6 +210,10 @@ namespace RoseGold::DirectX12
 
 		signature.SetVisibility(D3D12_SHADER_VISIBILITY_PIXEL);
 		{
+			signature.AddDescriptorTable()
+				.AddSRVRange(16, 0, RootParameterUpdateFrequency::PerMaterial)
+				;
+
 			signature.AddSampler(0) // Wrapping Point
 				.Filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
 				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)

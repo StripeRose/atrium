@@ -127,6 +127,7 @@ namespace RoseGold::DirectX12
 		void SetPipelineState(PipelineState& aPipelineState);
 		void SetPipelineResource(const VertexBuffer& aBuffer);
 		void SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, void* someData, std::size_t aDataSize);
+		void SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture);
 		void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY aTopology);
 		void SetScissorRect(const Math::RectangleT<int>& aRectangle);
 		void SetStencilRef(std::uint32_t aStencilRef);

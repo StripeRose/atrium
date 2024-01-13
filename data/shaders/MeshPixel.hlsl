@@ -1,3 +1,9 @@
+
+Texture2D<float4> tex : register(t0, space1);
+SamplerState wrapPoint : register(s0, space4);
+SamplerState wrapLinj : register(s1, space4);
+SamplerState wrapAniso : register(s2, space4);
+
 struct PixelInput
 {
     float4 ScreenPosition : SV_Position;
@@ -24,5 +30,8 @@ float4 main(PixelInput anInput) : SV_TARGET
     
     const float3 totalLight = saturate((skyColor * skyDiffuse) + (sunColor * sunDiffuse) + (ambientColor * ambientLight));
     
-    return float4(totalLight * anInput.Color.rgb, 1.0f);
+    const float textureRed = tex.Sample(wrapPoint, anInput.UV).r;
+    const float textureScalar = clamp(textureRed, 0.4f, 0.9f);
+    
+    return float4(textureScalar * totalLight * anInput.Color.rgb, 1.0f);
 }

@@ -116,10 +116,10 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 
 				buffer.SetPipelineState(ourGenericMeshPipelineState);
 				buffer.SetRenderTarget(ourRT1);
-				buffer.DrawMesh(ourGenericPlane, RoseGold::Math::MakeMatrix::Translation(0, -1.5f, 0), 0);
-				buffer.DrawMesh(ourGenericSphere, RoseGold::Math::MakeMatrix::Scale(0.5f) * RoseGold::Math::MakeMatrix::Translation(0, 1, 0), 0);
+				buffer.DrawMesh(ourGenericPlane, RoseGold::Math::MakeMatrix::Translation(0, -1.5f, 0), ourDDSFile, 0);
+				buffer.DrawMesh(ourGenericSphere, RoseGold::Math::MakeMatrix::Scale(0.5f) * RoseGold::Math::MakeMatrix::Translation(0, 1, 0), ourDDSFile, 0);
 				buffer.SetPipelineState(ourColoredMeshPipelineState);
-				buffer.DrawMesh(ourColoredCube, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), 0);
+				buffer.DrawMesh(ourColoredCube, RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart), ourDDSFile, 0);
 			}
 
 			if (ourRT2)
@@ -133,10 +133,10 @@ void DrawFrame(RoseGold::Core::Graphics::Manager& aManager)
 
 				buffer.SetPipelineState(ourColoredMeshPipelineState);
 				buffer.SetRenderTarget(ourRT2);
-				buffer.DrawMesh(ourColoredCube, RoseGold::Math::MakeMatrix::RotationX(secondsSinceStart), 0);
+				buffer.DrawMesh(ourColoredCube, RoseGold::Math::MakeMatrix::RotationX(secondsSinceStart), ourDDSFile, 0);
 				buffer.SetPipelineState(ourGenericMeshPipelineState);
-				buffer.DrawMesh(ourGenericPlane, RoseGold::Math::MakeMatrix::Translation(0, 1.5f, 0), 0);
-				buffer.DrawMesh(ourGenericSphere, RoseGold::Math::MakeMatrix::Translation(2.f, 0, 0), 0);
+				buffer.DrawMesh(ourGenericPlane, RoseGold::Math::MakeMatrix::Translation(0, 1.5f, 0), ourDDSFile, 0);
+				buffer.DrawMesh(ourGenericSphere, RoseGold::Math::MakeMatrix::Translation(2.f, 0, 0), ourDDSFile, 0);
 			}
 		}
 	}

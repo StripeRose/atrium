@@ -56,14 +56,14 @@ namespace RoseGold::Core::Graphics
 		);
 	}
 
-	void CommandBuffer::DrawMesh(const std::shared_ptr<Mesh>& aMesh, Math::Matrix aMatrix, int aSubmeshIndex)
+	void CommandBuffer::DrawMesh(const std::shared_ptr<Mesh>& aMesh, Math::Matrix aMatrix, const std::shared_ptr<Texture>& aTexture, int aSubmeshIndex)
 	{
 		Debug::Assert(!!aMesh, "DrawMesh(aMesh, aMatrix, aSubmeshIndex) requires mesh to be non-null.");
 
 		myRecordedCommands.emplace_back(
-			[aMesh, aMatrix, aSubmeshIndex](CommandBuffer& aBuffer)
+			[aMesh, aMatrix, aTexture, aSubmeshIndex](CommandBuffer& aBuffer)
 			{
-				aBuffer.DrawMesh(aMesh, aMatrix, aSubmeshIndex);
+				aBuffer.DrawMesh(aMesh, aMatrix, aTexture, aSubmeshIndex);
 			}
 		);
 	}

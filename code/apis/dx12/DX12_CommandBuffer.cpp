@@ -55,9 +55,9 @@ namespace RoseGold::DirectX12
 		myGraphicsContext.DisableScissorRect();
 	}
 
-	void ResolvedCommandBuffer::DrawMesh(const std::shared_ptr<Core::Graphics::Mesh>& aMesh, Math::Matrix aMatrix, int aSubmeshIndex)
+	void ResolvedCommandBuffer::DrawMesh(const std::shared_ptr<Core::Graphics::Mesh>& aMesh, Math::Matrix aMatrix, const std::shared_ptr<Core::Graphics::Texture>& aTexture, int aSubmeshIndex)
 	{
-		Debug::Assert(!!aMesh, "DrawMesh(aMesh, aMatrix, aSubmeshIndex) requires mesh to be non-null.");
+		Debug::Assert(!!aMesh, "DrawMesh(aMesh, aMatrix, aTexture, aSubmeshIndex) requires mesh to be non-null.");
 
 		std::shared_ptr<const VertexBuffer> vertexBuffer = std::static_pointer_cast<const VertexBuffer>(aMesh->GetVertexBuffer());
 		if (!vertexBuffer->IsReady())
@@ -81,6 +81,15 @@ namespace RoseGold::DirectX12
 			0,
 			&cameraConstants,
 			sizeof(CameraConstants));
+
+		if (aTexture)
+		{
+			myGraphicsContext.SetPipelineResource(
+				RootParameterUpdateFrequency::PerMaterial,
+				0,
+				aTexture
+			);
+		}
 
 		myGraphicsContext.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		myGraphicsContext.SetPipelineResource(*vertexBuffer);

@@ -3,6 +3,7 @@
 #include "Graphics_Mesh.hpp"
 #include "Graphics_Pipeline.hpp"
 #include "Graphics_RenderTexture.hpp"
+#include "Graphics_Texture.hpp"
 
 #include "Common_Color.hpp"
 
@@ -42,7 +43,7 @@ namespace RoseGold::Core::Graphics
 
 		// virtual void DispatchCompute(ComputeShader aShader);
 
-		virtual void DrawMesh(const std::shared_ptr<Mesh>& aMesh, Math::Matrix aMatrix, int aSubmeshIndex);
+		virtual void DrawMesh(const std::shared_ptr<Mesh>& aMesh, Math::Matrix aMatrix, const std::shared_ptr<Texture>& aTexture, int aSubmeshIndex);
 		//virtual void DrawMesh(std::shared_ptr<Mesh> aMesh, Math::Matrix aMatrix, std::shared_ptr<Material> aMaterial, int aSubmeshIndex);
 
 		// Todo: Figure out mesh instancing.

@@ -1,5 +1,6 @@
 // Filter "Frame contexts"
 
+#include "DX12_DDS.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_FrameContext.hpp"
@@ -359,6 +360,36 @@ namespace RoseGold::DirectX12
 			1,
 			gpuBuffer->GetCPUHandle(),
 			cpuBuffer->GetViewHandle().GetCPUHandle(),
+			renderPassHeap.GetHeapType()
+		);
+
+		myCommandList->SetGraphicsRootDescriptorTable(parameterIndex.value(), gpuBuffer->GetGPUHandle());
+	}
+
+	void FrameGraphicsContext::SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture)
+	{
+		Debug::Assert(!!aTexture, "Has a valid texture.");
+
+		const std::optional<unsigned int> parameterIndex = myCurrentPipelineState->GetRootSignature()->GetParameterIndex(
+			anUpdateFrequency,
+			RootParameterMapping::RegisterType::Texture,
+			aRegisterIndex
+		);
+
+		if (!parameterIndex.has_value())
+		{
+			Debug::LogError("Root parameter missing for register t%i, space%i", aRegisterIndex, static_cast<unsigned int>(anUpdateFrequency));
+			return;
+		}
+
+		RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
+		std::shared_ptr<DescriptorHeapHandle> gpuBuffer = renderPassHeap.GetHeapHandleBlock(1);
+
+		Texture2D_DDS* dds = static_cast<Texture2D_DDS*>(aTexture.get());
+		myDevice.GetDevice()->CopyDescriptorsSimple(
+			1,
+			gpuBuffer->GetCPUHandle(),
+			dds->GetSRVHandle()->GetCPUHandle(),
 			renderPassHeap.GetHeapType()
 		);
 
