@@ -331,15 +331,21 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, void* someData, std::size_t aDataSize)
 	{
-		const std::optional<unsigned int> parameterIndex = myCurrentPipelineState->GetRootSignature()->GetParameterIndex(
+		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
 			RootParameterMapping::RegisterType::ConstantBuffer,
 			aRegisterIndex
 		);
 
-		if (!parameterIndex.has_value())
+		if (!parameterInfo.has_value())
 		{
 			Debug::LogError("Root parameter missing for register c%i, space%i", aRegisterIndex, static_cast<unsigned int>(anUpdateFrequency));
+			return;
+		}
+
+		if (parameterInfo.value().Count != 1)
+		{
+			Debug::LogError("Root parameter %i requires more than 1 resources.", parameterInfo.value().RootParameterIndex);
 			return;
 		}
 
@@ -363,27 +369,27 @@ namespace RoseGold::DirectX12
 			renderPassHeap.GetHeapType()
 		);
 
-		myCommandList->SetGraphicsRootDescriptorTable(parameterIndex.value(), gpuBuffer->GetGPUHandle());
+		myCommandList->SetGraphicsRootDescriptorTable(parameterInfo.value().RootParameterIndex, gpuBuffer->GetGPUHandle());
 	}
 
 	void FrameGraphicsContext::SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture)
 	{
 		Debug::Assert(!!aTexture, "Has a valid texture.");
 
-		const std::optional<unsigned int> parameterIndex = myCurrentPipelineState->GetRootSignature()->GetParameterIndex(
+		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
 			RootParameterMapping::RegisterType::Texture,
 			aRegisterIndex
 		);
 
-		if (!parameterIndex.has_value())
+		if (!parameterInfo.has_value())
 		{
 			Debug::LogError("Root parameter missing for register t%i, space%i", aRegisterIndex, static_cast<unsigned int>(anUpdateFrequency));
 			return;
 		}
 
 		RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
-		std::shared_ptr<DescriptorHeapHandle> gpuBuffer = renderPassHeap.GetHeapHandleBlock(1);
+		std::shared_ptr<DescriptorHeapHandle> gpuBuffer = renderPassHeap.GetHeapHandleBlock(parameterInfo.value().Count);
 
 		Texture2D_DDS* dds = static_cast<Texture2D_DDS*>(aTexture.get());
 		myDevice.GetDevice()->CopyDescriptorsSimple(
@@ -393,7 +399,26 @@ namespace RoseGold::DirectX12
 			renderPassHeap.GetHeapType()
 		);
 
-		myCommandList->SetGraphicsRootDescriptorTable(parameterIndex.value(), gpuBuffer->GetGPUHandle());
+		// Setup null descriptors for remaining slots
+		D3D12_SHADER_RESOURCE_VIEW_DESC nullDesc = { };
+		nullDesc.Format = dds->GetDXGIFormat();
+		nullDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		nullDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		nullDesc.Texture2D.MipLevels = 1;
+		nullDesc.Texture2D.MostDetailedMip = 0;
+		nullDesc.Texture2D.PlaneSlice = 0;
+		nullDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+		for (unsigned int i = 1; i < parameterInfo.value().Count; ++i)
+		{
+			myDevice.GetDevice()->CreateShaderResourceView(
+				nullptr,
+				&nullDesc,
+				gpuBuffer->GetCPUHandle(i)
+				);
+		}
+
+		myCommandList->SetGraphicsRootDescriptorTable(parameterInfo.value().RootParameterIndex, gpuBuffer->GetGPUHandle());
 	}
 
 	void FrameGraphicsContext::SetStencilRef(std::uint32_t aStencilRef)

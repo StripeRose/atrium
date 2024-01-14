@@ -33,7 +33,7 @@ namespace RoseGold::DirectX12
 		return table;
 	}
 
-	std::optional<unsigned int> RootParameterMapping::GetParameterIndex(RootParameterUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex) const
+	std::optional<RootParameterMapping::ParameterInfo> RootParameterMapping::GetParameterInfo(RootParameterUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex) const
 	{
 		for (const auto& param : mySingleParameters)
 		{
@@ -41,7 +41,12 @@ namespace RoseGold::DirectX12
 			if (p.myUpdateFrequency == anUpdateFrequency &&
 				p.myRegisterType == aRegisterType &&
 				p.myRegisterIndex == aRegisterIndex)
-				return param.second;
+			{
+				ParameterInfo info;
+				info.RootParameterIndex = param.second;
+				info.Count = 1;
+				return info;
+			}
 		}
 
 		for (const auto& table : myTableParameters)
@@ -54,7 +59,12 @@ namespace RoseGold::DirectX12
 
 				if (aRegisterIndex >= range.myRegisterIndex &&
 					aRegisterIndex < (range.myRegisterIndex + range.myCount))
-					return table.myRootParameterIndex;
+				{
+					ParameterInfo info;
+					info.RootParameterIndex = table.myRootParameterIndex;
+					info.Count = range.myCount;
+					return info;
+				}
 			}
 		}
 

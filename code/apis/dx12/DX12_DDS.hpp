@@ -24,6 +24,7 @@ namespace RoseGold::DirectX12
 	public:
 		static std::shared_ptr<Texture2D_DDS> LoadFromFile(const std::filesystem::path& aPath, Device& aDevice, UploadContext& anUploader);
 
+		DXGI_FORMAT GetDXGIFormat() const { return myMetadata.format; }
 		const std::shared_ptr<DescriptorHeapHandle>& GetSRVHandle() const { return mySRVHandle; }
 
 		// Implements Texture

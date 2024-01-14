@@ -211,7 +211,7 @@ namespace RoseGold::DirectX12
 		signature.SetVisibility(D3D12_SHADER_VISIBILITY_PIXEL);
 		{
 			signature.AddDescriptorTable()
-				.AddSRVRange(16, 0, RootParameterUpdateFrequency::PerMaterial)
+				.AddSRVRange(4, 0, RootParameterUpdateFrequency::PerMaterial)
 				;
 
 			signature.AddSampler(0) // Wrapping Point

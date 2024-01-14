@@ -10,6 +10,20 @@ namespace RoseGold::DirectX12
 			myHeap->FreeHeapHandle(*this);
 	}
 
+	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeapHandle::GetCPUHandle(unsigned int anIndex) const
+	{
+		D3D12_CPU_DESCRIPTOR_HANDLE handle = myCPUHandle;
+		handle.ptr += (myHeap->GetDescriptorSize() * anIndex);
+		return handle;
+	}
+
+	D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeapHandle::GetGPUHandle(unsigned int anIndex) const
+	{
+		D3D12_GPU_DESCRIPTOR_HANDLE handle = myGPUHandle;
+		handle.ptr += (myHeap->GetDescriptorSize() * anIndex);
+		return handle;
+	}
+
 	DescriptorHeap::DescriptorHeap(ComPtr<ID3D12Device> aDevice, D3D12_DESCRIPTOR_HEAP_TYPE aHeapType, std::uint32_t aNumDescriptors, bool anIsReferencedByShader)
 		: myHeapType(aHeapType)
 		, myMaxDescriptors(aNumDescriptors)

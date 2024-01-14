@@ -56,6 +56,12 @@ namespace RoseGold::DirectX12
 			unsigned int myRootParameterIndex;
 		};
 
+		struct ParameterInfo
+		{
+			unsigned int RootParameterIndex;
+			unsigned int Count;
+		};
+
 	public:
 		void AddMapping(
 			RootParameterUpdateFrequency anUpdateFrequency,
@@ -65,7 +71,7 @@ namespace RoseGold::DirectX12
 
 		Table& AddTable();
 		
-		std::optional<unsigned int> GetParameterIndex(
+		std::optional<ParameterInfo> GetParameterInfo(
 			RootParameterUpdateFrequency anUpdateFrequency,
 			RegisterType aRegisterType,
 			unsigned int aRegisterIndex
@@ -85,13 +91,13 @@ namespace RoseGold::DirectX12
 	public:
 		const ComPtr<ID3D12RootSignature>& GetRootSignatureObject() const { return myRootSignature; }
 
-		std::optional<unsigned int> GetParameterIndex(
+		std::optional<RootParameterMapping::ParameterInfo> GetParameterInfo(
 			RootParameterUpdateFrequency anUpdateFrequency,
 			RootParameterMapping::RegisterType aRegisterType,
 			unsigned int aRegisterIndex
 		) const
 		{
-			return myParameterMapping.GetParameterIndex(anUpdateFrequency, aRegisterType, aRegisterIndex);
+			return myParameterMapping.GetParameterInfo(anUpdateFrequency, aRegisterType, aRegisterIndex);
 		}
 
 	private:

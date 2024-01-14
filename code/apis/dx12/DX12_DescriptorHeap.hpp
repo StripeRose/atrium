@@ -27,7 +27,9 @@ namespace RoseGold::DirectX12
         ~DescriptorHeapHandle();
 
         D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() const { return myCPUHandle; }
+        D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle(unsigned int anIndex) const;
         D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle() const { return myGPUHandle; }
+        D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(unsigned int anIndex) const;
         std::uint32_t GetHeapIndex() const { return myHeapIndex; }
 
         void SetCPUHandle(D3D12_CPU_DESCRIPTOR_HANDLE aCPUHandle) { myCPUHandle = aCPUHandle; }
