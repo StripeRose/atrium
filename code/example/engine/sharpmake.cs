@@ -1,19 +1,20 @@
 using System.IO;
 using Sharpmake;
 
-[module: Sharpmake.Include("../.sharpmake/project.sharpmake.cs")]
-[module: Sharpmake.Include("../libraries/rose-common.sharpmake.cs")]
-[module: Sharpmake.Include("../modules/sharpmake.cs")]
+[module: Sharpmake.Include("../../.sharpmake/project.sharpmake.cs")]
+[module: Sharpmake.Include("../../engine/sharpmake.cs")]
+[module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
+[module: Sharpmake.Include("../../modules/sharpmake.cs")]
 
-namespace ExampleGame
+namespace RoseGold.Example
 {
     [Generate]
-    public class ExampleGame : RoseGold.Executable
+    public class Example_Engine : RoseGold.Executable
     {
-        public ExampleGame()
+        public Example_Engine()
         {
-            Name = "Example game";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "example");
+            Name = "Example game (Engine)";
+            SourceRootPath = Path.Combine(Globals.RootDirectory, "example", "engine");
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)
@@ -21,6 +22,7 @@ namespace ExampleGame
             base.ConfigureAll(conf, target);
 
             conf.AddPrivateDependency<RoseCommon>(target);
+            conf.AddPrivateDependency<RoseGold.Engine>(target);
 
             // Add explicit dependencies to all available core modules.
             // Todo: For non-editor builds, only depend on the actually used modules.
@@ -29,11 +31,11 @@ namespace ExampleGame
     }
 
     [Generate]
-    public class ExampleGameSolution : RoseGold.Solution
+    public class ExampleGame_EngineSolution : RoseGold.Solution
     {
-        public ExampleGameSolution()
+        public ExampleGame_EngineSolution()
         {
-            Name = "Example game";
+            Name = "Example game (Engine)";
 
             AddTargets(new Target(
                 Sharpmake.Platform.win32 | Sharpmake.Platform.win64,
@@ -44,7 +46,7 @@ namespace ExampleGame
         public override void ConfigureAll(Solution.Configuration conf, Target target)
         {
             base.ConfigureAll(conf, target);
-            conf.AddProject<ExampleGame>(target);
+            conf.AddProject<Example_Engine>(target);
         }
     }
 
@@ -54,9 +56,9 @@ namespace ExampleGame
         public static void SharpmakeMain(Sharpmake.Arguments arguments)
         {
             FileInfo fileInfo = Util.GetCurrentSharpmakeFileInfo();
-            Globals.RootDirectory = Util.SimplifyPath(Path.Combine(fileInfo.DirectoryName, ".."));
+            Globals.RootDirectory = Util.SimplifyPath(Path.Combine(fileInfo.DirectoryName, "..", ".."));
             
-            arguments.Generate<ExampleGameSolution>();
+            arguments.Generate<ExampleGame_EngineSolution>();
         }
     }
 }

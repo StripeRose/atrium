@@ -32,10 +32,9 @@ namespace RoseGold::DirectX12
 
 		std::shared_ptr<Core::Graphics::Shader> CreateShader(const std::filesystem::path& aSource, Core::Graphics::Shader::Type aType, const char* anEntryPoint) override;
 
-		void ExecuteCommandBuffer(const Core::Graphics::CommandBuffer& aCommandBuffer) override;
-		void ExecuteTask(const Core::Graphics::GraphicsTask& aGraphicsTask) override;
-
 		CommandQueueManager& GetCommandQueueManager() { return *myCommandQueueManager.get(); }
+
+		Core::Graphics::FrameContext& GetCurrentFrameContext() override;
 
 		std::shared_ptr<SwapChain> GetSwapChain(Core::Platform::Window& aWindow);
 

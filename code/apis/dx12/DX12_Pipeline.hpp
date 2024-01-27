@@ -5,6 +5,7 @@
 #include "DX12_ComPtr.hpp"
 #include "DX12_Shader.hpp"
 
+#include <Graphics_FrameContext.hpp>
 #include <Graphics_Pipeline.hpp>
 #include <Graphics_RenderTexture.hpp>
 
@@ -17,8 +18,6 @@
 
 namespace RoseGold::DirectX12
 {
-	enum class RootParameterUpdateFrequency { PerObject, PerMaterial, PerPass, PerFrame, Constant };
-
 	class RootParameterMapping
 	{
 	public:
@@ -33,7 +32,7 @@ namespace RoseGold::DirectX12
 	private:
 		struct Parameter
 		{
-			RootParameterUpdateFrequency myUpdateFrequency;
+			Core::Graphics::ResourceUpdateFrequency myUpdateFrequency;
 			RegisterType myRegisterType;
 			unsigned int myRegisterIndex;
 			unsigned int myCount;
@@ -45,7 +44,7 @@ namespace RoseGold::DirectX12
 			friend RootParameterMapping;
 		public:
 			void AddMapping(
-				RootParameterUpdateFrequency anUpdateFrequency,
+				Core::Graphics::ResourceUpdateFrequency anUpdateFrequency,
 				RegisterType aRegisterType,
 				unsigned int aRegisterIndex,
 				unsigned int aCount
@@ -64,7 +63,7 @@ namespace RoseGold::DirectX12
 
 	public:
 		void AddMapping(
-			RootParameterUpdateFrequency anUpdateFrequency,
+			Core::Graphics::ResourceUpdateFrequency anUpdateFrequency,
 			RegisterType aRegisterType,
 			unsigned int aRegisterIndex
 		);
@@ -72,7 +71,7 @@ namespace RoseGold::DirectX12
 		Table& AddTable();
 		
 		std::optional<ParameterInfo> GetParameterInfo(
-			RootParameterUpdateFrequency anUpdateFrequency,
+			Core::Graphics::ResourceUpdateFrequency anUpdateFrequency,
 			RegisterType aRegisterType,
 			unsigned int aRegisterIndex
 		) const;
@@ -92,7 +91,7 @@ namespace RoseGold::DirectX12
 		const ComPtr<ID3D12RootSignature>& GetRootSignatureObject() const { return myRootSignature; }
 
 		std::optional<RootParameterMapping::ParameterInfo> GetParameterInfo(
-			RootParameterUpdateFrequency anUpdateFrequency,
+			Core::Graphics::ResourceUpdateFrequency anUpdateFrequency,
 			RootParameterMapping::RegisterType aRegisterType,
 			unsigned int aRegisterIndex
 		) const
@@ -120,7 +119,7 @@ namespace RoseGold::DirectX12
 			enum class Type { Table, Constant, CBV, SRV, UAV, Sampler } myType = Type::Constant;
 
 			unsigned int myShaderRegister = 0;
-			RootParameterUpdateFrequency myUpdateFrequency = RootParameterUpdateFrequency::PerObject;
+			Core::Graphics::ResourceUpdateFrequency myUpdateFrequency = Core::Graphics::ResourceUpdateFrequency::PerObject;
 			unsigned int myCount = 0;
 			D3D12_SHADER_VISIBILITY myVisibility = D3D12_SHADER_VISIBILITY_ALL;
 		};
@@ -130,15 +129,15 @@ namespace RoseGold::DirectX12
 		{
 			friend RootSignatureCreator;
 		public:
-			DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::CBV, aCount, aRegister, anUpdateFrequency); }
-			DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::SRV, aCount, aRegister, anUpdateFrequency); }
-			DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::UAV, aCount, aRegister, anUpdateFrequency); }
-			DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::Sampler, aCount, aRegister, anUpdateFrequency); }
+			DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::CBV, aCount, aRegister, anUpdateFrequency); }
+			DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::SRV, aCount, aRegister, anUpdateFrequency); }
+			DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::UAV, aCount, aRegister, anUpdateFrequency); }
+			DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::Sampler, aCount, aRegister, anUpdateFrequency); }
 
 		private:
 			DescriptorTable() { myType = Type::Table; }
 
-			DescriptorTable& AddRange(Parameter::Type aType, unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency)
+			DescriptorTable& AddRange(Parameter::Type aType, unsigned int aCount, unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency)
 			{
 				Parameter& param = myRanges.emplace_back();
 				param.myType = aType;
@@ -182,9 +181,9 @@ namespace RoseGold::DirectX12
 		};
 
 	public:
-		void AddCBV(unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::CBV, aRegister, anUpdateFrequency); }
-		void AddConstant(unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency); }
-		void AddConstants(unsigned int aCount, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency).myCount = aCount; }
+		void AddCBV(unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::CBV, aRegister, anUpdateFrequency); }
+		void AddConstant(unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency); }
+		void AddConstants(unsigned int aCount, unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency).myCount = aCount; }
 
 		DescriptorTable& AddDescriptorTable() { return AddParameter<DescriptorTable>(); }
 
@@ -193,12 +192,12 @@ namespace RoseGold::DirectX12
 			Sampler& sampler = myStaticSamplers.emplace_back();
 			sampler.ShaderVisibility = myCurrentVisibility;
 			sampler.ShaderRegister = aRegister;
-			sampler.RegisterSpace = static_cast<unsigned int>(RootParameterUpdateFrequency::Constant);
+			sampler.RegisterSpace = static_cast<unsigned int>(Core::Graphics::ResourceUpdateFrequency::Constant);
 			return sampler;
 		}
 
-		void AddSRV(unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::SRV, aRegister, anUpdateFrequency); }
-		void AddUAV(unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::UAV, aRegister, anUpdateFrequency); }
+		void AddSRV(unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::SRV, aRegister, anUpdateFrequency); }
+		void AddUAV(unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::UAV, aRegister, anUpdateFrequency); }
 
 		std::shared_ptr<RootSignature> Finalize(ID3D12Device* aDevice) const;
 
@@ -207,7 +206,7 @@ namespace RoseGold::DirectX12
 	private:
 		static bool PopulateTable(RootParameterMapping& aParameterMapping, std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable);
 
-		Parameter& AddParameter(Parameter::Type aType, unsigned int aRegister, RootParameterUpdateFrequency anUpdateFrequency)
+		Parameter& AddParameter(Parameter::Type aType, unsigned int aRegister, Core::Graphics::ResourceUpdateFrequency anUpdateFrequency)
 		{
 			Parameter& param = *myParameters.emplace_back(new Parameter());
 			param.myType = aType;
@@ -229,7 +228,7 @@ namespace RoseGold::DirectX12
 		std::vector<std::unique_ptr<Parameter>> myParameters;
 		std::vector<Sampler> myStaticSamplers;
 
-		D3D12_SHADER_VISIBILITY myCurrentVisibility;
+		D3D12_SHADER_VISIBILITY myCurrentVisibility = D3D12_SHADER_VISIBILITY_ALL;
 	};
 
 	class PipelineState : public Core::Graphics::PipelineState

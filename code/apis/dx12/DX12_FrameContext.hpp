@@ -12,6 +12,7 @@
 #include <Common_Color.hpp>
 #include <Common_Math.hpp>
 
+#include <Graphics_FrameContext.hpp>
 #include <Graphics_RenderTexture.hpp>
 
 #include <d3d12.h>
@@ -101,44 +102,43 @@ namespace RoseGold::DirectX12
 		std::vector<TextureUpload> myTextureUploads;
 	};
 
-	class FrameGraphicsContext final : public FrameContext
+	class FrameGraphicsContext final : public FrameContext, public Core::Graphics::FrameContext
 	{
 	public:
 		FrameGraphicsContext(Device& aDevice);
 
 		void Reset() override;
 
-		void ClearColor(const Core::Graphics::RenderTexture& aTarget, Color aClearColor);
-		void ClearDepth(const Core::Graphics::RenderTexture& aTarget, float aDepth, std::uint8_t aStencil);
+		void ClearColor(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, Color aClearColor) override;
+		void ClearDepth(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) override;
 
-		void DisableScissorRect();
+		void DisableScissorRect() override;
 
-		void Dispatch(std::uint32_t aGroupCountX, std::uint32_t aGroupCountY, std::uint32_t aGroupCountZ);
-		void Dispatch1D(std::uint32_t aThreadCountX, std::uint32_t aGroupSizeX);
-		void Dispatch2D(std::uint32_t aThreadCountX, std::uint32_t aThreadCountY, std::uint32_t aGroupSizeX, std::uint32_t aGroupSizeY);
-		void Dispatch3D(std::uint32_t aThreadCountX, std::uint32_t aThreadCountY, std::uint32_t aThreadCountZ, std::uint32_t aGroupSizeX, std::uint32_t aGroupSizeY, std::uint32_t aGroupSizeZ);
+		void Dispatch(std::uint32_t aGroupCountX, std::uint32_t aGroupCountY, std::uint32_t aGroupCountZ) override;
+		void Dispatch1D(std::uint32_t aThreadCountX, std::uint32_t aGroupSizeX) override;
+		void Dispatch2D(std::uint32_t aThreadCountX, std::uint32_t aThreadCountY, std::uint32_t aGroupSizeX, std::uint32_t aGroupSizeY) override;
+		void Dispatch3D(std::uint32_t aThreadCountX, std::uint32_t aThreadCountY, std::uint32_t aThreadCountZ, std::uint32_t aGroupSizeX, std::uint32_t aGroupSizeY, std::uint32_t aGroupSizeZ) override;
 
-		void Draw(std::uint32_t aVertexCount, std::uint32_t aVertexStartOffset);
-		void DrawIndexed(std::uint32_t anIndexCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation);
-		void DrawInstanced(std::uint32_t aVertexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartVertexLocation, std::uint32_t aStartInstanceLocation);
-		void DrawIndexedInstanced(std::uint32_t anIndexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation, std::uint32_t aStartInstanceLocation);
+		void Draw(std::uint32_t aVertexCount, std::uint32_t aVertexStartOffset) override;
+		void DrawIndexed(std::uint32_t anIndexCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation) override;
+		void DrawInstanced(std::uint32_t aVertexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartVertexLocation, std::uint32_t aStartInstanceLocation) override;
+		void DrawIndexedInstanced(std::uint32_t anIndexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation, std::uint32_t aStartInstanceLocation) override;
 
-		void SetBlendFactor(Color aBlendFactor);
-		void SetPipelineState(PipelineState& aPipelineState);
-		void SetPipelineResource(const VertexBuffer& aBuffer);
-		void SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, void* someData, std::size_t aDataSize);
-		void SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture);
-		void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY aTopology);
-		void SetScissorRect(const Math::RectangleT<int>& aRectangle);
-		void SetStencilRef(std::uint32_t aStencilRef);
-		void SetRenderTargets(const std::vector<RenderTarget*>& someTargets, RenderTarget* aDepthTarget);
-		void SetViewportAndScissorRect(const Size& aScreenSize);
-		void SetViewport(const Math::Rectangle& aRectangle);
+		void SetBlendFactor(Color aBlendFactor) override;
+		void SetPipelineState(const std::shared_ptr<Core::Graphics::PipelineState>& aPipelineState) override;
+		void SetVertexBuffer(const std::shared_ptr<const Core::Graphics::GraphicsBuffer>& aVertexBuffer) override;
+		void SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::GraphicsBuffer>& aBuffer) override;
+		void SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture) override;
+		void SetPrimitiveTopology(Core::Graphics::PrimitiveTopology aTopology) override;
+		void SetScissorRect(const Math::RectangleT<int>& aRectangle) override;
+		void SetStencilRef(std::uint32_t aStencilRef) override;
+		void SetRenderTargets(const std::vector<std::shared_ptr<Core::Graphics::RenderTexture>>& someTargets, const std::shared_ptr<Core::Graphics::RenderTexture>& aDepthTarget) override;
+		void SetViewportAndScissorRect(const Size& aScreenSize) override;
+		void SetViewport(const Math::Rectangle& aRectangle) override;
 
 	private:
 		inline std::uint32_t GetGroupCount(std::uint32_t threadCount, std::uint32_t groupSize) { return (threadCount + groupSize - 1) / groupSize; }
 
 		PipelineState* myCurrentPipelineState;
-		std::vector<std::shared_ptr<ConstantBuffer>> myFrameConstantBuffers;
 	};
 }

@@ -200,19 +200,23 @@ namespace RoseGold::DirectX12
 	}
 
 	FrameGraphicsContext::FrameGraphicsContext(Device& aDevice)
-		: FrameContext(aDevice, D3D12_COMMAND_LIST_TYPE_DIRECT)
+		: DirectX12::FrameContext(aDevice, D3D12_COMMAND_LIST_TYPE_DIRECT)
 		, myCurrentPipelineState(nullptr)
 	{ }
 
 	void FrameGraphicsContext::Reset()
 	{
-		FrameContext::Reset();
-		myFrameConstantBuffers.clear();
+		DirectX12::FrameContext::Reset();
 	}
 
-	void FrameGraphicsContext::ClearColor(const Core::Graphics::RenderTexture& aTarget, Color aClearColor)
+	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, Color aClearColor)
 	{
-		const RenderTarget& target = static_cast<const RenderTarget&>(aTarget);
+		Debug::Assert(!!aTarget, "ClearColor() requires a target.");
+
+		RenderTarget& target = static_cast<RenderTarget&>(*aTarget);
+		AddBarrier(target.GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+		FlushBarriers();
+
 		D3D12_CPU_DESCRIPTOR_HANDLE handle = target.GetColorView()->GetCPUHandle();
 
 		if (!Debug::Verify(handle.ptr != NULL, "Invalid target."))
@@ -232,9 +236,14 @@ namespace RoseGold::DirectX12
 		);
 	}
 
-	void FrameGraphicsContext::ClearDepth(const Core::Graphics::RenderTexture& aTarget, float aDepth, std::uint8_t aStencil)
+	void FrameGraphicsContext::ClearDepth(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil)
 	{
-		const RenderTarget& target = static_cast<const RenderTarget&>(aTarget);
+		Debug::Assert(!!aTarget, "ClearDepth() requires a target.");
+
+		RenderTarget& target = static_cast<RenderTarget&>(*aTarget);
+		AddBarrier(target.GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+		FlushBarriers();
+
 		D3D12_CPU_DESCRIPTOR_HANDLE handle = target.GetDepthStencilView()->GetCPUHandle();
 
 		if (!Debug::Verify(handle.ptr != NULL, "Invalid target."))
@@ -312,24 +321,48 @@ namespace RoseGold::DirectX12
 		myCommandList->RSSetScissorRects(1, &rect);
 	}
 
-	void FrameGraphicsContext::SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY aTopology)
+	void FrameGraphicsContext::SetPrimitiveTopology(Core::Graphics::PrimitiveTopology aTopology)
 	{
-		myCommandList->IASetPrimitiveTopology(aTopology);
+		D3D12_PRIMITIVE_TOPOLOGY topology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+
+		switch (aTopology)
+		{
+		case Core::Graphics::PrimitiveTopology::PointList:
+			topology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+			break;
+		case Core::Graphics::PrimitiveTopology::LineList:
+			topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+			break;
+		case Core::Graphics::PrimitiveTopology::LineStrip:
+			topology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+			break;
+		case Core::Graphics::PrimitiveTopology::TriangleList:
+			topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+			break;
+		case Core::Graphics::PrimitiveTopology::TriangleStrip:
+			topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+			break;
+		}
+
+		myCommandList->IASetPrimitiveTopology(topology);
 	}
 
-	void FrameGraphicsContext::SetPipelineState(PipelineState& aPipelineState)
+	void FrameGraphicsContext::SetPipelineState(const std::shared_ptr<Core::Graphics::PipelineState>& aPipelineState)
 	{
-		myCurrentPipelineState = &aPipelineState;
-		myCommandList->SetPipelineState(aPipelineState.GetPipelineStateObject().Get());
-		myCommandList->SetGraphicsRootSignature(aPipelineState.GetRootSignature()->GetRootSignatureObject().Get());
+		Debug::Assert(!!aPipelineState, "SetPipelineState() requires pipeline state to be non-null.");
+
+		myCurrentPipelineState = static_cast<DirectX12::PipelineState*>(aPipelineState.get());
+		myCommandList->SetPipelineState(myCurrentPipelineState->GetPipelineStateObject().Get());
+		myCommandList->SetGraphicsRootSignature(myCurrentPipelineState->GetRootSignature()->GetRootSignatureObject().Get());
 	}
 
-	void FrameGraphicsContext::SetPipelineResource(const VertexBuffer& aBuffer)
+	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Core::Graphics::GraphicsBuffer>& aVertexBuffer)
 	{
-		myCommandList->IASetVertexBuffers(0, 1, &aBuffer.GetBufferView());
+		const VertexBuffer& vertexBuffer = static_cast<const VertexBuffer&>(*aVertexBuffer);
+		myCommandList->IASetVertexBuffers(0, 1, &vertexBuffer.GetBufferView());
 	}
 
-	void FrameGraphicsContext::SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, void* someData, std::size_t aDataSize)
+	void FrameGraphicsContext::SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::GraphicsBuffer>& aBuffer)
 	{
 		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
@@ -349,30 +382,23 @@ namespace RoseGold::DirectX12
 			return;
 		}
 
-		const std::uint32_t dataSize = static_cast<std::uint32_t>(aDataSize);
-		std::shared_ptr<ConstantBuffer> cpuBuffer = myFrameConstantBuffers.emplace_back(
-			std::make_shared<ConstantBuffer>(
-				myDevice,
-				dataSize
-			)
-		);
-
-		cpuBuffer->SetData(someData, dataSize);
-
+		ConstantBuffer& cpuBuffer = static_cast<ConstantBuffer&>(*aBuffer);
+		AddBarrier(cpuBuffer, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		
 		RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
 		std::shared_ptr<DescriptorHeapHandle> gpuBuffer = renderPassHeap.GetHeapHandleBlock(1);
 
 		myDevice.GetDevice()->CopyDescriptorsSimple(
 			1,
 			gpuBuffer->GetCPUHandle(),
-			cpuBuffer->GetViewHandle().GetCPUHandle(),
+			cpuBuffer.GetViewHandle().GetCPUHandle(),
 			renderPassHeap.GetHeapType()
 		);
 
 		myCommandList->SetGraphicsRootDescriptorTable(parameterInfo.value().RootParameterIndex, gpuBuffer->GetGPUHandle());
 	}
 
-	void FrameGraphicsContext::SetPipelineResource(RootParameterUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture)
+	void FrameGraphicsContext::SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture)
 	{
 		Debug::Assert(!!aTexture, "Has a valid texture.");
 
@@ -426,14 +452,23 @@ namespace RoseGold::DirectX12
 		myCommandList->OMSetStencilRef(aStencilRef);
 	}
 
-	void FrameGraphicsContext::SetRenderTargets(const std::vector<RenderTarget*>& someTargets, RenderTarget* aDepthTarget)
+	void FrameGraphicsContext::SetRenderTargets(const std::vector<std::shared_ptr<Core::Graphics::RenderTexture>>& someTargets, const std::shared_ptr<Core::Graphics::RenderTexture>& aDepthTarget)
 	{
 		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> colorHandles;
+		colorHandles.fill(D3D12_CPU_DESCRIPTOR_HANDLE { 0 });
 
 		for (std::size_t i = 0; i < someTargets.size(); ++i)
-			colorHandles.at(i) = someTargets[i]->GetColorView()->GetCPUHandle();
+		{
+			RenderTarget* dxRenderTarget = static_cast<RenderTarget*>(someTargets.at(i).get());
+			AddBarrier(dxRenderTarget->GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+			colorHandles.at(i) = dxRenderTarget->GetColorView()->GetCPUHandle();
+		}
 
-		const D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = aDepthTarget ? aDepthTarget->GetDepthStencilView()->GetCPUHandle() : D3D12_CPU_DESCRIPTOR_HANDLE();
+		RenderTarget* dxDepthTarget = static_cast<RenderTarget*>(aDepthTarget.get());
+		AddBarrier(dxDepthTarget->GetDepthGPUResource(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
+		const D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = aDepthTarget ? dxDepthTarget->GetDepthStencilView()->GetCPUHandle() : D3D12_CPU_DESCRIPTOR_HANDLE();
+
+		FlushBarriers();
 
 		myCommandList->OMSetRenderTargets(
 			static_cast<UINT>(someTargets.size()),

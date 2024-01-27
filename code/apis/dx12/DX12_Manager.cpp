@@ -1,6 +1,5 @@
 #include "DX12_Manager.hpp"
 
-#include "DX12_CommandBuffer.hpp"
 #include "DX12_ComPtr.hpp"
 #include "DX12_DDS.hpp"
 #include "DX12_Device.hpp"
@@ -77,6 +76,8 @@ namespace RoseGold::DirectX12
 			return std::shared_ptr<Core::Graphics::GraphicsBuffer>(new VertexBuffer(*myDevice, aCount, aStride));
 		case Core::Graphics::GraphicsBuffer::Target::Index:
 			return std::shared_ptr<Core::Graphics::GraphicsBuffer>(new IndexBuffer(*myDevice, aCount));
+		case Core::Graphics::GraphicsBuffer::Target::Constant:
+			return std::shared_ptr<Core::Graphics::GraphicsBuffer>(new ConstantBuffer(*myDevice, aCount * aStride));
 		default:
 			return nullptr;
 		}
@@ -102,22 +103,9 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	void Manager::ExecuteCommandBuffer(const Core::Graphics::CommandBuffer& aCommandBuffer)
+	Core::Graphics::FrameContext& Manager::GetCurrentFrameContext()
 	{
-		ResolvedCommandBuffer resolvedBuffer(*myFrameGraphicsContext);
-		resolvedBuffer.Resolve(aCommandBuffer);
-	}
-
-	void Manager::ExecuteTask(const Core::Graphics::GraphicsTask& aGraphicsTask)
-	{
-		std::vector<const Core::Graphics::GraphicsTask*> resolvedTasks;
-		aGraphicsTask.ResolveWorkTasks(resolvedTasks);
-		for (const auto& task : resolvedTasks)
-		{
-			const std::vector<std::shared_ptr<Core::Graphics::CommandBuffer>>& taskWork = task->GetWork();
-			for (const std::shared_ptr<Core::Graphics::CommandBuffer>& commandBuffer : taskWork)
-				ExecuteCommandBuffer(*commandBuffer);
-		}
+		return *myFrameGraphicsContext;
 	}
 
 	std::shared_ptr<SwapChain> Manager::GetSwapChain(Core::Platform::Window& aWindow)
@@ -204,27 +192,27 @@ namespace RoseGold::DirectX12
 		signature.SetVisibility(D3D12_SHADER_VISIBILITY_VERTEX);
 		{
 			signature.AddDescriptorTable()
-				.AddCBVRange(1, 0, RootParameterUpdateFrequency::PerObject) // Model, View, Projection data.
+				.AddCBVRange(1, 0, Core::Graphics::ResourceUpdateFrequency::PerObject) // Model, View, Projection data.
 				;
 		}
 
 		signature.SetVisibility(D3D12_SHADER_VISIBILITY_PIXEL);
 		{
 			signature.AddDescriptorTable()
-				.AddSRVRange(4, 0, RootParameterUpdateFrequency::PerMaterial)
+				.AddSRVRange(4, 0, Core::Graphics::ResourceUpdateFrequency::PerMaterial)
 				;
 
-			signature.AddSampler(0) // Wrapping Point
+			signature.AddSampler(0) // Clamping Point
 				.Filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
+				.Address(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
 				;
-			signature.AddSampler(1) // Wrapping Linear
+			signature.AddSampler(1) // Clamping Linear
 				.Filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
+				.Address(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
 				;
-			signature.AddSampler(2) // Wrapping Anisotropic
+			signature.AddSampler(2) // Clamping Anisotropic
 				.Filter(D3D12_FILTER_ANISOTROPIC)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_WRAP)
+				.Address(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
 				;
 		}
 

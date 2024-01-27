@@ -1,3 +1,5 @@
+// Filter "Graphics"
+
 #pragma once
 
 #include "Graphics_Buffer.hpp"
@@ -25,17 +27,21 @@ namespace RoseGold::Core::Graphics
 	public:
 		Mesh(Manager& aGraphicsManager)
 			: myGraphicsManager(aGraphicsManager)
+			, myVertexCount(0)
 		{ }
 		virtual ~Mesh() = default;
 
 		virtual std::vector<PipelineStateDescription::InputLayoutEntry> GetInputLayout() const = 0;
 
 		std::shared_ptr<const GraphicsBuffer> GetVertexBuffer() const { return myVertexBuffer; }
+		std::uint32_t GetVertexCount() { return myVertexCount; }
 
 		virtual void SetFromPrimitive(MeshPrimitiveType aPrimitive) = 0;
 
 	protected:
 		std::shared_ptr<GraphicsBuffer> myVertexBuffer;
+		std::uint32_t myVertexCount;
+
 		Manager& myGraphicsManager;
 	};
 

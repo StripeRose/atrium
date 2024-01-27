@@ -7,7 +7,7 @@
 
 namespace RoseGold::DirectX12
 {
-	void RootParameterMapping::Table::AddMapping(RootParameterUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex, unsigned int aCount)
+	void RootParameterMapping::Table::AddMapping(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex, unsigned int aCount)
 	{
 		Parameter& p = myRanges.emplace_back();
 		p.myUpdateFrequency = anUpdateFrequency;
@@ -16,7 +16,7 @@ namespace RoseGold::DirectX12
 		p.myCount = aCount;
 	}
 
-	void RootParameterMapping::AddMapping(RootParameterUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex)
+	void RootParameterMapping::AddMapping(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex)
 	{
 		Parameter& p = mySingleParameters.emplace_back(Parameter(), GetNextParameterIndex()).first;
 		p.myUpdateFrequency = anUpdateFrequency;
@@ -33,7 +33,7 @@ namespace RoseGold::DirectX12
 		return table;
 	}
 
-	std::optional<RootParameterMapping::ParameterInfo> RootParameterMapping::GetParameterInfo(RootParameterUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex) const
+	std::optional<RootParameterMapping::ParameterInfo> RootParameterMapping::GetParameterInfo(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex) const
 	{
 		for (const auto& param : mySingleParameters)
 		{

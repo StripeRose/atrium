@@ -1,11 +1,9 @@
 #pragma once
 
 #include "Graphics_Buffer.hpp"
-#include "Graphics_CommandBuffer.hpp"
-#include "Graphics_Mesh.hpp"
+#include "Graphics_FrameContext.hpp"
 #include "Graphics_RenderTexture.hpp"
 #include "Graphics_Pipeline.hpp"
-#include "Graphics_Tasks.hpp"
 
 #include <filesystem>
 
@@ -27,9 +25,8 @@ namespace RoseGold::Core::Graphics
 		inline std::shared_ptr<Shader> CreateShader(const std::filesystem::path& aShaderSource, Shader::Type aShaderType) { return CreateShader(aShaderSource, aShaderType, "main"); }
 
 		virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& aShaderSource, Shader::Type aShaderType, const char* anEntryPoint) = 0;
-		
-		virtual void ExecuteCommandBuffer(const CommandBuffer& aCommandBuffer) = 0;
-		virtual void ExecuteTask(const GraphicsTask& aGraphicsTask) = 0;
+
+		virtual FrameContext& GetCurrentFrameContext() = 0;
 
 		virtual std::shared_ptr<Texture> LoadTexture(const std::filesystem::path& aPath) = 0;
 

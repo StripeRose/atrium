@@ -1,4 +1,6 @@
-#include "Graphics_Mesh.hpp"
+// Filter "Graphics"
+
+#include "Engine_Mesh.hpp"
 
 #include "Graphics_Manager.hpp"
 
@@ -30,9 +32,10 @@ namespace RoseGold::Core::Graphics
 		if (someVertices.empty())
 			return;
 
+		myVertexCount = static_cast<std::uint32_t>(someVertices.size());
 		myVertexBuffer = myGraphicsManager.CreateGraphicsBuffer(
 			GraphicsBuffer::Target::Vertex,
-			static_cast<std::uint32_t>(someVertices.size()), sizeof(Vertex)
+			myVertexCount, sizeof(Vertex)
 		);
 		myVertexBuffer->SetData<Vertex>(someVertices);
 	}
@@ -116,9 +119,10 @@ namespace RoseGold::Core::Graphics
 		for (Vertex& v : adjustedVertices)
 			v.Color = Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A);
 
+		myVertexCount = static_cast<std::uint32_t>(adjustedVertices.size());
 		myVertexBuffer = myGraphicsManager.CreateGraphicsBuffer(
 			GraphicsBuffer::Target::Vertex,
-			static_cast<std::uint32_t>(adjustedVertices.size()), sizeof(Vertex)
+			myVertexCount, sizeof(Vertex)
 		);
 		myVertexBuffer->SetData<Vertex>(adjustedVertices);
 	}
@@ -193,9 +197,10 @@ namespace RoseGold::Core::Graphics
 		if (someVertices.empty())
 			return;
 
+		myVertexCount = static_cast<std::uint32_t>(someVertices.size());
 		myVertexBuffer = myGraphicsManager.CreateGraphicsBuffer(
 			GraphicsBuffer::Target::Vertex,
-			static_cast<std::uint32_t>(someVertices.size()), sizeof(Vertex)
+			myVertexCount, sizeof(Vertex)
 		);
 		myVertexBuffer->SetData<Vertex>(someVertices);
 	}
