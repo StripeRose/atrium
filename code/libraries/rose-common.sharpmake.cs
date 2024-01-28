@@ -9,14 +9,14 @@ public class RoseCommon : RoseGold.Core.Library
     public RoseCommon()
     {
         Name = "Rose common";
-        SourceRootPath = Path.Combine(Globals.RootDirectory, "libraries/rose-common/include");
-        AdditionalSourceRootPaths.Add(Path.Combine(Globals.RootDirectory, "libraries/rose-common/source"));
+        SourceRootPath = Path.Combine("[project.SharpmakeCsPath]", "rose-common", "include");
+        AdditionalSourceRootPaths.Add(Path.Combine("[project.SharpmakeCsPath]", "rose-common", "source"));
     }
 
     public override void ConfigureAll(Configuration conf, Target target)
     {
         base.ConfigureAll(conf, target);
 
-        conf.ProjectPath = Path.Combine(Globals.RootDirectory, "libraries");
+        conf.ProjectPath = "[project.SharpmakeCsPath]";
     }
 }

@@ -12,7 +12,7 @@ namespace RoseGold.Core
         public Platform()
         {
             Name = "Platform";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "core", "platform");
+            SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)

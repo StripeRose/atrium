@@ -9,11 +9,10 @@ namespace RoseGold
     [Generate]
     public class Module : RoseGold.Core.Library
     {
-        // moduleFolder specifies the sub-folder inside "Core modules" the module project is located.
-        public Module(string moduleFolder)
+        public Module()
         {
             Name = "New module";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "modules", moduleFolder);
+            SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)

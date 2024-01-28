@@ -14,7 +14,7 @@ namespace RoseGold.Example
         public Example_Engine()
         {
             Name = "Example game (Engine)";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "example", "engine");
+            SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)
@@ -46,6 +46,7 @@ namespace RoseGold.Example
         public override void ConfigureAll(Solution.Configuration conf, Target target)
         {
             base.ConfigureAll(conf, target);
+            conf.SolutionPath = "[solution.SharpmakeCsPath]/../../";
             conf.AddProject<Example_Engine>(target);
         }
     }

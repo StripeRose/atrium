@@ -15,7 +15,7 @@ namespace RoseGold
         public Engine()
         {
             Name = "Engine";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "engine");
+            SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)

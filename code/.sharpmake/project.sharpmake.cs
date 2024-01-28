@@ -50,8 +50,7 @@ namespace RoseGold
         [Configure]
         public virtual void ConfigureAll(Solution.Configuration conf, Target target)
         {
-            conf.SolutionPath = Globals.RootDirectory;
             conf.SolutionFileName = "[solution.Name] [target.DevEnv]";
         }
-}
+    }
 }

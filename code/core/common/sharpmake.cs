@@ -12,7 +12,7 @@ namespace RoseGold.Core
         public Common()
         {
             Name = "Common";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "core", "common");
+            SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)

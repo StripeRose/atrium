@@ -15,7 +15,7 @@ namespace RoseGold
         public DirectX12()
         {
             Name = "DirectX 12";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "apis", "dx12");
+            SourceRootPath = "[project.SharpmakeCsPath]";
 
             // Allow core shaders to be part of the project and built with it.
             SourceFilesExtensions.Add(".hlsl");

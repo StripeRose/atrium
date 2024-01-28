@@ -12,7 +12,7 @@ namespace RoseGold.Core
         public Graphics()
         {
             Name = "Graphics";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "core", "graphics");
+            SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)

@@ -13,7 +13,7 @@ namespace RoseGold.Client
         public WindowsClient()
         {
             Name = "Windows";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "client", "windows");
+            SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)

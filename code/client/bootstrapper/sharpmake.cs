@@ -13,7 +13,7 @@ namespace RoseGold.Client
         public Bootstrapper()
         {
             Name = "Bootstrapper";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "client", "bootstrapper");
+            SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)

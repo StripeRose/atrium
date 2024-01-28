@@ -9,7 +9,6 @@ namespace RoseGold.Modules
     public class NodeGraphs : RoseGold.Module
     {
         public NodeGraphs()
-            : base("node-graphs")
         {
             Name = "Node graphs";
         }

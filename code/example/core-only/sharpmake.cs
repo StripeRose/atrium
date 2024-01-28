@@ -12,7 +12,7 @@ namespace RoseGold.Example
         public Example_CoreOnly()
         {
             Name = "Example game (Core only)";
-            SourceRootPath = Path.Combine(Globals.RootDirectory, "example", "core-only");
+            SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
         public override void ConfigureAll(Project.Configuration conf, Target target)
@@ -39,6 +39,7 @@ namespace RoseGold.Example
         public override void ConfigureAll(Solution.Configuration conf, Target target)
         {
             base.ConfigureAll(conf, target);
+            conf.SolutionPath = "[solution.SharpmakeCsPath]/../../";
             conf.AddProject<Example_CoreOnly>(target);
         }
     }

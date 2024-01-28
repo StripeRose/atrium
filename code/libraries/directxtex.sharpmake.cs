@@ -9,14 +9,14 @@ public class DirectXTex : RoseGold.Core.Library
     public DirectXTex()
     {
         Name = "DirectXTex";
-        SourceRootPath = Path.Combine(Globals.RootDirectory, "libraries/DirectXTex/DirectXTex");
+        SourceRootPath = Path.Combine("[project.SharpmakeCsPath]", "DirectXTex", "DirectXTex");
     }
 
     public override void ConfigureAll(Configuration conf, Target target)
     {
         base.ConfigureAll(conf, target);
 
-        conf.ProjectPath = Path.Combine(Globals.RootDirectory, "libraries");
+        conf.ProjectPath = "[project.SharpmakeCsPath]";
 
         conf.SourceFilesBuildExclude.Add("BCDirectCompute.cpp");
     }
