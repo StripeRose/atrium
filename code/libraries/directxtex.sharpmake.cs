@@ -16,8 +16,8 @@ public class DirectXTex : RoseGold.Core.Library
     {
         base.ConfigureAll(conf, target);
 
+        conf.SolutionFolder = "rose-gold/external";
         conf.ProjectPath = "[project.SharpmakeCsPath]";
-
         conf.SourceFilesBuildExclude.Add("BCDirectCompute.cpp");
     }
 }
