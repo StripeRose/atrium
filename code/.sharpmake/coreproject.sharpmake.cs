@@ -40,6 +40,8 @@ namespace RoseGold
 
                 conf.Defines.Add("NOMINMAX"); // Is this really needed?
 
+                if (target.Optimization == Optimization.Debug)
+                    conf.Defines.Add("IS_DEBUG_BUILD");
                 if (target.Optimization != Optimization.Retail)
                     conf.Defines.Add("IS_EDITOR_BUILD");
 

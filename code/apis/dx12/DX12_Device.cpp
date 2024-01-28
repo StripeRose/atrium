@@ -3,7 +3,7 @@
 #include "DX12_Diagnostics.hpp"
 #include "DX12_RenderTexture.hpp"
 
-#ifdef _DEBUG
+#ifdef IS_DEBUG_BUILD
 #include <dxgidebug.h>
 #include <d3d12sdklayers.h>
 #endif
@@ -17,7 +17,7 @@ namespace RoseGold::DirectX12
 
 		UINT dxgiFactoryFlags = 0;
 
-#ifdef _DEBUG
+#ifdef IS_DEBUG_BUILD
 		SetupDebug(dxgiFactoryFlags);
 #endif
 		SetupFactory(dxgiFactoryFlags);

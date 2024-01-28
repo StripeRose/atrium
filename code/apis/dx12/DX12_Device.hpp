@@ -34,7 +34,7 @@ namespace RoseGold::DirectX12
 		DescriptorHeapManager& GetDescriptorHeapManager() { return *myDescriptorHeapManager; }
 
 	private:
-#ifdef _DEBUG
+#ifdef IS_DEBUG_BUILD
 		void SetupDebug(UINT& someDXGIFlagsOut);
 #endif
 		bool SetupFactory(UINT someDXGIFlags);

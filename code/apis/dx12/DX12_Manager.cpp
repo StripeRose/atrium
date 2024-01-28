@@ -10,7 +10,7 @@
 
 #include "Common_Debug.hpp"
 
-#ifdef _DEBUG
+#ifdef IS_DEBUG_BUILD
 #include <dxgi1_6.h>
 #include <dxgidebug.h>
 #endif
