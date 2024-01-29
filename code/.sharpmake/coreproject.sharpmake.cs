@@ -29,9 +29,8 @@ namespace RoseGold
                 conf.IncludePaths.Add("[project.SourceRootPath]");
                 conf.IncludePaths.Add(Path.Combine(Globals.RootDirectory, "Third-Party"));
 
-                // Todo: Precompiled headers
-                //conf.PrecompHeader = "precomp.hpp";
-                //conf.PrecompSource = "precomp.cpp";
+                conf.PrecompHeader = "stdafx.hpp";
+                conf.PrecompSource = "stdafx.cpp";
 
                 conf.IntermediatePath = Path.Combine(Globals.RootDirectory, "../Build/Intermediate/[project.Name] [target.Optimization]/");
                 conf.TargetPath = Path.Combine(new string[] {Globals.RootDirectory, "..", "Build"});
@@ -122,6 +121,28 @@ namespace RoseGold
             {
                 base.ConfigureAll(conf, target);
                 conf.Output = Sharpmake.Project.Configuration.OutputType.Lib;
+            }
+        }
+
+        public class ExternalLibrary : Project
+        {
+            public ExternalLibrary()
+            {
+                Name = "External library";
+
+                AddTargets(new Target(
+                    Sharpmake.Platform.win32 | Sharpmake.Platform.win64,
+                    Sharpmake.DevEnv.vs2022,
+                    Sharpmake.Optimization.Debug | Sharpmake.Optimization.Release | Sharpmake.Optimization.Retail,
+                    Sharpmake.OutputType.Lib));
+            }
+
+            public override void ConfigureAll(Project.Configuration conf, Target target)
+            {
+                base.ConfigureAll(conf, target);
+                conf.Output = Sharpmake.Project.Configuration.OutputType.Lib;
+                conf.PrecompHeader = "";
+                conf.PrecompSource = "";
             }
         }
 

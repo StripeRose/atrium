@@ -4,7 +4,7 @@ using Sharpmake;
 [module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 
 [Generate]
-public class DirectXTex : RoseGold.Core.Library
+public class DirectXTex : RoseGold.Core.ExternalLibrary
 {
     public DirectXTex()
     {

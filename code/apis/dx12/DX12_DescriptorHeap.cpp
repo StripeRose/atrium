@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "DX12_DescriptorHeap.hpp"
 
 #include "DX12_Diagnostics.hpp"

@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "Bootstrapper.hpp"
 
 #include <DX12_Manager.hpp>

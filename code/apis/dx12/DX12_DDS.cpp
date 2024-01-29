@@ -1,4 +1,5 @@
 // Filter "Resources"
+#include "stdafx.hpp"
 
 #include "DX12_DDS.hpp"
 #include "DX12_Device.hpp"

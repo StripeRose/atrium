@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "DX12_Enums.hpp"
 
 #include "DX12_Diagnostics.hpp"

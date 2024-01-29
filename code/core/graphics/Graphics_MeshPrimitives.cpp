@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "Graphics_MeshPrimitives.hpp"
 
 #include <vector>

@@ -4,7 +4,7 @@ using Sharpmake;
 [module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 
 [Generate]
-public class RoseCommon : RoseGold.Core.Library
+public class RoseCommon : RoseGold.Core.ExternalLibrary
 {
     public RoseCommon()
     {
@@ -16,7 +16,7 @@ public class RoseCommon : RoseGold.Core.Library
     public override void ConfigureAll(Configuration conf, Target target)
     {
         base.ConfigureAll(conf, target);
-        
+
         conf.SolutionFolder = "rose-gold/external";
         conf.ProjectPath = "[project.SharpmakeCsPath]";
     }

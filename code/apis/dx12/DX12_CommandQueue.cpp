@@ -1,4 +1,5 @@
 // Filter "Commands"
+#include "stdafx.hpp"
 
 #include "DX12_CommandQueue.hpp"
 

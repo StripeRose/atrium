@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 #include "Win32_WindowManagement.hpp"
 
 #include <memory>
