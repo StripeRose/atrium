@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common_Color.hpp"
+
 #include "Graphics_Texture.hpp"
 
 #include <memory>

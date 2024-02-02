@@ -1,12 +1,13 @@
 // Filter "Resources"
+
 #include "stdafx.hpp"
+
+#include "Common_Math.hpp"
 
 #include "DX12_CommandQueue.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_SwapChain.hpp"
-
-#include "Common_Math.hpp"
 
 namespace RoseGold::DirectX12
 {

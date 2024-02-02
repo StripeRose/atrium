@@ -6,7 +6,7 @@
 #include "DX12_DescriptorHeap.hpp"
 #include "DX12_GPUResource.hpp"
 
-#include <Graphics_RenderTexture.hpp>
+#include "Graphics_RenderTexture.hpp"
 
 namespace RoseGold::DirectX12
 {

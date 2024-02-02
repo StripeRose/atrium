@@ -1,15 +1,15 @@
 #include "stdafx.hpp"
-#include "DX12_Manager.hpp"
+
+#include "Common_Debug.hpp"
 
 #include "DX12_ComPtr.hpp"
 #include "DX12_DDS.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_GraphicsBuffer.hpp"
+#include "DX12_Manager.hpp"
 #include "DX12_Pipeline.hpp"
 #include "DX12_Shader.hpp"
-
-#include "Common_Debug.hpp"
 
 #ifdef IS_DEBUG_BUILD
 #include <dxgi1_6.h>

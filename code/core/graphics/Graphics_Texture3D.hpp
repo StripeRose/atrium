@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Graphics_Texture.hpp"
+#include "Common_Color.hpp"
 
-#include <rose-common/Color.hpp>
+#include "Graphics_Texture.hpp"
 
 #include <memory>
 #include <vector>

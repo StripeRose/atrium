@@ -6,7 +6,7 @@
 #include "DX12_DescriptorHeap.hpp"
 #include "DX12_GPUResource.hpp"
 
-#include <Graphics_Buffer.hpp>
+#include "Graphics_Buffer.hpp"
 
 #include <d3d12.h>
 

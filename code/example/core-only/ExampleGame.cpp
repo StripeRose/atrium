@@ -1,4 +1,5 @@
 #include "stdafx.hpp"
+
 #include "ExampleGame.hpp"
 
 #include <Common_Debug.hpp>

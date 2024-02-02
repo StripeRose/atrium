@@ -6,9 +6,9 @@
 #include "DX12_DescriptorHeap.hpp"
 #include "DX12_GPUResource.hpp"
 
-#include <Graphics_Texture.hpp>
-#include <Graphics_Texture2D.hpp>
-#include <Graphics_Texture3D.hpp>
+#include "Graphics_Texture.hpp"
+#include "Graphics_Texture2D.hpp"
+#include "Graphics_Texture3D.hpp"
 
 #include <d3d12.h>
 #include <DirectXTex.h>

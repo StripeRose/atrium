@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Graphics_Enums.hpp>
+#include "Graphics_Enums.hpp"
 
 #include <d3d12.h>
 #include <dxgi1_6.h>

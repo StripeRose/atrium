@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Graphics_Manager.hpp>
-#include <Platform_WindowManagement.hpp>
+#include "Graphics_Manager.hpp"
+
+#include "Platform_WindowManagement.hpp"
 
 #include <memory>
 

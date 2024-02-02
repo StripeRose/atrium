@@ -2,15 +2,15 @@
 
 #pragma once
 
+#include "Common_Color.hpp"
+#include "Common_Math.hpp"
+
 #include "DX12_ComPtr.hpp"
 #include "DX12_DescriptorHeap.hpp"
 #include "DX12_GPUResource.hpp"
 #include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Pipeline.hpp"
 #include "DX12_RenderTexture.hpp"
-
-#include <Common_Color.hpp>
-#include <Common_Math.hpp>
 
 #include <Graphics_FrameContext.hpp>
 #include <Graphics_RenderTexture.hpp>

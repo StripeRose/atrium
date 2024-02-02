@@ -1,11 +1,11 @@
 // Filter "Resources"
-#include "stdafx.hpp"
 
-#include "DX12_RenderTexture.hpp"
+#include "stdafx.hpp"
 
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_Enums.hpp"
+#include "DX12_RenderTexture.hpp"
 
 namespace RoseGold::DirectX12
 {

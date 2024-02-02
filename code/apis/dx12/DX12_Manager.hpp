@@ -5,9 +5,9 @@
 #include "DX12_FrameContext.hpp"
 #include "DX12_SwapChain.hpp"
 
-#include <Graphics_Manager.hpp>
+#include "Graphics_Manager.hpp"
 
-#include <Platform_WindowManagement.hpp>
+#include "Platform_WindowManagement.hpp"
 
 #include <d3d12.h>
 

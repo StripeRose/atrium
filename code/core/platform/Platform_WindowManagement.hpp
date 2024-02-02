@@ -1,8 +1,8 @@
 #pragma once
 
-#include <rose-common/EventSlot.hpp>
+#include "Common_Math.hpp"
 
-#include <Common_Math.hpp>
+#include <rose-common/EventSlot.hpp>
 
 #include <any>
 #include <memory>
