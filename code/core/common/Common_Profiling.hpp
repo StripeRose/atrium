@@ -2,8 +2,10 @@
 
 #include <tracy/Tracy.hpp>
 
+#ifdef TRACY_ENABLE
 void* operator new(std::size_t count);
 void operator delete(void* ptr) noexcept;
+#endif
 
 //#ifdef TRACY_ENABLE
 //
