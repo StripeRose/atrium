@@ -18,8 +18,7 @@ namespace RoseGold::Client
 
 	BootstrapResult Bootstrap()
 	{
-		static constexpr const char* ourFrameMark = "Bootstrap setup";
-		FrameMarkStart(ourFrameMark);
+		ZoneScoped;
 
 		BootstrapResult result;
 
@@ -28,8 +27,6 @@ namespace RoseGold::Client
 #else
 		static_assert(false, "No bootstrapping available for this platform yet.");
 #endif
-
-		FrameMarkEnd(ourFrameMark);
 
 		return result;
 	}
