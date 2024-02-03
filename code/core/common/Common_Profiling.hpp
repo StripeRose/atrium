@@ -2,6 +2,9 @@
 
 #include <tracy/Tracy.hpp>
 
+void* operator new(std::size_t count);
+void operator delete(void* ptr) noexcept;
+
 //#ifdef TRACY_ENABLE
 //
 ////namespace RoseGold::Profiling

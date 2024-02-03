@@ -20,8 +20,6 @@ namespace RoseGold.Core
         {
             base.ConfigureAll(conf, target);
 
-            conf.Output = Configuration.OutputType.Utility; // Remove when there's code to build.
-
             conf.SolutionFolder = "rose-gold/core";
             conf.AddPublicDependency<RoseCommon>(target);
             conf.AddPublicDependency<Tracy>(target);
