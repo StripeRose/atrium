@@ -3,7 +3,6 @@
 :: %~1: Project/Solution to build
 :: %~2: Target(Normally should be Debug or Release)
 :: %~3: Platform(Normally should be "Any CPU" for sln and AnyCPU for a csproj)
-:: if none are passed, defaults to building Sharpmake/Sharpmake.sln in Release|AnyCPU
 
 setlocal enabledelayedexpansion
 
@@ -31,27 +30,14 @@ if %errorlevel% NEQ 0 (
 	exit /b 1
 )
 
-if "%~1" == "" (
-    call :BuildSharpmake "%~dp0Sharpmake\Sharpmake.sln" "Release" "Any CPU"
-) else (
-    call :BuildSharpmake %1 %2 %3
-)
-
-exit /b %errorlevel%
-
-@REM -----------------------------------------------------------------------
-:: Build Sharpmake using specified arguments
-:BuildSharpmake
 echo Compiling %~1 in "%~2|%~3"...
 
-::call %msBuildPath% ".\Tools\Sharpmake\Sharpmake.sln" /t:Restore;Build /p:Configuration=Release /v:minimal
 set MSBUILD_CMD=msbuild -clp:Summary -t:rebuild -restore "%~1" /nologo /verbosity:m /p:Configuration="%~2" /p:Platform="%~3" /maxcpucount /p:CL_MPCount=%NUMBER_OF_PROCESSORS%
 echo %MSBUILD_CMD%
 %MSBUILD_CMD%
-set ERROR_CODE=%errorlevel%
-if %ERROR_CODE% NEQ 0 (
+if %errorlevel% NEQ 0 (
     echo ERROR: Failed to compile %~1 in "%~2|%~3".
-    goto end
+    color 0C
 )
 
-exit /b 0
+exit /b %errorlevel%

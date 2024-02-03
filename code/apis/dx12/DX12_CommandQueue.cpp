@@ -13,6 +13,8 @@ namespace RoseGold::DirectX12
 		, myLastCompletedFenceValue(std::uint64_t(aQueueType) << 56)
 		, myFenceEventHandle(INVALID_HANDLE_VALUE)
 	{
+		ZoneScoped;
+
 		D3D12_COMMAND_QUEUE_DESC queueDescriptor = { };
 		queueDescriptor.Type = aQueueType;
 		queueDescriptor.NodeMask = 0;
@@ -99,6 +101,8 @@ namespace RoseGold::DirectX12
 		, myAsyncComputeQueue(aDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE)
 		, myCopyQueue(aDevice, D3D12_COMMAND_LIST_TYPE_COPY)
 	{
+		ZoneScoped;
+
 		myGraphicsQueue.GetCommandQueue()->SetName(L"Main Graphics Queue");
 		myAsyncComputeQueue.GetCommandQueue()->SetName(L"Async Compute Queue");
 		myCopyQueue.GetCommandQueue()->SetName(L"Copy Queue");

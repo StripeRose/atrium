@@ -14,6 +14,8 @@ namespace RoseGold::DirectX12
 	Device::Device(const DeviceParameters& someParameters)
 		: myFeatureLevel(someParameters.MinimumFeatureLevel)
 	{
+		ZoneScoped;
+
 		myParameters = someParameters;
 
 		UINT dxgiFactoryFlags = 0;
@@ -35,6 +37,8 @@ namespace RoseGold::DirectX12
 
 	void Device::MarkFrameStart()
 	{
+		ZoneScoped;
+
 		myDescriptorHeapManager->GetFrameHeap().Reset();
 	}
 
@@ -66,6 +70,8 @@ namespace RoseGold::DirectX12
 
 	bool Device::SetupFactory(UINT someDXGIFlags)
 	{
+		ZoneScoped;
+
 		if (!VerifyActionWithLog(CreateDXGIFactory2(someDXGIFlags, IID_PPV_ARGS(myDXGIFactory.GetAddressOf())), "Create DXGI Factory"))
 			return false;
 
@@ -87,6 +93,8 @@ namespace RoseGold::DirectX12
 
 	bool Device::SetupAdapter()
 	{
+		ZoneScoped;
+
 		ComPtr<IDXGIFactory6> dxgiFactory6;
 		HRESULT hr = myDXGIFactory.As(&dxgiFactory6);
 		if (SUCCEEDED(hr))
@@ -170,6 +178,8 @@ namespace RoseGold::DirectX12
 
 	bool Device::SetupDevice()
 	{
+		ZoneScoped;
+
 		if (!VerifyActionWithLog(D3D12CreateDevice(
 			myAdapter.Get(),
 			myParameters.MinimumFeatureLevel,
@@ -183,6 +193,8 @@ namespace RoseGold::DirectX12
 
 	bool Device::SetupInfoQueue()
 	{
+		ZoneScoped;
+
 #ifndef NDEBUG
 		if (!VerifyAction(myDevice.As(&myInfoQueue), "Get info queue."))
 			return false;
@@ -207,6 +219,8 @@ namespace RoseGold::DirectX12
 
 	bool Device::FindMaximumFeatureLevel()
 	{
+		ZoneScoped;
+
 		static const D3D_FEATURE_LEVEL s_featureLevels[] =
 		{
 #if defined(NTDDI_WIN10_FE) || defined(USING_D3D12_AGILITY_SDK)
@@ -233,6 +247,8 @@ namespace RoseGold::DirectX12
 
 	bool Device::SetupHeapManager()
 	{
+		ZoneScoped;
+
 		myDescriptorHeapManager.reset(new DescriptorHeapManager(myDevice));
 		return myDescriptorHeapManager.get() != nullptr;
 	}

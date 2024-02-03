@@ -18,6 +18,8 @@ namespace RoseGold::DirectX12
 		, myCurrentFrameHeap(nullptr)
 		, myResourceBarrierQueue()
 	{
+		ZoneScoped;
+
 		AssertAction(
 			aDevice.GetDevice()->CreateCommandAllocator(
 				aCommandType,

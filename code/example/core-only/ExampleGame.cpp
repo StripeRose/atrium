@@ -3,6 +3,7 @@
 #include "ExampleGame.hpp"
 
 #include <Common_Debug.hpp>
+#include <Common_Profiling.hpp>
 
 std::vector<RoseGold::Core::Graphics::PipelineStateDescription::InputLayoutEntry> TexturedVertex::GetInputLayout()
 {
@@ -22,6 +23,8 @@ std::vector<RoseGold::Core::Graphics::PipelineStateDescription::InputLayoutEntry
 
 void ExampleGame::OnStart(RoseGold::Client::BootstrapResult& aCoreSetup)
 {
+	ZoneScoped;
+
 	// Store the manager-pointers to not have to pass it around constantly.
 	myCoreSetup = &aCoreSetup;
 
@@ -47,6 +50,8 @@ void ExampleGame::OnStart(RoseGold::Client::BootstrapResult& aCoreSetup)
 
 void ExampleGame::OnLoop()
 {
+	ZoneScoped;
+
 	const std::chrono::high_resolution_clock::duration timeSinceStart = (std::chrono::high_resolution_clock::now() - myStartTime);
 	const std::chrono::milliseconds msSinceStart = std::chrono::duration_cast<std::chrono::milliseconds>(timeSinceStart);
 	const float secondsSinceStart = msSinceStart.count() / 1000.f;
@@ -56,6 +61,7 @@ void ExampleGame::OnLoop()
 
 	if (myWindow1)
 	{
+		ZoneScopedN("Window 1");
 		// Clear to a basic colour.
 		frameContext.ClearColor(myWindow1, RoseGold::Color::Predefined::CornflowerBlue);
 		frameContext.ClearDepth(myWindow1, 1.f, 0);
@@ -101,6 +107,7 @@ void ExampleGame::OnLoop()
 
 	if (myWindow2)
 	{
+		ZoneScopedN("Window 2");
 		frameContext.ClearColor(myWindow2, RoseGold::Color::Predefined::Tan);
 		frameContext.ClearDepth(myWindow2, 1.f, 0);
 
@@ -146,11 +153,12 @@ void ExampleGame::OnLoop()
 
 void ExampleGame::OnExit()
 {
-
+	ZoneScoped;
 }
 
 void ExampleGame::OnStart_SetupWindows()
 {
+	ZoneScoped;
 	RoseGold::Core::Platform::WindowManager::CreationParameters windowParams;
 	windowParams.Title = "Window 1";
 	windowParams.Size = { 640, 480 };
@@ -171,6 +179,7 @@ void ExampleGame::OnStart_SetupWindows()
 
 void ExampleGame::OnStart_DefineMeshes()
 {
+	ZoneScoped;
 	{
 		myColoredTriangle = ColoredMesh(myCoreSetup->GraphicsManager.get());
 		std::vector<ColoredVertex> triangle;
@@ -241,6 +250,7 @@ void ExampleGame::OnStart_DefineMeshes()
 
 void ExampleGame::OnStart_SetupPipelineStates()
 {
+	ZoneScoped;
 	RoseGold::Debug::Assert(
 		myWindow1->GetDescriptor().ColorGraphicsFormat == myWindow2->GetDescriptor().ColorGraphicsFormat &&
 		myWindow1->GetDescriptor().DepthStencilFormat == myWindow2->GetDescriptor().DepthStencilFormat,
@@ -286,6 +296,7 @@ void ExampleGame::OnStart_SetupPipelineStates()
 
 void ExampleGame::OnStart_CreateMVPBuffers()
 {
+	ZoneScoped;
 	using namespace RoseGold::Core::Graphics;
 	auto makeCameraConstants = [&]() { return myCoreSetup->GraphicsManager->CreateGraphicsBuffer(GraphicsBuffer::Target::Constant, 1, sizeof(CameraConstants)); };
 

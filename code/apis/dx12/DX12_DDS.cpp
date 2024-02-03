@@ -15,6 +15,8 @@ namespace RoseGold::DirectX12
 
 	std::shared_ptr<Texture2D_DDS> Texture2D_DDS::LoadFromFile(const std::filesystem::path& aPath, Device& aDevice, UploadContext& anUploader)
 	{
+		ZoneScoped;
+
 		std::unique_ptr<ScratchImage> image = std::make_unique<ScratchImage>();
 
 		HRESULT loadResult = LoadFromDDSFile(aPath.c_str(), DDS_FLAGS_NONE, nullptr, *image);

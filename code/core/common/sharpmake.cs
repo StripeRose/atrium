@@ -3,6 +3,7 @@ using Sharpmake;
 
 [module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
+[module: Sharpmake.Include("../../libraries/tracy.sharpmake.cs")]
 
 namespace RoseGold.Core
 {
@@ -23,6 +24,7 @@ namespace RoseGold.Core
 
             conf.SolutionFolder = "rose-gold/core";
             conf.AddPublicDependency<RoseCommon>(target);
+            conf.AddPublicDependency<Tracy>(target);
         }
     }
 }

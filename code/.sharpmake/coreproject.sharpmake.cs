@@ -44,6 +44,12 @@ namespace RoseGold
                 if (target.Optimization != Optimization.Retail)
                     conf.Defines.Add("IS_EDITOR_BUILD");
 
+                if (target.Optimization != Optimization.Retail)
+                {
+                    conf.Defines.Add("IS_PROFILING_ENABLED");
+                    conf.Defines.Add("TRACY_ENABLE");
+                }
+
                 // Todo: Figure out how to do memory leak debugging.
                 // if (target.Optimization == Optimization.Debug)
                 // {

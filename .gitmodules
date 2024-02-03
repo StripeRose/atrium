@@ -7,3 +7,6 @@
 [submodule "code/libraries/DirectXTex"]
 	path = code/libraries/DirectXTex
 	url = https://github.com/Microsoft/DirectXTex
+[submodule "code/libraries/tracy"]
+	path = code/libraries/tracy
+	url = https://github.com/wolfpld/tracy.git

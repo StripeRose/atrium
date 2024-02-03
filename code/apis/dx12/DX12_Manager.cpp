@@ -26,6 +26,8 @@ namespace RoseGold::DirectX12
 		, myGraphicsQueueFrameEndFence(0)
 		, myFrameIndex(static_cast<std::uint64_t>(-1))
 	{
+		ZoneScoped;
+
 		Debug::Log("DX12 start");
 
 		myDevice.reset(new Device());
@@ -40,6 +42,8 @@ namespace RoseGold::DirectX12
 
 	Manager::~Manager()
 	{
+		ZoneScoped;
+
 		Debug::Log("DX12 stop");
 
 		myDefaultRootSignature.reset();
@@ -57,6 +61,8 @@ namespace RoseGold::DirectX12
 
 	std::shared_ptr<Core::Graphics::RenderTexture> Manager::CreateRenderTextureForWindow(Core::Platform::Window& aWindow)
 	{
+		ZoneScoped;
+
 		const std::scoped_lock lock(mySwapChainMutex);
 		std::shared_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
 		swapChain.reset(new SwapChain(*myDevice, myCommandQueueManager->GetGraphicsQueue(), aWindow));
@@ -71,6 +77,8 @@ namespace RoseGold::DirectX12
 
 	std::shared_ptr<Core::Graphics::GraphicsBuffer> Manager::CreateGraphicsBuffer(Core::Graphics::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 	{
+		ZoneScoped;
+
 		switch (aTarget)
 		{
 		case Core::Graphics::GraphicsBuffer::Target::Vertex:
@@ -91,6 +99,8 @@ namespace RoseGold::DirectX12
 
 	std::shared_ptr<Core::Graphics::Shader> Manager::CreateShader(const std::filesystem::path& aSource, Core::Graphics::Shader::Type aType, const char* anEntryPoint)
 	{
+		ZoneScoped;
+
 		switch (aType)
 		{
 		case Shader::Type::Vertex:
@@ -136,6 +146,8 @@ namespace RoseGold::DirectX12
 
 	void Manager::MarkFrameStart()
 	{
+		ZoneScoped;
+
 		myFrameIndex += 1;
 
 		myCommandQueueManager->GetComputeQueue().WaitForFenceCPUBlocking(myComputeQueueFrameEndFence);
@@ -155,6 +167,8 @@ namespace RoseGold::DirectX12
 
 	void Manager::MarkFrameEnd()
 	{
+		ZoneScoped;
+
 		myUploadContext->ProcessUploads();
 		myCommandQueueManager->GetCopyQueue().ExecuteCommandList(
 			myUploadContext->GetCommandList()
@@ -188,6 +202,8 @@ namespace RoseGold::DirectX12
 
 	void Manager::SetupRootSignature()
 	{
+		ZoneScoped;
+
 		RootSignatureCreator signature;
 
 		signature.SetVisibility(D3D12_SHADER_VISIBILITY_VERTEX);

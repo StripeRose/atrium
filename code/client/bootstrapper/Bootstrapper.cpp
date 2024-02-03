@@ -2,6 +2,8 @@
 
 #include "Bootstrapper.hpp"
 
+#include "Common_Profiling.hpp"
+
 #include "DX12_Manager.hpp"
 
 #include "Win32_WindowManagement.hpp"
@@ -16,6 +18,9 @@ namespace RoseGold::Client
 
 	BootstrapResult Bootstrap()
 	{
+		static constexpr const char* ourFrameMark = "Bootstrap setup";
+		FrameMarkStart(ourFrameMark);
+
 		BootstrapResult result;
 
 #if _WIN32
@@ -23,6 +28,8 @@ namespace RoseGold::Client
 #else
 		static_assert(false, "No bootstrapping available for this platform yet.");
 #endif
+
+		FrameMarkEnd(ourFrameMark);
 
 		return result;
 	}

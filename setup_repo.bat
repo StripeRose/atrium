@@ -1,6 +1,7 @@
 @echo off
 call :CloneSubmodules
-call "./tools/compile_sharpmake.bat"
+call :BuildSharpmake
+call "./code/libraries/build_tracy_server.bat"
 call :GenerateProject
 exit /b 0
 
@@ -19,6 +20,12 @@ if %errorlevel% NEQ 0 (
 )
 
 exit /b 0
+
+::==============================================================
+:: COMPILE SHARPMAKE
+:BuildSharpmake
+call "./tools/compile_solution.bat" "./tools/Sharpmake/Sharpmake.sln" "Release" "Any CPU"
+exit /b %errorlevel%
 
 ::==============================================================
 :: GENERATE PROJECT

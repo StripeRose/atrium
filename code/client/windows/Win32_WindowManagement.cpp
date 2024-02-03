@@ -67,6 +67,7 @@ namespace RoseGold::Win32
 		: myWindowHandle(NULL)
 		, myHasRequestedClose(false)
 	{
+		ZoneScoped;
 		myDefaultCursor = ::LoadCursor(NULL, IDC_ARROW);
 
 		myWndProcCallback = std::bind(&Window::HandleWindowMessage,
@@ -235,6 +236,7 @@ namespace RoseGold::Win32
 
 	void WindowManager::Update()
 	{
+		ZoneScoped;
 		ProcessWindowMessages();
 
 		for (std::size_t i = 0; i < myWindows.size(); ++i)
@@ -253,6 +255,7 @@ namespace RoseGold::Win32
 
 	LRESULT WindowManager::WindowClassWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
+		ZoneScoped;
 		if (msg == WM_NCCREATE) [[unlikely]]
 		{
 			CREATESTRUCT* createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
@@ -269,6 +272,7 @@ namespace RoseGold::Win32
 
 	void WindowManager::RegisterWindowClasses()
 	{
+		ZoneScoped;
 		WNDCLASSEX& wndClass = myWindowClasses.emplace_back();
 		wndClass.cbSize = sizeof(wndClass);
 		wndClass.style = CS_CLASSDC;
@@ -288,6 +292,7 @@ namespace RoseGold::Win32
 
 	void WindowManager::CleanupWindowClasses()
 	{
+		ZoneScoped;
 		for (const WNDCLASSEX& wndClass : myWindowClasses)
 			::UnregisterClass(wndClass.lpszClassName, wndClass.hInstance);
 
@@ -296,6 +301,7 @@ namespace RoseGold::Win32
 
 	void WindowManager::ProcessWindowMessages()
 	{
+		ZoneScoped;
 		MSG message;
 		while (::PeekMessage(&message, nullptr, 0U, 0U, PM_REMOVE))
 		{

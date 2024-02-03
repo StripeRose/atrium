@@ -33,6 +33,8 @@ namespace RoseGold::DirectX12
 		, myDescriptorHeapCPUStart({ 0 })
 		, myDescriptorHeapGPUStart({ 0 })
 	{
+		ZoneScoped;
+
 		D3D12_DESCRIPTOR_HEAP_DESC heapDescriptor;
 		heapDescriptor.NumDescriptors = myMaxDescriptors;
 		heapDescriptor.Type = aHeapType;
