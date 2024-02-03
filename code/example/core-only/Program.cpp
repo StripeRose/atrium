@@ -23,22 +23,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 		ExampleGame game;
 		game.OnStart(roseGold);
 
-		static constexpr const char* ourFrameMark = "Frame";
-
 		while (!roseGold.WindowManager->GetWindows().empty())
 		{
-			std::chrono::high_resolution_clock::time_point frameStart = std::chrono::high_resolution_clock::now();
-
-			FrameMarkStart(ourFrameMark);
+			FrameMark;
 
 			roseGold.WindowManager->Update();
 			roseGold.GraphicsManager->MarkFrameStart();
 			game.OnLoop();
 			roseGold.GraphicsManager->MarkFrameEnd();
-
-			FrameMarkEnd(ourFrameMark);
-
-			std::this_thread::sleep_until(frameStart + std::chrono::milliseconds(16));
 		}
 
 		game.OnExit();
