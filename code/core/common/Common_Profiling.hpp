@@ -1,9 +1,16 @@
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable: 26495 4100 6201)
 #include <tracy/Tracy.hpp>
+#pragma warning(pop)
 
 #ifdef TRACY_ENABLE
-void* operator new(std::size_t count);
+_NODISCARD
+_Ret_notnull_
+_Post_writable_byte_size_(count)
+_VCRT_ALLOCATOR
+void* operator new(std::size_t count) noexcept(false);
 void operator delete(void* ptr) noexcept;
 #endif
 

@@ -3,9 +3,15 @@
 #include "Common_Profiling.hpp"
 
 #ifdef TRACY_ENABLE
-void* operator new(std::size_t count)
+_NODISCARD
+_Ret_notnull_
+_Post_writable_byte_size_(count)
+_VCRT_ALLOCATOR
+void* operator new(std::size_t count) noexcept(false)
 {
 	auto ptr = malloc(count);
+	if (!ptr)
+		throw std::bad_alloc();
 	TracyAlloc(ptr, count);
 	return ptr;
 }
