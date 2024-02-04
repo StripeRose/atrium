@@ -62,92 +62,133 @@ void ExampleGame::OnLoop()
 	if (myWindow1)
 	{
 		ZoneScopedN("Window 1");
+		CONTEXT_ZONE(frameContext, "Window 1");
+
 		// Clear to a basic colour.
-		frameContext.ClearColor(myWindow1, RoseGold::Color::Predefined::CornflowerBlue);
-		frameContext.ClearDepth(myWindow1, 1.f, 0);
+		{
+			CONTEXT_ZONE(frameContext, "Clear");
+			frameContext.ClearColor(myWindow1, RoseGold::Color::Predefined::CornflowerBlue);
+			frameContext.ClearDepth(myWindow1, 1.f, 0);
+		}
 
 		// Set up the window to be drawn to.
-		frameContext.SetViewportAndScissorRect(RoseGold::Size(myWindow1->GetWidth(), myWindow1->GetHeight()));
-		frameContext.SetRenderTargets({ myWindow1 }, myWindow1);
+		{
+			CONTEXT_ZONE(frameContext, "Set up target");
+			frameContext.SetViewportAndScissorRect(RoseGold::Size(myWindow1->GetWidth(), myWindow1->GetHeight()));
+			frameContext.SetRenderTargets({ myWindow1 }, myWindow1);
+		}
 
 		// Set up some common data.
 		CameraConstants mvp;
-		const float aspectRatio = static_cast<float>(myWindow1->GetWidth()) / static_cast<float>(myWindow1->GetHeight());
-		mvp.Projection = RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseGold::Math::ToRadians<float>(60.f), aspectRatio, 0.01f, 50.f);
-		mvp.View = RoseGold::Math::MakeMatrix::LookAt({ 2, 2, -3 }, { 0, 0, 0 }, RoseGold::Math::Vector3::Up());
-		mvp.View = mvp.View.Invert().value_or(RoseGold::Math::Matrix::Identity());
+		{
+			CONTEXT_ZONE(frameContext, "Set frame data");
+			const float aspectRatio = static_cast<float>(myWindow1->GetWidth()) / static_cast<float>(myWindow1->GetHeight());
+			mvp.Projection = RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseGold::Math::ToRadians<float>(60.f), aspectRatio, 0.01f, 50.f);
+			mvp.View = RoseGold::Math::MakeMatrix::LookAt({ 2, 2, -3 }, { 0, 0, 0 }, RoseGold::Math::Vector3::Up());
+			mvp.View = mvp.View.Invert().value_or(RoseGold::Math::Matrix::Identity());
+		}
 
 		// Draw the colored triangle.
-		frameContext.SetPipelineState(myColoredMeshPipelineState);
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myWhite);
-		mvp.Model =
-			RoseGold::Math::MakeMatrix::Translation(0, 0, -0.25f) *
-			RoseGold::Math::MakeMatrix::Scale(10) *
-			RoseGold::Math::MakeMatrix::Translation(0, -2, 0);
-		myRT1TriangleConstants->SetData(&mvp, sizeof(mvp));
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT1TriangleConstants);
-		myColoredTriangle.DrawToFrame(frameContext);
+		{
+			CONTEXT_ZONE(frameContext, "Draw triangle");
+			frameContext.SetPipelineState(myColoredMeshPipelineState);
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myWhite);
+			mvp.Model =
+				RoseGold::Math::MakeMatrix::Translation(0, 0, -0.25f) *
+				RoseGold::Math::MakeMatrix::Scale(10) *
+				RoseGold::Math::MakeMatrix::Translation(0, -2, 0);
+			myRT1TriangleConstants->SetData(&mvp, sizeof(mvp));
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT1TriangleConstants);
+			myColoredTriangle.DrawToFrame(frameContext);
+		}
 
 		// Draw the colored plane.
-		frameContext.SetPipelineState(myColoredMeshPipelineState);
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myWhite);
-		mvp.Model = RoseGold::Math::MakeMatrix::Translation(0, -1.5f, 0);
-		myRT1PlaneConstants->SetData(&mvp, sizeof(mvp));
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT1PlaneConstants);
-		myColoredPlane.DrawToFrame(frameContext);
+		{
+			CONTEXT_ZONE(frameContext, "Draw plane");
+			frameContext.SetPipelineState(myColoredMeshPipelineState);
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myWhite);
+			mvp.Model = RoseGold::Math::MakeMatrix::Translation(0, -1.5f, 0);
+			myRT1PlaneConstants->SetData(&mvp, sizeof(mvp));
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT1PlaneConstants);
+			myColoredPlane.DrawToFrame(frameContext);
+		}
 
 		// Draw the textured pyramid.
-		frameContext.SetPipelineState(myTexturedMeshPipelineState);
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myCheckerboard);
-		mvp.Model = RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart);
-		myRT1PyramidConstants->SetData(&mvp, sizeof(mvp));
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT1PyramidConstants);
-		myTexturedPyramid.DrawToFrame(frameContext);
+		{
+			CONTEXT_ZONE(frameContext, "Draw pyramid");
+			frameContext.SetPipelineState(myTexturedMeshPipelineState);
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myCheckerboard);
+			mvp.Model = RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart);
+			myRT1PyramidConstants->SetData(&mvp, sizeof(mvp));
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT1PyramidConstants);
+			myTexturedPyramid.DrawToFrame(frameContext);
+		}
 	}
 
 	if (myWindow2)
 	{
 		ZoneScopedN("Window 2");
-		frameContext.ClearColor(myWindow2, RoseGold::Color::Predefined::Tan);
-		frameContext.ClearDepth(myWindow2, 1.f, 0);
+		CONTEXT_ZONE(frameContext, "Window 2");
+
+		// Clear to a basic colour.
+		{
+			CONTEXT_ZONE(frameContext, "Clear");
+			frameContext.ClearColor(myWindow2, RoseGold::Color::Predefined::Tan);
+			frameContext.ClearDepth(myWindow2, 1.f, 0);
+		}
 
 		// Set up the window to be drawn to.
-		frameContext.SetViewportAndScissorRect(RoseGold::Size(myWindow2->GetWidth(), myWindow2->GetHeight()));
-		frameContext.SetRenderTargets({ myWindow2 }, myWindow2);
+		{
+			CONTEXT_ZONE(frameContext, "Set up target");
+			frameContext.SetViewportAndScissorRect(RoseGold::Size(myWindow2->GetWidth(), myWindow2->GetHeight()));
+			frameContext.SetRenderTargets({ myWindow2 }, myWindow2);
+		}
 
 		// Set up some common data.
 		CameraConstants mvp;
-		const float aspectRatio = static_cast<float>(myWindow2->GetWidth()) / static_cast<float>(myWindow2->GetHeight());
-		mvp.Projection = RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseGold::Math::ToRadians<float>(60.f), aspectRatio, 0.01f, 50.f);
-		mvp.View = RoseGold::Math::MakeMatrix::LookAt({ 2, 2, -3 }, { 0, 0, 0 }, RoseGold::Math::Vector3::Up());
-		mvp.View = mvp.View.Invert().value_or(RoseGold::Math::Matrix::Identity());
+		{
+			CONTEXT_ZONE(frameContext, "Set frame data");
+			const float aspectRatio = static_cast<float>(myWindow2->GetWidth()) / static_cast<float>(myWindow2->GetHeight());
+			mvp.Projection = RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseGold::Math::ToRadians<float>(60.f), aspectRatio, 0.01f, 50.f);
+			mvp.View = RoseGold::Math::MakeMatrix::LookAt({ 2, 2, -3 }, { 0, 0, 0 }, RoseGold::Math::Vector3::Up());
+			mvp.View = mvp.View.Invert().value_or(RoseGold::Math::Matrix::Identity());
+		}
 
 		// Draw the colored triangle.
-		frameContext.SetPipelineState(myColoredMeshPipelineState);
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myWhite);
-		mvp.Model = RoseGold::Math::MakeMatrix::RotationX(RoseGold::Math::ToRadians(-90.f)) * RoseGold::Math::MakeMatrix::Translation(0, 0, 5.f);
-		myRT2TriangleConstants->SetData(&mvp, sizeof(mvp));
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT2TriangleConstants);
-		myColoredTriangle.DrawToFrame(frameContext);
+		{
+			CONTEXT_ZONE(frameContext, "Draw triangle");
+			frameContext.SetPipelineState(myColoredMeshPipelineState);
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myWhite);
+			mvp.Model = RoseGold::Math::MakeMatrix::RotationX(RoseGold::Math::ToRadians(-90.f)) * RoseGold::Math::MakeMatrix::Translation(0, 0, 5.f);
+			myRT2TriangleConstants->SetData(&mvp, sizeof(mvp));
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT2TriangleConstants);
+			myColoredTriangle.DrawToFrame(frameContext);
+		}
 
 		// Draw the colored plane.
-		frameContext.SetPipelineState(myColoredMeshPipelineState);
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myWhite);
-		mvp.Model = RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart * 0.2f) * RoseGold::Math::MakeMatrix::Scale(20.f);
-		myRT2PlaneConstants->SetData(&mvp, sizeof(mvp));
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT2PlaneConstants);
-		myColoredPlane.DrawToFrame(frameContext);
+		{
+			CONTEXT_ZONE(frameContext, "Draw plane");
+			frameContext.SetPipelineState(myColoredMeshPipelineState);
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myWhite);
+			mvp.Model = RoseGold::Math::MakeMatrix::RotationY(secondsSinceStart * 0.2f) * RoseGold::Math::MakeMatrix::Scale(20.f);
+			myRT2PlaneConstants->SetData(&mvp, sizeof(mvp));
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT2PlaneConstants);
+			myColoredPlane.DrawToFrame(frameContext);
+		}
 
 		// Draw the textured pyramid.
-		frameContext.SetPipelineState(myTexturedMeshPipelineState);
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myCheckerboard);
-		mvp.Model =
-			RoseGold::Math::MakeMatrix::Translation(0, -0.25f, 0) *
-			RoseGold::Math::MakeMatrix::RotationX(secondsSinceStart) *
-			RoseGold::Math::MakeMatrix::Translation(0, 1.f, 0);
-		myRT2PyramidConstants->SetData(&mvp, sizeof(mvp));
-		frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT2PyramidConstants);
-		myTexturedPyramid.DrawToFrame(frameContext);
+		{
+			CONTEXT_ZONE(frameContext, "Draw pyramid");
+			frameContext.SetPipelineState(myTexturedMeshPipelineState);
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerMaterial, 0, myCheckerboard);
+			mvp.Model =
+				RoseGold::Math::MakeMatrix::Translation(0, -0.25f, 0) *
+				RoseGold::Math::MakeMatrix::RotationX(secondsSinceStart) *
+				RoseGold::Math::MakeMatrix::Translation(0, 1.f, 0);
+			myRT2PyramidConstants->SetData(&mvp, sizeof(mvp));
+			frameContext.SetPipelineResource(ResourceUpdateFrequency::PerObject, 0, myRT2PyramidConstants);
+			myTexturedPyramid.DrawToFrame(frameContext);
+		}
 	}
 }
 

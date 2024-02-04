@@ -12,17 +12,20 @@
 
 namespace RoseGold::DirectX12
 {
-	FrameContext::FrameContext(Device& aDevice, D3D12_COMMAND_LIST_TYPE aCommandType)
+	FrameContext::FrameContext(Device& aDevice, CommandQueue& aCommandQueue)
 		: myDevice(aDevice)
-		, myCommandType(aCommandType)
+		, myCommandType(aCommandQueue.GetQueueType())
 		, myCurrentFrameHeap(nullptr)
 		, myResourceBarrierQueue()
+#ifdef TRACY_ENABLE
+		, myProfilingContext(aCommandQueue.GetProfilingContext())
+#endif
 	{
 		ZoneScoped;
 
 		AssertAction(
 			aDevice.GetDevice()->CreateCommandAllocator(
-				aCommandType,
+				myCommandType,
 				IID_PPV_ARGS(myCommandAllocator.ReleaseAndGetAddressOf())
 			),
 			"Create frame context command allocator."
@@ -35,7 +38,7 @@ namespace RoseGold::DirectX12
 		AssertAction(
 			device4->CreateCommandList1(
 				0,
-				aCommandType,
+				myCommandType,
 				D3D12_COMMAND_LIST_FLAG_NONE,
 				IID_PPV_ARGS(myCommandList.ReleaseAndGetAddressOf())
 			),
@@ -133,9 +136,10 @@ namespace RoseGold::DirectX12
 		myCommandList->SetDescriptorHeaps(1, heapsToBind);
 	}
 
-	UploadContext::UploadContext(Device& aDevice)
-		: FrameContext(aDevice, D3D12_COMMAND_LIST_TYPE_COPY)
+	UploadContext::UploadContext(Device& aDevice, CommandQueue& aCommandQueue)
+		: FrameContext(aDevice, aCommandQueue)
 	{
+		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_COPY, "Queue is the correcct type.");
 		myBufferUploadHeap.reset(new UploadBuffer(aDevice, 10 * 1024 * 1024));
 		myTextureUploadHeap.reset(new UploadBuffer(aDevice, 40 * 1024 * 1024));
 	}
@@ -203,10 +207,36 @@ namespace RoseGold::DirectX12
 		myTextureUploadsInProgress.clear();
 	}
 
-	FrameGraphicsContext::FrameGraphicsContext(Device& aDevice)
-		: DirectX12::FrameContext(aDevice, D3D12_COMMAND_LIST_TYPE_DIRECT)
+	FrameGraphicsContext::FrameGraphicsContext(Device& aDevice, CommandQueue& aCommandQueue)
+		: DirectX12::FrameContext(aDevice, aCommandQueue)
 		, myCurrentPipelineState(nullptr)
-	{ }
+	{
+		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_DIRECT, "Queue is the correcct type.");
+	}
+
+	void FrameGraphicsContext::BeginZone(ContextZone& aZoneScope
+#ifdef TRACY_ENABLE
+		, const tracy::SourceLocationData& aLocation
+#endif
+	)
+	{
+		static_assert(sizeof(ContextZone::Data) >= sizeof(tracy::D3D12ZoneScope));
+
+		std::memset(aZoneScope.Data, 0, sizeof(aZoneScope.Data));
+
+		std::construct_at(
+			reinterpret_cast<tracy::D3D12ZoneScope*>(&aZoneScope.Data[0]),
+			myProfilingContext,
+			myCommandList.Get(),
+			&aLocation,
+			true
+			);
+
+		aZoneScope.Destructor = [](ContextZone& aZone) {
+				tracy::D3D12ZoneScope* scope = reinterpret_cast<tracy::D3D12ZoneScope*>(&aZone.Data[0]);
+				scope->~D3D12ZoneScope();
+			};
+	}
 
 	void FrameGraphicsContext::Reset()
 	{

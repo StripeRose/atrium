@@ -5,6 +5,7 @@
 #include "Common_Color.hpp"
 #include "Common_Math.hpp"
 
+#include "DX12_CommandQueue.hpp"
 #include "DX12_ComPtr.hpp"
 #include "DX12_DescriptorHeap.hpp"
 #include "DX12_GPUResource.hpp"
@@ -36,7 +37,7 @@ namespace RoseGold::DirectX12
 		using SubresourceLayouts = std::array<D3D12_PLACED_SUBRESOURCE_FOOTPRINT, MaxTextureSubresourceCount>;
 
 	public:
-		FrameContext(Device& aDevice, D3D12_COMMAND_LIST_TYPE aCommandType);
+		FrameContext(Device& aDevice, CommandQueue& aCommandQueue);
 		virtual ~FrameContext() = default;
 
 		D3D12_COMMAND_LIST_TYPE GetCommandType() const { return myCommandType; }
@@ -53,6 +54,9 @@ namespace RoseGold::DirectX12
 		void BindDescriptorHeaps();
 
 		Device& myDevice;
+#ifdef TRACY_ENABLE
+		TracyD3D12Ctx& myProfilingContext;
+#endif
 
 		D3D12_COMMAND_LIST_TYPE myCommandType;
 		ComPtr<ID3D12GraphicsCommandList6> myCommandList;
@@ -84,7 +88,7 @@ namespace RoseGold::DirectX12
 		};
 
 	public:
-		UploadContext(Device& aDevice);
+		UploadContext(Device& aDevice, CommandQueue& aCommandQueue);
 
 		//void AddUpload(Buffer);
 		TextureUpload& AddTextureUpload();
@@ -105,7 +109,13 @@ namespace RoseGold::DirectX12
 	class FrameGraphicsContext final : public FrameContext, public Core::Graphics::FrameContext
 	{
 	public:
-		FrameGraphicsContext(Device& aDevice);
+		FrameGraphicsContext(Device& aDevice, CommandQueue& aCommandQueue);
+
+		void BeginZone(ContextZone& aZoneScope
+#ifdef TRACY_ENABLE
+			, const tracy::SourceLocationData& aLocation
+#endif
+		) override;
 
 		void Reset() override;
 

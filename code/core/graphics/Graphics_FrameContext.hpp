@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Common_Color.hpp"
+#include "Common_Profiling.hpp"
 #include "Common_Math.hpp"
 
 #include "Graphics_Buffer.hpp"
 #include "Graphics_RenderTexture.hpp"
 #include "Graphics_Pipeline.hpp"
 
+#include <functional>
 #include <memory>
+#include <source_location>
 #include <vector>
 
 namespace RoseGold::Core::Graphics
@@ -33,6 +36,21 @@ namespace RoseGold::Core::Graphics
 	class FrameContext
 	{
 	public:
+		struct ContextZone
+		{
+			~ContextZone() { Destructor(*this); }
+
+			std::uint_least8_t Data[32];
+			std::function<void(ContextZone&)> Destructor;
+		};
+
+	public:
+		virtual void BeginZone(ContextZone& aZoneScope
+#ifdef TRACY_ENABLE
+			, const tracy::SourceLocationData& aLocation
+#endif
+		) = 0;
+
 		virtual void ClearColor(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, Color aClearColor) = 0;
 		virtual void ClearDepth(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) = 0;
 
@@ -61,3 +79,12 @@ namespace RoseGold::Core::Graphics
 		virtual void SetViewport(const Math::Rectangle& aRectangle) = 0;
 	};
 }
+
+#ifdef TRACY_ENABLE
+#define CONTEXT_ZONE(aContext, aName) \
+	static constexpr tracy::SourceLocationData TracyConcat(__tracy_source_location, TracyLine) { aName, TracyFunction, TracyFile, (uint32_t)TracyLine, 0 };  \
+	RoseGold::Core::Graphics::FrameContext::ContextZone TracyConcat(contextZoneScope, __LINE__); \
+	aContext.BeginZone(TracyConcat(contextZoneScope, __LINE__), TracyConcat(__tracy_source_location, TracyLine));
+#else
+#define CONTEXT_ZONE(aContext, aName)
+#endif

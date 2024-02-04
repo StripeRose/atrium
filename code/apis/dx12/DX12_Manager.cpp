@@ -34,8 +34,8 @@ namespace RoseGold::DirectX12
 
 		myCommandQueueManager.reset(new CommandQueueManager(myDevice->GetDevice()));
 
-		myFrameGraphicsContext.reset(new FrameGraphicsContext(*myDevice));
-		myUploadContext.reset(new UploadContext(*myDevice));
+		myFrameGraphicsContext.reset(new FrameGraphicsContext(*myDevice, myCommandQueueManager->GetGraphicsQueue()));
+		myUploadContext.reset(new UploadContext(*myDevice, myCommandQueueManager->GetCopyQueue()));
 
 		SetupRootSignature();
 	}
@@ -150,9 +150,18 @@ namespace RoseGold::DirectX12
 
 		myFrameIndex += 1;
 
-		myCommandQueueManager->GetComputeQueue().WaitForFenceCPUBlocking(myComputeQueueFrameEndFence);
-		myCommandQueueManager->GetCopyQueue().WaitForFenceCPUBlocking(myCopyQueueFrameEndFence);
-		myCommandQueueManager->GetGraphicsQueue().WaitForFenceCPUBlocking(myGraphicsQueueFrameEndFence);
+#ifdef TRACY_ENABLE
+		TracyD3D12NewFrame(myCommandQueueManager->GetComputeQueue().GetProfilingContext());
+		TracyD3D12NewFrame(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
+		TracyD3D12NewFrame(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
+#endif
+
+		{
+			ZoneScopedN("Waiting for previous frame");
+			myCommandQueueManager->GetComputeQueue().WaitForFenceCPUBlocking(myComputeQueueFrameEndFence);
+			myCommandQueueManager->GetCopyQueue().WaitForFenceCPUBlocking(myCopyQueueFrameEndFence);
+			myCommandQueueManager->GetGraphicsQueue().WaitForFenceCPUBlocking(myGraphicsQueueFrameEndFence);
+		}
 
 		myUploadContext->ResolveUploads();
 		myUploadContext->Reset();
@@ -198,6 +207,12 @@ namespace RoseGold::DirectX12
 		myComputeQueueFrameEndFence = myCommandQueueManager->GetComputeQueue().InsertSignal();
 		myCopyQueueFrameEndFence = myCommandQueueManager->GetCopyQueue().InsertSignal();
 		myGraphicsQueueFrameEndFence = myCommandQueueManager->GetGraphicsQueue().InsertSignal();
+
+#ifdef TRACY_ENABLE
+		TracyD3D12Collect(myCommandQueueManager->GetComputeQueue().GetProfilingContext());
+		TracyD3D12Collect(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
+		TracyD3D12Collect(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
+#endif
 	}
 
 	void Manager::SetupRootSignature()

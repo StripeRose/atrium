@@ -5,6 +5,12 @@
 #include "DX12_ComPtr.hpp"
 
 #include <d3d12.h>
+#ifdef TRACY_ENABLE
+#pragma warning(push)
+#pragma warning(disable:26495 4100 6201)
+#include <tracy/TracyD3D12.hpp>
+#pragma warning(pop)
+#endif
 
 #include <mutex>
 
@@ -29,6 +35,10 @@ namespace RoseGold::DirectX12
 		ComPtr<ID3D12CommandQueue> GetCommandQueue() { return myCommandQueue; }
 		D3D12_COMMAND_LIST_TYPE GetQueueType() const { return myQueueType; }
 
+#ifdef TRACY_ENABLE
+		TracyD3D12Ctx& GetProfilingContext() { return myProfilingContext; }
+#endif
+
 		std::uint64_t PollCurrentFenceValue();
 		std::uint64_t GetLastCompletedFence() const { return myLastCompletedFenceValue; }
 		std::uint64_t GetNextFenceValue() const { return myNextFenceValue; }
@@ -39,6 +49,10 @@ namespace RoseGold::DirectX12
 	private:
 		ComPtr<ID3D12CommandQueue> myCommandQueue;
 		D3D12_COMMAND_LIST_TYPE myQueueType;
+
+#ifdef TRACY_ENABLE
+		TracyD3D12Ctx myProfilingContext;
+#endif
 
 		std::mutex myFenceMutex;
 		std::mutex myEventMutex;

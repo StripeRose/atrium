@@ -23,14 +23,48 @@ namespace RoseGold::DirectX12
 			"Create command queue."
 		);
 
-		myCommandQueue->SetName(L"CommandQueue");
+		const wchar_t* queueName = nullptr;
+
+		switch (aQueueType)
+		{
+		case D3D12_COMMAND_LIST_TYPE_COMPUTE:
+			queueName = L"Compute queue";
+			break;
+		case D3D12_COMMAND_LIST_TYPE_COPY:
+			queueName = L"Copy queue";
+			break;
+		case D3D12_COMMAND_LIST_TYPE_DIRECT:
+			queueName = L"Graphics queue";
+			break;
+		}
+
+		if (queueName != nullptr)
+			myCommandQueue->SetName(queueName);
+
+#ifdef TRACY_ENABLE
+		myProfilingContext = TracyD3D12Context(aDevice.Get(), myCommandQueue.Get());
+
+		switch (aQueueType)
+		{
+		case D3D12_COMMAND_LIST_TYPE_COMPUTE:
+			TracyD3D12ContextName(myProfilingContext, "Compute queue", 13);
+			break;
+		case D3D12_COMMAND_LIST_TYPE_COPY:
+			TracyD3D12ContextName(myProfilingContext, "Copy queue", 10);
+			break;
+		case D3D12_COMMAND_LIST_TYPE_DIRECT:
+			TracyD3D12ContextName(myProfilingContext, "Graphics queue", 14);
+			break;
+		}
+#endif
 
 		AssertAction(
 			aDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(myFence.ReleaseAndGetAddressOf())),
 			"Create command queue fence."
 		);
 
-		myFence->SetName(L"CommandQueue");
+		if (queueName != nullptr)
+			myFence->SetName(queueName);
 		myFence->Signal(myLastCompletedFenceValue);
 
 		myFenceEventHandle = CreateEventEx(NULL, nullptr, false, EVENT_ALL_ACCESS);
