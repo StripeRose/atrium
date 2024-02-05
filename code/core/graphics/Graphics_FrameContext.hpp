@@ -84,7 +84,7 @@ namespace RoseGold::Core::Graphics
 #define CONTEXT_ZONE(aContext, aName) \
 	static constexpr tracy::SourceLocationData TracyConcat(__tracy_source_location, TracyLine) { aName, TracyFunction, TracyFile, (uint32_t)TracyLine, 0 };  \
 	RoseGold::Core::Graphics::FrameContext::ContextZone TracyConcat(contextZoneScope, __LINE__); \
-	aContext.BeginZone(TracyConcat(contextZoneScope, __LINE__), TracyConcat(__tracy_source_location, TracyLine));
+	(aContext).BeginZone(TracyConcat(contextZoneScope, __LINE__), TracyConcat(__tracy_source_location, TracyLine));
 #else
 #define CONTEXT_ZONE(aContext, aName)
 #endif
