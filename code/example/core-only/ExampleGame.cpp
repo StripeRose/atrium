@@ -2,8 +2,7 @@
 
 #include "ExampleGame.hpp"
 
-#include <Common_Debug.hpp>
-#include <Common_Profiling.hpp>
+#include <Common_Diagnostics.hpp>
 
 std::vector<RoseGold::Core::Graphics::PipelineStateDescription::InputLayoutEntry> TexturedVertex::GetInputLayout()
 {

@@ -2,7 +2,7 @@
 
 #include "Bootstrapper.hpp"
 
-#include "Common_Profiling.hpp"
+#include "Common_Diagnostics.hpp"
 
 #include "DX12_Manager.hpp"
 

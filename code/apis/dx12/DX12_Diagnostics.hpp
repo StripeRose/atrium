@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common_Debug.hpp"
+#include "Common_Diagnostics.hpp"
 
 #include <d3d12.h>
 #include <Windows.h>

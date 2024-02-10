@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common_Color.hpp"
-#include "Common_Profiling.hpp"
+#include "Common_Diagnostics.hpp"
 #include "Common_Math.hpp"
 
 #include "Graphics_Buffer.hpp"

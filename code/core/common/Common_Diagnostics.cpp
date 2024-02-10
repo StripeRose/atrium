@@ -1,6 +1,6 @@
 #include "stdafx.hpp"
 
-#include "Common_Profiling.hpp"
+#include "Common_Diagnostics.hpp"
 
 #ifdef TRACY_ENABLE
 _NODISCARD

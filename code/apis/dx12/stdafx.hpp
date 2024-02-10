@@ -1,3 +1,3 @@
 #pragma once
 
-#include "Common_Profiling.hpp"
+#include "Common_Diagnostics.hpp"
