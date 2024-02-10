@@ -3,14 +3,9 @@
 #pragma once
 
 #include "DX12_ComPtr.hpp"
+#include "DX12_Diagnostics.hpp"
 
 #include <d3d12.h>
-#ifdef TRACY_ENABLE
-#pragma warning(push)
-#pragma warning(disable:26495 4100 6201)
-#include <tracy/TracyD3D12.hpp>
-#pragma warning(pop)
-#endif
 
 #include <mutex>
 

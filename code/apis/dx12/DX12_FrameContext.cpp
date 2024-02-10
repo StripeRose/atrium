@@ -172,9 +172,7 @@ namespace RoseGold::DirectX12
 				break;
 
 			myBufferUploadHeap->SetData(bufferUploadHeapOffset, currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize));
-#ifdef TRACY_ENABLE
 			TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Buffer upload");
-#endif
 			CopyBufferRegion(*currentUpload.Resource, 0, *myBufferUploadHeap, bufferUploadHeapOffset, currentUpload.BufferSize);
 
 			bufferUploadHeapOffset += currentUpload.BufferSize;
@@ -189,9 +187,7 @@ namespace RoseGold::DirectX12
 				break;
 
 			myTextureUploadHeap->SetData(textureUploadHeapOffset, currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize));
-#ifdef TRACY_ENABLE
 			TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Texture upload");
-#endif
 			CopyTextureRegion(*myTextureUploadHeap, textureUploadHeapOffset, currentUpload.SubresourceLayouts, currentUpload.SubresourceCount, *currentUpload.Resource);
 
 			textureUploadHeapOffset += currentUpload.BufferSize;

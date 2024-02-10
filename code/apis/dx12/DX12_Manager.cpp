@@ -151,17 +151,13 @@ namespace RoseGold::DirectX12
 
 		myFrameIndex += 1;
 
-#ifdef TRACY_ENABLE
 		TracyD3D12NewFrame(myCommandQueueManager->GetComputeQueue().GetProfilingContext());
 		TracyD3D12NewFrame(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
 		TracyD3D12NewFrame(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
-#endif
 
 		{
 			ZoneScopedN("Waiting for previous frame");
-			myCommandQueueManager->GetComputeQueue().WaitForFenceCPUBlocking(myComputeQueueFrameEndFence);
-			myCommandQueueManager->GetCopyQueue().WaitForFenceCPUBlocking(myCopyQueueFrameEndFence);
-			myCommandQueueManager->GetGraphicsQueue().WaitForFenceCPUBlocking(myGraphicsQueueFrameEndFence);
+			myCommandQueueManager->WaitForAllIdle();
 		}
 
 		myUploadContext->ResolveUploads();
@@ -217,11 +213,9 @@ namespace RoseGold::DirectX12
 				swapChain->Present();
 		}
 
-#ifdef TRACY_ENABLE
 		TracyD3D12Collect(myCommandQueueManager->GetComputeQueue().GetProfilingContext());
 		TracyD3D12Collect(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
 		TracyD3D12Collect(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
-#endif
 	}
 
 	void Manager::SetupRootSignature()
