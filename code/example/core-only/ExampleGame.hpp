@@ -21,6 +21,7 @@ public:
 	Mesh(RoseGold::Core::Graphics::Manager* aManager)
 		: myManager(aManager)
 		, myVertexCount(0)
+		, myName(L"Mesh")
 	{ }
 
 	void DrawToFrame(RoseGold::Core::Graphics::FrameContext& aFrameContext)
@@ -42,16 +43,25 @@ public:
 			myVertexCount,
 			sizeof(VertexType)
 		);
+		myVertexBuffer->SetName((myName + L" vertices").c_str());
 		myVertexBuffer->SetData(
 			&someVertices.front(),
 			static_cast<std::uint32_t>(myVertexCount * sizeof(VertexType))
 		);
 	}
 
+	void SetName(const std::wstring& aName)
+	{
+		myName = aName;
+		if (myVertexBuffer)
+			myVertexBuffer->SetName((aName + L" vertices").c_str());
+	}
+
 protected:
 	RoseGold::Core::Graphics::Manager* myManager;
 	std::shared_ptr<RoseGold::Core::Graphics::GraphicsBuffer> myVertexBuffer;
 	std::uint32_t myVertexCount;
+	std::wstring myName;
 };
 
 struct TexturedVertex

@@ -63,7 +63,9 @@ namespace RoseGold::DirectX12
 		: DescriptorHeap(aDevice, aHeapType, aNumDescriptors, false)
 		, myCurrentDescriptorIndex(0)
 		, myActiveHandleCount(0)
-	{ }
+	{
+		myDescriptorHeap->SetName(L"Staging descriptor heap");
+	}
 
 	StagingDescriptorHeap::~StagingDescriptorHeap()
 	{
@@ -111,7 +113,9 @@ namespace RoseGold::DirectX12
 	RenderPassDescriptorHeap::RenderPassDescriptorHeap(ComPtr<ID3D12Device> aDevice, D3D12_DESCRIPTOR_HEAP_TYPE aHeapType, std::uint32_t aNumDescriptors)
 		: DescriptorHeap(aDevice, aHeapType, aNumDescriptors, true)
 		, myCurrentDescriptorIndex(0)
-	{ }
+	{
+		myDescriptorHeap->SetName(L"Render pass descriptor heap");
+	}
 
 	void RenderPassDescriptorHeap::Reset()
 	{

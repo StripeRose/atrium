@@ -66,6 +66,16 @@ namespace RoseGold::DirectX12
 		return static_cast<unsigned int>(myBackBuffers.size());
 	}
 
+	void SwapChain::SetName(const wchar_t* aName)
+	{
+		for (std::size_t i = 0; i < myBackBuffers.size(); ++i)
+		{
+			myBackBuffers[i]->SetName(
+				(std::wstring(aName) + L" #" + std::to_wstring(i)).c_str()
+			);
+		}
+	}
+
 	const DescriptorHeapHandle* SwapChain::GetColorView() const
 	{
 		if (myBackBuffers.empty())

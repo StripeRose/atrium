@@ -37,6 +37,7 @@ namespace RoseGold::DirectX12
 		{
 			std::shared_ptr<Texture2D_DDS> ddsInstance(new Texture2D_DDS(aDevice, anUploader));
 			ddsInstance->ApplyImage(std::move(image));
+			ddsInstance->GetResource()->SetName(aPath.filename().c_str());
 			return ddsInstance;
 		}
 		case TEX_DIMENSION_TEXTURE3D:

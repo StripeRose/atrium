@@ -23,6 +23,8 @@ namespace RoseGold::DirectX12
 		unsigned int GetCurrentBufferIndex() const;
 		unsigned int GetBufferCount() const;
 
+		void SetName(const wchar_t* aName);
+
 		// Implementing RenderTarget
 	public:
 		const DescriptorHeapHandle* GetColorView() const override;

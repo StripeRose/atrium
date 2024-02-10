@@ -223,6 +223,7 @@ void ExampleGame::OnStart_DefineMeshes()
 	ZoneScoped;
 	{
 		myColoredTriangle = ColoredMesh(myCoreSetup->GraphicsManager.get());
+		myColoredTriangle.SetName(L"Triangle");
 		std::vector<ColoredVertex> triangle;
 		triangle.emplace_back(ColoredVertex{ { -1.f, 0.f, 0.f }, { 1.f, 0.f, 0.f, 1.f } });
 		triangle.emplace_back(ColoredVertex{ {  0.f, 0.f, 1.f }, { 0.f, 1.f, 0.f, 1.f } });
@@ -232,6 +233,7 @@ void ExampleGame::OnStart_DefineMeshes()
 
 	{
 		myColoredPlane = ColoredMesh(myCoreSetup->GraphicsManager.get());
+		myColoredPlane.SetName(L"Plane");
 		std::vector<ColoredVertex> plane;
 
 		plane.emplace_back(ColoredVertex{ { -1.f, 0.f,-1.f }, { 0.f, 0.f, 1.f, 1.f } });
@@ -247,6 +249,7 @@ void ExampleGame::OnStart_DefineMeshes()
 
 	{
 		myTexturedPyramid = TexturedMesh(myCoreSetup->GraphicsManager.get());
+		myTexturedPyramid.SetName(L"Pyramid");
 		std::vector<TexturedVertex> pyramid;
 
 		const TexturedVertex frontLeft({ -1.f, 0.f,-1.f }, { 0.f, 1.f });
@@ -292,11 +295,14 @@ void ExampleGame::OnStart_DefineMeshes()
 void ExampleGame::OnStart_SetupPipelineStates()
 {
 	ZoneScoped;
-	RoseGold::Debug::Assert(
-		myWindow1->GetDescriptor().ColorGraphicsFormat == myWindow2->GetDescriptor().ColorGraphicsFormat &&
-		myWindow1->GetDescriptor().DepthStencilFormat == myWindow2->GetDescriptor().DepthStencilFormat,
-		"Code assumes both window render-targets have the same formats. If this is not the case, each render-target needs a special pipeline state for each used shader combination."
-	);
+	if (myWindow1 && myWindow2)
+	{
+		RoseGold::Debug::Assert(
+			myWindow1->GetDescriptor().ColorGraphicsFormat == myWindow2->GetDescriptor().ColorGraphicsFormat &&
+			myWindow1->GetDescriptor().DepthStencilFormat == myWindow2->GetDescriptor().DepthStencilFormat,
+			"Code assumes both window render-targets have the same formats. If this is not the case, each render-target needs a special pipeline state for each used shader combination."
+		);
+	}
 
 	std::shared_ptr<RoseGold::Core::Graphics::Shader> coloredVertexShader = myCoreSetup->GraphicsManager->CreateShader(
 		"example/CoreOnly_MeshVertex.hlsl",
@@ -348,4 +354,12 @@ void ExampleGame::OnStart_CreateMVPBuffers()
 	myRT2PyramidConstants = makeCameraConstants();
 	myRT2TriangleConstants = makeCameraConstants();
 	myRT2PlaneConstants = makeCameraConstants();
+
+	myRT1PyramidConstants->SetName(L"Window 1 pyramid constants");
+	myRT1TriangleConstants->SetName(L"Window 1 triangle constants");
+	myRT1PlaneConstants->SetName(L"Window 1 plane constants");
+
+	myRT2PyramidConstants->SetName(L"Window 2 pyramid constants");
+	myRT2TriangleConstants->SetName(L"Window 2 triangle constants");
+	myRT2PlaneConstants->SetName(L"Window 2 plane constants");
 }

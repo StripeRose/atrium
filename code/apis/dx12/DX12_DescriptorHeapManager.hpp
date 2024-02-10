@@ -15,7 +15,14 @@ namespace RoseGold::DirectX12
 			, myRTVHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 32)
 			, myDSVHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 32)
 			, myFrameHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 32)
-		{ }
+		{
+			mySRVHeap.GetHeap()->SetName(L"Staging descriptor heap SRV");
+			myCBVHeap.GetHeap()->SetName(L"Staging descriptor heap CBV");
+			myUAVHeap.GetHeap()->SetName(L"Staging descriptor heap UAV");
+			mySamplerHeap.GetHeap()->SetName(L"Staging descriptor heap sampler");
+			myRTVHeap.GetHeap()->SetName(L"Staging descriptor heap RTV");
+			myDSVHeap.GetHeap()->SetName(L"Staging descriptor heap DSV");
+		}
 
 		StagingDescriptorHeap& GetShaderResourceViewHeap() { return mySRVHeap; }
 		StagingDescriptorHeap& GetConstantBufferViewHeap() { return myCBVHeap; }

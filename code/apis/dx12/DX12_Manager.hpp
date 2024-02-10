@@ -63,7 +63,6 @@ namespace RoseGold::DirectX12
 		std::unique_ptr<FrameGraphicsContext> myFrameGraphicsContext;
 		std::unique_ptr<UploadContext> myUploadContext;
 
-		std::vector<std::shared_ptr<Core::Graphics::RenderTexture>> myFrameTargets;
 		std::uint64_t myComputeQueueFrameEndFence;
 		std::uint64_t myCopyQueueFrameEndFence;
 		std::uint64_t myGraphicsQueueFrameEndFence;

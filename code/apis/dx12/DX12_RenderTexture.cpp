@@ -69,7 +69,7 @@ namespace RoseGold::DirectX12
 					IID_PPV_ARGS(myResource.ReleaseAndGetAddressOf())
 				), "Create render texture color buffer.");
 
-				myResource->SetName(L"RenderTexture Depth");
+				myResource->SetName(L"Render texture - Color");
 			}
 
 			D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = { };
@@ -120,7 +120,7 @@ namespace RoseGold::DirectX12
 					IID_PPV_ARGS(depthBufferResource.ReleaseAndGetAddressOf())
 				), "Create render texture depth buffer.");
 
-				depthBufferResource->SetName(L"RenderTexture Depth");
+				depthBufferResource->SetName(L"Render texture - Depth");
 
 				myDepthResource = GPUResource(depthBufferResource, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 			}
@@ -142,6 +142,12 @@ namespace RoseGold::DirectX12
 	unsigned int RenderTexture::GetDepth() const
 	{
 		return myDescriptor.Size_Depth;
+	}
+
+	void RenderTexture::SetName(const wchar_t* aName)
+	{
+		myResource->SetName((std::wstring(aName) + L" - Color").c_str());
+		myDepthResource.GetResource()->SetName((std::wstring(aName) + L" - Depth").c_str());
 	}
 
 	void RenderTexture::SetFilterMode(Core::Graphics::FilterMode aFilterMode)

@@ -137,9 +137,12 @@ namespace RoseGold::DirectX12
 	{
 		ZoneScoped;
 
-		myGraphicsQueue.GetCommandQueue()->SetName(L"Main Graphics Queue");
-		myAsyncComputeQueue.GetCommandQueue()->SetName(L"Async Compute Queue");
-		myCopyQueue.GetCommandQueue()->SetName(L"Copy Queue");
+		myGraphicsQueue.GetCommandQueue()->SetName(L"Main graphics queue");
+		myGraphicsQueue.GetFence()->SetName(L"Main graphics queue fence");
+		myAsyncComputeQueue.GetCommandQueue()->SetName(L"Async compute queue");
+		myAsyncComputeQueue.GetFence()->SetName(L"Async compute queue fence");
+		myCopyQueue.GetCommandQueue()->SetName(L"Copy queue");
+		myCopyQueue.GetFence()->SetName(L"Copy queue fence");
 	}
 
 	CommandQueue* CommandQueueManager::GetQueue(D3D12_COMMAND_LIST_TYPE aCommandType)

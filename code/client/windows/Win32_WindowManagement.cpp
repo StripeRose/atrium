@@ -38,6 +38,15 @@ namespace RoseGold::Win32
 		};
 	}
 
+	std::wstring Window::GetTitle() const
+	{
+		const int textLength = ::GetWindowTextLengthW(myWindowHandle);
+		std::wstring title;
+		title.resize(textLength + 1);
+		::GetWindowTextW(myWindowHandle, title.data(), static_cast<int>(title.size()));
+		return title;
+	}
+
 	bool Window::IsFocused() const
 	{
 		return myWindowHandle == ::GetActiveWindow();
@@ -61,6 +70,16 @@ namespace RoseGold::Win32
 		::SetWindowPos(myWindowHandle, NULL,
 			0, 0, rect.right - rect.left, rect.bottom - rect.top,
 			SWP_NOACTIVATE | SWP_NOMOVE);
+	}
+
+	void Window::SetTitle(const char* aTitleText)
+	{
+		::SetWindowTextA(myWindowHandle, aTitleText);
+	}
+
+	void Window::SetTitle(const wchar_t* aTitleText)
+	{
+		::SetWindowTextW(myWindowHandle, aTitleText);
 	}
 
 	Window::Window(const Core::Platform::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass)

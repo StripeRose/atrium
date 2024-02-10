@@ -54,6 +54,8 @@ namespace RoseGold::DirectX12
 
 		bool IsSwapChain() const override { return false; }
 
+		void SetName(const wchar_t* aName);
+
 		// Implementing RenderTexture
 	public:
 		const Core::Graphics::RenderTextureDescriptor& GetDescriptor() const override { return myDescriptor; }

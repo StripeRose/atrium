@@ -66,6 +66,7 @@ namespace RoseGold::DirectX12
 		const std::scoped_lock lock(mySwapChainMutex);
 		std::shared_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
 		swapChain.reset(new SwapChain(*myDevice, myCommandQueueManager->GetGraphicsQueue(), aWindow));
+		swapChain->SetName(aWindow.GetTitle().c_str());
 
 		aWindow.Closed.Connect(this, [&](Core::Platform::Window& aWindow) {
 			myDrawSurfaceSwapChain.at(&aWindow)->Invalidate();
@@ -178,35 +179,43 @@ namespace RoseGold::DirectX12
 	{
 		ZoneScoped;
 
-		myUploadContext->ProcessUploads();
-		myCommandQueueManager->GetCopyQueue().ExecuteCommandList(
-			myUploadContext->GetCommandList()
-		);
+		{
+			ZoneScopedN("Process uploads");
+			myUploadContext->ProcessUploads();
+			myCopyQueueFrameEndFence = myCommandQueueManager->GetCopyQueue().ExecuteCommandList(
+				myUploadContext->GetCommandList()
+			);
+		}
 
 		// Record used swapchains and make them ready to present.
 		std::vector<std::shared_ptr<SwapChain>> frameSwapChains;
-		for (const auto& swapChainIterator : myDrawSurfaceSwapChain)
 		{
-			if (swapChainIterator.second->GetGPUResource().GetUsageState() == D3D12_RESOURCE_STATE_PRESENT)
-				continue; // Swapchain hasn't been drawn to, skip it.
+			ZoneScopedN("Set up used swapchains for presenting");
+			for (const auto& swapChainIterator : myDrawSurfaceSwapChain)
+			{
+				if (swapChainIterator.second->GetGPUResource().GetUsageState() == D3D12_RESOURCE_STATE_PRESENT)
+					continue; // Swapchain hasn't been drawn to, skip it.
 
-			frameSwapChains.push_back(swapChainIterator.second);
-			myFrameGraphicsContext->AddBarrier(swapChainIterator.second->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
+				frameSwapChains.push_back(swapChainIterator.second);
+				myFrameGraphicsContext->AddBarrier(swapChainIterator.second->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
+			}
+			myFrameGraphicsContext->FlushBarriers();
 		}
-		myFrameGraphicsContext->FlushBarriers();
 
 		// Submit the frame's work.
-		CommandQueue& graphicsQueue = myCommandQueueManager->GetGraphicsQueue();
-		graphicsQueue.ExecuteCommandList(
-			myFrameGraphicsContext->GetCommandList()
-		);
+		{
+			ZoneScopedN("Submit graphic commands");
+			CommandQueue& graphicsQueue = myCommandQueueManager->GetGraphicsQueue();
+			myGraphicsQueueFrameEndFence = graphicsQueue.ExecuteCommandList(
+				myFrameGraphicsContext->GetCommandList()
+			);
+		}
 
-		for (const std::shared_ptr<SwapChain>& swapChain : frameSwapChains)
-			swapChain->Present();
-
-		myComputeQueueFrameEndFence = myCommandQueueManager->GetComputeQueue().InsertSignal();
-		myCopyQueueFrameEndFence = myCommandQueueManager->GetCopyQueue().InsertSignal();
-		myGraphicsQueueFrameEndFence = myCommandQueueManager->GetGraphicsQueue().InsertSignal();
+		{
+			ZoneScopedN("Present");
+			for (const std::shared_ptr<SwapChain>& swapChain : frameSwapChains)
+				swapChain->Present();
+		}
 
 #ifdef TRACY_ENABLE
 		TracyD3D12Collect(myCommandQueueManager->GetComputeQueue().GetProfilingContext());

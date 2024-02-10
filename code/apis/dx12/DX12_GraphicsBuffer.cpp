@@ -55,6 +55,7 @@ namespace RoseGold::DirectX12
 	VertexBuffer::VertexBuffer(Device& aDevice, std::uint32_t aVertexCount, std::uint32_t aVertexStride)
 		: GraphicsBuffer(aDevice, aVertexCount * aVertexStride, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD)
 	{
+		myResource->SetName(L"Vertex buffer");
 		myBufferView.StrideInBytes = aVertexStride;
 		myBufferView.SizeInBytes = (aVertexCount * aVertexStride);
 		myBufferView.BufferLocation = GetGPUAddress();
@@ -75,6 +76,7 @@ namespace RoseGold::DirectX12
 	IndexBuffer::IndexBuffer(Device& aDevice, std::uint32_t anIndexCount)
 		: GraphicsBuffer(aDevice, anIndexCount * sizeof(std::uint32_t), D3D12_RESOURCE_STATE_INDEX_BUFFER, D3D12_HEAP_TYPE_UPLOAD)
 	{
+		myResource->SetName(L"Index buffer");
 		myBufferView.SizeInBytes = anIndexCount * sizeof(std::uint32_t);
 		myBufferView.Format = DXGI_FORMAT_R32_UINT;
 		myBufferView.BufferLocation = GetGPUAddress();
@@ -95,6 +97,7 @@ namespace RoseGold::DirectX12
 	ConstantBuffer::ConstantBuffer(Device& aDevice, std::uint32_t aBufferSize)
 		: GraphicsBuffer(aDevice, Align<std::uint32_t>(aBufferSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD)
 	{
+		myResource->SetName(L"Constant buffer");
 		D3D12_CONSTANT_BUFFER_VIEW_DESC constantBufferViewDescriptor = { };
 		constantBufferViewDescriptor.BufferLocation = myResource->GetGPUVirtualAddress();
 		constantBufferViewDescriptor.SizeInBytes = myBufferSize;
@@ -124,6 +127,7 @@ namespace RoseGold::DirectX12
 	UploadBuffer::UploadBuffer(Device& aDevice, std::uint32_t aBufferSize)
 		: GraphicsBuffer(aDevice, Align<std::uint32_t>(aBufferSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD)
 	{
+		myResource->SetName(L"Upload buffer");
 		myMappedBuffer = nullptr;
 		myIsReady = SUCCEEDED(myResource->Map(0, nullptr, &myMappedBuffer));
 	}

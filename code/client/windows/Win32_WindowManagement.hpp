@@ -20,11 +20,14 @@ namespace RoseGold::Win32
 
 		Point GetPosition() const override;
 		Size GetSize() const override;
+		std::wstring GetTitle() const override;
 
 		bool IsFocused() const override;
 
 		void SetPosition(const Point& aPoint) override;
 		void SetSize(const Size& aSize) override;
+		void SetTitle(const char* aTitleText) override;
+		void SetTitle(const wchar_t* aTitleText) override;
 
 	private:
 		Window(const Core::Platform::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass);

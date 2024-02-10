@@ -31,6 +31,8 @@ namespace RoseGold::DirectX12
 			"Create frame context command allocator."
 		);
 
+		myCommandAllocator->SetName(L"Frame context allocator");
+
 		ComPtr<ID3D12Device4> device4;
 		AssertAction(aDevice.GetDevice().As<ID3D12Device4>(&device4), "Get ID3D12Device4.");
 		
@@ -44,6 +46,8 @@ namespace RoseGold::DirectX12
 			),
 			"Create closed command list."
 		);
+
+		myCommandList->SetName(L"Frame context command list");
 	}
 
 	void FrameContext::Reset()
@@ -139,6 +143,8 @@ namespace RoseGold::DirectX12
 	UploadContext::UploadContext(Device& aDevice, CommandQueue& aCommandQueue)
 		: FrameContext(aDevice, aCommandQueue)
 	{
+		myCommandAllocator->SetName(L"Upload context command allocator");
+		myCommandList->SetName(L"Upload context command list");
 		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_COPY, "Queue is the correcct type.");
 		myBufferUploadHeap.reset(new UploadBuffer(aDevice, 10 * 1024 * 1024));
 		myTextureUploadHeap.reset(new UploadBuffer(aDevice, 40 * 1024 * 1024));
@@ -166,7 +172,9 @@ namespace RoseGold::DirectX12
 				break;
 
 			myBufferUploadHeap->SetData(bufferUploadHeapOffset, currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize));
+#ifdef TRACY_ENABLE
 			TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Buffer upload");
+#endif
 			CopyBufferRegion(*currentUpload.Resource, 0, *myBufferUploadHeap, bufferUploadHeapOffset, currentUpload.BufferSize);
 
 			bufferUploadHeapOffset += currentUpload.BufferSize;
@@ -181,7 +189,9 @@ namespace RoseGold::DirectX12
 				break;
 
 			myTextureUploadHeap->SetData(textureUploadHeapOffset, currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize));
+#ifdef TRACY_ENABLE
 			TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Texture upload");
+#endif
 			CopyTextureRegion(*myTextureUploadHeap, textureUploadHeapOffset, currentUpload.SubresourceLayouts, currentUpload.SubresourceCount, *currentUpload.Resource);
 
 			textureUploadHeapOffset += currentUpload.BufferSize;
@@ -213,6 +223,9 @@ namespace RoseGold::DirectX12
 		: DirectX12::FrameContext(aDevice, aCommandQueue)
 		, myCurrentPipelineState(nullptr)
 	{
+		myCommandAllocator->SetName(L"Frame graphics command allocator");
+		myCommandList->SetName(L"Frame graphics command list");
+
 		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_DIRECT, "Queue is the correcct type.");
 	}
 
@@ -222,9 +235,10 @@ namespace RoseGold::DirectX12
 #endif
 	)
 	{
-		static_assert(sizeof(ContextZone::Data) >= sizeof(tracy::D3D12ZoneScope));
-
 		std::memset(aZoneScope.Data, 0, sizeof(aZoneScope.Data));
+
+#ifdef TRACY_ENABLE
+		static_assert(sizeof(ContextZone::Data) >= sizeof(tracy::D3D12ZoneScope));
 
 		std::construct_at(
 			reinterpret_cast<tracy::D3D12ZoneScope*>(&aZoneScope.Data[0]),
@@ -238,6 +252,7 @@ namespace RoseGold::DirectX12
 				tracy::D3D12ZoneScope* scope = reinterpret_cast<tracy::D3D12ZoneScope*>(&aZone.Data[0]);
 				scope->~D3D12ZoneScope();
 			};
+#endif
 	}
 
 	void FrameGraphicsContext::Reset()

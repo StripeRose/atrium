@@ -40,11 +40,14 @@ namespace RoseGold::Core::Platform
 
 		virtual Point GetPosition() const = 0;
 		virtual Size GetSize() const = 0;
+		virtual std::wstring GetTitle() const = 0;
 
 		virtual bool IsFocused() const = 0;
 
 		virtual void SetPosition(const Point& aPoint) = 0;
 		virtual void SetSize(const Size& aSize) = 0;
+		virtual void SetTitle(const char* aTitleText) = 0;
+		virtual void SetTitle(const wchar_t* aTitleText) = 0;
 	};
 
 	class WindowManager

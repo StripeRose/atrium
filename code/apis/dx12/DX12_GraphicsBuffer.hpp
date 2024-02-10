@@ -21,6 +21,7 @@ namespace RoseGold::DirectX12
 		// Implementing GraphicsBuffer
 	public:
 		void* GetNativeBufferPtr() override { return myResource.Get(); }
+		void SetName(const wchar_t* aName) override { myResource->SetName(aName); }
 
 	protected:
 		std::uint32_t myBufferSize;
