@@ -87,17 +87,20 @@ namespace RoseGold::DirectX12
 		if (myQueuedBarriers == 0)
 			return;
 
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Flush resource barriers");
 		myCommandList->ResourceBarrier(static_cast<UINT>(myQueuedBarriers), myResourceBarrierQueue.data());
 		myQueuedBarriers = 0;
 	}
 
 	void FrameContext::CopyResource(const GPUResource& aSource, GPUResource& aDestination)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Copy resource");
 		myCommandList->CopyResource(aDestination.GetResource().Get(), aSource.GetResource().Get());
 	}
 
 	void FrameContext::CopyBufferRegion(const GPUResource& aSource, std::size_t aSourceOffset, GPUResource& aDestination, std::size_t aDestinationOffset, std::size_t aByteCountToCopy)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Copy buffer region");
 		myCommandList->CopyBufferRegion(
 			aDestination.GetResource().Get(),
 			static_cast<UINT64>(aDestinationOffset),
@@ -109,6 +112,7 @@ namespace RoseGold::DirectX12
 
 	void FrameContext::CopyTextureRegion(GPUResource& aSource, std::size_t aSourceOffset, SubresourceLayouts& someSubResourceLayouts, std::uint32_t aSubresourceCount, GPUResource& aDestination)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Copy texture region");
 		for (std::uint32_t subResourceIndex = 0; subResourceIndex < aSubresourceCount; subResourceIndex++)
 		{
 			D3D12_TEXTURE_COPY_LOCATION destinationLocation = {};
@@ -128,6 +132,7 @@ namespace RoseGold::DirectX12
 
 	void FrameContext::BindDescriptorHeaps()
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Bind descriptor heaps");
 		DescriptorHeapManager& heapManager = myDevice.GetDescriptorHeapManager();
 
 		myCurrentFrameHeap = &heapManager.GetFrameHeap();
@@ -258,6 +263,7 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, Color aClearColor)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Clear color");
 		Debug::Assert(!!aTarget, "ClearColor() requires a target.");
 
 		RenderTarget& target = static_cast<RenderTarget&>(*aTarget);
@@ -285,6 +291,7 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::ClearDepth(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Clear depth");
 		Debug::Assert(!!aTarget, "ClearDepth() requires a target.");
 
 		RenderTarget& target = static_cast<RenderTarget&>(*aTarget);
@@ -306,57 +313,68 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::DisableScissorRect()
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Disable scissor rect");
 		myCommandList->RSSetScissorRects(0, nullptr);
 	}
 
 	void FrameGraphicsContext::Dispatch(std::uint32_t aGroupCountX, std::uint32_t aGroupCountY, std::uint32_t aGroupCountZ)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Dispatch");
 		myCommandList->Dispatch(aGroupCountX, aGroupCountY, aGroupCountZ);
 	}
 
 	void FrameGraphicsContext::Dispatch1D(std::uint32_t aThreadCountX, std::uint32_t aGroupSizeX)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Dispatch 1D");
 		Dispatch(GetGroupCount(aThreadCountX, aGroupSizeX), 1, 1);
 	}
 
 	void FrameGraphicsContext::Dispatch2D(std::uint32_t aThreadCountX, std::uint32_t aThreadCountY, std::uint32_t aGroupSizeX, std::uint32_t aGroupSizeY)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Dispatch 2D");
 		Dispatch(GetGroupCount(aThreadCountX, aGroupSizeX), GetGroupCount(aThreadCountY, aGroupSizeY), 1);
 	}
 
 	void FrameGraphicsContext::Dispatch3D(std::uint32_t aThreadCountX, std::uint32_t aThreadCountY, std::uint32_t aThreadCountZ, std::uint32_t aGroupSizeX, std::uint32_t aGroupSizeY, std::uint32_t aGroupSizeZ)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Dispatch 3D");
 		Dispatch(GetGroupCount(aThreadCountX, aGroupSizeX), GetGroupCount(aThreadCountY, aGroupSizeY), GetGroupCount(aThreadCountZ, aGroupSizeZ));
 	}
 
 	void FrameGraphicsContext::Draw(std::uint32_t aVertexCount, std::uint32_t aVertexStartOffset)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Draw");
 		DrawInstanced(aVertexCount, 1, aVertexStartOffset, 0);
 	}
 
 	void FrameGraphicsContext::DrawIndexed(std::uint32_t anIndexCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Draw indexed");
 		DrawIndexedInstanced(anIndexCount, 1, aStartIndexLocation, aBaseVertexLocation, 0);
 	}
 
 	void FrameGraphicsContext::DrawInstanced(std::uint32_t aVertexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartVertexLocation, std::uint32_t aStartInstanceLocation)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Draw instanced");
 		myCommandList->DrawInstanced(aVertexCountPerInstance, anInstanceCount, aStartVertexLocation, aStartInstanceLocation);
 	}
 
 	void FrameGraphicsContext::DrawIndexedInstanced(std::uint32_t anIndexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation, std::uint32_t aStartInstanceLocation)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Draw indexed instanced");
 		myCommandList->DrawIndexedInstanced(anIndexCountPerInstance, anInstanceCount, aStartIndexLocation, aBaseVertexLocation, aStartInstanceLocation);
 	}
 
 	void FrameGraphicsContext::SetBlendFactor(Color aBlendFactor)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set blend factor");
 		float color[4] = { aBlendFactor.R, aBlendFactor.G, aBlendFactor.B, aBlendFactor.A };
 		myCommandList->OMSetBlendFactor(color);
 	}
 
 	void FrameGraphicsContext::SetScissorRect(const Math::RectangleT<int>& aRectangle)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set scissor rect");
 		const Math::Vector2T<int> halfSize = (aRectangle.Size / 2);
 
 		D3D12_RECT rect;
@@ -370,6 +388,8 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::SetPrimitiveTopology(Core::Graphics::PrimitiveTopology aTopology)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set primitive topology");
+
 		D3D12_PRIMITIVE_TOPOLOGY topology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
 
 		switch (aTopology)
@@ -396,6 +416,7 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::SetPipelineState(const std::shared_ptr<Core::Graphics::PipelineState>& aPipelineState)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline state");
 		Debug::Assert(!!aPipelineState, "SetPipelineState() requires pipeline state to be non-null.");
 
 		myCurrentPipelineState = static_cast<DirectX12::PipelineState*>(aPipelineState.get());
@@ -405,12 +426,15 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Core::Graphics::GraphicsBuffer>& aVertexBuffer)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set vertex buffer");
 		const VertexBuffer& vertexBuffer = static_cast<const VertexBuffer&>(*aVertexBuffer);
 		myCommandList->IASetVertexBuffers(0, 1, &vertexBuffer.GetBufferView());
 	}
 
 	void FrameGraphicsContext::SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::GraphicsBuffer>& aBuffer)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline buffer resource");
+
 		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
 			RootParameterMapping::RegisterType::ConstantBuffer,
@@ -447,6 +471,7 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline texture resource");
 		Debug::Assert(!!aTexture, "Has a valid texture.");
 
 		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
@@ -496,11 +521,13 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::SetStencilRef(std::uint32_t aStencilRef)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set stencil ref");
 		myCommandList->OMSetStencilRef(aStencilRef);
 	}
 
 	void FrameGraphicsContext::SetRenderTargets(const std::vector<std::shared_ptr<Core::Graphics::RenderTexture>>& someTargets, const std::shared_ptr<Core::Graphics::RenderTexture>& aDepthTarget)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set render targets");
 		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> colorHandles;
 		colorHandles.fill(D3D12_CPU_DESCRIPTOR_HANDLE { 0 });
 
@@ -526,6 +553,7 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::SetViewportAndScissorRect(const Size& aScreenSize)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set viewport and scissor rect");
 		D3D12_VIEWPORT viewport;
 		viewport.Width = static_cast<float>(aScreenSize.X);
 		viewport.Height = static_cast<float>(aScreenSize.Y);
@@ -546,6 +574,7 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::SetViewport(const Math::Rectangle& aRectangle)
 	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set viewport");
 		const Math::Vector2 topLeft = aRectangle.Center - (aRectangle.Size * 0.5f);
 
 		D3D12_VIEWPORT viewport;
