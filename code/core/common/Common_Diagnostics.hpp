@@ -7,11 +7,12 @@ namespace RoseGold
 	using Debug = RoseCommon::Debug;
 }
 
-#ifdef TRACY_ENABLE
 #pragma warning(push)
 #pragma warning(disable: 26495 4100 6201)
 #include <tracy/Tracy.hpp>
 #pragma warning(pop)
+
+#ifdef TRACY_ENABLE
 
 _NODISCARD
 _Ret_notnull_
