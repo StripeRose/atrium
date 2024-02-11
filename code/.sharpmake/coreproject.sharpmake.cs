@@ -48,6 +48,7 @@ namespace RoseGold
                 {
                     conf.Defines.Add("IS_PROFILING_ENABLED");
                     conf.Defines.Add("TRACY_ENABLE");
+                    conf.Defines.Add("TRACY_CALLSTACK=2");
                 }
 
                 // Todo: Figure out how to do memory leak debugging.
