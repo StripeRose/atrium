@@ -25,7 +25,7 @@ namespace RoseGold::DirectX12
 		Device(const DeviceParameters& someParameters = { });
 		~Device();
 
-		void MarkFrameStart();
+		void MarkFrameStart(std::uint64_t aFrameIndex);
 
 		const DeviceParameters& GetParameters() const { return myParameters; }
 

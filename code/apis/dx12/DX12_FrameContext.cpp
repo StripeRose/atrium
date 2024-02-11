@@ -23,15 +23,18 @@ namespace RoseGold::DirectX12
 	{
 		ZoneScoped;
 
-		AssertAction(
-			aDevice.GetDevice()->CreateCommandAllocator(
-				myCommandType,
-				IID_PPV_ARGS(myCommandAllocator.ReleaseAndGetAddressOf())
-			),
-			"Create frame context command allocator."
-		);
+		for (unsigned int i = 0; i < DX12_FRAMES_IN_FLIGHT; ++i)
+		{
+			AssertAction(
+				aDevice.GetDevice()->CreateCommandAllocator(
+					myCommandType,
+					IID_PPV_ARGS(myFrameCommandAllocators[i].ReleaseAndGetAddressOf())
+				),
+				"Create frame context command allocator."
+			);
 
-		myCommandAllocator->SetName(L"Frame context allocator");
+			myFrameCommandAllocators[i]->SetName(L"Frame context allocator");
+		}
 
 		ComPtr<ID3D12Device4> device4;
 		AssertAction(aDevice.GetDevice().As<ID3D12Device4>(&device4), "Get ID3D12Device4.");
@@ -50,10 +53,11 @@ namespace RoseGold::DirectX12
 		myCommandList->SetName(L"Frame context command list");
 	}
 
-	void FrameContext::Reset()
+	void FrameContext::Reset(const std::uint64_t& aFrameIndex)
 	{
-		myCommandAllocator->Reset();
-		myCommandList->Reset(myCommandAllocator.Get(), nullptr);
+		const std::uint64_t frameInFlight = (aFrameIndex % DX12_FRAMES_IN_FLIGHT);
+		myFrameCommandAllocators[frameInFlight]->Reset();
+		myCommandList->Reset(myFrameCommandAllocators[frameInFlight].Get(), nullptr);
 
 		if (myCommandType != D3D12_COMMAND_LIST_TYPE_COPY)
 			BindDescriptorHeaps();
@@ -148,7 +152,8 @@ namespace RoseGold::DirectX12
 	UploadContext::UploadContext(Device& aDevice, CommandQueue& aCommandQueue)
 		: FrameContext(aDevice, aCommandQueue)
 	{
-		myCommandAllocator->SetName(L"Upload context command allocator");
+		for (unsigned int i = 0; i < DX12_FRAMES_IN_FLIGHT; ++i)
+			myFrameCommandAllocators[i]->SetName(L"Upload context command allocator");
 		myCommandList->SetName(L"Upload context command list");
 		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_COPY, "Queue is the correcct type.");
 		myBufferUploadHeap.reset(new UploadBuffer(aDevice, 10 * 1024 * 1024));
@@ -224,7 +229,8 @@ namespace RoseGold::DirectX12
 		: DirectX12::FrameContext(aDevice, aCommandQueue)
 		, myCurrentPipelineState(nullptr)
 	{
-		myCommandAllocator->SetName(L"Frame graphics command allocator");
+		for (unsigned int i = 0; i < DX12_FRAMES_IN_FLIGHT; ++i)
+			myFrameCommandAllocators[i]->SetName(L"Frame graphics command allocator");
 		myCommandList->SetName(L"Frame graphics command list");
 
 		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_DIRECT, "Queue is the correcct type.");
@@ -256,9 +262,9 @@ namespace RoseGold::DirectX12
 #endif
 	}
 
-	void FrameGraphicsContext::Reset()
+	void FrameGraphicsContext::Reset(const std::uint64_t& aFrameIndex)
 	{
-		DirectX12::FrameContext::Reset();
+		DirectX12::FrameContext::Reset(aFrameIndex);
 	}
 
 	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, Color aClearColor)

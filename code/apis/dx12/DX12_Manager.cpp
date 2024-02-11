@@ -7,6 +7,7 @@
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_GraphicsBuffer.hpp"
+#include "DX12_Instancer.hpp"
 #include "DX12_Manager.hpp"
 #include "DX12_Pipeline.hpp"
 #include "DX12_Shader.hpp"
@@ -20,13 +21,19 @@
 
 namespace RoseGold::DirectX12
 {
+	std::unique_ptr<Core::Graphics::Manager> CreateDX12Manager()
+	{
+		return std::make_unique<Manager>();
+	}
+
 	Manager::Manager()
-		: myComputeQueueFrameEndFence(0)
-		, myCopyQueueFrameEndFence(0)
-		, myGraphicsQueueFrameEndFence(0)
-		, myFrameIndex(static_cast<std::uint64_t>(-1))
+		: myFrameIndex(static_cast<std::uint64_t>(-1))
 	{
 		ZoneScoped;
+
+		myComputeQueueFrameEndFence.fill(0);
+		myCopyQueueFrameEndFence.fill(0);
+		myGraphicsQueueFrameEndFence.fill(0);
 
 		Debug::Log("DX12 start");
 
@@ -150,25 +157,25 @@ namespace RoseGold::DirectX12
 		ZoneScoped;
 
 		myFrameIndex += 1;
-
-		TracyD3D12NewFrame(myCommandQueueManager->GetComputeQueue().GetProfilingContext());
-		TracyD3D12NewFrame(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
-		TracyD3D12NewFrame(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
+		myFrameInFlight = myFrameIndex % DX12_FRAMES_IN_FLIGHT;
 
 		{
 			ZoneScopedN("Waiting for previous frame");
-			myCommandQueueManager->WaitForAllIdle();
+
+			myCommandQueueManager->GetComputeQueue().WaitForFenceCPUBlocking(myComputeQueueFrameEndFence[myFrameInFlight]);
+			myCommandQueueManager->GetCopyQueue().WaitForFenceCPUBlocking(myCopyQueueFrameEndFence[myFrameInFlight]);
+			myCommandQueueManager->GetGraphicsQueue().WaitForFenceCPUBlocking(myGraphicsQueueFrameEndFence[myFrameInFlight]);
 		}
 
+		myDevice->MarkFrameStart(myFrameIndex);
+
 		myUploadContext->ResolveUploads();
-		myUploadContext->Reset();
-		myFrameGraphicsContext->Reset();
+		myUploadContext->Reset(myFrameIndex);
+		myFrameGraphicsContext->Reset(myFrameIndex);
 
 		const std::scoped_lock lock(mySwapChainMutex);
 		for (auto& swapChain : myDrawSurfaceSwapChain)
 			swapChain.second->UpdateResolution();
-
-		myDevice->MarkFrameStart();
 	}
 
 	void Manager::MarkFrameEnd()
@@ -178,7 +185,7 @@ namespace RoseGold::DirectX12
 		{
 			ZoneScopedN("Process uploads");
 			myUploadContext->ProcessUploads();
-			myCopyQueueFrameEndFence = myCommandQueueManager->GetCopyQueue().ExecuteCommandList(
+			myCopyQueueFrameEndFence[myFrameInFlight] = myCommandQueueManager->GetCopyQueue().ExecuteCommandList(
 				myUploadContext->GetCommandList()
 			);
 		}
@@ -202,7 +209,7 @@ namespace RoseGold::DirectX12
 		{
 			ZoneScopedN("Submit graphic commands");
 			CommandQueue& graphicsQueue = myCommandQueueManager->GetGraphicsQueue();
-			myGraphicsQueueFrameEndFence = graphicsQueue.ExecuteCommandList(
+			myGraphicsQueueFrameEndFence[myFrameInFlight] = graphicsQueue.ExecuteCommandList(
 				myFrameGraphicsContext->GetCommandList()
 			);
 		}
@@ -216,6 +223,11 @@ namespace RoseGold::DirectX12
 		TracyD3D12Collect(myCommandQueueManager->GetComputeQueue().GetProfilingContext());
 		TracyD3D12Collect(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
 		TracyD3D12Collect(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
+
+		FrameMark;
+		TracyD3D12NewFrame(myCommandQueueManager->GetComputeQueue().GetProfilingContext());
+		TracyD3D12NewFrame(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
+		TracyD3D12NewFrame(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
 	}
 
 	void Manager::SetupRootSignature()

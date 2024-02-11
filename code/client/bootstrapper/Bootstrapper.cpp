@@ -4,7 +4,7 @@
 
 #include "Common_Diagnostics.hpp"
 
-#include "DX12_Manager.hpp"
+#include "DX12_Instancer.hpp"
 
 #include "Win32_WindowManagement.hpp"
 
@@ -12,7 +12,7 @@ namespace RoseGold::Client
 {
 	void Bootstrap_Windows(BootstrapResult& aResult)
 	{
-		aResult.GraphicsManager.reset(new DirectX12::Manager());
+		aResult.GraphicsManager.reset(DirectX12::CreateDX12Manager().release());
 		aResult.WindowManager.reset(new Win32::WindowManager());
 	}
 

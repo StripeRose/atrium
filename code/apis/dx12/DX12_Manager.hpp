@@ -63,11 +63,12 @@ namespace RoseGold::DirectX12
 		std::unique_ptr<FrameGraphicsContext> myFrameGraphicsContext;
 		std::unique_ptr<UploadContext> myUploadContext;
 
-		std::uint64_t myComputeQueueFrameEndFence;
-		std::uint64_t myCopyQueueFrameEndFence;
-		std::uint64_t myGraphicsQueueFrameEndFence;
+		std::array<std::uint64_t, DX12_FRAMES_IN_FLIGHT> myComputeQueueFrameEndFence;
+		std::array<std::uint64_t, DX12_FRAMES_IN_FLIGHT> myCopyQueueFrameEndFence;
+		std::array<std::uint64_t, DX12_FRAMES_IN_FLIGHT> myGraphicsQueueFrameEndFence;
 
 		std::uint64_t myFrameIndex;
+		std::uint_least8_t myFrameInFlight;
 
 		std::shared_ptr<RootSignature> myDefaultRootSignature;
 	};

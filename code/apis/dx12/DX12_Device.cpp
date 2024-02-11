@@ -35,11 +35,10 @@ namespace RoseGold::DirectX12
 		myDescriptorHeapManager.reset();
 	}
 
-	void Device::MarkFrameStart()
+	void Device::MarkFrameStart(std::uint64_t aFrameIndex)
 	{
 		ZoneScoped;
-
-		myDescriptorHeapManager->GetFrameHeap().Reset();
+		myDescriptorHeapManager->MarkFrameStart(aFrameIndex);
 	}
 
 #if _DEBUG
@@ -55,6 +54,8 @@ namespace RoseGold::DirectX12
 			someDXGIFlagsOut |= DXGI_CREATE_FACTORY_DEBUG;
 
 			dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true);
+			dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true);
+			dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, true);
 
 			//DXGI_INFO_QUEUE_MESSAGE_ID hide[] =
 			//{

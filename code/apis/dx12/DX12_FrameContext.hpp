@@ -43,7 +43,7 @@ namespace RoseGold::DirectX12
 		D3D12_COMMAND_LIST_TYPE GetCommandType() const { return myCommandType; }
 		ID3D12GraphicsCommandList* GetCommandList() { return myCommandList.Get(); }
 
-		virtual void Reset();
+		virtual void Reset(const std::uint64_t& aFrameIndex);
 		void AddBarrier(GPUResource& aResource, D3D12_RESOURCE_STATES aNewState);
 		void FlushBarriers();
 		void CopyResource(const GPUResource& aSource, GPUResource& aDestination);
@@ -60,7 +60,7 @@ namespace RoseGold::DirectX12
 
 		D3D12_COMMAND_LIST_TYPE myCommandType;
 		ComPtr<ID3D12GraphicsCommandList6> myCommandList;
-		ComPtr<ID3D12CommandAllocator> myCommandAllocator;
+		std::array<ComPtr<ID3D12CommandAllocator>, DX12_FRAMES_IN_FLIGHT> myFrameCommandAllocators;
 
 		RenderPassDescriptorHeap* myCurrentFrameHeap;
 
@@ -117,7 +117,7 @@ namespace RoseGold::DirectX12
 #endif
 		) override;
 
-		void Reset() override;
+		void Reset(const std::uint64_t& aFrameIndex) override;
 
 		void ClearColor(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, Color aClearColor) override;
 		void ClearDepth(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) override;

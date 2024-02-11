@@ -25,8 +25,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 
 		while (!roseGold.WindowManager->GetWindows().empty())
 		{
-			FrameMark;
-
 			roseGold.WindowManager->Update();
 			roseGold.GraphicsManager->MarkFrameStart();
 			game.OnLoop();

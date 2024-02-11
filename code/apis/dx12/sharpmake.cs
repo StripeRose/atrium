@@ -36,6 +36,8 @@ namespace RoseGold
             // if (target.Optimization != Optimization.Retail)
             //     conf.AddPrivateDependency<ThirdParty.IMGUI>(target);
 
+            conf.Defines.Add("DX12_FRAMES_IN_FLIGHT=2");
+
             conf.LibraryFiles.Add("d3d12.lib");
             conf.LibraryFiles.Add("dxgi.lib");
             conf.LibraryFiles.Add("dxguid.lib");
