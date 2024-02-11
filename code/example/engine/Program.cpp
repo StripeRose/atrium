@@ -1,3 +1,4 @@
+#include "stdafx.hpp"
 
 #include <rose-common/CommandLineParser.hpp>
 
