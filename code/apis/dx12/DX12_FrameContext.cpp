@@ -2,7 +2,7 @@
 
 #include "stdafx.hpp"
 
-#include "DX12_DDS.hpp"
+#include "DX12_Texture.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_FrameContext.hpp"
@@ -478,7 +478,10 @@ namespace RoseGold::DirectX12
 	void FrameGraphicsContext::SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline texture resource");
-		Debug::Assert(!!aTexture, "Has a valid texture.");
+
+		TextureBackend* textureBackend = TextureBackend::FromTexture(*aTexture);
+
+		Debug::Assert(!!aTexture && textureBackend, "Has a valid texture.");
 
 		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
@@ -495,17 +498,17 @@ namespace RoseGold::DirectX12
 		RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
 		std::shared_ptr<DescriptorHeapHandle> gpuBuffer = renderPassHeap.GetHeapHandleBlock(parameterInfo.value().Count);
 
-		Texture2D_DDS* dds = static_cast<Texture2D_DDS*>(aTexture.get());
+		
 		myDevice.GetDevice()->CopyDescriptorsSimple(
 			1,
 			gpuBuffer->GetCPUHandle(),
-			dds->GetSRVHandle()->GetCPUHandle(),
+			textureBackend->GetSRVHandle()->GetCPUHandle(),
 			renderPassHeap.GetHeapType()
 		);
 
 		// Setup null descriptors for remaining slots
 		D3D12_SHADER_RESOURCE_VIEW_DESC nullDesc = { };
-		nullDesc.Format = dds->GetDXGIFormat();
+		nullDesc.Format = textureBackend->GetDXGIFormat();
 		nullDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		nullDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		nullDesc.Texture2D.MipLevels = 1;

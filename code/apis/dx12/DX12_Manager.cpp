@@ -147,7 +147,7 @@ namespace RoseGold::DirectX12
 	{
 		const std::filesystem::path extension = aPath.extension();
 		if (extension == ".dds")
-			return Texture2D_DDS::LoadFromFile(aPath, *myDevice, *myUploadContext);
+			return LoadDDSFromFile(aPath, *myDevice, *myUploadContext);
 		else
 			return nullptr;
 	}
