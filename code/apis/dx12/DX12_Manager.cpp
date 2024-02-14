@@ -122,6 +122,21 @@ namespace RoseGold::DirectX12
 		}
 	}
 
+	std::shared_ptr<Core::Graphics::Texture2D> Manager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::Graphics::TextureFormat aTextureFormat)
+	{
+		return CreateDDS2D(*myDevice, *myUploadContext, aWidth, aHeight, aTextureFormat);
+	}
+
+	std::shared_ptr<Core::Graphics::Texture3D> Manager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::Graphics::TextureFormat aTextureFormat)
+	{
+		return CreateDDS3D(*myDevice, *myUploadContext, aWidth, aHeight, aDepth, aTextureFormat);
+	}
+
+	std::shared_ptr<Core::Graphics::TextureCube> Manager::CreateTextureCube(unsigned int aWidth, Core::Graphics::TextureFormat aTextureFormat)
+	{
+		return CreateDDSCube(*myDevice, *myUploadContext, aWidth, aTextureFormat);
+	}
+
 	Core::Graphics::FrameContext& Manager::GetCurrentFrameContext()
 	{
 		return *myFrameGraphicsContext;
@@ -147,7 +162,7 @@ namespace RoseGold::DirectX12
 	{
 		const std::filesystem::path extension = aPath.extension();
 		if (extension == ".dds")
-			return LoadDDSFromFile(aPath, *myDevice, *myUploadContext);
+			return LoadDDSFromFile(*myDevice, *myUploadContext, aPath);
 		else
 			return nullptr;
 	}

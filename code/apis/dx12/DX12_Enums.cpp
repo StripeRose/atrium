@@ -200,6 +200,92 @@ namespace RoseGold::DirectX12
 		}
 	}
 
+	Core::Graphics::GraphicsFormat ToGraphicsFormat(const Core::Graphics::TextureFormat& aFormat)
+	{
+		switch (aFormat)
+		{
+		case TextureFormat::Alpha8:				return GraphicsFormat::R8_UInt;
+		case TextureFormat::ARGB4444:	  		return GraphicsFormat::None;
+		case TextureFormat::RGB24:				return GraphicsFormat::R8G8B8_UInt;
+		case TextureFormat::RGBA32:				return GraphicsFormat::R8G8B8A8_UInt;
+		case TextureFormat::ARGB32:				return GraphicsFormat::None;
+		case TextureFormat::RGB565:				return GraphicsFormat::R5G6B5_UNormPack16;
+		case TextureFormat::R16:				return GraphicsFormat::R16_UInt;
+		case TextureFormat::DXT1:				return GraphicsFormat::RGBA_DXT1_SRGB;
+		case TextureFormat::DXT3:				return GraphicsFormat::RGBA_DXT3_SRGB;
+		case TextureFormat::DXT5:				return GraphicsFormat::RGBA_DXT5_SRGB;
+		case TextureFormat::RGBA4444:			return GraphicsFormat::B4G4R4A4_UNormPack16;
+		case TextureFormat::BGRA32:				return GraphicsFormat::B8G8R8A8_UInt;
+
+		case TextureFormat::RHalf:				return GraphicsFormat::R16_SFloat;
+		case TextureFormat::RGHalf:				return GraphicsFormat::R16G16_SFloat;
+		case TextureFormat::RGBAHalf:			return GraphicsFormat::R16G16B16A16_SFloat;
+		case TextureFormat::RFloat:				return GraphicsFormat::R32_SFloat;
+		case TextureFormat::RGFloat:			return GraphicsFormat::R32G32_SFloat;
+		case TextureFormat::RGBAFloat:			return GraphicsFormat::R32G32B32A32_SFloat;
+
+		case TextureFormat::YUY2:				return GraphicsFormat::YUV2;
+		case TextureFormat::RGB9e5Float:		return GraphicsFormat::None;
+
+		case TextureFormat::BC4:				return GraphicsFormat::R_BC4_UNorm;
+		case TextureFormat::BC5:				return GraphicsFormat::RG_BC5_UNorm;
+		case TextureFormat::BC6H:				return GraphicsFormat::RGB_BC6H_SFloat;
+		case TextureFormat::BC7:				return GraphicsFormat::RGBA_BC7_SRGB;
+
+		case TextureFormat::DXT1Crunched:		return GraphicsFormat::RGBA_DXT1_SRGB;
+		case TextureFormat::DXT5Crunched:		return GraphicsFormat::RGBA_DXT5_SRGB;
+
+		case TextureFormat::PVRTC_RGB2:			return GraphicsFormat::None;
+		case TextureFormat::PVRTC_RGBA2:		return GraphicsFormat::None;
+		case TextureFormat::PVRTC_RGB4:			return GraphicsFormat::None;
+		case TextureFormat::PVRTC_RGBA4:		return GraphicsFormat::None;
+		case TextureFormat::ETC_RGB4:			return GraphicsFormat::None;
+
+		case TextureFormat::EAC_R:				return GraphicsFormat::None;
+		case TextureFormat::EAC_R_SIGNED:		return GraphicsFormat::None;
+		case TextureFormat::EAC_RG:				return GraphicsFormat::None;
+		case TextureFormat::EAC_RG_SIGNED:		return GraphicsFormat::None;
+		case TextureFormat::ETC2_RGB:			return GraphicsFormat::None;
+		case TextureFormat::ETC2_RGBA1:			return GraphicsFormat::None;
+		case TextureFormat::ETC2_RGBA8:			return GraphicsFormat::None;
+
+		case TextureFormat::ASTC_4x4:			return GraphicsFormat::None;
+		case TextureFormat::ASTC_5x5:			return GraphicsFormat::None;
+		case TextureFormat::ASTC_6x6:			return GraphicsFormat::None;
+		case TextureFormat::ASTC_8x8:			return GraphicsFormat::None;
+		case TextureFormat::ASTC_10x10:			return GraphicsFormat::None;
+		case TextureFormat::ASTC_12x12:			return GraphicsFormat::None;
+
+		case TextureFormat::RG16:				return GraphicsFormat::R8G8_UInt;
+		case TextureFormat::R8:					return GraphicsFormat::R8_UInt;
+
+		case TextureFormat::ETC_RGB4Crunched:	return GraphicsFormat::None;
+		case TextureFormat::ETC2_RGBA8Crunched: return GraphicsFormat::None;
+
+		case TextureFormat::ASTC_HDR_4x4:		return GraphicsFormat::None;
+		case TextureFormat::ASTC_HDR_5x5:		return GraphicsFormat::None;
+		case TextureFormat::ASTC_HDR_6x6:		return GraphicsFormat::None;
+		case TextureFormat::ASTC_HDR_8x8:		return GraphicsFormat::None;
+		case TextureFormat::ASTC_HDR_10x10:		return GraphicsFormat::None;
+		case TextureFormat::ASTC_HDR_12x12:		return GraphicsFormat::None;
+
+		// 16-bit raw integer formats
+		case TextureFormat::RG32:				return GraphicsFormat::R16G16_UInt;
+		case TextureFormat::RGB48:				return GraphicsFormat::R16G16B16_UInt;
+		case TextureFormat::RGBA64:				return GraphicsFormat::R16G16B16A16_UInt;
+		case TextureFormat::R8_SIGNED:			return GraphicsFormat::R8_SInt;
+		case TextureFormat::RG16_SIGNED:		return GraphicsFormat::R8G8_SInt;
+		case TextureFormat::RGB24_SIGNED:		return GraphicsFormat::R8G8B8_SInt;
+		case TextureFormat::RGBA32_SIGNED:		return GraphicsFormat::R8G8B8A8_SInt;
+		case TextureFormat::R16_SIGNED:			return GraphicsFormat::R16_UInt;
+		case TextureFormat::RG32_SIGNED:		return GraphicsFormat::R16G16_UInt;
+		case TextureFormat::RGB48_SIGNED:		return GraphicsFormat::R16G16B16_UInt;
+		case TextureFormat::RGBA64_SIGNE2:		return GraphicsFormat::R16G16B16A16_UInt;
+
+		default: return GraphicsFormat::None;
+		}
+	}
+
 	D3D12_RESOURCE_DIMENSION ToD3DTextureDimension(const TextureDimension& aDimension)
 	{
 		switch (aDimension)

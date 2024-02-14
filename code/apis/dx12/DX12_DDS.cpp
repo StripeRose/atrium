@@ -8,7 +8,7 @@
 
 namespace RoseGold::DirectX12
 {
-	std::shared_ptr<Core::Graphics::Texture> LoadDDSFromFile(const std::filesystem::path& aPath, Device& aDevice, UploadContext& anUploader)
+	std::shared_ptr<Core::Graphics::Texture> LoadDDSFromFile(Device& aDevice, UploadContext& anUploader, const std::filesystem::path& aPath)
 	{
 		ZoneScoped;
 
@@ -58,5 +58,56 @@ namespace RoseGold::DirectX12
 
 		backend->GetResource()->SetName(aPath.filename().c_str());
 		return textureInstance;
+	}
+
+	std::shared_ptr<Core::Graphics::Texture2D> CreateDDS2D(Device& aDevice, UploadContext& anUploader, unsigned int aWidth, unsigned int aHeight, Core::Graphics::TextureFormat aTextureFormat)
+	{
+		DirectX::TexMetadata metadata;
+		metadata.arraySize = 1;
+		metadata.depth = 1;
+		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
+		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
+		metadata.height = aHeight;
+		metadata.mipLevels = 0;
+		metadata.miscFlags = 0;
+		metadata.miscFlags2 = 0;
+		metadata.width = aWidth;
+
+		std::shared_ptr<TextureBackend> backend(new TextureBackend(aDevice, anUploader, metadata));
+		return std::make_shared<Texture2D>(backend);
+	}
+
+	std::shared_ptr<Core::Graphics::Texture3D> CreateDDS3D(Device& aDevice, UploadContext& anUploader, unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::Graphics::TextureFormat aTextureFormat)
+	{
+		DirectX::TexMetadata metadata;
+		metadata.arraySize = 1;
+		metadata.depth = aDepth;
+		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE3D;
+		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
+		metadata.height = aHeight;
+		metadata.mipLevels = 0;
+		metadata.miscFlags = 0;
+		metadata.miscFlags2 = 0;
+		metadata.width = aWidth;
+
+		std::shared_ptr<TextureBackend> backend(new TextureBackend(aDevice, anUploader, metadata));
+		return std::make_shared<Texture3D>(backend);
+	}
+
+	std::shared_ptr<Core::Graphics::TextureCube> CreateDDSCube(Device& aDevice, UploadContext& anUploader, unsigned int aWidth, Core::Graphics::TextureFormat aTextureFormat)
+	{
+		DirectX::TexMetadata metadata;
+		metadata.arraySize = 6;
+		metadata.depth = 1;
+		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
+		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
+		metadata.height = aWidth;
+		metadata.mipLevels = 0;
+		metadata.miscFlags = DirectX::TEX_MISC_TEXTURECUBE;
+		metadata.miscFlags2 = 0;
+		metadata.width = aWidth;
+
+		std::shared_ptr<TextureBackend> backend(new TextureBackend(aDevice, anUploader, metadata));
+		return std::make_shared<TextureCube>(backend);
 	}
 }

@@ -302,6 +302,14 @@ namespace RoseGold::DirectX12
 
 	Color Texture2D::GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
 	{
+		//DirectX::ScratchImage& scratchImage = myBackend->GetScratchImage();
+		//scratchImage.GetMetadata().
+
+		//myBackend->GetScratchImage()->GetPixels();
+
+		//myBackend->GetScratchImage()->GetImage().
+		//myBackend->GetScratchImage()->GetMetadata();
+
 		anX; aY; aMipLevel;
 		return Color::Predefined::Black;
 	}

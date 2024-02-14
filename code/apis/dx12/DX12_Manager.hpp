@@ -32,6 +32,10 @@ namespace RoseGold::DirectX12
 
 		std::shared_ptr<Core::Graphics::Shader> CreateShader(const std::filesystem::path& aSource, Core::Graphics::Shader::Type aType, const char* anEntryPoint) override;
 
+		std::shared_ptr<Core::Graphics::Texture2D> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::Graphics::TextureFormat aTextureFormat) override;
+		std::shared_ptr<Core::Graphics::Texture3D> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::Graphics::TextureFormat aTextureFormat) override;
+		std::shared_ptr<Core::Graphics::TextureCube> CreateTextureCube(unsigned int aWidth, Core::Graphics::TextureFormat aTextureFormat) override;
+
 		CommandQueueManager& GetCommandQueueManager() { return *myCommandQueueManager.get(); }
 
 		Core::Graphics::FrameContext& GetCurrentFrameContext() override;
