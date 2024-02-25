@@ -136,53 +136,7 @@ namespace RoseGold::Core::Graphics
 		RGB_BC6H_UFloat,
 		RGB_BC6H_SFloat,
 		RGBA_BC7_SRGB,
-		RGBA_BC7_UNorm,
-
-		RGB_PVRTC_2Bpp_SRGB,
-		RGB_PVRTC_2Bpp_UNorm,
-		RGB_PVRTC_4Bpp_SRGB,
-		RGB_PVRTC_4Bpp_UNorm,
-		RGBA_PVRTC_2Bpp_SRGB,
-		RGBA_PVRTC_2Bpp_UNorm,
-		RGBA_PVRTC_4Bpp_SRGB,
-		RGBA_PVRTC_4Bpp_UNorm,
-
-		RGB_ETC_UNorm,
-		RGB_ETC2_SRGB,
-		RGB_ETC2_UNorm,
-		RGB_A1_ETC2_SRGB,
-		RGB_A1_ETC2_UNorm,
-		RGBA_ETC2_SRGB,
-		RGBA_ETC2_UNorm,
-
-		R_EAC_UNorm,
-		R_EAC_SNorm,
-		RG_EAC_UNorm,
-		RG_EAC_SNorm,
-
-		RGBA_ASTC4X4_SRGB,
-		RGBA_ASTC4X4_UNorm,
-		RGBA_ASTC5X5_SRGB,
-		RGBA_ASTC5X5_UNorm,
-		RGBA_ASTC6X6_SRGB,
-		RGBA_ASTC6X6_UNorm,
-		RGBA_ASTC8X8_SRGB,
-		RGBA_ASTC8X8_UNorm,
-		RGBA_ASTC10X10_SRGB,
-		RGBA_ASTC10X10_UNorm,
-		RGBA_ASTC12X12_SRGB,
-		RGBA_ASTC12X12_UNorm,
-
-		YUV2,
-
-		RGBA_ASTC4X4_UFloat,
-		RGBA_ASTC5X5_UFloat,
-		RGBA_ASTC6X6_UFloat,
-		RGBA_ASTC8X8_UFloat,
-		RGBA_ASTC10X10_UFloat,
-		RGBA_ASTC12X12_UFloat,
-
-		D16_UNorm_S8_UInt
+		RGBA_BC7_UNorm
 	};
 
 	enum class FormatUsage
@@ -223,9 +177,6 @@ namespace RoseGold::Core::Graphics
 		RGFloat,
 		RGBAFloat,
 
-		YUY2,
-		RGB9e5Float,
-
 		BC4,
 		BC5,
 		BC6H,
@@ -234,39 +185,8 @@ namespace RoseGold::Core::Graphics
 		DXT1Crunched,
 		DXT5Crunched,
 
-		PVRTC_RGB2,
-		PVRTC_RGBA2,
-		PVRTC_RGB4,
-		PVRTC_RGBA4,
-		ETC_RGB4,
-
-		EAC_R,
-		EAC_R_SIGNED,
-		EAC_RG,
-		EAC_RG_SIGNED,
-		ETC2_RGB,
-		ETC2_RGBA1,
-		ETC2_RGBA8,
-
-		ASTC_4x4,
-		ASTC_5x5,
-		ASTC_6x6,
-		ASTC_8x8,
-		ASTC_10x10,
-		ASTC_12x12,
-
 		RG16,
 		R8,
-
-		ETC_RGB4Crunched,
-		ETC2_RGBA8Crunched,
-
-		ASTC_HDR_4x4,
-		ASTC_HDR_5x5,
-		ASTC_HDR_6x6,
-		ASTC_HDR_8x8,
-		ASTC_HDR_10x10,
-		ASTC_HDR_12x12,
 
 		// 16-bit raw integer formats
 		RG32,

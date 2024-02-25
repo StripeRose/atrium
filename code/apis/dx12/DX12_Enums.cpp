@@ -114,52 +114,6 @@ namespace RoseGold::DirectX12
 		case GraphicsFormat::RGBA_BC7_SRGB:					return DXGI_FORMAT_BC7_UNORM_SRGB;
 		case GraphicsFormat::RGBA_BC7_UNorm:				return DXGI_FORMAT_BC7_UNORM;
 
-		case GraphicsFormat::RGB_PVRTC_2Bpp_SRGB:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGB_PVRTC_2Bpp_UNorm:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGB_PVRTC_4Bpp_SRGB:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGB_PVRTC_4Bpp_UNorm:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_PVRTC_2Bpp_SRGB:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_PVRTC_2Bpp_UNorm:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_PVRTC_4Bpp_SRGB:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_PVRTC_4Bpp_UNorm:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-
-		case GraphicsFormat::RGB_ETC_UNorm:					return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGB_ETC2_SRGB:					return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGB_ETC2_UNorm:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGB_A1_ETC2_SRGB:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGB_A1_ETC2_UNorm:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ETC2_SRGB:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ETC2_UNorm:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
-
-		case GraphicsFormat::R_EAC_UNorm:					return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::R_EAC_SNorm:					return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RG_EAC_UNorm:					return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RG_EAC_SNorm:					return DXGI_FORMAT_UNKNOWN;				// Not supported.
-
-		case GraphicsFormat::RGBA_ASTC4X4_SRGB:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC4X4_UNorm:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC5X5_SRGB:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC5X5_UNorm:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC6X6_SRGB:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC6X6_UNorm:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC8X8_SRGB:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC8X8_UNorm:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC10X10_SRGB:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC10X10_UNorm:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC12X12_SRGB:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC12X12_UNorm:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-
-		case GraphicsFormat::YUV2:							return DXGI_FORMAT_UNKNOWN;				// Not supported.
-
-		case GraphicsFormat::RGBA_ASTC4X4_UFloat:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC5X5_UFloat:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC6X6_UFloat:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC8X8_UFloat:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC10X10_UFloat:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-		case GraphicsFormat::RGBA_ASTC12X12_UFloat:			return DXGI_FORMAT_UNKNOWN;				// Not supported.
-
-		case GraphicsFormat::D16_UNorm_S8_UInt:				return DXGI_FORMAT_UNKNOWN;				// Not supported.
-
 		default:											return DXGI_FORMAT_UNKNOWN;
 		}
 	}
@@ -224,9 +178,6 @@ namespace RoseGold::DirectX12
 		case TextureFormat::RGFloat:			return GraphicsFormat::R32G32_SFloat;
 		case TextureFormat::RGBAFloat:			return GraphicsFormat::R32G32B32A32_SFloat;
 
-		case TextureFormat::YUY2:				return GraphicsFormat::YUV2;
-		case TextureFormat::RGB9e5Float:		return GraphicsFormat::None;
-
 		case TextureFormat::BC4:				return GraphicsFormat::R_BC4_UNorm;
 		case TextureFormat::BC5:				return GraphicsFormat::RG_BC5_UNorm;
 		case TextureFormat::BC6H:				return GraphicsFormat::RGB_BC6H_SFloat;
@@ -235,39 +186,8 @@ namespace RoseGold::DirectX12
 		case TextureFormat::DXT1Crunched:		return GraphicsFormat::RGBA_DXT1_SRGB;
 		case TextureFormat::DXT5Crunched:		return GraphicsFormat::RGBA_DXT5_SRGB;
 
-		case TextureFormat::PVRTC_RGB2:			return GraphicsFormat::None;
-		case TextureFormat::PVRTC_RGBA2:		return GraphicsFormat::None;
-		case TextureFormat::PVRTC_RGB4:			return GraphicsFormat::None;
-		case TextureFormat::PVRTC_RGBA4:		return GraphicsFormat::None;
-		case TextureFormat::ETC_RGB4:			return GraphicsFormat::None;
-
-		case TextureFormat::EAC_R:				return GraphicsFormat::None;
-		case TextureFormat::EAC_R_SIGNED:		return GraphicsFormat::None;
-		case TextureFormat::EAC_RG:				return GraphicsFormat::None;
-		case TextureFormat::EAC_RG_SIGNED:		return GraphicsFormat::None;
-		case TextureFormat::ETC2_RGB:			return GraphicsFormat::None;
-		case TextureFormat::ETC2_RGBA1:			return GraphicsFormat::None;
-		case TextureFormat::ETC2_RGBA8:			return GraphicsFormat::None;
-
-		case TextureFormat::ASTC_4x4:			return GraphicsFormat::None;
-		case TextureFormat::ASTC_5x5:			return GraphicsFormat::None;
-		case TextureFormat::ASTC_6x6:			return GraphicsFormat::None;
-		case TextureFormat::ASTC_8x8:			return GraphicsFormat::None;
-		case TextureFormat::ASTC_10x10:			return GraphicsFormat::None;
-		case TextureFormat::ASTC_12x12:			return GraphicsFormat::None;
-
 		case TextureFormat::RG16:				return GraphicsFormat::R8G8_UInt;
 		case TextureFormat::R8:					return GraphicsFormat::R8_UInt;
-
-		case TextureFormat::ETC_RGB4Crunched:	return GraphicsFormat::None;
-		case TextureFormat::ETC2_RGBA8Crunched: return GraphicsFormat::None;
-
-		case TextureFormat::ASTC_HDR_4x4:		return GraphicsFormat::None;
-		case TextureFormat::ASTC_HDR_5x5:		return GraphicsFormat::None;
-		case TextureFormat::ASTC_HDR_6x6:		return GraphicsFormat::None;
-		case TextureFormat::ASTC_HDR_8x8:		return GraphicsFormat::None;
-		case TextureFormat::ASTC_HDR_10x10:		return GraphicsFormat::None;
-		case TextureFormat::ASTC_HDR_12x12:		return GraphicsFormat::None;
 
 		// 16-bit raw integer formats
 		case TextureFormat::RG32:				return GraphicsFormat::R16G16_UInt;
