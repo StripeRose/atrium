@@ -5,10 +5,10 @@ using Sharpmake;
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/tracy.sharpmake.cs")]
 
-namespace RoseGold.Core
+namespace RoseGold
 {
     [Generate]
-    public class Common : Core.Library
+    public class Common : StaticLibraryProject
     {
         public Common()
         {

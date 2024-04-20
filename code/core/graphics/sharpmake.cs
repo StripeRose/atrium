@@ -4,10 +4,10 @@ using Sharpmake;
 [module: Sharpmake.Include("../common/sharpmake.cs")]
 [module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
 
-namespace RoseGold.Core
+namespace RoseGold
 {
     [Generate]
-    public class Graphics : Core.Library
+    public class Graphics : StaticLibraryProject
     {
         public Graphics()
         {
@@ -21,7 +21,7 @@ namespace RoseGold.Core
 
             conf.SolutionFolder = "rose-gold/core";
 
-            conf.AddPublicDependency<RoseGold.Core.Common>(target);
+            conf.AddPublicDependency<RoseGold.Common>(target);
         }
     }
 }

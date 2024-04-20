@@ -5,10 +5,10 @@ using Sharpmake;
 [module: Sharpmake.Include("../../core/platform/sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 
-namespace RoseGold.Client
+namespace RoseGold
 {
     [Generate]
-    public class WindowsClient : RoseGold.Core.Library
+    public class WindowsClient : RoseGold.StaticLibraryProject
     {
         public WindowsClient()
         {
@@ -21,9 +21,8 @@ namespace RoseGold.Client
             base.ConfigureAll(conf, target);
             conf.SolutionFolder = "rose-gold/client";
 
-            conf.AddPublicDependency<Core.Platform>(target);
-            
-            conf.AddPrivateDependency<RoseCommon>(target);
+            conf.AddPrivateDependency<RoseGold.Common>(target);
+            conf.AddPrivateDependency<Platform>(target);
         }
     }
 }

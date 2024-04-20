@@ -1,10 +1,9 @@
 using System.IO;
-using Sharpmake;
 
 [module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 
-[Generate]
-public class Tracy : RoseGold.Core.ExternalLibrary
+[Sharpmake.Generate]
+public class Tracy : RoseGold.ExternalLibraryProject
 {
     public Tracy()
     {
@@ -15,11 +14,14 @@ public class Tracy : RoseGold.Core.ExternalLibrary
         SourceFilesExcludeRegex.Add(@"^((?!TracyClient).)*\.cpp$");
     }
 
-    public override void ConfigureAll(Configuration conf, Target target)
+    public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
     {
         base.ConfigureAll(conf, target);
-
+        
         conf.SolutionFolder = "rose-gold/external";
-        conf.ProjectPath = "[project.SharpmakeCsPath]";
+
+        // Match with EngineProject.ConfigureAll()
+        conf.Defines.Add("TRACY_ENABLE");
+        conf.Defines.Add("TRACY_CALLSTACK=4");
     }
 }

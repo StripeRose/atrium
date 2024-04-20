@@ -1,10 +1,9 @@
 using System.IO;
-using Sharpmake;
 
 [module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 
-[Generate]
-public class RoseCommon : RoseGold.Core.ExternalLibrary
+[Sharpmake.Generate]
+public class RoseCommon : RoseGold.ExternalLibraryProject
 {
     public RoseCommon()
     {
@@ -13,11 +12,10 @@ public class RoseCommon : RoseGold.Core.ExternalLibrary
         AdditionalSourceRootPaths.Add(Path.Combine("[project.SharpmakeCsPath]", "rose-common", "source"));
     }
 
-    public override void ConfigureAll(Configuration conf, Target target)
+    public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
     {
         base.ConfigureAll(conf, target);
 
         conf.SolutionFolder = "rose-gold/external";
-        conf.ProjectPath = "[project.SharpmakeCsPath]";
     }
 }

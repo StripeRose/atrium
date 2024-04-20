@@ -10,7 +10,7 @@ using Sharpmake;
 namespace RoseGold
 {
     [Generate]
-    public class DirectX12 : RoseGold.Core.Library
+    public class DirectX12 : RoseGold.StaticLibraryProject
     {
         public DirectX12()
         {
@@ -26,15 +26,10 @@ namespace RoseGold
             base.ConfigureAll(conf, target);
             conf.SolutionFolder = "rose-gold/apis";
 
-            conf.AddPublicDependency<RoseCommon>(target);
-            conf.AddPublicDependency<DirectXTex>(target);
-            conf.AddPublicDependency<Core.Graphics>(target);
-            conf.AddPrivateDependency<Core.Platform>(target);
-
-            //conf.AddPrivateDependency<Client.WindowsClient>(target);
-            
-            // if (target.Optimization != Optimization.Retail)
-            //     conf.AddPrivateDependency<ThirdParty.IMGUI>(target);
+            conf.AddPrivateDependency<RoseGold.Common>(target);
+            conf.AddPrivateDependency<DirectXTex>(target);
+            conf.AddPrivateDependency<Graphics>(target);
+            conf.AddPrivateDependency<Platform>(target);
 
             conf.Defines.Add("DX12_FRAMES_IN_FLIGHT=2");
 

@@ -10,7 +10,7 @@ using Sharpmake;
 namespace RoseGold
 {
     [Generate]
-    public class Engine : Core.Library
+    public class Engine : StaticLibraryProject
     {
         public Engine()
         {
@@ -25,10 +25,10 @@ namespace RoseGold
             conf.Output = Configuration.OutputType.Utility; // Remove when there's code to build.
 
             conf.SolutionFolder = "rose-gold";
-            conf.AddPublicDependency<RoseCommon>(target);
-            conf.AddPublicDependency<Core.Common>(target);
-            conf.AddPublicDependency<Core.Graphics>(target);
-            conf.AddPublicDependency<Core.Platform>(target);
+            // conf.AddPublicDependency<RoseCommon>(target);
+            // conf.AddPublicDependency<Common>(target);
+            // conf.AddPublicDependency<Graphics>(target);
+            // conf.AddPublicDependency<Platform>(target);
         }
     }
 }

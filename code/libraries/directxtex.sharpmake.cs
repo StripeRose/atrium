@@ -1,10 +1,9 @@
 using System.IO;
-using Sharpmake;
 
 [module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 
-[Generate]
-public class DirectXTex : RoseGold.Core.ExternalLibrary
+[Sharpmake.Generate]
+public class DirectXTex : RoseGold.ExternalLibraryProject
 {
     public DirectXTex()
     {
@@ -12,12 +11,11 @@ public class DirectXTex : RoseGold.Core.ExternalLibrary
         SourceRootPath = Path.Combine("[project.SharpmakeCsPath]", "DirectXTex", "DirectXTex");
     }
 
-    public override void ConfigureAll(Configuration conf, Target target)
+    public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
     {
         base.ConfigureAll(conf, target);
 
         conf.SolutionFolder = "rose-gold/external";
-        conf.ProjectPath = "[project.SharpmakeCsPath]";
         conf.SourceFilesBuildExclude.Add("BCDirectCompute.cpp");
     }
 }

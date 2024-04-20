@@ -1,169 +1,197 @@
 using System.Collections.Generic;
 using System.IO;
-using Sharpmake;
-
-public static class Globals
-{
-    public static string RootDirectory = "";
-    //public static string SharpmakeDirectory { get { return Path.Combine(RootDirectory, ".sharpmake"); } }
-}
 
 namespace RoseGold
 {
-    namespace Core
+    public static class Configuration
     {
-        public class Project : Sharpmake.Project
+        public static string BuildDirectory = "";
+
+        public static Sharpmake.Platform Platform = Sharpmake.Platform.win32 | Sharpmake.Platform.win64;
+        public static Sharpmake.DevEnv DevEnv = Sharpmake.DevEnv.vs2022;
+        public static Sharpmake.Optimization Optimization = Sharpmake.Optimization.Debug | Sharpmake.Optimization.Release | Sharpmake.Optimization.Retail;
+    }
+    
+    public class FilteredProject : Sharpmake.Project
+    {
+        public FilteredProject()
         {
-            public Project()
-            {
-                IsFileNameToLower = false;
-                IsTargetFileNameToLower = false;
-            }
-
-            [Configure]
-            public virtual void ConfigureAll(Project.Configuration conf, Target target)
-            {
-                conf.Name = @"[target.Optimization] [target.OutputType]";
-                conf.ProjectPath = "[project.SourceRootPath]";
-
-                conf.IncludePaths.Add("[project.SourceRootPath]");
-                conf.IncludePaths.Add(Path.Combine(Globals.RootDirectory, "Third-Party"));
-
-                conf.PrecompHeader = "stdafx.hpp";
-                conf.PrecompSource = "stdafx.cpp";
-
-                conf.IntermediatePath = Path.Combine(Globals.RootDirectory, "../Build/Intermediate/[project.Name] [target.Optimization]/");
-                conf.TargetPath = Path.Combine(new string[] {Globals.RootDirectory, "..", "Build"});
-                conf.TargetLibraryPath = Path.Combine(conf.TargetPath, "Lib");
-                conf.TargetFileName = "[project.Name] [target.Optimization]";
-
-                conf.Defines.Add("NOMINMAX"); // Is this really needed?
-
-                if (target.Optimization == Optimization.Debug)
-                    conf.Defines.Add("IS_DEBUG_BUILD");
-                if (target.Optimization != Optimization.Retail)
-                    conf.Defines.Add("IS_EDITOR_BUILD");
-
-                if (target.Optimization != Optimization.Retail)
-                {
-                    conf.Defines.Add("IS_PROFILING_ENABLED");
-                    conf.Defines.Add("TRACY_ENABLE");
-                    conf.Defines.Add("TRACY_CALLSTACK=2");
-                }
-
-                // Todo: Figure out how to do memory leak debugging.
-                // if (target.Optimization == Optimization.Debug)
-                // {
-                //     conf.Defines.Add("_CRTDBG_MAP_ALLOC");
-                //     conf.ForcedIncludes.Add("stdlib.h");
-                //     conf.ForcedIncludes.Add("crtdbg.h");
-                //     conf.Defines.Add("DEBUG_NEW=new(_NORMAL_BLOCK, __FILE__, __LINE__)");
-                //     conf.Defines.Add("new=DEBUG_NEW");
-                // }
-
-                conf.Options.Add(Sharpmake.Options.Vc.Linker.SubSystem.Windows);
-                conf.Options.Add(Sharpmake.Options.Vc.General.TreatWarningsAsErrors.Enable);
-                conf.Options.Add(Sharpmake.Options.Vc.General.WarningLevel.Level4);
-                conf.Options.Add(Sharpmake.Options.Vc.General.WindowsTargetPlatformVersion.Latest);
-                //conf.Options.Add(Sharpmake.Options.Vc.General.WarningLevel.EnableAllWarnings);
-
-                //conf.Options.Add(Sharpmake.Options.Vc.Compiler.ConformanceMode.Enable);
-                conf.Options.Add(Sharpmake.Options.Vc.Compiler.CppLanguageStandard.CPP20);
-                conf.Options.Add(Sharpmake.Options.Vc.Compiler.MultiProcessorCompilation.Enable);
-
-                conf.Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Enable);
-            }
-
-            public override bool ResolveFilterPathForFile(string relativePath, out string filterPath)
-            {
-                string commentStartString = "//";
-                string filterIdentifierString = "Filter";
-                string openFilterString = "\"";
-                string closeFilterString = "\"";
-
-                IEnumerable<string> fileLines = File.ReadLines(Path.Combine(SourceRootPath, relativePath));
-                foreach (string line in fileLines)
-                {
-                    if (string.IsNullOrWhiteSpace(line))
-                        continue;
-
-                    int commentStartIndex = line.IndexOf(commentStartString);
-                    if (commentStartIndex == -1) continue; // Skip lines without comments.
-
-                    string comment = line.Substring(commentStartIndex + commentStartString.Length);
-                    int filterIdentifier = comment.IndexOf(filterIdentifierString, System.StringComparison.CurrentCultureIgnoreCase);
-                    if (filterIdentifier == -1) break;
-
-                    int openFilterIndex = comment.IndexOf(openFilterString, filterIdentifier + filterIdentifierString.Length);
-                    if (openFilterIndex == -1) break;
-
-                    int closeFilterIndex = comment.IndexOf(closeFilterString, openFilterIndex + openFilterString.Length);
-                    if (closeFilterIndex == -1) break;
-
-                    int filterNameStart = openFilterIndex + openFilterString.Length;
-                    int filterNameLength = closeFilterIndex - filterNameStart;
-                    filterPath = comment.Substring(filterNameStart, filterNameLength).Replace("/", "\\");
-                    return true;
-                }
-
-                filterPath = null;
-                return false;
-            }
+            Name = "Unnamed project";
         }
 
-        public class Library : Project
+        public override bool ResolveFilterPathForFile(string relativePath, out string filterPath)
         {
-            public Library()
-            {
-                Name = "New core library";
+            string commentStartString = "//";
+            string filterIdentifierString = "Filter";
+            string openFilterString = "\"";
+            string closeFilterString = "\"";
 
-                AddTargets(new Target(
-                    Sharpmake.Platform.win32 | Sharpmake.Platform.win64,
-                    Sharpmake.DevEnv.vs2022,
-                    Sharpmake.Optimization.Debug | Sharpmake.Optimization.Release | Sharpmake.Optimization.Retail,
-                    Sharpmake.OutputType.Lib));
+            IEnumerable<string> fileLines = File.ReadLines(Path.Combine(SourceRootPath, relativePath));
+            foreach (string line in fileLines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                int commentStartIndex = line.IndexOf(commentStartString);
+                if (commentStartIndex == -1) continue; // Skip lines without comments.
+
+                string comment = line.Substring(commentStartIndex + commentStartString.Length);
+                int filterIdentifier = comment.IndexOf(filterIdentifierString, System.StringComparison.CurrentCultureIgnoreCase);
+                if (filterIdentifier == -1) break;
+
+                int openFilterIndex = comment.IndexOf(openFilterString, filterIdentifier + filterIdentifierString.Length);
+                if (openFilterIndex == -1) break;
+
+                int closeFilterIndex = comment.IndexOf(closeFilterString, openFilterIndex + openFilterString.Length);
+                if (closeFilterIndex == -1) break;
+
+                int filterNameStart = openFilterIndex + openFilterString.Length;
+                int filterNameLength = closeFilterIndex - filterNameStart;
+                filterPath = comment.Substring(filterNameStart, filterNameLength).Replace("/", "\\");
+                return true;
             }
 
-            public override void ConfigureAll(Project.Configuration conf, Target target)
-            {
-                base.ConfigureAll(conf, target);
-                conf.Output = Sharpmake.Project.Configuration.OutputType.Lib;
-            }
+            filterPath = null;
+            return false;
+        }
+    }
+
+    public class BasicProject : FilteredProject
+    {
+        public BasicProject()
+        {
+            IsFileNameToLower = false;
+            IsTargetFileNameToLower = false;
         }
 
-        public class ExternalLibrary : Project
+        [Sharpmake.Configure]
+        public virtual void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
         {
-            public ExternalLibrary()
-            {
-                Name = "External library";
+            conf.Name = @"[target.Optimization] [target.Platform] [target.DevEnv]";
 
-                AddTargets(new Target(
-                    Sharpmake.Platform.win32 | Sharpmake.Platform.win64,
-                    Sharpmake.DevEnv.vs2022,
-                    Sharpmake.Optimization.Debug | Sharpmake.Optimization.Release | Sharpmake.Optimization.Retail,
-                    Sharpmake.OutputType.Lib));
-            }
+            conf.ProjectPath = "[project.SharpmakeCsPath]";
+            conf.ProjectFileName = "[project.Name] [target.DevEnv]";
 
-            public override void ConfigureAll(Project.Configuration conf, Target target)
+            conf.IntermediatePath = Path.Combine(RoseGold.Configuration.BuildDirectory, "Intermediate/[project.Name] [target.Optimization] [target.DevEnv]/");
+            
+            conf.TargetPath = RoseGold.Configuration.BuildDirectory;
+            conf.TargetLibraryPath = Path.Combine(conf.TargetPath, "Lib");
+            conf.TargetFileName = "[project.Name] [target.Optimization] [target.DevEnv]";
+
+            conf.Options.Add(Sharpmake.Options.Vc.Linker.SubSystem.Windows);
+            conf.Options.Add(Sharpmake.Options.Vc.General.TreatWarningsAsErrors.Enable);
+            conf.Options.Add(Sharpmake.Options.Vc.General.WarningLevel.Level4);
+            conf.Options.Add(Sharpmake.Options.Vc.General.WindowsTargetPlatformVersion.Latest);
+            //conf.Options.Add(Sharpmake.Options.Vc.General.WarningLevel.EnableAllWarnings);
+
+            //conf.Options.Add(Sharpmake.Options.Vc.Compiler.ConformanceMode.Enable);
+            conf.Options.Add(Sharpmake.Options.Vc.Compiler.CppLanguageStandard.CPP20);
+            conf.Options.Add(Sharpmake.Options.Vc.Compiler.MultiProcessorCompilation.Enable);
+
+            conf.Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Enable);
+
+            conf.IncludePaths.Add("[project.SourceRootPath]");
+        }
+    }
+
+    public class EngineProject : BasicProject
+    {
+        public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
+        {
+            base.ConfigureAll(conf, target);
+
+            conf.PrecompHeader = "stdafx.hpp";
+            conf.PrecompSource = "stdafx.cpp";
+
+            conf.Defines.Add("NOMINMAX");
+
+            if (target.Optimization == Sharpmake.Optimization.Debug)
+                conf.Defines.Add("IS_DEBUG_BUILD");
+            if (target.Optimization != Sharpmake.Optimization.Retail)
+                conf.Defines.Add("IS_EDITOR_BUILD");
+
+            if (target.Optimization != Sharpmake.Optimization.Retail)
             {
-                base.ConfigureAll(conf, target);
-                conf.Output = Sharpmake.Project.Configuration.OutputType.Lib;
-                conf.PrecompHeader = "";
-                conf.PrecompSource = "";
+                conf.Defines.Add("IS_PROFILING_ENABLED");
+
+                // Match with Tracy.ConfigureAll()
+                conf.Defines.Add("TRACY_ENABLE");
+                conf.Defines.Add("TRACY_CALLSTACK=4");
             }
         }
+    }
 
-        public class Executable : Project
+    public class Solution : Sharpmake.Solution
+    {
+        public Solution()
         {
-            public Executable()
-            {
-                Name = "New core executable";
+            Name = "Solution";
+            IsFileNameToLower = false;
 
-                AddTargets(new Target(
-                    Sharpmake.Platform.win32 | Sharpmake.Platform.win64,
-                    Sharpmake.DevEnv.vs2022,
-                    Sharpmake.Optimization.Debug | Sharpmake.Optimization.Release | Sharpmake.Optimization.Retail));
-            }
+            AddTargets(new Sharpmake.Target(
+                RoseGold.Configuration.Platform,
+                RoseGold.Configuration.DevEnv,
+                RoseGold.Configuration.Optimization));
+        }
+
+        [Sharpmake.Configure]
+        public virtual void ConfigureAll(Sharpmake.Solution.Configuration conf, Sharpmake.Target target)
+        {
+            conf.SolutionFileName = "[solution.Name] [target.DevEnv]";
+        }
+    }
+
+    public class ExecutableProject : EngineProject
+    {
+        public ExecutableProject()
+        {
+            Name = "Executable";
+
+            AddTargets(new Sharpmake.Target(
+                RoseGold.Configuration.Platform,
+                RoseGold.Configuration.DevEnv,
+                RoseGold.Configuration.Optimization));
+        }
+    }
+
+    public class StaticLibraryProject : EngineProject
+    {
+        public StaticLibraryProject()
+        {
+            Name = "Static library";
+
+            AddTargets(new Sharpmake.Target(
+                RoseGold.Configuration.Platform,
+                RoseGold.Configuration.DevEnv,
+                RoseGold.Configuration.Optimization,
+                Sharpmake.OutputType.Lib));
+        }
+
+        public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
+        {
+            base.ConfigureAll(conf, target);
+            conf.Output = Sharpmake.Project.Configuration.OutputType.Lib;
+        }
+    }
+
+    public class ExternalLibraryProject : BasicProject
+    {
+        public ExternalLibraryProject()
+        {
+            Name = "External library";
+
+            AddTargets(new Sharpmake.Target(
+                RoseGold.Configuration.Platform,
+                RoseGold.Configuration.DevEnv,
+                RoseGold.Configuration.Optimization,
+                Sharpmake.OutputType.Lib));
+        }
+
+        public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
+        {
+            base.ConfigureAll(conf, target);
+            
+            conf.Output = Sharpmake.Project.Configuration.OutputType.Lib;
         }
     }
 }

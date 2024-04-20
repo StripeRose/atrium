@@ -1,58 +1,60 @@
 using System.IO;
-using Sharpmake;
 
-[module: Sharpmake.Include("../../.sharpmake/project.sharpmake.cs")]
+[module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
+[module: Sharpmake.Include("../../client/bootstrapper/sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 
-namespace RoseGold.Example
+[Sharpmake.Generate]
+public class Example_CoreOnlyExecutable : RoseGold.ExecutableProject
 {
-    [Generate]
-    public class Example_CoreOnly : RoseGold.Executable
+    public Example_CoreOnlyExecutable()
     {
-        public Example_CoreOnly()
-        {
-            Name = "Example game (Core only)";
-            SourceRootPath = "[project.SharpmakeCsPath]";
-        }
-
-        public override void ConfigureAll(Project.Configuration conf, Target target)
-        {
-            base.ConfigureAll(conf, target);
-
-            conf.AddPrivateDependency<RoseCommon>(target);
-        }
+        Name = "Example game (Core only)";
+        SourceRootPath = "[project.SharpmakeCsPath]";
     }
 
-    [Generate]
-    public class ExampleGame_CoreOnlySolution : RoseGold.Solution
+    public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
     {
-        public ExampleGame_CoreOnlySolution()
-        {
-            Name = "Example game (Core only)";
+        base.ConfigureAll(conf, target);
 
-            AddTargets(new Target(
-                Sharpmake.Platform.win32 | Sharpmake.Platform.win64,
-                Sharpmake.DevEnv.vs2022,
-                Sharpmake.Optimization.Debug | Sharpmake.Optimization.Release | Sharpmake.Optimization.Retail));
-        }
+        conf.SolutionFolder = "Executables";
+        conf.AddPrivateDependency<RoseGold.Common>(target);
+        conf.AddPrivateDependency<RoseGold.Bootstrapper>(target);
 
-        public override void ConfigureAll(Solution.Configuration conf, Target target)
-        {
-            base.ConfigureAll(conf, target);
-            conf.SolutionPath = "[solution.SharpmakeCsPath]/../../";
-            conf.AddProject<Example_CoreOnly>(target);
-        }
+        conf.VcxprojUserFile = new Sharpmake.Project.Configuration.VcxprojUserFileSettings();
+        conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = "$(OutputPath)..\\data\\";
+    }
+}
+
+[Sharpmake.Generate]
+public class ExampleGame_CoreOnlySolution : RoseGold.Solution
+{
+    public ExampleGame_CoreOnlySolution()
+    {
+        Name = "Example game (Core only)";
     }
 
-    public static class Main
+    public override void ConfigureAll(Sharpmake.Solution.Configuration conf, Sharpmake.Target target)
     {
-        [Sharpmake.Main]
-        public static void SharpmakeMain(Sharpmake.Arguments arguments)
-        {
-            FileInfo fileInfo = Util.GetCurrentSharpmakeFileInfo();
-            Globals.RootDirectory = Util.SimplifyPath(Path.Combine(fileInfo.DirectoryName, "..", ".."));
-            
-            arguments.Generate<ExampleGame_CoreOnlySolution>();
-        }
+        base.ConfigureAll(conf, target);
+        conf.SolutionPath = "[solution.SharpmakeCsPath]/../../";
+
+        conf.AddProject<Example_CoreOnlyExecutable>(target);
+    }
+}
+
+public static class Main
+{
+    [Sharpmake.Main]
+    public static void SharpmakeMain(Sharpmake.Arguments arguments)
+    {
+        FileInfo fileInfo = Sharpmake.Util.GetCurrentSharpmakeFileInfo();
+
+        RoseGold.Configuration.BuildDirectory = Path.Combine(
+            fileInfo.DirectoryName,
+            "../../../Build"
+        );
+        
+        arguments.Generate<ExampleGame_CoreOnlySolution>();
     }
 }
