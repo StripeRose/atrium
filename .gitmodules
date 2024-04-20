@@ -9,4 +9,4 @@
 	url = https://github.com/Microsoft/DirectXTex
 [submodule "code/libraries/tracy"]
 	path = code/libraries/tracy
-	url = https://github.com/wolfpld/tracy.git
+	url = git@github.com:wolfpld/tracy.git
