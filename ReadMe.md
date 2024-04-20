@@ -16,7 +16,7 @@ The intent of this project is to create a graphics library and game engine that 
 ### Prerequisites
 
  * Windows 11
- * Visual Studio 2022
+ * Visual Studio 2022 (Tracy profiler requires CMake tools to build)
 
 ### Setting up the repository
 
@@ -24,7 +24,7 @@ Once cloned on its own or as part of a larger project, run `setup_repo.bat`.
 This script will automatically do the following.
 
 1. Clone all submodules the in use.
-2. Build the tools in use by the project; [Sharpmake](https://github.com/ubisoft/Sharpmake/) and [Tracy](https://github.com/wolfpld/tracy).
+2. Build the tools in use by the project; [Sharpmake](https://github.com/ubisoft/Sharpmake/).
 
 ### Open the example project
 
@@ -34,7 +34,12 @@ This will create all the current example solutions in the same directory.
 
 ## Performance profiling
 
-The codebase uses [Tracy](https://github.com/wolfpld/tracy) for profiling on supported platforms. After it's been built successfully as part of the `setup_repo.bat` script, there is a shortcut to run it in `./code/run_tracy_profiler.bat`, which you can run before or after you start the example project.
+The codebase uses [Tracy](https://github.com/wolfpld/tracy) for profiling on supported platforms.
+
+The executable is located at `./tools/tracy-profiler.exe`, which you can run before or while the project is running.
+
+### Building Tracy
+To build the Tracy profiler program, ensure Visual Studio 2022 has been installed with CMake tools, and run `./code/libraries/build_tracy_server.bat`.
 
 ## Structure
 * `build`

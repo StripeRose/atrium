@@ -22,9 +22,3 @@ if %errorlevel% NEQ 0 (
 	pause
 	exit /b %errorlevel%
 )
-
-::==============================================================
-:: COMPILE TRACY SERVER
-cd "./code/libraries"
-call "./build_tracy_server.bat"
-
