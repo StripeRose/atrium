@@ -1,11 +1,11 @@
 ---
 Language: Cpp
-BasedOnStyle: Microsoft
 
 Standard: c++20
 
-ColumnLimit: 150
+ColumnLimit: 130
 IndentWidth: 4
+PPIndentWidth: -1
 LineEnding: LF
 UseTab: ForContinuationAndIndentation
 TabWidth: 4
@@ -71,6 +71,7 @@ AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: Inline
 AllowShortLoopsOnASingleLine: false
 
+AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: true
 AlwaysBreakTemplateDeclarations: Yes
@@ -107,7 +108,7 @@ EmptyLineBeforeAccessModifier: LogicalBlock
 EmptyLineAfterAccessModifier: Never
 
 RequiresClausePosition: WithPreceding
-RequiresExpressionIndentation: OuterScope #Maybe "Keyword"?
+RequiresExpressionIndentation: OuterScope
 
 SeparateDefinitionBlocks: Leave
 ShortNamespaceLines: 10
@@ -152,14 +153,29 @@ SpacesInSquareBrackets: false
 #------------------------------------
 # Corrections
 #------------------------------------
+ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
-InsertNewlineAtEOF: true
-InsertTrailingCommas: Wrapped
+InsertBraces:    false
+InsertNewlineAtEOF: false
+InsertTrailingCommas: None
+
+IntegerLiteralSeparator:
+  Binary:          0
+  BinaryMinDigits: 0
+  Decimal:         0
+  DecimalMinDigits: 0
+  Hex:             0
+  HexMinDigits:    0
+
 KeepEmptyLinesAtEOF: false
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
 
-ReflowComments: false
+ReflowComments: true
+
+QualifierAlignment: Leave
+RemoveBracesLLVM: false
+RemoveParentheses: Leave
 
 #------------------------------------
 # Includes and Using declarations
@@ -172,6 +188,9 @@ SortUsingDeclarations: LexicographicNumeric
 #------------------------------------
 # Macro lists
 #------------------------------------
+MacroBlockBegin: ''
+MacroBlockEnd:   ''
+
 AttributeMacros:
   - __capability
   - __output
