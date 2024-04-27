@@ -66,7 +66,7 @@ namespace RoseGold::DirectX12
 		ReportUnreleasedObjects();
 	}
 
-	std::shared_ptr<Core::RenderTexture> Manager::CreateRenderTextureForWindow(Core::Platform::Window& aWindow)
+	std::shared_ptr<Core::RenderTexture> Manager::CreateRenderTextureForWindow(Core::Window& aWindow)
 	{
 		ZoneScoped;
 
@@ -75,7 +75,7 @@ namespace RoseGold::DirectX12
 		swapChain.reset(new SwapChain(*myDevice, myCommandQueueManager->GetGraphicsQueue(), aWindow));
 		swapChain->SetName(aWindow.GetTitle().c_str());
 
-		aWindow.Closed.Connect(this, [&](Core::Platform::Window& aWindow) {
+		aWindow.Closed.Connect(this, [&](Core::Window& aWindow) {
 			myDrawSurfaceSwapChain.at(&aWindow)->Invalidate();
 			myDrawSurfaceSwapChain.erase(&aWindow);
 			});
@@ -142,7 +142,7 @@ namespace RoseGold::DirectX12
 		return *myFrameGraphicsContext;
 	}
 
-	std::shared_ptr<SwapChain> Manager::GetSwapChain(Core::Platform::Window& aWindow)
+	std::shared_ptr<SwapChain> Manager::GetSwapChain(Core::Window& aWindow)
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
 		auto it = myDrawSurfaceSwapChain.find(&aWindow);

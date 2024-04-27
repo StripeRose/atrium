@@ -12,7 +12,7 @@ namespace RoseGold::Client
 	{
 		// Todo: Add eventual graphics, audio and input handlers.
 		std::unique_ptr<Core::Manager> GraphicsManager;
-		std::unique_ptr<Core::Platform::WindowManager> WindowManager;
+		std::unique_ptr<Core::WindowManager> WindowManager;
 	};
 
 	BootstrapResult Bootstrap();

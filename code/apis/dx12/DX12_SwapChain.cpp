@@ -11,7 +11,7 @@
 
 namespace RoseGold::DirectX12
 {
-	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Platform::Window& aWindow)
+	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Window& aWindow)
 		: myDevice(&aDevice)
 		, myWindow(&aWindow)
 	{
@@ -21,7 +21,7 @@ namespace RoseGold::DirectX12
 		Size windowSize = aWindow.GetSize();
 		GetBackBuffers(windowSize);
 
-		aWindow.SizeChanged.Connect(this, [&](Core::Platform::Window& aWindow) {
+		aWindow.SizeChanged.Connect(this, [&](Core::Window& aWindow) {
 			OnDrawSurfaceResize(aWindow.GetSize());
 			});
 	}

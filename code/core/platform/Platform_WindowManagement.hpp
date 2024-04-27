@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace RoseGold::Core::Platform
+namespace RoseGold::Core
 {
 	class Window
 	{

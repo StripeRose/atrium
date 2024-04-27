@@ -24,7 +24,7 @@ namespace RoseGold::DirectX12
 		Manager();
 		~Manager();
 
-		std::shared_ptr<Core::RenderTexture> CreateRenderTextureForWindow(Core::Platform::Window& aWindow) override;
+		std::shared_ptr<Core::RenderTexture> CreateRenderTextureForWindow(Core::Window& aWindow) override;
 
 		std::shared_ptr<Core::GraphicsBuffer> CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) override;
 
@@ -40,7 +40,7 @@ namespace RoseGold::DirectX12
 
 		Core::FrameContext& GetCurrentFrameContext() override;
 
-		std::shared_ptr<SwapChain> GetSwapChain(Core::Platform::Window& aWindow);
+		std::shared_ptr<SwapChain> GetSwapChain(Core::Window& aWindow);
 
 		std::vector<std::shared_ptr<SwapChain>> GetSwapChains();
 
@@ -60,7 +60,7 @@ namespace RoseGold::DirectX12
 		std::unique_ptr<Device> myDevice;
 
 		std::mutex mySwapChainMutex;
-		std::map<Core::Platform::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
+		std::map<Core::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
 
 		std::unique_ptr<CommandQueueManager> myCommandQueueManager;
 

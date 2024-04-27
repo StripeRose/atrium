@@ -82,7 +82,7 @@ namespace RoseGold::Win32
 		::SetWindowTextW(myWindowHandle, aTitleText);
 	}
 
-	Window::Window(const Core::Platform::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass)
+	Window::Window(const Core::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass)
 		: myWindowHandle(NULL)
 		, myHasRequestedClose(false)
 	{
@@ -238,18 +238,18 @@ namespace RoseGold::Win32
 		CleanupWindowClasses();
 	}
 
-	std::shared_ptr<Core::Platform::Window> WindowManager::NewWindow(const CreationParameters& someParameters)
+	std::shared_ptr<Core::Window> WindowManager::NewWindow(const CreationParameters& someParameters)
 	{
 		auto newWindow = std::shared_ptr<Win32::Window>(new Win32::Window(someParameters, myWindowClasses[0]));
 		myWindows.push_back(newWindow);
 		return newWindow;
 	}
 
-	std::vector<std::shared_ptr<Core::Platform::Window>> WindowManager::GetWindows() const
+	std::vector<std::shared_ptr<Core::Window>> WindowManager::GetWindows() const
 	{
-		std::vector<std::shared_ptr<Core::Platform::Window>> windows;
+		std::vector<std::shared_ptr<Core::Window>> windows;
 		for (const auto& window : myWindows)
-			windows.push_back(std::static_pointer_cast<Core::Platform::Window>(window));
+			windows.push_back(std::static_pointer_cast<Core::Window>(window));
 		return windows;
 	}
 

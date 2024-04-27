@@ -199,12 +199,12 @@ void ExampleGame::OnExit()
 void ExampleGame::OnStart_SetupWindows()
 {
 	ZoneScoped;
-	RoseGold::Core::Platform::WindowManager::CreationParameters windowParams;
+	RoseGold::Core::WindowManager::CreationParameters windowParams;
 	windowParams.Title = "Window 1";
 	windowParams.Size = { 640, 480 };
 	auto window1 = myCoreSetup->WindowManager->NewWindow(windowParams);
 	myWindow1 = myCoreSetup->GraphicsManager->CreateRenderTextureForWindow(*window1);
-	window1->Closed.Connect(nullptr, [&](RoseGold::Core::Platform::Window&) {
+	window1->Closed.Connect(nullptr, [&](RoseGold::Core::Window&) {
 		myWindow1.reset();
 		});
 
@@ -212,7 +212,7 @@ void ExampleGame::OnStart_SetupWindows()
 	windowParams.Size = { 640, 480 };
 	auto window2 = myCoreSetup->WindowManager->NewWindow(windowParams);
 	myWindow2 = myCoreSetup->GraphicsManager->CreateRenderTextureForWindow(*window2);
-	window2->Closed.Connect(nullptr, [&](RoseGold::Core::Platform::Window&) {
+	window2->Closed.Connect(nullptr, [&](RoseGold::Core::Window&) {
 		myWindow2.reset();
 		});
 }

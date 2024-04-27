@@ -14,7 +14,7 @@ namespace RoseGold::DirectX12
 	class SwapChain : public RenderTarget
 	{
 	public:
-		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Platform::Window& aWindow);
+		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Window& aWindow);
 
 		void Invalidate();
 		void UpdateResolution();
@@ -91,7 +91,7 @@ namespace RoseGold::DirectX12
 	private:
 		Device* myDevice;
 		ComPtr<IDXGISwapChain3> mySwapChain;
-		Core::Platform::Window* myWindow;
+		Core::Window* myWindow;
 
 		std::vector<std::shared_ptr<SwapChainBackBuffer>> myBackBuffers;
 		std::optional<Size> myDesiredResolution;

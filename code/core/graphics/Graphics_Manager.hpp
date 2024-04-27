@@ -11,7 +11,7 @@
 
 #include <filesystem>
 
-namespace RoseGold::Core::Platform { class Window; }
+namespace RoseGold::Core { class Window; }
 
 namespace RoseGold::Core
 {
@@ -20,7 +20,7 @@ namespace RoseGold::Core
 	public:
 		virtual ~Manager() = default;
 		
-		virtual std::shared_ptr<RenderTexture> CreateRenderTextureForWindow(Platform::Window& aWindow) = 0;
+		virtual std::shared_ptr<RenderTexture> CreateRenderTextureForWindow(Window& aWindow) = 0;
 
 		virtual std::shared_ptr<GraphicsBuffer> CreateGraphicsBuffer(GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) = 0;
 
