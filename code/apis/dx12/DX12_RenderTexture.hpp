@@ -10,7 +10,7 @@
 
 namespace RoseGold::DirectX12
 {
-	class RenderTarget : public Core::Graphics::RenderTexture
+	class RenderTarget : public Core::RenderTexture
 	{
 	public:
 		virtual const DescriptorHeapHandle* GetColorView() const = 0;
@@ -31,11 +31,11 @@ namespace RoseGold::DirectX12
 	public:
 		RenderTexture(
 			Device& aDevice,
-			const Core::Graphics::RenderTextureDescriptor& aDescriptor
+			const Core::RenderTextureDescriptor& aDescriptor
 		);
 		RenderTexture(
 			Device& aDevice,
-			const Core::Graphics::RenderTextureDescriptor& aDescriptor,
+			const Core::RenderTextureDescriptor& aDescriptor,
 			ComPtr<ID3D12Resource> aColorBuffer,
 			ComPtr<ID3D12Resource> aDepthBuffer
 		);
@@ -58,35 +58,35 @@ namespace RoseGold::DirectX12
 
 		// Implementing RenderTexture
 	public:
-		const Core::Graphics::RenderTextureDescriptor& GetDescriptor() const override { return myDescriptor; }
+		const Core::RenderTextureDescriptor& GetDescriptor() const override { return myDescriptor; }
 		void* GetNativeDepthBufferPtr() const override { return myDepthResource.GetResource().Get(); }
 
 		// Implementing Texture
 	public:
-		void SetFilterMode(Core::Graphics::FilterMode aFilterMode) override;
-		Core::Graphics::TextureDimension GetDimensions() const override;
+		void SetFilterMode(Core::FilterMode aFilterMode) override;
+		Core::TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		Core::Graphics::FilterMode GetFilterMode() const override;
+		Core::FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
 
-		Core::Graphics::TextureWrapMode GetWrapModeU() const override;
-		Core::Graphics::TextureWrapMode GetWrapModeV() const override;
-		Core::Graphics::TextureWrapMode GetWrapModeW() const override;
+		Core::TextureWrapMode GetWrapModeU() const override;
+		Core::TextureWrapMode GetWrapModeV() const override;
+		Core::TextureWrapMode GetWrapModeW() const override;
 
-		void SetWrapMode(Core::Graphics::TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(Core::Graphics::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(Core::Graphics::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(Core::Graphics::TextureWrapMode aWrapMode) const override;
+		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
 
 		void* GetNativeTexturePtr() const override { return myResource.Get(); }
 
 	protected:
 		Device* myDevicePtr;
 
-		Core::Graphics::RenderTextureDescriptor myDescriptor;
+		Core::RenderTextureDescriptor myDescriptor;
 
 		GPUResource myDepthResource;
 

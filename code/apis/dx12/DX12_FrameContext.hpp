@@ -106,7 +106,7 @@ namespace RoseGold::DirectX12
 		std::vector<TextureUpload> myTextureUploads;
 	};
 
-	class FrameGraphicsContext final : public FrameContext, public Core::Graphics::FrameContext
+	class FrameGraphicsContext final : public FrameContext, public Core::FrameContext
 	{
 	public:
 		FrameGraphicsContext(Device& aDevice, CommandQueue& aCommandQueue);
@@ -119,8 +119,8 @@ namespace RoseGold::DirectX12
 
 		void Reset(const std::uint64_t& aFrameIndex) override;
 
-		void ClearColor(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, Color aClearColor) override;
-		void ClearDepth(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) override;
+		void ClearColor(const std::shared_ptr<Core::RenderTexture>& aTarget, Color aClearColor) override;
+		void ClearDepth(const std::shared_ptr<Core::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) override;
 
 		void DisableScissorRect() override;
 
@@ -135,14 +135,14 @@ namespace RoseGold::DirectX12
 		void DrawIndexedInstanced(std::uint32_t anIndexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation, std::uint32_t aStartInstanceLocation) override;
 
 		void SetBlendFactor(Color aBlendFactor) override;
-		void SetPipelineState(const std::shared_ptr<Core::Graphics::PipelineState>& aPipelineState) override;
-		void SetVertexBuffer(const std::shared_ptr<const Core::Graphics::GraphicsBuffer>& aVertexBuffer) override;
-		void SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::GraphicsBuffer>& aBuffer) override;
-		void SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture) override;
-		void SetPrimitiveTopology(Core::Graphics::PrimitiveTopology aTopology) override;
+		void SetPipelineState(const std::shared_ptr<Core::PipelineState>& aPipelineState) override;
+		void SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer) override;
+		void SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer) override;
+		void SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture) override;
+		void SetPrimitiveTopology(Core::PrimitiveTopology aTopology) override;
 		void SetScissorRect(const Math::RectangleT<int>& aRectangle) override;
 		void SetStencilRef(std::uint32_t aStencilRef) override;
-		void SetRenderTargets(const std::vector<std::shared_ptr<Core::Graphics::RenderTexture>>& someTargets, const std::shared_ptr<Core::Graphics::RenderTexture>& aDepthTarget) override;
+		void SetRenderTargets(const std::vector<std::shared_ptr<Core::RenderTexture>>& someTargets, const std::shared_ptr<Core::RenderTexture>& aDepthTarget) override;
 		void SetViewportAndScissorRect(const Size& aScreenSize) override;
 		void SetViewport(const Math::Rectangle& aRectangle) override;
 

@@ -9,11 +9,11 @@
 
 namespace RoseGold::DirectX12
 {
-	RenderTexture::RenderTexture(Device& aDevice, const Core::Graphics::RenderTextureDescriptor& aDescriptor)
+	RenderTexture::RenderTexture(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor)
 		: RenderTexture(aDevice, aDescriptor, nullptr, nullptr)
 	{ }
 
-	RenderTexture::RenderTexture(Device& aDevice, const Core::Graphics::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
+	RenderTexture::RenderTexture(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
 		: myDescriptor(aDescriptor)
 		, myDevicePtr(&aDevice)
 		, myDepthResource(aDepthBuffer, D3D12_RESOURCE_STATE_DEPTH_WRITE)
@@ -26,10 +26,10 @@ namespace RoseGold::DirectX12
 			"The render-texture has a size."
 		);
 
-		if (myDescriptor.ColorGraphicsFormat == Core::Graphics::GraphicsFormat::None)
+		if (myDescriptor.ColorGraphicsFormat == Core::GraphicsFormat::None)
 			myDescriptor.ColorGraphicsFormat = ToGraphicsFormat(myDescriptor.ColorFormat);
 
-		if (myDescriptor.ColorGraphicsFormat != Core::Graphics::GraphicsFormat::None)
+		if (myDescriptor.ColorGraphicsFormat != Core::GraphicsFormat::None)
 		{
 			if (!aColorBuffer)
 			{
@@ -80,7 +80,7 @@ namespace RoseGold::DirectX12
 			aDevice.GetDevice()->CreateRenderTargetView(myResource.Get(), &rtvDesc, myRSVHandle->GetCPUHandle());
 		}
 
-		if (myDescriptor.DepthStencilFormat != Core::Graphics::GraphicsFormat::None)
+		if (myDescriptor.DepthStencilFormat != Core::GraphicsFormat::None)
 		{
 			if (!myDepthResource.GetResource())
 			{
@@ -134,7 +134,7 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	Core::Graphics::TextureDimension RenderTexture::GetDimensions() const
+	Core::TextureDimension RenderTexture::GetDimensions() const
 	{
 		return myDescriptor.Dimension;
 	}
@@ -150,14 +150,14 @@ namespace RoseGold::DirectX12
 		myDepthResource.GetResource()->SetName((std::wstring(aName) + L" - Depth").c_str());
 	}
 
-	void RenderTexture::SetFilterMode(Core::Graphics::FilterMode aFilterMode)
+	void RenderTexture::SetFilterMode(Core::FilterMode aFilterMode)
 	{
 		aFilterMode;
 	}
 
-	Core::Graphics::FilterMode RenderTexture::GetFilterMode() const
+	Core::FilterMode RenderTexture::GetFilterMode() const
 	{
-		return Core::Graphics::FilterMode::Bilinear;
+		return Core::FilterMode::Bilinear;
 	}
 
 	unsigned int RenderTexture::GetHeight() const
@@ -180,37 +180,37 @@ namespace RoseGold::DirectX12
 		return myDescriptor.Size_Width;
 	}
 
-	Core::Graphics::TextureWrapMode RenderTexture::GetWrapModeU() const
+	Core::TextureWrapMode RenderTexture::GetWrapModeU() const
 	{
-		return Core::Graphics::TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	Core::Graphics::TextureWrapMode RenderTexture::GetWrapModeV() const
+	Core::TextureWrapMode RenderTexture::GetWrapModeV() const
 	{
-		return Core::Graphics::TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	Core::Graphics::TextureWrapMode RenderTexture::GetWrapModeW() const
+	Core::TextureWrapMode RenderTexture::GetWrapModeW() const
 	{
-		return Core::Graphics::TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	void RenderTexture::SetWrapMode(Core::Graphics::TextureWrapMode aWrapMode)
-	{
-		aWrapMode;
-	}
-
-	void RenderTexture::SetWrapModeU(Core::Graphics::TextureWrapMode aWrapMode) const
+	void RenderTexture::SetWrapMode(Core::TextureWrapMode aWrapMode)
 	{
 		aWrapMode;
 	}
 
-	void RenderTexture::SetWrapModeV(Core::Graphics::TextureWrapMode aWrapMode) const
+	void RenderTexture::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 	}
 
-	void RenderTexture::SetWrapModeW(Core::Graphics::TextureWrapMode aWrapMode) const
+	void RenderTexture::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
+	{
+		aWrapMode;
+	}
+
+	void RenderTexture::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 	}

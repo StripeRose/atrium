@@ -18,15 +18,15 @@ public:
 		, myVertexCount(0)
 	{ }
 
-	Mesh(RoseGold::Core::Graphics::Manager* aManager)
+	Mesh(RoseGold::Core::Manager* aManager)
 		: myManager(aManager)
 		, myVertexCount(0)
 		, myName(L"Mesh")
 	{ }
 
-	void DrawToFrame(RoseGold::Core::Graphics::FrameContext& aFrameContext)
+	void DrawToFrame(RoseGold::Core::FrameContext& aFrameContext)
 	{
-		aFrameContext.SetPrimitiveTopology(RoseGold::Core::Graphics::PrimitiveTopology::TriangleList);
+		aFrameContext.SetPrimitiveTopology(RoseGold::Core::PrimitiveTopology::TriangleList);
 		aFrameContext.SetVertexBuffer(myVertexBuffer);
 		aFrameContext.Draw(myVertexCount, 0);
 	}
@@ -39,7 +39,7 @@ public:
 		myVertexCount = static_cast<std::uint32_t>(someVertices.size());
 
 		myVertexBuffer = myManager->CreateGraphicsBuffer(
-			RoseGold::Core::Graphics::GraphicsBuffer::Target::Vertex,
+			RoseGold::Core::GraphicsBuffer::Target::Vertex,
 			myVertexCount,
 			sizeof(VertexType)
 		);
@@ -58,15 +58,15 @@ public:
 	}
 
 protected:
-	RoseGold::Core::Graphics::Manager* myManager;
-	std::shared_ptr<RoseGold::Core::Graphics::GraphicsBuffer> myVertexBuffer;
+	RoseGold::Core::Manager* myManager;
+	std::shared_ptr<RoseGold::Core::GraphicsBuffer> myVertexBuffer;
 	std::uint32_t myVertexCount;
 	std::wstring myName;
 };
 
 struct TexturedVertex
 {
-	static std::vector<RoseGold::Core::Graphics::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
+	static std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
 
 	float Position[3];
 	float UV[2];
@@ -76,7 +76,7 @@ using TexturedMesh = Mesh<TexturedVertex>;
 
 struct ColoredVertex
 {
-	static std::vector<RoseGold::Core::Graphics::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
+	static std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
 
 	float Position[3];
 	float Color[4];
@@ -105,21 +105,21 @@ private:
 
 	RoseGold::Client::BootstrapResult* myCoreSetup;
 
-	std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> myWindow1;
-	std::shared_ptr<RoseGold::Core::Graphics::RenderTexture> myWindow2;
+	std::shared_ptr<RoseGold::Core::RenderTexture> myWindow1;
+	std::shared_ptr<RoseGold::Core::RenderTexture> myWindow2;
 
-	std::shared_ptr<RoseGold::Core::Graphics::Texture> myWhite;
-	std::shared_ptr<RoseGold::Core::Graphics::Texture> myCheckerboard;
+	std::shared_ptr<RoseGold::Core::Texture> myWhite;
+	std::shared_ptr<RoseGold::Core::Texture> myCheckerboard;
 
-	std::shared_ptr<RoseGold::Core::Graphics::PipelineState> myColoredMeshPipelineState;
-	std::shared_ptr<RoseGold::Core::Graphics::PipelineState> myTexturedMeshPipelineState;
+	std::shared_ptr<RoseGold::Core::PipelineState> myColoredMeshPipelineState;
+	std::shared_ptr<RoseGold::Core::PipelineState> myTexturedMeshPipelineState;
 
 	ColoredMesh myColoredTriangle;
 	ColoredMesh myColoredPlane;
 	TexturedMesh myTexturedPyramid;
 
-	std::shared_ptr<RoseGold::Core::Graphics::GraphicsBuffer> myRT1PyramidConstants, myRT1TriangleConstants, myRT1PlaneConstants;
-	std::shared_ptr<RoseGold::Core::Graphics::GraphicsBuffer> myRT2PyramidConstants, myRT2TriangleConstants, myRT2PlaneConstants;
+	std::shared_ptr<RoseGold::Core::GraphicsBuffer> myRT1PyramidConstants, myRT1TriangleConstants, myRT1PlaneConstants;
+	std::shared_ptr<RoseGold::Core::GraphicsBuffer> myRT2PyramidConstants, myRT2TriangleConstants, myRT2PlaneConstants;
 
 	std::chrono::high_resolution_clock::time_point myStartTime;
 };

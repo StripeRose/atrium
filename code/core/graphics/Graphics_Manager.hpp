@@ -13,7 +13,7 @@
 
 namespace RoseGold::Core::Platform { class Window; }
 
-namespace RoseGold::Core::Graphics
+namespace RoseGold::Core
 {
 	class Manager
 	{

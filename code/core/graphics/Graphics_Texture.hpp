@@ -2,7 +2,7 @@
 
 #include "Graphics_Enums.hpp"
 
-namespace RoseGold::Core::Graphics
+namespace RoseGold::Core
 {
 	class Texture
 	{

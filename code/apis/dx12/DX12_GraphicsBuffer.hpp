@@ -13,7 +13,7 @@
 namespace RoseGold::DirectX12
 {
 	class Device;
-	class GraphicsBuffer : public Core::Graphics::GraphicsBuffer, public GPUResource
+	class GraphicsBuffer : public Core::GraphicsBuffer, public GPUResource
 	{
 	public:
 		GraphicsBuffer(Device& aDevice, std::uint32_t aBufferSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType);

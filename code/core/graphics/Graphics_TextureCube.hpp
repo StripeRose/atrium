@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-namespace RoseGold::Core::Graphics
+namespace RoseGold::Core
 {
 	class TextureCube : public Texture
 	{

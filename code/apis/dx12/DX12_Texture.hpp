@@ -20,18 +20,18 @@ namespace RoseGold::DirectX12
 {
 	class Device;
 	class UploadContext;
-	class TextureBackend : public Core::Graphics::Texture, public GPUResource, public std::enable_shared_from_this<TextureBackend>
+	class TextureBackend : public Core::Texture, public GPUResource, public std::enable_shared_from_this<TextureBackend>
 	{
 	public:
-		static TextureBackend* FromTexture(Core::Graphics::Texture& aTexture);
-		static const TextureBackend* FromTexture(const Core::Graphics::Texture& aTexture);
+		static TextureBackend* FromTexture(Core::Texture& aTexture);
+		static const TextureBackend* FromTexture(const Core::Texture& aTexture);
 
 	public:
 		TextureBackend(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
 		TextureBackend(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage);
 
 		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable);
-		Core::Graphics::TextureFormat GetFormat() const;
+		Core::TextureFormat GetFormat() const;
 
 		virtual DXGI_FORMAT GetDXGIFormat() const { return myImage->GetMetadata().format; }
 		const std::shared_ptr<DescriptorHeapHandle>& GetSRVHandle() const { return mySRVHandle; }
@@ -39,23 +39,23 @@ namespace RoseGold::DirectX12
 		// Implements Texture
 	public:
 
-		Core::Graphics::TextureDimension GetDimensions() const override;
+		Core::TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		Core::Graphics::FilterMode GetFilterMode() const override;
+		Core::FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
 
-		Core::Graphics::TextureWrapMode GetWrapModeU() const override;
-		Core::Graphics::TextureWrapMode GetWrapModeV() const override;
-		Core::Graphics::TextureWrapMode GetWrapModeW() const override;
+		Core::TextureWrapMode GetWrapModeU() const override;
+		Core::TextureWrapMode GetWrapModeV() const override;
+		Core::TextureWrapMode GetWrapModeW() const override;
 
-		void SetFilterMode(Core::Graphics::FilterMode aFilterMode) override;
-		void SetWrapMode(Core::Graphics::TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(Core::Graphics::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(Core::Graphics::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(Core::Graphics::TextureWrapMode aWrapMode) const override;
+		void SetFilterMode(Core::FilterMode aFilterMode) override;
+		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
 
 		void* GetNativeTexturePtr() const override;
 
@@ -73,7 +73,7 @@ namespace RoseGold::DirectX12
 		std::shared_ptr<DescriptorHeapHandle> mySRVHandle;
 	};
 
-	class Texture2D : public Core::Graphics::Texture2D
+	class Texture2D : public Core::Texture2D
 	{
 	public:
 		Texture2D(std::shared_ptr<TextureBackend> aBackend)
@@ -85,30 +85,30 @@ namespace RoseGold::DirectX12
 
 		// Implements Texture
 	public:
-		Core::Graphics::TextureDimension GetDimensions() const override { return myBackend->GetDimensions(); }
+		Core::TextureDimension GetDimensions() const override { return myBackend->GetDimensions(); }
 		unsigned int GetDepth() const override { return myBackend->GetDepth(); }
-		Core::Graphics::FilterMode GetFilterMode() const override { return myBackend->GetFilterMode(); }
+		Core::FilterMode GetFilterMode() const override { return myBackend->GetFilterMode(); }
 		unsigned int GetHeight() const override { return myBackend->GetHeight(); }
 		bool IsReadable() const override { return myBackend->IsReadable(); }
 		unsigned int GetMipmapCount() const override { return myBackend->GetMipmapCount(); }
 		unsigned int GetWidth() const override { return myBackend->GetWidth(); }
 
-		Core::Graphics::TextureWrapMode GetWrapModeU() const override { return myBackend->GetWrapModeU(); }
-		Core::Graphics::TextureWrapMode GetWrapModeV() const override { return myBackend->GetWrapModeV(); }
-		Core::Graphics::TextureWrapMode GetWrapModeW() const override { return myBackend->GetWrapModeW(); }
+		Core::TextureWrapMode GetWrapModeU() const override { return myBackend->GetWrapModeU(); }
+		Core::TextureWrapMode GetWrapModeV() const override { return myBackend->GetWrapModeV(); }
+		Core::TextureWrapMode GetWrapModeW() const override { return myBackend->GetWrapModeW(); }
 
-		void SetFilterMode(Core::Graphics::FilterMode aFilterMode) override { myBackend->SetFilterMode(aFilterMode); }
-		void SetWrapMode(Core::Graphics::TextureWrapMode aWrapMode) override { myBackend->SetWrapMode(aWrapMode); }
-		void SetWrapModeU(Core::Graphics::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeU(aWrapMode); }
-		void SetWrapModeV(Core::Graphics::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeV(aWrapMode); }
-		void SetWrapModeW(Core::Graphics::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeW(aWrapMode); }
+		void SetFilterMode(Core::FilterMode aFilterMode) override { myBackend->SetFilterMode(aFilterMode); }
+		void SetWrapMode(Core::TextureWrapMode aWrapMode) override { myBackend->SetWrapMode(aWrapMode); }
+		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeU(aWrapMode); }
+		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeV(aWrapMode); }
+		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeW(aWrapMode); }
 
 		void* GetNativeTexturePtr() const override { return myBackend->GetNativeTexturePtr(); }
 
 		// Implements Texture2D
 	public:
 		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override { myBackend->Apply(anUpdateMipmaps, aMakeNoLongerReadable); }
-		Core::Graphics::TextureFormat GetFormat() const override { return myBackend->GetFormat(); }
+		Core::TextureFormat GetFormat() const override { return myBackend->GetFormat(); }
 
 		Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel) const override;
 		Color GetPixelBilinear(float aU, float aV, unsigned int aMipLevel) const override;
@@ -123,7 +123,7 @@ namespace RoseGold::DirectX12
 		std::shared_ptr<TextureBackend> myBackend;
 	};
 
-	class Texture3D : public Core::Graphics::Texture3D
+	class Texture3D : public Core::Texture3D
 	{
 	public:
 		Texture3D(std::shared_ptr<TextureBackend> aBackend)
@@ -135,30 +135,30 @@ namespace RoseGold::DirectX12
 
 		// Implements Texture
 	public:
-		Core::Graphics::TextureDimension GetDimensions() const override { return myBackend->GetDimensions(); }
+		Core::TextureDimension GetDimensions() const override { return myBackend->GetDimensions(); }
 		unsigned int GetDepth() const override { return myBackend->GetDepth(); }
-		Core::Graphics::FilterMode GetFilterMode() const override { return myBackend->GetFilterMode(); }
+		Core::FilterMode GetFilterMode() const override { return myBackend->GetFilterMode(); }
 		unsigned int GetHeight() const override { return myBackend->GetHeight(); }
 		bool IsReadable() const override { return myBackend->IsReadable(); }
 		unsigned int GetMipmapCount() const override { return myBackend->GetMipmapCount(); }
 		unsigned int GetWidth() const override { return myBackend->GetWidth(); }
 
-		Core::Graphics::TextureWrapMode GetWrapModeU() const override { return myBackend->GetWrapModeU(); }
-		Core::Graphics::TextureWrapMode GetWrapModeV() const override { return myBackend->GetWrapModeV(); }
-		Core::Graphics::TextureWrapMode GetWrapModeW() const override { return myBackend->GetWrapModeW(); }
+		Core::TextureWrapMode GetWrapModeU() const override { return myBackend->GetWrapModeU(); }
+		Core::TextureWrapMode GetWrapModeV() const override { return myBackend->GetWrapModeV(); }
+		Core::TextureWrapMode GetWrapModeW() const override { return myBackend->GetWrapModeW(); }
 
-		void SetFilterMode(Core::Graphics::FilterMode aFilterMode) override { myBackend->SetFilterMode(aFilterMode); }
-		void SetWrapMode(Core::Graphics::TextureWrapMode aWrapMode) override { myBackend->SetWrapMode(aWrapMode); }
-		void SetWrapModeU(Core::Graphics::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeU(aWrapMode); }
-		void SetWrapModeV(Core::Graphics::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeV(aWrapMode); }
-		void SetWrapModeW(Core::Graphics::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeW(aWrapMode); }
+		void SetFilterMode(Core::FilterMode aFilterMode) override { myBackend->SetFilterMode(aFilterMode); }
+		void SetWrapMode(Core::TextureWrapMode aWrapMode) override { myBackend->SetWrapMode(aWrapMode); }
+		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeU(aWrapMode); }
+		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeV(aWrapMode); }
+		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeW(aWrapMode); }
 
 		void* GetNativeTexturePtr() const override { return myBackend->GetNativeTexturePtr(); }
 
 		// Implements Texture3D
 	public:
 		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override { myBackend->Apply(anUpdateMipmaps, aMakeNoLongerReadable); }
-		Core::Graphics::TextureFormat GetFormat() const override { return myBackend->GetFormat(); }
+		Core::TextureFormat GetFormat() const override { return myBackend->GetFormat(); }
 
 		Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel) const override;
 		Color GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel) const override;
@@ -171,7 +171,7 @@ namespace RoseGold::DirectX12
 		std::shared_ptr<TextureBackend> myBackend;
 	};
 
-	class TextureCube : public Core::Graphics::TextureCube
+	class TextureCube : public Core::TextureCube
 	{
 	public:
 		TextureCube(std::shared_ptr<TextureBackend> aBackend)
@@ -183,30 +183,30 @@ namespace RoseGold::DirectX12
 
 		// Implements Texture
 	public:
-		Core::Graphics::TextureDimension GetDimensions() const override { return myBackend->GetDimensions(); }
+		Core::TextureDimension GetDimensions() const override { return myBackend->GetDimensions(); }
 		unsigned int GetDepth() const override { return myBackend->GetDepth(); }
-		Core::Graphics::FilterMode GetFilterMode() const override { return myBackend->GetFilterMode(); }
+		Core::FilterMode GetFilterMode() const override { return myBackend->GetFilterMode(); }
 		unsigned int GetHeight() const override { return myBackend->GetHeight(); }
 		bool IsReadable() const override { return myBackend->IsReadable(); }
 		unsigned int GetMipmapCount() const override { return myBackend->GetMipmapCount(); }
 		unsigned int GetWidth() const override { return myBackend->GetWidth(); }
 
-		Core::Graphics::TextureWrapMode GetWrapModeU() const override { return myBackend->GetWrapModeU(); }
-		Core::Graphics::TextureWrapMode GetWrapModeV() const override { return myBackend->GetWrapModeV(); }
-		Core::Graphics::TextureWrapMode GetWrapModeW() const override { return myBackend->GetWrapModeW(); }
+		Core::TextureWrapMode GetWrapModeU() const override { return myBackend->GetWrapModeU(); }
+		Core::TextureWrapMode GetWrapModeV() const override { return myBackend->GetWrapModeV(); }
+		Core::TextureWrapMode GetWrapModeW() const override { return myBackend->GetWrapModeW(); }
 
-		void SetFilterMode(Core::Graphics::FilterMode aFilterMode) override { myBackend->SetFilterMode(aFilterMode); }
-		void SetWrapMode(Core::Graphics::TextureWrapMode aWrapMode) override { myBackend->SetWrapMode(aWrapMode); }
-		void SetWrapModeU(Core::Graphics::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeU(aWrapMode); }
-		void SetWrapModeV(Core::Graphics::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeV(aWrapMode); }
-		void SetWrapModeW(Core::Graphics::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeW(aWrapMode); }
+		void SetFilterMode(Core::FilterMode aFilterMode) override { myBackend->SetFilterMode(aFilterMode); }
+		void SetWrapMode(Core::TextureWrapMode aWrapMode) override { myBackend->SetWrapMode(aWrapMode); }
+		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeU(aWrapMode); }
+		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeV(aWrapMode); }
+		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override { myBackend->SetWrapModeW(aWrapMode); }
 
 		void* GetNativeTexturePtr() const override { return myBackend->GetNativeTexturePtr(); }
 
 		// Implements TextureCube
 	public:
 		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override { myBackend->Apply(anUpdateMipmaps, aMakeNoLongerReadable); }
-		Core::Graphics::TextureFormat GetFormat() const override { return myBackend->GetFormat(); }
+		Core::TextureFormat GetFormat() const override { return myBackend->GetFormat(); }
 
 		Color GetPixel(Face aFace, unsigned int anX, unsigned int aY) const override;
 		Color GetPixels(Face aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel) const override;

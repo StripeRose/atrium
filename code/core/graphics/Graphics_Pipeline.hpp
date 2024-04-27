@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace RoseGold::Core::Graphics
+namespace RoseGold::Core
 {
 	class Shader
 	{

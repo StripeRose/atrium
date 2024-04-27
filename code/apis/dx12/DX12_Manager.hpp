@@ -18,33 +18,33 @@ namespace RoseGold::DirectX12
 	class Device;
 	class RootSignature;
 
-	class Manager final : public Core::Graphics::Manager
+	class Manager final : public Core::Manager
 	{
 	public:
 		Manager();
 		~Manager();
 
-		std::shared_ptr<Core::Graphics::RenderTexture> CreateRenderTextureForWindow(Core::Platform::Window& aWindow) override;
+		std::shared_ptr<Core::RenderTexture> CreateRenderTextureForWindow(Core::Platform::Window& aWindow) override;
 
-		std::shared_ptr<Core::Graphics::GraphicsBuffer> CreateGraphicsBuffer(Core::Graphics::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) override;
+		std::shared_ptr<Core::GraphicsBuffer> CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) override;
 
-		std::shared_ptr<Core::Graphics::PipelineState> CreateOrGetPipelineState(const Core::Graphics::PipelineStateDescription& aPipelineState) override;
+		std::shared_ptr<Core::PipelineState> CreateOrGetPipelineState(const Core::PipelineStateDescription& aPipelineState) override;
 
-		std::shared_ptr<Core::Graphics::Shader> CreateShader(const std::filesystem::path& aSource, Core::Graphics::Shader::Type aType, const char* anEntryPoint) override;
+		std::shared_ptr<Core::Shader> CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint) override;
 
-		std::shared_ptr<Core::Graphics::Texture2D> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::Graphics::TextureFormat aTextureFormat) override;
-		std::shared_ptr<Core::Graphics::Texture3D> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::Graphics::TextureFormat aTextureFormat) override;
-		std::shared_ptr<Core::Graphics::TextureCube> CreateTextureCube(unsigned int aWidth, Core::Graphics::TextureFormat aTextureFormat) override;
+		std::shared_ptr<Core::Texture2D> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat) override;
+		std::shared_ptr<Core::Texture3D> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat) override;
+		std::shared_ptr<Core::TextureCube> CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat) override;
 
 		CommandQueueManager& GetCommandQueueManager() { return *myCommandQueueManager.get(); }
 
-		Core::Graphics::FrameContext& GetCurrentFrameContext() override;
+		Core::FrameContext& GetCurrentFrameContext() override;
 
 		std::shared_ptr<SwapChain> GetSwapChain(Core::Platform::Window& aWindow);
 
 		std::vector<std::shared_ptr<SwapChain>> GetSwapChains();
 
-		virtual std::shared_ptr<Core::Graphics::Texture> LoadTexture(const std::filesystem::path& aPath) override;
+		virtual std::shared_ptr<Core::Texture> LoadTexture(const std::filesystem::path& aPath) override;
 
 		bool SupportsMultipleWindows() const override { return true; }
 

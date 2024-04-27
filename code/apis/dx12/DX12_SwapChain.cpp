@@ -118,7 +118,7 @@ namespace RoseGold::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthGPUResource();
 	}
 
-	const Core::Graphics::RenderTextureDescriptor& SwapChain::GetDescriptor() const
+	const Core::RenderTextureDescriptor& SwapChain::GetDescriptor() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDescriptor();
 	}
@@ -131,13 +131,13 @@ namespace RoseGold::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetNativeDepthBufferPtr();
 	}
 
-	void SwapChain::SetFilterMode(Core::Graphics::FilterMode aFilterMode)
+	void SwapChain::SetFilterMode(Core::FilterMode aFilterMode)
 	{
 		for (auto backBuffer : myBackBuffers)
 			backBuffer->SetFilterMode(aFilterMode);
 	}
 
-	Core::Graphics::TextureDimension SwapChain::GetDimensions() const
+	Core::TextureDimension SwapChain::GetDimensions() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDimensions();
 	}
@@ -147,7 +147,7 @@ namespace RoseGold::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepth();
 	}
 
-	Core::Graphics::FilterMode SwapChain::GetFilterMode() const
+	Core::FilterMode SwapChain::GetFilterMode() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetFilterMode();
 	}
@@ -172,40 +172,40 @@ namespace RoseGold::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetWidth();
 	}
 
-	Core::Graphics::TextureWrapMode SwapChain::GetWrapModeU() const
+	Core::TextureWrapMode SwapChain::GetWrapModeU() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeU();
 	}
 
-	Core::Graphics::TextureWrapMode SwapChain::GetWrapModeV() const
+	Core::TextureWrapMode SwapChain::GetWrapModeV() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeV();
 	}
 
-	Core::Graphics::TextureWrapMode SwapChain::GetWrapModeW() const
+	Core::TextureWrapMode SwapChain::GetWrapModeW() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeW();
 	}
 
-	void SwapChain::SetWrapMode(Core::Graphics::TextureWrapMode aWrapMode)
+	void SwapChain::SetWrapMode(Core::TextureWrapMode aWrapMode)
 	{
 		for (auto backBuffer : myBackBuffers)
 			backBuffer->SetWrapMode(aWrapMode);
 	}
 
-	void SwapChain::SetWrapModeU(Core::Graphics::TextureWrapMode aWrapMode) const
+	void SwapChain::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
 	{
 		for (auto backBuffer : myBackBuffers)
 			backBuffer->SetWrapModeU(aWrapMode);
 	}
 
-	void SwapChain::SetWrapModeV(Core::Graphics::TextureWrapMode aWrapMode) const
+	void SwapChain::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
 	{
 		for (auto backBuffer : myBackBuffers)
 			backBuffer->SetWrapModeV(aWrapMode);
 	}
 
-	void SwapChain::SetWrapModeW(Core::Graphics::TextureWrapMode aWrapMode) const
+	void SwapChain::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
 	{
 		for (auto backBuffer : myBackBuffers)
 			backBuffer->SetWrapModeW(aWrapMode);
@@ -414,11 +414,11 @@ namespace RoseGold::DirectX12
 			AssertAction(mySwapChain->GetBuffer(i, IID_PPV_ARGS(backBufferResource.ReleaseAndGetAddressOf())), "Get swapchain back buffer.");
 			//backBufferResource->SetName(BasicString<wchar_t>::Format(L"Backbuffer Texture #%i", i).ToCharArray());
 
-			Core::Graphics::RenderTextureDescriptor rtDesc;
+			Core::RenderTextureDescriptor rtDesc;
 			rtDesc.ColorFormat = GetRenderTextureFormat();
 			rtDesc.ColorGraphicsFormat = ToGraphicsFormat(rtDesc.ColorFormat);
-			rtDesc.DepthStencilFormat = Core::Graphics::GraphicsFormat::D32_SFloat;
-			rtDesc.Dimension = Core::Graphics::TextureDimension::Tex2D;
+			rtDesc.DepthStencilFormat = Core::GraphicsFormat::D32_SFloat;
+			rtDesc.Dimension = Core::TextureDimension::Tex2D;
 			rtDesc.IsSRGB = false;
 			rtDesc.Size_Width = aSize.X;
 			rtDesc.Size_Height = aSize.Y;
@@ -436,15 +436,15 @@ namespace RoseGold::DirectX12
 		myDesiredResolution = aSize;
 	}
 
-	Core::Graphics::RenderTextureFormat SwapChain::GetRenderTextureFormat() const
+	Core::RenderTextureFormat SwapChain::GetRenderTextureFormat() const
 	{
 		if (myDevice->GetParameters().EnableHDR)
-			return Core::Graphics::RenderTextureFormat::DefaultHDR;
+			return Core::RenderTextureFormat::DefaultHDR;
 		else
-			return Core::Graphics::RenderTextureFormat::Default;
+			return Core::RenderTextureFormat::Default;
 	}
 
-	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const Core::Graphics::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
+	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
 		: RenderTexture(aDevice, aDescriptor, aColorBuffer, aDepthBuffer)
 	{
 		myUsageState = D3D12_RESOURCE_STATE_PRESENT;

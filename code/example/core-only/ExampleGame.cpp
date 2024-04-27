@@ -4,19 +4,19 @@
 
 #include <Common_Diagnostics.hpp>
 
-std::vector<RoseGold::Core::Graphics::PipelineStateDescription::InputLayoutEntry> TexturedVertex::GetInputLayout()
+std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> TexturedVertex::GetInputLayout()
 {
-	std::vector<RoseGold::Core::Graphics::PipelineStateDescription::InputLayoutEntry> layout;
-	layout.emplace_back("POSITION", RoseGold::Core::Graphics::GraphicsFormat::R32G32B32_SFloat);
-	layout.emplace_back("TEXCOORD", RoseGold::Core::Graphics::GraphicsFormat::R32G32_SFloat);
+	std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> layout;
+	layout.emplace_back("POSITION", RoseGold::Core::GraphicsFormat::R32G32B32_SFloat);
+	layout.emplace_back("TEXCOORD", RoseGold::Core::GraphicsFormat::R32G32_SFloat);
 	return layout;
 }
 
-std::vector<RoseGold::Core::Graphics::PipelineStateDescription::InputLayoutEntry> ColoredVertex::GetInputLayout()
+std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> ColoredVertex::GetInputLayout()
 {
-	std::vector<RoseGold::Core::Graphics::PipelineStateDescription::InputLayoutEntry> layout;
-	layout.emplace_back("POSITION", RoseGold::Core::Graphics::GraphicsFormat::R32G32B32_SFloat);
-	layout.emplace_back("COLOR", RoseGold::Core::Graphics::GraphicsFormat::R32G32B32A32_SFloat);
+	std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> layout;
+	layout.emplace_back("POSITION", RoseGold::Core::GraphicsFormat::R32G32B32_SFloat);
+	layout.emplace_back("COLOR", RoseGold::Core::GraphicsFormat::R32G32B32A32_SFloat);
 	return layout;
 }
 
@@ -55,7 +55,7 @@ void ExampleGame::OnLoop()
 	const std::chrono::milliseconds msSinceStart = std::chrono::duration_cast<std::chrono::milliseconds>(timeSinceStart);
 	const float secondsSinceStart = msSinceStart.count() / 1000.f;
 
-	using namespace RoseGold::Core::Graphics;
+	using namespace RoseGold::Core;
 	FrameContext& frameContext = myCoreSetup->GraphicsManager->GetCurrentFrameContext();
 
 	if (myWindow1)
@@ -303,24 +303,24 @@ void ExampleGame::OnStart_SetupPipelineStates()
 		);
 	}
 
-	std::shared_ptr<RoseGold::Core::Graphics::Shader> coloredVertexShader = myCoreSetup->GraphicsManager->CreateShader(
+	std::shared_ptr<RoseGold::Core::Shader> coloredVertexShader = myCoreSetup->GraphicsManager->CreateShader(
 		"example/CoreOnly_MeshVertex.hlsl",
-		RoseGold::Core::Graphics::Shader::Type::Vertex,
+		RoseGold::Core::Shader::Type::Vertex,
 		"ColoredMesh");
 
 	// Same file as ColoredMesh, but a different entrypoint.
-	std::shared_ptr<RoseGold::Core::Graphics::Shader> texturedVertexShader = myCoreSetup->GraphicsManager->CreateShader(
+	std::shared_ptr<RoseGold::Core::Shader> texturedVertexShader = myCoreSetup->GraphicsManager->CreateShader(
 		"example/CoreOnly_MeshVertex.hlsl",
-		RoseGold::Core::Graphics::Shader::Type::Vertex,
+		RoseGold::Core::Shader::Type::Vertex,
 		"TexturedMesh");
 
 	// Only one pixel-shader as the vertex-shaders have the same output.
-	std::shared_ptr<RoseGold::Core::Graphics::Shader> pixelShader = myCoreSetup->GraphicsManager->CreateShader(
+	std::shared_ptr<RoseGold::Core::Shader> pixelShader = myCoreSetup->GraphicsManager->CreateShader(
 		"example/CoreOnly_MeshPixel.hlsl",
-		RoseGold::Core::Graphics::Shader::Type::Pixel);
+		RoseGold::Core::Shader::Type::Pixel);
 
 	{
-		RoseGold::Core::Graphics::PipelineStateDescription pipelineState;
+		RoseGold::Core::PipelineStateDescription pipelineState;
 		pipelineState.InputLayout = ColoredVertex::GetInputLayout();
 		pipelineState.VertexShader = coloredVertexShader;
 		pipelineState.PixelShader = pixelShader;
@@ -330,7 +330,7 @@ void ExampleGame::OnStart_SetupPipelineStates()
 	}
 
 	{
-		RoseGold::Core::Graphics::PipelineStateDescription pipelineState;
+		RoseGold::Core::PipelineStateDescription pipelineState;
 		pipelineState.InputLayout = TexturedVertex::GetInputLayout();
 		pipelineState.VertexShader = texturedVertexShader;
 		pipelineState.PixelShader = pixelShader;
@@ -343,7 +343,7 @@ void ExampleGame::OnStart_SetupPipelineStates()
 void ExampleGame::OnStart_CreateMVPBuffers()
 {
 	ZoneScoped;
-	using namespace RoseGold::Core::Graphics;
+	using namespace RoseGold::Core;
 	auto makeCameraConstants = [&]() { return myCoreSetup->GraphicsManager->CreateGraphicsBuffer(GraphicsBuffer::Target::Constant, 1, sizeof(CameraConstants)); };
 
 	myRT1PyramidConstants = makeCameraConstants();

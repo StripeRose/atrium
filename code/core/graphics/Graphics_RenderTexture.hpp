@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace RoseGold::Core::Graphics
+namespace RoseGold::Core
 {
 	struct RenderTextureDescriptor
 	{

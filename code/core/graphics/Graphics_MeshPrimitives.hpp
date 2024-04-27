@@ -5,7 +5,7 @@
 #include <functional>
 #include <vector>
 
-namespace RoseGold::Core::Graphics
+namespace RoseGold::Core
 {
 	enum class MeshPrimitiveType
 	{

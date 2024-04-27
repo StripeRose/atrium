@@ -5,7 +5,7 @@
 
 namespace RoseGold::DirectX12
 {
-	using namespace Core::Graphics;
+	using namespace Core;
 
 	DXGI_FORMAT ToDXGIFormat(const GraphicsFormat& aFormat)
 	{
@@ -154,7 +154,7 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	Core::Graphics::GraphicsFormat ToGraphicsFormat(const Core::Graphics::TextureFormat& aFormat)
+	Core::GraphicsFormat ToGraphicsFormat(const Core::TextureFormat& aFormat)
 	{
 		switch (aFormat)
 		{
@@ -249,9 +249,9 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	Core::Graphics::TextureFormat ToTextureFormat(const DXGI_FORMAT& aFormat)
+	Core::TextureFormat ToTextureFormat(const DXGI_FORMAT& aFormat)
 	{
-		using namespace Core::Graphics;
+		using namespace Core;
 
 		switch (aFormat)
 		{
@@ -292,7 +292,7 @@ namespace RoseGold::DirectX12
 
 		default:
 			Debug::LogFatal("Unsupported format.");
-			return Core::Graphics::TextureFormat(0);
+			return Core::TextureFormat(0);
 		}
 	}
 }

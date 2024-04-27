@@ -267,7 +267,7 @@ namespace RoseGold::DirectX12
 		DirectX12::FrameContext::Reset(aFrameIndex);
 	}
 
-	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, Color aClearColor)
+	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Core::RenderTexture>& aTarget, Color aClearColor)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Clear color");
 		Debug::Assert(!!aTarget, "ClearColor() requires a target.");
@@ -295,7 +295,7 @@ namespace RoseGold::DirectX12
 		);
 	}
 
-	void FrameGraphicsContext::ClearDepth(const std::shared_ptr<Core::Graphics::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil)
+	void FrameGraphicsContext::ClearDepth(const std::shared_ptr<Core::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Clear depth");
 		Debug::Assert(!!aTarget, "ClearDepth() requires a target.");
@@ -392,7 +392,7 @@ namespace RoseGold::DirectX12
 		myCommandList->RSSetScissorRects(1, &rect);
 	}
 
-	void FrameGraphicsContext::SetPrimitiveTopology(Core::Graphics::PrimitiveTopology aTopology)
+	void FrameGraphicsContext::SetPrimitiveTopology(Core::PrimitiveTopology aTopology)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set primitive topology");
 
@@ -400,19 +400,19 @@ namespace RoseGold::DirectX12
 
 		switch (aTopology)
 		{
-		case Core::Graphics::PrimitiveTopology::PointList:
+		case Core::PrimitiveTopology::PointList:
 			topology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
 			break;
-		case Core::Graphics::PrimitiveTopology::LineList:
+		case Core::PrimitiveTopology::LineList:
 			topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 			break;
-		case Core::Graphics::PrimitiveTopology::LineStrip:
+		case Core::PrimitiveTopology::LineStrip:
 			topology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
 			break;
-		case Core::Graphics::PrimitiveTopology::TriangleList:
+		case Core::PrimitiveTopology::TriangleList:
 			topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 			break;
-		case Core::Graphics::PrimitiveTopology::TriangleStrip:
+		case Core::PrimitiveTopology::TriangleStrip:
 			topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 			break;
 		}
@@ -420,7 +420,7 @@ namespace RoseGold::DirectX12
 		myCommandList->IASetPrimitiveTopology(topology);
 	}
 
-	void FrameGraphicsContext::SetPipelineState(const std::shared_ptr<Core::Graphics::PipelineState>& aPipelineState)
+	void FrameGraphicsContext::SetPipelineState(const std::shared_ptr<Core::PipelineState>& aPipelineState)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline state");
 		Debug::Assert(!!aPipelineState, "SetPipelineState() requires pipeline state to be non-null.");
@@ -430,14 +430,14 @@ namespace RoseGold::DirectX12
 		myCommandList->SetGraphicsRootSignature(myCurrentPipelineState->GetRootSignature()->GetRootSignatureObject().Get());
 	}
 
-	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Core::Graphics::GraphicsBuffer>& aVertexBuffer)
+	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set vertex buffer");
 		const VertexBuffer& vertexBuffer = static_cast<const VertexBuffer&>(*aVertexBuffer);
 		myCommandList->IASetVertexBuffers(0, 1, &vertexBuffer.GetBufferView());
 	}
 
-	void FrameGraphicsContext::SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::GraphicsBuffer>& aBuffer)
+	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline buffer resource");
 
@@ -475,7 +475,7 @@ namespace RoseGold::DirectX12
 		myCommandList->SetGraphicsRootDescriptorTable(parameterInfo.value().RootParameterIndex, gpuBuffer->GetGPUHandle());
 	}
 
-	void FrameGraphicsContext::SetPipelineResource(Core::Graphics::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Graphics::Texture>& aTexture)
+	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline texture resource");
 
@@ -534,7 +534,7 @@ namespace RoseGold::DirectX12
 		myCommandList->OMSetStencilRef(aStencilRef);
 	}
 
-	void FrameGraphicsContext::SetRenderTargets(const std::vector<std::shared_ptr<Core::Graphics::RenderTexture>>& someTargets, const std::shared_ptr<Core::Graphics::RenderTexture>& aDepthTarget)
+	void FrameGraphicsContext::SetRenderTargets(const std::vector<std::shared_ptr<Core::RenderTexture>>& someTargets, const std::shared_ptr<Core::RenderTexture>& aDepthTarget)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set render targets");
 		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> colorHandles;

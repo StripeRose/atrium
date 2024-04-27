@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace RoseGold::Core::Graphics
+namespace RoseGold::Core
 {
 	namespace MakeMeshPrimitives
 	{

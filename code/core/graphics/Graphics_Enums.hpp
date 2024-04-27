@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RoseGold::Core::Graphics
+namespace RoseGold::Core
 {
 	enum class TextureDimension
 	{

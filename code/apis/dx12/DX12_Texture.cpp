@@ -12,15 +12,15 @@ namespace RoseGold::DirectX12
 {
 	using namespace DirectX;
 
-	TextureBackend* TextureBackend::FromTexture(Core::Graphics::Texture& aTexture)
+	TextureBackend* TextureBackend::FromTexture(Core::Texture& aTexture)
 	{
 		switch (aTexture.GetDimensions())
 		{
-		case Core::Graphics::TextureDimension::Tex2D:
+		case Core::TextureDimension::Tex2D:
 			return &static_cast<Texture2D&>(aTexture).GetBackend();
-		case Core::Graphics::TextureDimension::Tex3D:
+		case Core::TextureDimension::Tex3D:
 			return &static_cast<Texture3D&>(aTexture).GetBackend();
-		case Core::Graphics::TextureDimension::Cube:
+		case Core::TextureDimension::Cube:
 			return &static_cast<TextureCube&>(aTexture).GetBackend();
 		default:
 			Debug::LogFatal("Tried to get the texture backend from an unsupported texture.");
@@ -28,15 +28,15 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	const TextureBackend* TextureBackend::FromTexture(const Core::Graphics::Texture& aTexture)
+	const TextureBackend* TextureBackend::FromTexture(const Core::Texture& aTexture)
 	{
 		switch (aTexture.GetDimensions())
 		{
-		case Core::Graphics::TextureDimension::Tex2D:
+		case Core::TextureDimension::Tex2D:
 			return &static_cast<const Texture2D&>(aTexture).GetBackend();
-		case Core::Graphics::TextureDimension::Tex3D:
+		case Core::TextureDimension::Tex3D:
 			return &static_cast<const Texture3D&>(aTexture).GetBackend();
-		case Core::Graphics::TextureDimension::Cube:
+		case Core::TextureDimension::Cube:
 			return &static_cast<const TextureCube&>(aTexture).GetBackend();
 		default:
 			Debug::LogFatal("Tried to get the texture backend from an unsupported texture.");
@@ -81,20 +81,20 @@ namespace RoseGold::DirectX12
 			myImage.reset();
 	}
 
-	Core::Graphics::TextureDimension TextureBackend::GetDimensions() const
+	Core::TextureDimension TextureBackend::GetDimensions() const
 	{
 		switch (myMetadata.dimension)
 		{
 		case TEX_DIMENSION_TEXTURE1D:
-			return Core::Graphics::TextureDimension::Tex2D;
+			return Core::TextureDimension::Tex2D;
 		case TEX_DIMENSION_TEXTURE2D:
 			return myMetadata.IsCubemap()
-				? Core::Graphics::TextureDimension::Cube
-				: Core::Graphics::TextureDimension::Tex2D;
+				? Core::TextureDimension::Cube
+				: Core::TextureDimension::Tex2D;
 		case TEX_DIMENSION_TEXTURE3D:
-			return Core::Graphics::TextureDimension::Tex3D;
+			return Core::TextureDimension::Tex3D;
 		default:
-			return Core::Graphics::TextureDimension::Unknown;
+			return Core::TextureDimension::Unknown;
 		}
 	}
 
@@ -103,13 +103,13 @@ namespace RoseGold::DirectX12
 		return static_cast<unsigned int>(myMetadata.depth);
 	}
 
-	Core::Graphics::FilterMode TextureBackend::GetFilterMode() const
+	Core::FilterMode TextureBackend::GetFilterMode() const
 	{
 		Debug::LogWarning("Not implemented.");
-		return Core::Graphics::FilterMode::Point;
+		return Core::FilterMode::Point;
 	}
 
-	Core::Graphics::TextureFormat TextureBackend::GetFormat() const
+	Core::TextureFormat TextureBackend::GetFormat() const
 	{
 		return ToTextureFormat(myMetadata.format);
 	}
@@ -134,49 +134,49 @@ namespace RoseGold::DirectX12
 		return static_cast<unsigned int>(myMetadata.width);
 	}
 
-	Core::Graphics::TextureWrapMode TextureBackend::GetWrapModeU() const
+	Core::TextureWrapMode TextureBackend::GetWrapModeU() const
 	{
 		Debug::LogWarning("Not implemented.");
-		return Core::Graphics::TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	Core::Graphics::TextureWrapMode TextureBackend::GetWrapModeV() const
+	Core::TextureWrapMode TextureBackend::GetWrapModeV() const
 	{
 		Debug::LogWarning("Not implemented.");
-		return Core::Graphics::TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	Core::Graphics::TextureWrapMode TextureBackend::GetWrapModeW() const
+	Core::TextureWrapMode TextureBackend::GetWrapModeW() const
 	{
 		Debug::LogWarning("Not implemented.");
-		return Core::Graphics::TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	void TextureBackend::SetFilterMode(Core::Graphics::FilterMode aFilterMode)
+	void TextureBackend::SetFilterMode(Core::FilterMode aFilterMode)
 	{
 		aFilterMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void TextureBackend::SetWrapMode(Core::Graphics::TextureWrapMode aWrapMode)
+	void TextureBackend::SetWrapMode(Core::TextureWrapMode aWrapMode)
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void TextureBackend::SetWrapModeU(Core::Graphics::TextureWrapMode aWrapMode) const
+	void TextureBackend::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void TextureBackend::SetWrapModeV(Core::Graphics::TextureWrapMode aWrapMode) const
+	void TextureBackend::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void TextureBackend::SetWrapModeW(Core::Graphics::TextureWrapMode aWrapMode) const
+	void TextureBackend::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");

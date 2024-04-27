@@ -21,7 +21,7 @@
 
 namespace RoseGold::DirectX12
 {
-	std::unique_ptr<Core::Graphics::Manager> CreateDX12Manager()
+	std::unique_ptr<Core::Manager> CreateDX12Manager()
 	{
 		return std::make_unique<Manager>();
 	}
@@ -66,7 +66,7 @@ namespace RoseGold::DirectX12
 		ReportUnreleasedObjects();
 	}
 
-	std::shared_ptr<Core::Graphics::RenderTexture> Manager::CreateRenderTextureForWindow(Core::Platform::Window& aWindow)
+	std::shared_ptr<Core::RenderTexture> Manager::CreateRenderTextureForWindow(Core::Platform::Window& aWindow)
 	{
 		ZoneScoped;
 
@@ -83,29 +83,29 @@ namespace RoseGold::DirectX12
 		return swapChain;
 	}
 
-	std::shared_ptr<Core::Graphics::GraphicsBuffer> Manager::CreateGraphicsBuffer(Core::Graphics::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+	std::shared_ptr<Core::GraphicsBuffer> Manager::CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 	{
 		ZoneScoped;
 
 		switch (aTarget)
 		{
-		case Core::Graphics::GraphicsBuffer::Target::Vertex:
-			return std::shared_ptr<Core::Graphics::GraphicsBuffer>(new VertexBuffer(*myDevice, aCount, aStride));
-		case Core::Graphics::GraphicsBuffer::Target::Index:
-			return std::shared_ptr<Core::Graphics::GraphicsBuffer>(new IndexBuffer(*myDevice, aCount));
-		case Core::Graphics::GraphicsBuffer::Target::Constant:
-			return std::shared_ptr<Core::Graphics::GraphicsBuffer>(new ConstantBuffer(*myDevice, aCount * aStride));
+		case Core::GraphicsBuffer::Target::Vertex:
+			return std::shared_ptr<Core::GraphicsBuffer>(new VertexBuffer(*myDevice, aCount, aStride));
+		case Core::GraphicsBuffer::Target::Index:
+			return std::shared_ptr<Core::GraphicsBuffer>(new IndexBuffer(*myDevice, aCount));
+		case Core::GraphicsBuffer::Target::Constant:
+			return std::shared_ptr<Core::GraphicsBuffer>(new ConstantBuffer(*myDevice, aCount * aStride));
 		default:
 			return nullptr;
 		}
 	}
 
-	std::shared_ptr<Core::Graphics::PipelineState> Manager::CreateOrGetPipelineState(const Core::Graphics::PipelineStateDescription& aPipelineState)
+	std::shared_ptr<Core::PipelineState> Manager::CreateOrGetPipelineState(const Core::PipelineStateDescription& aPipelineState)
 	{
 		return DirectX12::PipelineState::CreateFrom(*myDevice->GetDevice().Get(), myDefaultRootSignature, aPipelineState);
 	}
 
-	std::shared_ptr<Core::Graphics::Shader> Manager::CreateShader(const std::filesystem::path& aSource, Core::Graphics::Shader::Type aType, const char* anEntryPoint)
+	std::shared_ptr<Core::Shader> Manager::CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint)
 	{
 		ZoneScoped;
 
@@ -122,22 +122,22 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::Graphics::Texture2D> Manager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::Graphics::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::Texture2D> Manager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat)
 	{
 		return CreateDDS2D(*myDevice, *myUploadContext, aWidth, aHeight, aTextureFormat);
 	}
 
-	std::shared_ptr<Core::Graphics::Texture3D> Manager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::Graphics::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::Texture3D> Manager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat)
 	{
 		return CreateDDS3D(*myDevice, *myUploadContext, aWidth, aHeight, aDepth, aTextureFormat);
 	}
 
-	std::shared_ptr<Core::Graphics::TextureCube> Manager::CreateTextureCube(unsigned int aWidth, Core::Graphics::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::TextureCube> Manager::CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat)
 	{
 		return CreateDDSCube(*myDevice, *myUploadContext, aWidth, aTextureFormat);
 	}
 
-	Core::Graphics::FrameContext& Manager::GetCurrentFrameContext()
+	Core::FrameContext& Manager::GetCurrentFrameContext()
 	{
 		return *myFrameGraphicsContext;
 	}
@@ -158,7 +158,7 @@ namespace RoseGold::DirectX12
 		return swapChains;
 	}
 
-	std::shared_ptr<Core::Graphics::Texture> Manager::LoadTexture(const std::filesystem::path& aPath)
+	std::shared_ptr<Core::Texture> Manager::LoadTexture(const std::filesystem::path& aPath)
 	{
 		const std::filesystem::path extension = aPath.extension();
 		if (extension == ".dds")
@@ -254,14 +254,14 @@ namespace RoseGold::DirectX12
 		signature.SetVisibility(D3D12_SHADER_VISIBILITY_VERTEX);
 		{
 			signature.AddDescriptorTable()
-				.AddCBVRange(1, 0, Core::Graphics::ResourceUpdateFrequency::PerObject) // Model, View, Projection data.
+				.AddCBVRange(1, 0, Core::ResourceUpdateFrequency::PerObject) // Model, View, Projection data.
 				;
 		}
 
 		signature.SetVisibility(D3D12_SHADER_VISIBILITY_PIXEL);
 		{
 			signature.AddDescriptorTable()
-				.AddSRVRange(4, 0, Core::Graphics::ResourceUpdateFrequency::PerMaterial)
+				.AddSRVRange(4, 0, Core::ResourceUpdateFrequency::PerMaterial)
 				;
 
 			signature.AddSampler(0) // Clamping Point

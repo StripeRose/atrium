@@ -3,7 +3,7 @@
 #include <memory>
 #include <span>
 
-namespace RoseGold::Core::Graphics
+namespace RoseGold::Core
 {
 	class GraphicsBuffer
 	{
