@@ -27,8 +27,8 @@ namespace RoseGold::DirectX12
 
 		// Implementing RenderTarget
 	public:
-		const DescriptorHeapHandle* GetColorView() const override;
-		const DescriptorHeapHandle* GetDepthStencilView() const override;
+		DescriptorHeapHandle GetColorView() const override;
+		DescriptorHeapHandle GetDepthStencilView() const override;
 
 		ID3D12Resource* GetColorResource() const override;
 		ID3D12Resource* GetDepthResource() const override;

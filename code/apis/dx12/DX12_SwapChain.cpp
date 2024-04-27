@@ -76,18 +76,18 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	const DescriptorHeapHandle* SwapChain::GetColorView() const
+	DescriptorHeapHandle SwapChain::GetColorView() const
 	{
 		if (myBackBuffers.empty())
-			return nullptr;
+			return DescriptorHeapHandle();
 
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetColorView();
 	}
 
-	const DescriptorHeapHandle* SwapChain::GetDepthStencilView() const
+	DescriptorHeapHandle SwapChain::GetDepthStencilView() const
 	{
 		if (myBackBuffers.empty())
-			return nullptr;
+			return DescriptorHeapHandle();
 
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthStencilView();
 	}
@@ -454,7 +454,7 @@ namespace RoseGold::DirectX12
 	{
 		myResource.Reset();
 		myDepthResource = GPUResource();
-		myRSVHandle.reset();
-		myDSVHandle.reset();
+		myRSVHandle.Invalidate();
+		myDSVHandle.Invalidate();
 	}
 }

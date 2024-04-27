@@ -34,7 +34,7 @@ namespace RoseGold::DirectX12
 		Core::TextureFormat GetFormat() const;
 
 		virtual DXGI_FORMAT GetDXGIFormat() const { return myImage->GetMetadata().format; }
-		const std::shared_ptr<DescriptorHeapHandle>& GetSRVHandle() const { return mySRVHandle; }
+		const DescriptorHeapHandle& GetSRVHandle() const { return mySRVHandle; }
 
 		// Implements Texture
 	public:
@@ -70,7 +70,7 @@ namespace RoseGold::DirectX12
 		std::unique_ptr<DirectX::ScratchImage> myImage;
 		DirectX::TexMetadata myMetadata;
 
-		std::shared_ptr<DescriptorHeapHandle> mySRVHandle;
+		DescriptorHeapHandle mySRVHandle;
 	};
 
 	class Texture2D : public Core::Texture2D

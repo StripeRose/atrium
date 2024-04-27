@@ -5,24 +5,59 @@
 
 namespace RoseGold::DirectX12
 {
-	DescriptorHeapHandle::~DescriptorHeapHandle()
+	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeapHandle::GetCPUHandle() const
 	{
-		if (myHeap)
-			myHeap->FreeHeapHandle(*this);
+		if (IsValid())
+			return myData->myCPUHandle;
+		else
+			return D3D12_CPU_DESCRIPTOR_HANDLE{ 0 };
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeapHandle::GetCPUHandle(unsigned int anIndex) const
 	{
-		D3D12_CPU_DESCRIPTOR_HANDLE handle = myCPUHandle;
-		handle.ptr += (myHeap->GetDescriptorSize() * anIndex);
-		return handle;
+		if (IsValid())
+		{
+			D3D12_CPU_DESCRIPTOR_HANDLE handle = myData->myCPUHandle;
+			handle.ptr += (myData->myHeap->GetDescriptorSize() * anIndex);
+			return handle;
+		}
+		else
+		{
+			return D3D12_CPU_DESCRIPTOR_HANDLE{ 0 };
+		}
+	}
+
+	D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeapHandle::GetGPUHandle() const
+	{
+		if (IsValid())
+			return myData->myGPUHandle;
+		else
+			return D3D12_GPU_DESCRIPTOR_HANDLE{ 0 };
 	}
 
 	D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeapHandle::GetGPUHandle(unsigned int anIndex) const
 	{
-		D3D12_GPU_DESCRIPTOR_HANDLE handle = myGPUHandle;
-		handle.ptr += (myHeap->GetDescriptorSize() * anIndex);
-		return handle;
+		if (IsValid())
+		{
+			D3D12_GPU_DESCRIPTOR_HANDLE handle = myData->myGPUHandle;
+			handle.ptr += (myData->myHeap->GetDescriptorSize() * anIndex);
+			return handle;
+		}
+		else
+		{
+			return D3D12_GPU_DESCRIPTOR_HANDLE{ 0 };
+		}
+	}
+
+	DescriptorHeapHandle::HandleData::~HandleData()
+	{
+		if (myHeap)
+			myHeap->FreeHeapHandle(myHeapIndex);
+	}
+
+	void DescriptorHeapHandle::Invalidate()
+	{
+		myData.reset();
 	}
 
 	DescriptorHeap::DescriptorHeap(ComPtr<ID3D12Device> aDevice, D3D12_DESCRIPTOR_HEAP_TYPE aHeapType, std::uint32_t aNumDescriptors, bool anIsReferencedByShader)
@@ -54,9 +89,15 @@ namespace RoseGold::DirectX12
 		myDescriptorSize = aDevice->GetDescriptorHandleIncrementSize(myHeapType);
 	}
 
-	std::shared_ptr<DescriptorHeapHandle> DescriptorHeap::CreateHeapHandle()
+	DescriptorHeapHandle DescriptorHeap::CreateHeapHandle(D3D12_CPU_DESCRIPTOR_HANDLE aCPUHandle, D3D12_GPU_DESCRIPTOR_HANDLE aGPUHandle, std::uint32_t aHeapIndex)
 	{
-		return std::shared_ptr<DescriptorHeapHandle>(new DescriptorHeapHandle(this));
+		DescriptorHeapHandle handle;
+		handle.myData.reset(new DescriptorHeapHandle::HandleData());
+		handle.myData->myHeap = this;
+		handle.myData->myCPUHandle = aCPUHandle;
+		handle.myData->myGPUHandle = aGPUHandle;
+		handle.myData->myHeapIndex = aHeapIndex;
+		return handle;
 	}
 
 	StagingDescriptorHeap::StagingDescriptorHeap(ComPtr<ID3D12Device> aDevice, D3D12_DESCRIPTOR_HEAP_TYPE aHeapType, std::uint32_t aNumDescriptors)
@@ -73,7 +114,7 @@ namespace RoseGold::DirectX12
 		myFreeDescriptors.clear();
 	}
 
-	std::shared_ptr<DescriptorHeapHandle> StagingDescriptorHeap::GetNewHeapHandle()
+	DescriptorHeapHandle StagingDescriptorHeap::GetNewHeapHandle()
 	{
 		std::uint32_t newHandleId = 0;
 
@@ -92,20 +133,17 @@ namespace RoseGold::DirectX12
 			Debug::LogFatal("Ran out of dynamic descriptor heap handles.");
 		}
 
-		std::shared_ptr<DescriptorHeapHandle> newHandle = CreateHeapHandle();
-		D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = myDescriptorHeapCPUStart;
-		cpuHandle.ptr += newHandleId * myDescriptorSize;
-		newHandle->SetCPUHandle(cpuHandle);
-		newHandle->SetHeapIndex(newHandleId);
 		myActiveHandleCount++;
 
-		return newHandle;
+		D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = myDescriptorHeapCPUStart;
+		cpuHandle.ptr += newHandleId * myDescriptorSize;
+		return CreateHeapHandle(cpuHandle, { 0 }, newHandleId);
 	}
 
-	void StagingDescriptorHeap::FreeHeapHandle(const DescriptorHeapHandle& handle)
+	void StagingDescriptorHeap::FreeHeapHandle(std::uint32_t anIndex)
 	{
 		Debug::Assert(myActiveHandleCount != 0, "Still have handles left to free.");
-		myFreeDescriptors.push_back(handle.GetHeapIndex());
+		myFreeDescriptors.push_back(anIndex);
 
 		myActiveHandleCount--;
 	}
@@ -122,7 +160,7 @@ namespace RoseGold::DirectX12
 		myCurrentDescriptorIndex = 0;
 	}
 
-	std::shared_ptr<DescriptorHeapHandle> RenderPassDescriptorHeap::GetHeapHandleBlock(std::uint32_t aCount)
+	DescriptorHeapHandle RenderPassDescriptorHeap::GetHeapHandleBlock(std::uint32_t aCount)
 	{
 		std::uint32_t newHandleID = 0;
 		std::uint32_t blockEnd = myCurrentDescriptorIndex + aCount;
@@ -137,17 +175,11 @@ namespace RoseGold::DirectX12
 			Debug::LogFatal("Ran out of render pass descriptor heap handles, need to increase heap size.");
 		}
 
-		std::shared_ptr<DescriptorHeapHandle> newHandle = CreateHeapHandle();
 		D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = myDescriptorHeapCPUStart;
 		cpuHandle.ptr += newHandleID * myDescriptorSize;
-		newHandle->SetCPUHandle(cpuHandle);
-
 		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = myDescriptorHeapGPUStart;
 		gpuHandle.ptr += newHandleID * myDescriptorSize;
-		newHandle->SetGPUHandle(gpuHandle);
 
-		newHandle->SetHeapIndex(newHandleID);
-
-		return newHandle;
+		return CreateHeapHandle(cpuHandle, gpuHandle, newHandleID);
 	}
 }

@@ -276,7 +276,7 @@ namespace RoseGold::DirectX12
 		AddBarrier(target.GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
 		FlushBarriers();
 
-		D3D12_CPU_DESCRIPTOR_HANDLE handle = target.GetColorView()->GetCPUHandle();
+		D3D12_CPU_DESCRIPTOR_HANDLE handle = target.GetColorView().GetCPUHandle();
 
 		if (!Debug::Verify(handle.ptr != NULL, "Invalid target."))
 			return;
@@ -304,7 +304,7 @@ namespace RoseGold::DirectX12
 		AddBarrier(target.GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
 		FlushBarriers();
 
-		D3D12_CPU_DESCRIPTOR_HANDLE handle = target.GetDepthStencilView()->GetCPUHandle();
+		D3D12_CPU_DESCRIPTOR_HANDLE handle = target.GetDepthStencilView().GetCPUHandle();
 
 		if (!Debug::Verify(handle.ptr != NULL, "Invalid target."))
 			return;
@@ -463,16 +463,16 @@ namespace RoseGold::DirectX12
 		AddBarrier(cpuBuffer, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 		
 		RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
-		std::shared_ptr<DescriptorHeapHandle> gpuBuffer = renderPassHeap.GetHeapHandleBlock(1);
+		DescriptorHeapHandle gpuBuffer = renderPassHeap.GetHeapHandleBlock(1);
 
 		myDevice.GetDevice()->CopyDescriptorsSimple(
 			1,
-			gpuBuffer->GetCPUHandle(),
+			gpuBuffer.GetCPUHandle(),
 			cpuBuffer.GetViewHandle().GetCPUHandle(),
 			renderPassHeap.GetHeapType()
 		);
 
-		myCommandList->SetGraphicsRootDescriptorTable(parameterInfo.value().RootParameterIndex, gpuBuffer->GetGPUHandle());
+		myCommandList->SetGraphicsRootDescriptorTable(parameterInfo.value().RootParameterIndex, gpuBuffer.GetGPUHandle());
 	}
 
 	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture)
@@ -496,13 +496,13 @@ namespace RoseGold::DirectX12
 		}
 
 		RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
-		std::shared_ptr<DescriptorHeapHandle> gpuBuffer = renderPassHeap.GetHeapHandleBlock(parameterInfo.value().Count);
+		DescriptorHeapHandle gpuBuffer = renderPassHeap.GetHeapHandleBlock(parameterInfo.value().Count);
 
 		
 		myDevice.GetDevice()->CopyDescriptorsSimple(
 			1,
-			gpuBuffer->GetCPUHandle(),
-			textureBackend->GetSRVHandle()->GetCPUHandle(),
+			gpuBuffer.GetCPUHandle(),
+			textureBackend->GetSRVHandle().GetCPUHandle(),
 			renderPassHeap.GetHeapType()
 		);
 
@@ -521,11 +521,11 @@ namespace RoseGold::DirectX12
 			myDevice.GetDevice()->CreateShaderResourceView(
 				nullptr,
 				&nullDesc,
-				gpuBuffer->GetCPUHandle(i)
+				gpuBuffer.GetCPUHandle(i)
 				);
 		}
 
-		myCommandList->SetGraphicsRootDescriptorTable(parameterInfo.value().RootParameterIndex, gpuBuffer->GetGPUHandle());
+		myCommandList->SetGraphicsRootDescriptorTable(parameterInfo.value().RootParameterIndex, gpuBuffer.GetGPUHandle());
 	}
 
 	void FrameGraphicsContext::SetStencilRef(std::uint32_t aStencilRef)
@@ -544,12 +544,12 @@ namespace RoseGold::DirectX12
 		{
 			RenderTarget* dxRenderTarget = static_cast<RenderTarget*>(someTargets.at(i).get());
 			AddBarrier(dxRenderTarget->GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
-			colorHandles.at(i) = dxRenderTarget->GetColorView()->GetCPUHandle();
+			colorHandles.at(i) = dxRenderTarget->GetColorView().GetCPUHandle();
 		}
 
 		RenderTarget* dxDepthTarget = static_cast<RenderTarget*>(aDepthTarget.get());
 		AddBarrier(dxDepthTarget->GetDepthGPUResource(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
-		const D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = aDepthTarget ? dxDepthTarget->GetDepthStencilView()->GetCPUHandle() : D3D12_CPU_DESCRIPTOR_HANDLE();
+		const D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = aDepthTarget ? dxDepthTarget->GetDepthStencilView().GetCPUHandle() : D3D12_CPU_DESCRIPTOR_HANDLE();
 
 		FlushBarriers();
 

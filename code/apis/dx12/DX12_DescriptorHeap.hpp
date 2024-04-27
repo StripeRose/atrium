@@ -9,43 +9,34 @@
 
 namespace RoseGold::DirectX12
 {
-    // Todo: Make compatible with ComPtrs.
+    class DescriptorHeap;
     class DescriptorHeapHandle
     {
-        friend class DescriptorHeap;
-
-        DescriptorHeapHandle(DescriptorHeap* aHeapOwner)
-            : myHeap(aHeapOwner)
-        {
-            myCPUHandle.ptr = 0;
-            myGPUHandle.ptr = 0;
-            myHeapIndex = 0;
-        }
-
+        friend DescriptorHeap;
     public:
-        DescriptorHeapHandle() : DescriptorHeapHandle(nullptr) { }
-        ~DescriptorHeapHandle();
-
-        D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() const { return myCPUHandle; }
+        D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() const;
         D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle(unsigned int anIndex) const;
-        D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle() const { return myGPUHandle; }
+        D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle() const;
         D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(unsigned int anIndex) const;
-        std::uint32_t GetHeapIndex() const { return myHeapIndex; }
+        std::uint32_t GetHeapIndex() const { return IsValid() ? myData->myHeapIndex : 0; }
 
-        void SetCPUHandle(D3D12_CPU_DESCRIPTOR_HANDLE aCPUHandle) { myCPUHandle = aCPUHandle; }
-        void SetGPUHandle(D3D12_GPU_DESCRIPTOR_HANDLE aGPUHandle) { myGPUHandle = aGPUHandle; }
-        void SetHeapIndex(std::uint32_t aHeapIndex) { myHeapIndex = aHeapIndex; }
+        bool IsValid() const { return myData && myData->myCPUHandle.ptr != 0; }
+        bool IsReferencedByShader() const { return IsValid() && myData->myGPUHandle.ptr != 0; }
 
-        bool IsValid() const { return myCPUHandle.ptr != 0; }
-        bool IsReferencedByShader() const { return myGPUHandle.ptr != 0; }
+        void Invalidate();
 
-        DescriptorHeapHandle& operator=(const DescriptorHeapHandle&) = delete;
 
     private:
-        DescriptorHeap* myHeap;
-        D3D12_CPU_DESCRIPTOR_HANDLE myCPUHandle;
-        D3D12_GPU_DESCRIPTOR_HANDLE myGPUHandle;
-        std::uint32_t myHeapIndex;
+        struct HandleData
+        {
+            ~HandleData();
+            DescriptorHeap* myHeap = nullptr;
+            D3D12_CPU_DESCRIPTOR_HANDLE myCPUHandle = { 0 };
+            D3D12_GPU_DESCRIPTOR_HANDLE myGPUHandle = { 0 };
+            std::uint32_t myHeapIndex = 0;
+        };
+
+        std::shared_ptr<HandleData> myData;
     };
 
     class DescriptorHeap
@@ -63,8 +54,8 @@ namespace RoseGold::DirectX12
         std::uint32_t GetDescriptorSize() const { return myDescriptorSize; }
 
     protected:
-        std::shared_ptr<DescriptorHeapHandle> CreateHeapHandle();
-        virtual void FreeHeapHandle(const DescriptorHeapHandle&) { }
+        DescriptorHeapHandle CreateHeapHandle(D3D12_CPU_DESCRIPTOR_HANDLE aCPUHandle, D3D12_GPU_DESCRIPTOR_HANDLE aGPUHandle, std::uint32_t aHeapIndex);
+        virtual void FreeHeapHandle(std::uint32_t) { }
 
     protected:
         ComPtr<ID3D12DescriptorHeap> myDescriptorHeap;
@@ -82,8 +73,8 @@ namespace RoseGold::DirectX12
         StagingDescriptorHeap(ComPtr<ID3D12Device> aDevice, D3D12_DESCRIPTOR_HEAP_TYPE aHeapType, std::uint32_t aNumDescriptors);
         ~StagingDescriptorHeap() override;
 
-        std::shared_ptr<DescriptorHeapHandle> GetNewHeapHandle();
-        void FreeHeapHandle(const DescriptorHeapHandle& handle) override;
+        DescriptorHeapHandle GetNewHeapHandle();
+        void FreeHeapHandle(std::uint32_t anIndex) override;
 
     private:
         std::vector<std::uint32_t> myFreeDescriptors;
@@ -97,7 +88,7 @@ namespace RoseGold::DirectX12
         RenderPassDescriptorHeap(ComPtr<ID3D12Device> aDevice, D3D12_DESCRIPTOR_HEAP_TYPE aHeapType, std::uint32_t aNumDescriptors);
 
         void Reset();
-        std::shared_ptr<DescriptorHeapHandle> GetHeapHandleBlock(std::uint32_t aCount);
+        DescriptorHeapHandle GetHeapHandleBlock(std::uint32_t aCount);
 
     private:
         std::uint32_t myCurrentDescriptorIndex;

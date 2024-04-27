@@ -77,7 +77,7 @@ namespace RoseGold::DirectX12
 			rtvDesc.ViewDimension = ToRTVTextureDimension(myDescriptor.Dimension);
 
 			myRSVHandle = aDevice.GetDescriptorHeapManager().GetRTVHeap().GetNewHeapHandle();
-			aDevice.GetDevice()->CreateRenderTargetView(myResource.Get(), &rtvDesc, myRSVHandle->GetCPUHandle());
+			aDevice.GetDevice()->CreateRenderTargetView(myResource.Get(), &rtvDesc, myRSVHandle.GetCPUHandle());
 		}
 
 		if (myDescriptor.DepthStencilFormat != Core::GraphicsFormat::None)
@@ -130,7 +130,7 @@ namespace RoseGold::DirectX12
 			dsvDesc.ViewDimension = ToDSVTextureDimension(myDescriptor.Dimension);
 
 			myDSVHandle = aDevice.GetDescriptorHeapManager().GetDSVHeap().GetNewHeapHandle();
-			aDevice.GetDevice()->CreateDepthStencilView(myDepthResource.GetResource().Get(), &dsvDesc, myDSVHandle->GetCPUHandle());
+			aDevice.GetDevice()->CreateDepthStencilView(myDepthResource.GetResource().Get(), &dsvDesc, myDSVHandle.GetCPUHandle());
 		}
 	}
 

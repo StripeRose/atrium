@@ -103,7 +103,7 @@ namespace RoseGold::DirectX12
 		constantBufferViewDescriptor.SizeInBytes = myBufferSize;
 
 		myConstantBufferViewHandle = aDevice.GetDescriptorHeapManager().GetConstantBufferViewHeap().GetNewHeapHandle();
-		aDevice.GetDevice()->CreateConstantBufferView(&constantBufferViewDescriptor, myConstantBufferViewHandle->GetCPUHandle());
+		aDevice.GetDevice()->CreateConstantBufferView(&constantBufferViewDescriptor, myConstantBufferViewHandle.GetCPUHandle());
 
 		myMappedBuffer = nullptr;
 		myIsReady = SUCCEEDED(myResource->Map(0, nullptr, &myMappedBuffer));

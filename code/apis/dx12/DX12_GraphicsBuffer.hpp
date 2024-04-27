@@ -75,7 +75,7 @@ namespace RoseGold::DirectX12
 		~ConstantBuffer() override;
 
 		void SetData(const void* aDataPtr, std::uint32_t aDataSize) override;
-		const DescriptorHeapHandle& GetViewHandle() const { return *myConstantBufferViewHandle; }
+		const DescriptorHeapHandle& GetViewHandle() const { return myConstantBufferViewHandle; }
 
 		std::uint32_t GetCount() const { return 1; }
 		std::uint32_t GetStride() const { return myBufferSize; }
@@ -84,7 +84,7 @@ namespace RoseGold::DirectX12
 	private:
 		void* myMappedBuffer;
 
-		std::shared_ptr<DescriptorHeapHandle> myConstantBufferViewHandle;
+		DescriptorHeapHandle myConstantBufferViewHandle;
 	};
 
 	class UploadBuffer : public GraphicsBuffer

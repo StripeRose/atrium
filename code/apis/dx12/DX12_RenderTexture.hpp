@@ -13,8 +13,8 @@ namespace RoseGold::DirectX12
 	class RenderTarget : public Core::RenderTexture
 	{
 	public:
-		virtual const DescriptorHeapHandle* GetColorView() const = 0;
-		virtual const DescriptorHeapHandle* GetDepthStencilView() const = 0;
+		virtual DescriptorHeapHandle GetColorView() const = 0;
+		virtual DescriptorHeapHandle GetDepthStencilView() const = 0;
 
 		virtual ID3D12Resource* GetColorResource() const = 0;
 		virtual ID3D12Resource* GetDepthResource() const = 0;
@@ -43,8 +43,8 @@ namespace RoseGold::DirectX12
 
 		// Implementing RenderTarget
 	public:
-		const DescriptorHeapHandle* GetColorView() const override { return myRSVHandle.get(); }
-		const DescriptorHeapHandle* GetDepthStencilView() const override { return myDSVHandle.get(); }
+		DescriptorHeapHandle GetColorView() const override { return myRSVHandle; }
+		DescriptorHeapHandle GetDepthStencilView() const override { return myDSVHandle; }
 
 		ID3D12Resource* GetColorResource() const override { return myResource.Get(); }
 		ID3D12Resource* GetDepthResource() const override { return myDepthResource.GetResource().Get(); }
@@ -90,7 +90,7 @@ namespace RoseGold::DirectX12
 
 		GPUResource myDepthResource;
 
-		std::shared_ptr<DescriptorHeapHandle> myRSVHandle;
-		std::shared_ptr<DescriptorHeapHandle> myDSVHandle;
+		DescriptorHeapHandle myRSVHandle;
+		DescriptorHeapHandle myDSVHandle;
 	};
 }

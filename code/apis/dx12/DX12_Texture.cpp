@@ -245,7 +245,7 @@ namespace RoseGold::DirectX12
 		myDevice.GetDevice()->CreateShaderResourceView(
 			myResource.Get(),
 			srvDescPtr,
-			mySRVHandle->GetCPUHandle()
+			mySRVHandle.GetCPUHandle()
 		);
 	}
 
