@@ -18,7 +18,7 @@ public:
 		, myVertexCount(0)
 	{ }
 
-	Mesh(RoseGold::Core::Manager* aManager)
+	Mesh(RoseGold::Core::GraphicsAPI* aManager)
 		: myManager(aManager)
 		, myVertexCount(0)
 		, myName(L"Mesh")
@@ -58,7 +58,7 @@ public:
 	}
 
 protected:
-	RoseGold::Core::Manager* myManager;
+	RoseGold::Core::GraphicsAPI* myManager;
 	std::shared_ptr<RoseGold::Core::GraphicsBuffer> myVertexBuffer;
 	std::uint32_t myVertexCount;
 	std::wstring myName;

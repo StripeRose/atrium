@@ -11,7 +11,7 @@ namespace RoseGold::Client
 	struct BootstrapResult
 	{
 		// Todo: Add eventual graphics, audio and input handlers.
-		std::unique_ptr<Core::Manager> GraphicsManager;
+		std::unique_ptr<Core::GraphicsAPI> GraphicsAPI;
 		std::unique_ptr<Core::WindowManager> WindowManager;
 	};
 

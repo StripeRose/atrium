@@ -6,5 +6,5 @@
 
 namespace RoseGold::DirectX12
 {
-	std::unique_ptr<Core::Manager> CreateDX12Manager();
+	std::unique_ptr<Core::GraphicsAPI> CreateDX12Manager();
 }

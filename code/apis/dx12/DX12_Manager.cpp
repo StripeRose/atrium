@@ -21,12 +21,12 @@
 
 namespace RoseGold::DirectX12
 {
-	std::unique_ptr<Core::Manager> CreateDX12Manager()
+	std::unique_ptr<Core::GraphicsAPI> CreateDX12Manager()
 	{
-		return std::make_unique<Manager>();
+		return std::make_unique<DirectX12API>();
 	}
 
-	Manager::Manager()
+	DirectX12API::DirectX12API()
 		: myFrameIndex(static_cast<std::uint64_t>(-1))
 	{
 		ZoneScoped;
@@ -47,7 +47,7 @@ namespace RoseGold::DirectX12
 		SetupRootSignature();
 	}
 
-	Manager::~Manager()
+	DirectX12API::~DirectX12API()
 	{
 		ZoneScoped;
 
@@ -66,7 +66,7 @@ namespace RoseGold::DirectX12
 		ReportUnreleasedObjects();
 	}
 
-	std::shared_ptr<Core::RenderTexture> Manager::CreateRenderTextureForWindow(Core::Window& aWindow)
+	std::shared_ptr<Core::RenderTexture> DirectX12API::CreateRenderTextureForWindow(Core::Window& aWindow)
 	{
 		ZoneScoped;
 
@@ -83,7 +83,7 @@ namespace RoseGold::DirectX12
 		return swapChain;
 	}
 
-	std::shared_ptr<Core::GraphicsBuffer> Manager::CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+	std::shared_ptr<Core::GraphicsBuffer> DirectX12API::CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 	{
 		ZoneScoped;
 
@@ -100,12 +100,12 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::PipelineState> Manager::CreateOrGetPipelineState(const Core::PipelineStateDescription& aPipelineState)
+	std::shared_ptr<Core::PipelineState> DirectX12API::CreateOrGetPipelineState(const Core::PipelineStateDescription& aPipelineState)
 	{
 		return DirectX12::PipelineState::CreateFrom(*myDevice->GetDevice().Get(), myDefaultRootSignature, aPipelineState);
 	}
 
-	std::shared_ptr<Core::Shader> Manager::CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint)
+	std::shared_ptr<Core::Shader> DirectX12API::CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint)
 	{
 		ZoneScoped;
 
@@ -122,34 +122,34 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::Texture2D> Manager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::Texture2D> DirectX12API::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat)
 	{
 		return CreateDDS2D(*myDevice, *myUploadContext, aWidth, aHeight, aTextureFormat);
 	}
 
-	std::shared_ptr<Core::Texture3D> Manager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::Texture3D> DirectX12API::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat)
 	{
 		return CreateDDS3D(*myDevice, *myUploadContext, aWidth, aHeight, aDepth, aTextureFormat);
 	}
 
-	std::shared_ptr<Core::TextureCube> Manager::CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::TextureCube> DirectX12API::CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat)
 	{
 		return CreateDDSCube(*myDevice, *myUploadContext, aWidth, aTextureFormat);
 	}
 
-	Core::FrameContext& Manager::GetCurrentFrameContext()
+	Core::FrameContext& DirectX12API::GetCurrentFrameContext()
 	{
 		return *myFrameGraphicsContext;
 	}
 
-	std::shared_ptr<SwapChain> Manager::GetSwapChain(Core::Window& aWindow)
+	std::shared_ptr<SwapChain> DirectX12API::GetSwapChain(Core::Window& aWindow)
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
 		auto it = myDrawSurfaceSwapChain.find(&aWindow);
 		return (it != myDrawSurfaceSwapChain.end()) ? it->second : nullptr;
 	}
 
-	std::vector<std::shared_ptr<SwapChain>> Manager::GetSwapChains()
+	std::vector<std::shared_ptr<SwapChain>> DirectX12API::GetSwapChains()
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
 		std::vector<std::shared_ptr<SwapChain>> swapChains;
@@ -158,7 +158,7 @@ namespace RoseGold::DirectX12
 		return swapChains;
 	}
 
-	std::shared_ptr<Core::Texture> Manager::LoadTexture(const std::filesystem::path& aPath)
+	std::shared_ptr<Core::Texture> DirectX12API::LoadTexture(const std::filesystem::path& aPath)
 	{
 		const std::filesystem::path extension = aPath.extension();
 		if (extension == ".dds")
@@ -167,7 +167,7 @@ namespace RoseGold::DirectX12
 			return nullptr;
 	}
 
-	void Manager::MarkFrameStart()
+	void DirectX12API::MarkFrameStart()
 	{
 		ZoneScoped;
 
@@ -193,7 +193,7 @@ namespace RoseGold::DirectX12
 			swapChain.second->UpdateResolution();
 	}
 
-	void Manager::MarkFrameEnd()
+	void DirectX12API::MarkFrameEnd()
 	{
 		ZoneScoped;
 
@@ -245,7 +245,7 @@ namespace RoseGold::DirectX12
 		TracyD3D12NewFrame(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
 	}
 
-	void Manager::SetupRootSignature()
+	void DirectX12API::SetupRootSignature()
 	{
 		ZoneScoped;
 
@@ -281,7 +281,7 @@ namespace RoseGold::DirectX12
 		myDefaultRootSignature = signature.Finalize(myDevice->GetDevice().Get());
 	}
 
-	void Manager::ReportUnreleasedObjects()
+	void DirectX12API::ReportUnreleasedObjects()
 	{
 #if _DEBUG
 		ComPtr<IDXGIDebug1> debugInterface;

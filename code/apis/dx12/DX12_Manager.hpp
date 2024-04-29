@@ -18,11 +18,11 @@ namespace RoseGold::DirectX12
 	class Device;
 	class RootSignature;
 
-	class Manager final : public Core::Manager
+	class DirectX12API final : public Core::GraphicsAPI
 	{
 	public:
-		Manager();
-		~Manager();
+		DirectX12API();
+		~DirectX12API();
 
 		std::shared_ptr<Core::RenderTexture> CreateRenderTextureForWindow(Core::Window& aWindow) override;
 

@@ -12,7 +12,7 @@ namespace RoseGold::Client
 {
 	void Bootstrap_Windows(BootstrapResult& aResult)
 	{
-		aResult.GraphicsManager.reset(DirectX12::CreateDX12Manager().release());
+		aResult.GraphicsAPI.reset(DirectX12::CreateDX12Manager().release());
 		aResult.WindowManager.reset(new Win32::WindowManager());
 	}
 

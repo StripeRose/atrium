@@ -8,17 +8,16 @@
 #include "Graphics_Texture3D.hpp"
 #include "Graphics_TextureCube.hpp"
 
-
 #include <filesystem>
 
 namespace RoseGold::Core { class Window; }
 
 namespace RoseGold::Core
 {
-	class Manager
+	class GraphicsAPI
 	{
 	public:
-		virtual ~Manager() = default;
+		virtual ~GraphicsAPI() = default;
 		
 		virtual std::shared_ptr<RenderTexture> CreateRenderTextureForWindow(Window& aWindow) = 0;
 
