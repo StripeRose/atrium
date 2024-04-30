@@ -28,6 +28,7 @@ namespace RoseGold::DirectX12
 
 	DirectX12API::DirectX12API()
 		: myFrameIndex(static_cast<std::uint64_t>(-1))
+		, myFrameInFlight(0)
 	{
 		ZoneScoped;
 
@@ -44,7 +45,7 @@ namespace RoseGold::DirectX12
 		myFrameGraphicsContext.reset(new FrameGraphicsContext(*myDevice, myCommandQueueManager->GetGraphicsQueue()));
 		myUploadContext.reset(new UploadContext(*myDevice, myCommandQueueManager->GetCopyQueue()));
 
-		SetupRootSignature();
+		myResourceManager.reset(new DirectX12::ResourceManager(*this));
 	}
 
 	DirectX12API::~DirectX12API()
@@ -53,118 +54,21 @@ namespace RoseGold::DirectX12
 
 		Debug::Log("DX12 stop");
 
-		myDefaultRootSignature.reset();
+		myResourceManager.reset();
 
 		myUploadContext.reset();
 		myFrameGraphicsContext.reset();
 
 		myCommandQueueManager.reset();
 
-		myDrawSurfaceSwapChain.clear();
 		myDevice.reset();
 
 		ReportUnreleasedObjects();
 	}
 
-	std::shared_ptr<Core::RenderTexture> DirectX12API::CreateRenderTextureForWindow(Core::Window& aWindow)
-	{
-		ZoneScoped;
-
-		const std::scoped_lock lock(mySwapChainMutex);
-		std::shared_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
-		swapChain.reset(new SwapChain(*myDevice, myCommandQueueManager->GetGraphicsQueue(), aWindow));
-		swapChain->SetName(aWindow.GetTitle().c_str());
-
-		aWindow.Closed.Connect(this, [&](Core::Window& aWindow) {
-			myDrawSurfaceSwapChain.at(&aWindow)->Invalidate();
-			myDrawSurfaceSwapChain.erase(&aWindow);
-			});
-
-		return swapChain;
-	}
-
-	std::shared_ptr<Core::GraphicsBuffer> DirectX12API::CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
-	{
-		ZoneScoped;
-
-		switch (aTarget)
-		{
-		case Core::GraphicsBuffer::Target::Vertex:
-			return std::shared_ptr<Core::GraphicsBuffer>(new VertexBuffer(*myDevice, aCount, aStride));
-		case Core::GraphicsBuffer::Target::Index:
-			return std::shared_ptr<Core::GraphicsBuffer>(new IndexBuffer(*myDevice, aCount));
-		case Core::GraphicsBuffer::Target::Constant:
-			return std::shared_ptr<Core::GraphicsBuffer>(new ConstantBuffer(*myDevice, aCount * aStride));
-		default:
-			return nullptr;
-		}
-	}
-
-	std::shared_ptr<Core::PipelineState> DirectX12API::CreateOrGetPipelineState(const Core::PipelineStateDescription& aPipelineState)
-	{
-		return DirectX12::PipelineState::CreateFrom(*myDevice->GetDevice().Get(), myDefaultRootSignature, aPipelineState);
-	}
-
-	std::shared_ptr<Core::Shader> DirectX12API::CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint)
-	{
-		ZoneScoped;
-
-		switch (aType)
-		{
-		case Shader::Type::Vertex:
-			return Shader::CreateFromSource(aSource, anEntryPoint, "vs_5_1");
-
-		case Shader::Type::Pixel:
-			return Shader::CreateFromSource(aSource, anEntryPoint, "ps_5_1");
-
-		default:
-			return nullptr;
-		}
-	}
-
-	std::shared_ptr<Core::Texture2D> DirectX12API::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat)
-	{
-		return CreateDDS2D(*myDevice, *myUploadContext, aWidth, aHeight, aTextureFormat);
-	}
-
-	std::shared_ptr<Core::Texture3D> DirectX12API::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat)
-	{
-		return CreateDDS3D(*myDevice, *myUploadContext, aWidth, aHeight, aDepth, aTextureFormat);
-	}
-
-	std::shared_ptr<Core::TextureCube> DirectX12API::CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat)
-	{
-		return CreateDDSCube(*myDevice, *myUploadContext, aWidth, aTextureFormat);
-	}
-
 	Core::FrameContext& DirectX12API::GetCurrentFrameContext()
 	{
 		return *myFrameGraphicsContext;
-	}
-
-	std::shared_ptr<SwapChain> DirectX12API::GetSwapChain(Core::Window& aWindow)
-	{
-		const std::scoped_lock lock(mySwapChainMutex);
-		auto it = myDrawSurfaceSwapChain.find(&aWindow);
-		return (it != myDrawSurfaceSwapChain.end()) ? it->second : nullptr;
-	}
-
-	std::vector<std::shared_ptr<SwapChain>> DirectX12API::GetSwapChains()
-	{
-		const std::scoped_lock lock(mySwapChainMutex);
-		std::vector<std::shared_ptr<SwapChain>> swapChains;
-		for (auto& swapChain : myDrawSurfaceSwapChain)
-			swapChains.push_back(swapChain.second);
-		return swapChains;
-	}
-
-	std::shared_ptr<Core::Texture> DirectX12API::LoadTexture(const std::filesystem::path& aPath)
-	{
-		const std::filesystem::path extension = aPath.extension();
-		if (extension == ".dds")
-			return LoadDDSFromFile(*myDevice, *myUploadContext, aPath);
-		else
-			return nullptr;
 	}
 
 	void DirectX12API::MarkFrameStart()
@@ -188,9 +92,7 @@ namespace RoseGold::DirectX12
 		myUploadContext->Reset(myFrameIndex);
 		myFrameGraphicsContext->Reset(myFrameIndex);
 
-		const std::scoped_lock lock(mySwapChainMutex);
-		for (auto& swapChain : myDrawSurfaceSwapChain)
-			swapChain.second->UpdateResolution();
+		myResourceManager->MarkFrameStart();
 	}
 
 	void DirectX12API::MarkFrameEnd()
@@ -209,13 +111,13 @@ namespace RoseGold::DirectX12
 		std::vector<std::shared_ptr<SwapChain>> frameSwapChains;
 		{
 			ZoneScopedN("Set up used swapchains for presenting");
-			for (const auto& swapChainIterator : myDrawSurfaceSwapChain)
+			for (const auto& swapChain : myResourceManager->GetSwapChains())
 			{
-				if (swapChainIterator.second->GetGPUResource().GetUsageState() == D3D12_RESOURCE_STATE_PRESENT)
+				if (swapChain->GetGPUResource().GetUsageState() == D3D12_RESOURCE_STATE_PRESENT)
 					continue; // Swapchain hasn't been drawn to, skip it.
 
-				frameSwapChains.push_back(swapChainIterator.second);
-				myFrameGraphicsContext->AddBarrier(swapChainIterator.second->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
+				frameSwapChains.push_back(swapChain);
+				myFrameGraphicsContext->AddBarrier(swapChain->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
 			}
 			myFrameGraphicsContext->FlushBarriers();
 		}
@@ -243,42 +145,6 @@ namespace RoseGold::DirectX12
 		TracyD3D12NewFrame(myCommandQueueManager->GetComputeQueue().GetProfilingContext());
 		TracyD3D12NewFrame(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
 		TracyD3D12NewFrame(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
-	}
-
-	void DirectX12API::SetupRootSignature()
-	{
-		ZoneScoped;
-
-		RootSignatureCreator signature;
-
-		signature.SetVisibility(D3D12_SHADER_VISIBILITY_VERTEX);
-		{
-			signature.AddDescriptorTable()
-				.AddCBVRange(1, 0, Core::ResourceUpdateFrequency::PerObject) // Model, View, Projection data.
-				;
-		}
-
-		signature.SetVisibility(D3D12_SHADER_VISIBILITY_PIXEL);
-		{
-			signature.AddDescriptorTable()
-				.AddSRVRange(4, 0, Core::ResourceUpdateFrequency::PerMaterial)
-				;
-
-			signature.AddSampler(0) // Clamping Point
-				.Filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
-				;
-			signature.AddSampler(1) // Clamping Linear
-				.Filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
-				;
-			signature.AddSampler(2) // Clamping Anisotropic
-				.Filter(D3D12_FILTER_ANISOTROPIC)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
-				;
-		}
-
-		myDefaultRootSignature = signature.Finalize(myDevice->GetDevice().Get());
 	}
 
 	void DirectX12API::ReportUnreleasedObjects()

@@ -38,7 +38,7 @@ public:
 
 		myVertexCount = static_cast<std::uint32_t>(someVertices.size());
 
-		myVertexBuffer = myManager->CreateGraphicsBuffer(
+		myVertexBuffer = myManager->GetResourceManager().CreateGraphicsBuffer(
 			RoseGold::Core::GraphicsBuffer::Target::Vertex,
 			myVertexCount,
 			sizeof(VertexType)

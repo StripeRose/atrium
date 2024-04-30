@@ -3,6 +3,7 @@
 #include "DX12_CommandQueue.hpp"
 #include "DX12_ComPtr.hpp"
 #include "DX12_FrameContext.hpp"
+#include "DX12_ResourceManager.hpp"
 #include "DX12_SwapChain.hpp"
 
 #include "Graphics_Manager.hpp"
@@ -24,27 +25,15 @@ namespace RoseGold::DirectX12
 		DirectX12API();
 		~DirectX12API();
 
-		std::shared_ptr<Core::RenderTexture> CreateRenderTextureForWindow(Core::Window& aWindow) override;
-
-		std::shared_ptr<Core::GraphicsBuffer> CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) override;
-
-		std::shared_ptr<Core::PipelineState> CreateOrGetPipelineState(const Core::PipelineStateDescription& aPipelineState) override;
-
-		std::shared_ptr<Core::Shader> CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint) override;
-
-		std::shared_ptr<Core::Texture2D> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat) override;
-		std::shared_ptr<Core::Texture3D> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat) override;
-		std::shared_ptr<Core::TextureCube> CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat) override;
-
 		CommandQueueManager& GetCommandQueueManager() { return *myCommandQueueManager.get(); }
 
 		Core::FrameContext& GetCurrentFrameContext() override;
 
-		std::shared_ptr<SwapChain> GetSwapChain(Core::Window& aWindow);
+		Device& GetDevice() { return *myDevice; }
 
-		std::vector<std::shared_ptr<SwapChain>> GetSwapChains();
+		Core::GraphicsAPI::ResourceManager& GetResourceManager() override { return *myResourceManager; }
 
-		virtual std::shared_ptr<Core::Texture> LoadTexture(const std::filesystem::path& aPath) override;
+		UploadContext& GetUploadContext() { return *myUploadContext; }
 
 		bool SupportsMultipleWindows() const override { return true; }
 
@@ -52,15 +41,10 @@ namespace RoseGold::DirectX12
 		void MarkFrameEnd() override;
 
 	private:
-		void SetupRootSignature();
-
 		void ReportUnreleasedObjects();
 
 	private:
 		std::unique_ptr<Device> myDevice;
-
-		std::mutex mySwapChainMutex;
-		std::map<Core::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
 
 		std::unique_ptr<CommandQueueManager> myCommandQueueManager;
 
@@ -74,6 +58,6 @@ namespace RoseGold::DirectX12
 		std::uint64_t myFrameIndex;
 		std::uint_least8_t myFrameInFlight;
 
-		std::shared_ptr<RootSignature> myDefaultRootSignature;
+		std::unique_ptr<DirectX12::ResourceManager> myResourceManager;
 	};
 }

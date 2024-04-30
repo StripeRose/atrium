@@ -28,8 +28,8 @@ void ExampleGame::OnStart(RoseGold::Client::BootstrapResult& aCoreSetup)
 	myCoreSetup = &aCoreSetup;
 
 	// Load the textures.
-	myWhite = aCoreSetup.GraphicsAPI->LoadTexture(L"debug/images/10.dds");
-	myCheckerboard = aCoreSetup.GraphicsAPI->LoadTexture(L"debug/images/checkered4.dds");
+	myWhite = aCoreSetup.GraphicsAPI->GetResourceManager().LoadTexture(L"debug/images/10.dds");
+	myCheckerboard = aCoreSetup.GraphicsAPI->GetResourceManager().LoadTexture(L"debug/images/checkered4.dds");
 
 	// Set up the windows and create render textures for them.
 	OnStart_SetupWindows();
@@ -203,7 +203,7 @@ void ExampleGame::OnStart_SetupWindows()
 	windowParams.Title = "Window 1";
 	windowParams.Size = { 640, 480 };
 	auto window1 = myCoreSetup->WindowManager->NewWindow(windowParams);
-	myWindow1 = myCoreSetup->GraphicsAPI->CreateRenderTextureForWindow(*window1);
+	myWindow1 = myCoreSetup->GraphicsAPI->GetResourceManager().CreateRenderTextureForWindow(*window1);
 	window1->Closed.Connect(nullptr, [&](RoseGold::Core::Window&) {
 		myWindow1.reset();
 		});
@@ -211,7 +211,7 @@ void ExampleGame::OnStart_SetupWindows()
 	windowParams.Title = "Window 2";
 	windowParams.Size = { 640, 480 };
 	auto window2 = myCoreSetup->WindowManager->NewWindow(windowParams);
-	myWindow2 = myCoreSetup->GraphicsAPI->CreateRenderTextureForWindow(*window2);
+	myWindow2 = myCoreSetup->GraphicsAPI->GetResourceManager().CreateRenderTextureForWindow(*window2);
 	window2->Closed.Connect(nullptr, [&](RoseGold::Core::Window&) {
 		myWindow2.reset();
 		});
@@ -303,21 +303,22 @@ void ExampleGame::OnStart_SetupPipelineStates()
 		);
 	}
 
-	std::shared_ptr<RoseGold::Core::Shader> coloredVertexShader = myCoreSetup->GraphicsAPI->CreateShader(
+	std::shared_ptr<RoseGold::Core::Shader> coloredVertexShader = myCoreSetup->GraphicsAPI->GetResourceManager().CreateShader(
 		"example/CoreOnly_MeshVertex.hlsl",
 		RoseGold::Core::Shader::Type::Vertex,
 		"ColoredMesh");
 
 	// Same file as ColoredMesh, but a different entrypoint.
-	std::shared_ptr<RoseGold::Core::Shader> texturedVertexShader = myCoreSetup->GraphicsAPI->CreateShader(
+	std::shared_ptr<RoseGold::Core::Shader> texturedVertexShader = myCoreSetup->GraphicsAPI->GetResourceManager().CreateShader(
 		"example/CoreOnly_MeshVertex.hlsl",
 		RoseGold::Core::Shader::Type::Vertex,
 		"TexturedMesh");
 
 	// Only one pixel-shader as the vertex-shaders have the same output.
-	std::shared_ptr<RoseGold::Core::Shader> pixelShader = myCoreSetup->GraphicsAPI->CreateShader(
+	std::shared_ptr<RoseGold::Core::Shader> pixelShader = myCoreSetup->GraphicsAPI->GetResourceManager().CreateShader(
 		"example/CoreOnly_MeshPixel.hlsl",
-		RoseGold::Core::Shader::Type::Pixel);
+		RoseGold::Core::Shader::Type::Pixel,
+		"main");
 
 	{
 		RoseGold::Core::PipelineStateDescription pipelineState;
@@ -326,7 +327,7 @@ void ExampleGame::OnStart_SetupPipelineStates()
 		pipelineState.PixelShader = pixelShader;
 		pipelineState.OutputFormats = { myWindow1->GetDescriptor().ColorGraphicsFormat };
 		pipelineState.DepthTargetFormat = myWindow1->GetDescriptor().DepthStencilFormat;
-		myColoredMeshPipelineState = myCoreSetup->GraphicsAPI->CreateOrGetPipelineState(pipelineState);
+		myColoredMeshPipelineState = myCoreSetup->GraphicsAPI->GetResourceManager().CreateOrGetPipelineState(pipelineState);
 	}
 
 	{
@@ -336,7 +337,7 @@ void ExampleGame::OnStart_SetupPipelineStates()
 		pipelineState.PixelShader = pixelShader;
 		pipelineState.OutputFormats = { myWindow1->GetDescriptor().ColorGraphicsFormat };
 		pipelineState.DepthTargetFormat = myWindow1->GetDescriptor().DepthStencilFormat;
-		myTexturedMeshPipelineState = myCoreSetup->GraphicsAPI->CreateOrGetPipelineState(pipelineState);
+		myTexturedMeshPipelineState = myCoreSetup->GraphicsAPI->GetResourceManager().CreateOrGetPipelineState(pipelineState);
 	}
 }
 
@@ -344,7 +345,7 @@ void ExampleGame::OnStart_CreateMVPBuffers()
 {
 	ZoneScoped;
 	using namespace RoseGold::Core;
-	auto makeCameraConstants = [&]() { return myCoreSetup->GraphicsAPI->CreateGraphicsBuffer(GraphicsBuffer::Target::Constant, 1, sizeof(CameraConstants)); };
+	auto makeCameraConstants = [&]() { return myCoreSetup->GraphicsAPI->GetResourceManager().CreateGraphicsBuffer(GraphicsBuffer::Target::Constant, 1, sizeof(CameraConstants)); };
 
 	myRT1PyramidConstants = makeCameraConstants();
 	myRT1TriangleConstants = makeCameraConstants();
