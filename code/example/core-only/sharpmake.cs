@@ -1,15 +1,13 @@
 using System.IO;
 
-[module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
-[module: Sharpmake.Include("../../client/bootstrapper/sharpmake.cs")]
-[module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
+[module: Sharpmake.Include("../../engine/sharpmake.cs")]
 
 [Sharpmake.Generate]
 public class Example_CoreOnlyExecutable : RoseGold.ExecutableProject
 {
     public Example_CoreOnlyExecutable()
     {
-        Name = "Example game (Core only)";
+        Name = "Example game";
         SourceRootPath = "[project.SharpmakeCsPath]";
     }
 
@@ -18,8 +16,7 @@ public class Example_CoreOnlyExecutable : RoseGold.ExecutableProject
         base.ConfigureAll(conf, target);
 
         conf.SolutionFolder = "Executables";
-        conf.AddPrivateDependency<RoseGold.Common>(target);
-        conf.AddPrivateDependency<RoseGold.Bootstrapper>(target);
+        conf.AddPrivateDependency<RoseGold.Engine>(target);
 
         conf.VcxprojUserFile = new Sharpmake.Project.Configuration.VcxprojUserFileSettings();
         conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = "$(OutputPath)..\\data\\";
@@ -31,7 +28,7 @@ public class ExampleGame_CoreOnlySolution : RoseGold.Solution
 {
     public ExampleGame_CoreOnlySolution()
     {
-        Name = "Example game (Core only)";
+        Name = "Example game";
     }
 
     public override void ConfigureAll(Sharpmake.Solution.Configuration conf, Sharpmake.Target target)

@@ -1,8 +1,9 @@
 // Filter "Graphics"
+#include "stdafx.hpp"
 
 #include "Engine_CommandBuffer.hpp"
 
-#include "Common_Debug.hpp"
+#include "Common_Diagnostics.hpp"
 
 //namespace RoseGold::Core::Graphics
 //{

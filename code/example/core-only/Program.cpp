@@ -2,14 +2,9 @@
 
 #include "ExampleGame.hpp"
 
-#include <Bootstrapper.hpp>
-
-#include <Common_Diagnostics.hpp>
+#include <Engine_Bootstrapper.hpp>
 
 #include <Windows.h>
-
-#include <chrono>
-#include <thread>
 
 #if defined(_CONSOLE)
 int main(int, const char**)
