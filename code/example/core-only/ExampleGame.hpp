@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine_Bootstrapper.hpp>
+#include <Engine_Game.hpp>
 
 #include <Graphics_Buffer.hpp>
 #include <Graphics_Manager.hpp>
@@ -90,20 +90,18 @@ struct CameraConstants
 	RoseGold::Math::Matrix View;
 };
 
-class ExampleGame
+class ExampleGame : public RoseGold::Game
 {
 public:
-	void OnStart(RoseGold::Client::BootstrapResult& aCoreSetup);
-	void OnLoop();
-	void OnExit();
+	void OnStart() override;
+	void OnLoop() override;
+	void OnExit() override;
 
 private:
 	void OnStart_SetupWindows();
 	void OnStart_DefineMeshes();
 	void OnStart_SetupPipelineStates();
 	void OnStart_CreateMVPBuffers();
-
-	RoseGold::Client::BootstrapResult* myCoreSetup;
 
 	std::shared_ptr<RoseGold::Core::RenderTexture> myWindow1;
 	std::shared_ptr<RoseGold::Core::RenderTexture> myWindow2;

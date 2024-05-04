@@ -2,7 +2,7 @@
 
 #include "ExampleGame.hpp"
 
-#include <Engine_Bootstrapper.hpp>
+#include <Engine_Instance.hpp>
 
 #include <Windows.h>
 
@@ -12,21 +12,10 @@ int main(int, const char**)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 #endif
 {
-	RoseGold::Client::BootstrapResult roseGold = RoseGold::Client::Bootstrap();
-
+	RoseGold::EngineInstance engineInstance = RoseGold::EngineInstance::Create();
 	{
 		ExampleGame game;
-		game.OnStart(roseGold);
-
-		while (!roseGold.WindowManager->GetWindows().empty())
-		{
-			roseGold.WindowManager->Update();
-			roseGold.GraphicsAPI->MarkFrameStart();
-			game.OnLoop();
-			roseGold.GraphicsAPI->MarkFrameEnd();
-		}
-
-		game.OnExit();
+		engineInstance.Run(game);
 	}
 
 	return 0;
