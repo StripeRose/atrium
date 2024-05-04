@@ -110,7 +110,7 @@ namespace RoseGold::DirectX12
 
 	StagingDescriptorHeap::~StagingDescriptorHeap()
 	{
-		Debug::Assert(myActiveHandleCount == 0, "No active handles remain.");
+		Debug::Assert(myActiveHandleCount == 0, "Should not contain active handles upon destruction.");
 		myFreeDescriptors.clear();
 	}
 
@@ -142,7 +142,7 @@ namespace RoseGold::DirectX12
 
 	void StagingDescriptorHeap::FreeHeapHandle(std::uint32_t anIndex)
 	{
-		Debug::Assert(myActiveHandleCount != 0, "Still have handles left to free.");
+		Debug::Assert(myActiveHandleCount != 0, "No more handles left to free. Is something being freed incorrectly?");
 		myFreeDescriptors.push_back(anIndex);
 
 		myActiveHandleCount--;
