@@ -479,7 +479,7 @@ namespace RoseGold::DirectX12
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline texture resource");
 
-		TextureBackend* textureBackend = TextureBackend::FromTexture(*aTexture);
+		SimpleTexture* textureBackend = static_cast<SimpleTexture*>(aTexture.get());
 
 		Debug::Assert(!!aTexture && textureBackend, "Has a valid texture.");
 

@@ -24,11 +24,11 @@ namespace RoseGold::DirectX12
 
 		std::shared_ptr<Core::Shader> CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint) override;
 
-		std::shared_ptr<Core::Texture2D> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat) override;
+		std::shared_ptr<Core::EditableTexture> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat) override;
 
-		std::shared_ptr<Core::Texture3D> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat) override;
+		std::shared_ptr<Core::EditableTexture> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat) override;
 
-		std::shared_ptr<Core::TextureCube> CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat) override;
+		std::shared_ptr<Core::EditableTexture> CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat) override;
 
 		std::shared_ptr<SwapChain> GetSwapChain(Core::Window& aWindow);
 

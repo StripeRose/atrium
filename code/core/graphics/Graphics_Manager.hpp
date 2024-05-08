@@ -4,9 +4,6 @@
 #include "Graphics_FrameContext.hpp"
 #include "Graphics_RenderTexture.hpp"
 #include "Graphics_Pipeline.hpp"
-#include "Graphics_Texture2D.hpp"
-#include "Graphics_Texture3D.hpp"
-#include "Graphics_TextureCube.hpp"
 
 #include <filesystem>
 
@@ -28,11 +25,11 @@ namespace RoseGold::Core
 
 			virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& aShaderSource, Shader::Type aShaderType, const char* anEntryPoint) = 0;
 
-			virtual std::shared_ptr<Texture2D> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, TextureFormat aTextureFormat) = 0;
+			virtual std::shared_ptr<EditableTexture> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, TextureFormat aTextureFormat) = 0;
 
-			virtual std::shared_ptr<Texture3D> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat) = 0;
+			virtual std::shared_ptr<EditableTexture> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat) = 0;
 
-			virtual std::shared_ptr<TextureCube> CreateTextureCube(unsigned int aWidth, TextureFormat aTextureFormat) = 0;
+			virtual std::shared_ptr<EditableTexture> CreateTextureCube(unsigned int aWidth, TextureFormat aTextureFormat) = 0;
 
 			virtual std::shared_ptr<Texture> LoadTexture(const std::filesystem::path& aPath) = 0;
 		};

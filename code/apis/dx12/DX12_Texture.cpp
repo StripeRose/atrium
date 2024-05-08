@@ -12,39 +12,7 @@ namespace RoseGold::DirectX12
 {
 	using namespace DirectX;
 
-	TextureBackend* TextureBackend::FromTexture(Core::Texture& aTexture)
-	{
-		switch (aTexture.GetDimensions())
-		{
-		case Core::TextureDimension::Tex2D:
-			return &static_cast<Texture2D&>(aTexture).GetBackend();
-		case Core::TextureDimension::Tex3D:
-			return &static_cast<Texture3D&>(aTexture).GetBackend();
-		case Core::TextureDimension::Cube:
-			return &static_cast<TextureCube&>(aTexture).GetBackend();
-		default:
-			Debug::LogFatal("Tried to get the texture backend from an unsupported texture.");
-			return nullptr;
-		}
-	}
-
-	const TextureBackend* TextureBackend::FromTexture(const Core::Texture& aTexture)
-	{
-		switch (aTexture.GetDimensions())
-		{
-		case Core::TextureDimension::Tex2D:
-			return &static_cast<const Texture2D&>(aTexture).GetBackend();
-		case Core::TextureDimension::Tex3D:
-			return &static_cast<const Texture3D&>(aTexture).GetBackend();
-		case Core::TextureDimension::Cube:
-			return &static_cast<const TextureCube&>(aTexture).GetBackend();
-		default:
-			Debug::LogFatal("Tried to get the texture backend from an unsupported texture.");
-			return nullptr;
-		}
-	}
-
-	TextureBackend::TextureBackend(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata)
+	SimpleTexture::SimpleTexture(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata)
 		: myDevice(aDevice)
 		, myUploader(anUploader)
 		, myImage(std::make_unique<DirectX::ScratchImage>())
@@ -53,7 +21,7 @@ namespace RoseGold::DirectX12
 		myImage->Initialize(aMetadata);
 	}
 
-	TextureBackend::TextureBackend(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage)
+	SimpleTexture::SimpleTexture(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage)
 		: myDevice(aDevice)
 		, myUploader(anUploader)
 		, myMetadata(anImage->GetMetadata())
@@ -61,7 +29,7 @@ namespace RoseGold::DirectX12
 		std::swap(myImage, anImage);
 	}
 
-	void TextureBackend::Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable)
+	void SimpleTexture::Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable)
 	{
 		if (anUpdateMipmaps)
 		{
@@ -81,7 +49,7 @@ namespace RoseGold::DirectX12
 			myImage.reset();
 	}
 
-	Core::TextureDimension TextureBackend::GetDimensions() const
+	Core::TextureDimension SimpleTexture::GetDimensions() const
 	{
 		switch (myMetadata.dimension)
 		{
@@ -98,97 +66,97 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	unsigned int TextureBackend::GetDepth() const
+	unsigned int SimpleTexture::GetDepth() const
 	{
 		return static_cast<unsigned int>(myMetadata.depth);
 	}
 
-	Core::FilterMode TextureBackend::GetFilterMode() const
+	Core::FilterMode SimpleTexture::GetFilterMode() const
 	{
 		Debug::LogWarning("Not implemented.");
 		return Core::FilterMode::Point;
 	}
 
-	Core::TextureFormat TextureBackend::GetFormat() const
+	Core::TextureFormat SimpleTexture::GetFormat() const
 	{
 		return ToTextureFormat(myMetadata.format);
 	}
 
-	unsigned int TextureBackend::GetHeight() const
+	unsigned int SimpleTexture::GetHeight() const
 	{
 		return static_cast<unsigned int>(myMetadata.height);
 	}
 
-	bool TextureBackend::IsReadable() const
+	bool SimpleTexture::IsReadable() const
 	{
 		return myImage != nullptr;
 	}
 
-	unsigned int TextureBackend::GetMipmapCount() const
+	unsigned int SimpleTexture::GetMipmapCount() const
 	{
 		return static_cast<unsigned int>(myMetadata.mipLevels);
 	}
 
-	unsigned int TextureBackend::GetWidth() const
+	unsigned int SimpleTexture::GetWidth() const
 	{
 		return static_cast<unsigned int>(myMetadata.width);
 	}
 
-	Core::TextureWrapMode TextureBackend::GetWrapModeU() const
+	Core::TextureWrapMode SimpleTexture::GetWrapModeU() const
 	{
 		Debug::LogWarning("Not implemented.");
 		return Core::TextureWrapMode::Repeat;
 	}
 
-	Core::TextureWrapMode TextureBackend::GetWrapModeV() const
+	Core::TextureWrapMode SimpleTexture::GetWrapModeV() const
 	{
 		Debug::LogWarning("Not implemented.");
 		return Core::TextureWrapMode::Repeat;
 	}
 
-	Core::TextureWrapMode TextureBackend::GetWrapModeW() const
+	Core::TextureWrapMode SimpleTexture::GetWrapModeW() const
 	{
 		Debug::LogWarning("Not implemented.");
 		return Core::TextureWrapMode::Repeat;
 	}
 
-	void TextureBackend::SetFilterMode(Core::FilterMode aFilterMode)
+	void SimpleTexture::SetFilterMode(Core::FilterMode aFilterMode)
 	{
 		aFilterMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void TextureBackend::SetWrapMode(Core::TextureWrapMode aWrapMode)
+	void SimpleTexture::SetWrapMode(Core::TextureWrapMode aWrapMode)
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void TextureBackend::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
+	void SimpleTexture::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void TextureBackend::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
+	void SimpleTexture::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void TextureBackend::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
+	void SimpleTexture::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void* TextureBackend::GetNativeTexturePtr() const
+	void* SimpleTexture::GetNativeTexturePtr() const
 	{
 		return myResource.Get();
 	}
 
 	// Todo: Keep resource if it's still the right setup.
-	void TextureBackend::Apply_SetupResource()
+	void SimpleTexture::Apply_SetupResource()
 	{
 		D3D12_RESOURCE_DESC textureDesc;
 		textureDesc.Format = myMetadata.format;
@@ -249,7 +217,7 @@ namespace RoseGold::DirectX12
 		);
 	}
 
-	void TextureBackend::Apply_BeginImageUpload()
+	void SimpleTexture::Apply_BeginImageUpload()
 	{
 		UploadContext::TextureUpload& textureUpload = myUploader.AddTextureUpload();
 		textureUpload.Resource = shared_from_this();
@@ -300,7 +268,7 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	Color Texture2D::GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
+	Color SimpleTexture::GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel) const
 	{
 		//DirectX::ScratchImage& scratchImage = myBackend->GetScratchImage();
 		//scratchImage.GetMetadata().
@@ -310,90 +278,18 @@ namespace RoseGold::DirectX12
 		//myBackend->GetScratchImage()->GetImage().
 		//myBackend->GetScratchImage()->GetMetadata();
 
-		anX; aY; aMipLevel;
-		return Color::Predefined::Black;
-	}
-
-	Color Texture2D::GetPixelBilinear(float aU, float aV, unsigned int aMipLevel) const
-	{
-		aU; aV; aMipLevel;
-		return Color::Predefined::Black;
-	}
-
-	std::vector<Color> Texture2D::GetPixels(unsigned int aMipLevel) const
-	{
-		aMipLevel;
-		return std::vector<Color>();
-	}
-
-	std::vector<Color> Texture2D::GetPixels(unsigned int anX, unsigned int aY, unsigned int aBlockWidth, unsigned int aBlockHeight, unsigned int aMipLevel) const
-	{
-		anX; aY; aBlockWidth; aBlockHeight; aMipLevel;
-		return std::vector<Color>();
-	}
-
-	void Texture2D::SetPixel(unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel)
-	{
-		anX; aY; aColor; aMipLevel;
-	}
-
-	void Texture2D::SetPixels(const std::vector<Color>& someColors, unsigned int aMipLevel) const
-	{
-		someColors; aMipLevel;
-	}
-
-	void Texture2D::SetPixels(unsigned int anX, unsigned int aY, unsigned int aBlockWidth, unsigned int aBlockHeight, const std::vector<Color>& someColors, unsigned int aMipLevel) const
-	{
-		anX; aY; aBlockWidth; aBlockHeight; someColors; aMipLevel;
-	}
-
-	Color Texture3D::GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel) const
-	{
 		anX; aY; aZ; aMipLevel;
 		return Color::Predefined::Black;
 	}
 
-	Color Texture3D::GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel) const
+	Color SimpleTexture::GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel) const
 	{
 		aU; aV; aW; aMipLevel;
 		return Color::Predefined::Black;
 	}
 
-	std::vector<Color> Texture3D::GetPixels(unsigned int aMipLevel) const
+	void SimpleTexture::SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const Color& aColor, unsigned int aMipLevel)
 	{
-		aMipLevel;
-		return std::vector<Color>();
-	}
-
-	void Texture3D::SetPixel(unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel)
-	{
-		anX; aY; aColor; aMipLevel;
-	}
-
-	void Texture3D::SetPixels(const std::vector<Color>& someColors, unsigned int aMipLevel) const
-	{
-		someColors; aMipLevel;
-	}
-
-	Color TextureCube::GetPixel(Face aFace, unsigned int anX, unsigned int aY) const
-	{
-		aFace; anX; aY;
-		return Color::Predefined::Black;
-	}
-
-	Color TextureCube::GetPixels(Face aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
-	{
-		aFace; anX; aY; aMipLevel;
-		return Color::Predefined::Black;
-	}
-
-	void TextureCube::SetPixel(Face aFace, unsigned int anX, unsigned int aY, const Color& aColor)
-	{
-		aFace; anX; aY; aColor;
-	}
-
-	void TextureCube::SetPixels(const std::vector<Color>& someColors, Face aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel)
-	{
-		someColors; aFace; anX; aY; aMipLevel;
+		anX; aY; aZ; aColor; aMipLevel;
 	}
 }

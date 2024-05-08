@@ -25,89 +25,26 @@ namespace RoseGold::DirectX12
 			return nullptr;
 		}
 
-		std::shared_ptr<TextureBackend> backend(new TextureBackend(aDevice, anUploader, std::move(image)));
+		std::shared_ptr<SimpleTexture> texture = std::make_shared<SimpleTexture>(aDevice, anUploader, std::move(image));
+		texture->Apply(true, false);
+		texture->GetResource()->SetName(aPath.filename().c_str());
 
-		std::shared_ptr<Core::Texture> textureInstance;
-
-		switch (backend->GetDimensions())
-		{
-		case Core::TextureDimension::Tex2D:
-		{
-			Texture2D* tex2d = new DirectX12::Texture2D(backend);
-			tex2d->Apply(true, false);
-			textureInstance.reset(tex2d);
-			break;
-		}
-		case Core::TextureDimension::Tex3D:
-		{
-			Texture3D* tex3d = new DirectX12::Texture3D(backend);
-			tex3d->Apply(true, false);
-			textureInstance.reset(tex3d);
-			break;
-		}
-		case Core::TextureDimension::Cube:
-		{
-			TextureCube* texCube = new DirectX12::TextureCube(backend);
-			texCube->Apply(true, false);
-			textureInstance.reset(texCube);
-			break;
-		}
-		default:
-			return nullptr;
-		}
-
-		backend->GetResource()->SetName(aPath.filename().c_str());
-		return textureInstance;
+		return texture;
 	}
 
-	std::shared_ptr<Core::Texture2D> CreateDDS2D(Device& aDevice, UploadContext& anUploader, unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat)
-	{
-		DirectX::TexMetadata metadata;
-		metadata.arraySize = 1;
-		metadata.depth = 1;
-		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
-		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
-		metadata.height = aHeight;
-		metadata.mipLevels = 0;
-		metadata.miscFlags = 0;
-		metadata.miscFlags2 = 0;
-		metadata.width = aWidth;
-
-		std::shared_ptr<TextureBackend> backend(new TextureBackend(aDevice, anUploader, metadata));
-		return std::make_shared<Texture2D>(backend);
-	}
-
-	std::shared_ptr<Core::Texture3D> CreateDDS3D(Device& aDevice, UploadContext& anUploader, unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::EditableTexture> CreateEditableDDS(Device& aDevice, UploadContext& anUploader, unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat)
 	{
 		DirectX::TexMetadata metadata;
 		metadata.arraySize = 1;
 		metadata.depth = aDepth;
-		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE3D;
+		metadata.dimension = (aDepth == 1) ? DirectX::TEX_DIMENSION_TEXTURE2D : DirectX::TEX_DIMENSION_TEXTURE3D;
 		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
 		metadata.height = aHeight;
 		metadata.mipLevels = 0;
-		metadata.miscFlags = 0;
+		metadata.miscFlags = (aDepth == 6) ? DirectX::TEX_MISC_TEXTURECUBE : 0;
 		metadata.miscFlags2 = 0;
 		metadata.width = aWidth;
 
-		std::shared_ptr<TextureBackend> backend(new TextureBackend(aDevice, anUploader, metadata));
-		return std::make_shared<Texture3D>(backend);
-	}
-
-	std::shared_ptr<Core::TextureCube> CreateDDSCube(Device& aDevice, UploadContext& anUploader, unsigned int aWidth, Core::TextureFormat aTextureFormat)
-	{
-		DirectX::TexMetadata metadata;
-		metadata.arraySize = 6;
-		metadata.depth = 1;
-		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
-		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
-		metadata.height = aWidth;
-		metadata.mipLevels = 0;
-		metadata.miscFlags = DirectX::TEX_MISC_TEXTURECUBE;
-		metadata.miscFlags2 = 0;
-		metadata.width = aWidth;
-
-		std::shared_ptr<TextureBackend> backend(new TextureBackend(aDevice, anUploader, metadata));
-		return std::make_shared<TextureCube>(backend);
+		return std::make_shared<SimpleTexture>(aDevice, anUploader, metadata);
 	}
 }

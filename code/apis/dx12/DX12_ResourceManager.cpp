@@ -72,19 +72,19 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::Texture2D> ResourceManager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::EditableTexture> ResourceManager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat)
 	{
-		return CreateDDS2D(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aHeight, aTextureFormat);
+		return CreateEditableDDS(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aHeight, 1, aTextureFormat);
 	}
 
-	std::shared_ptr<Core::Texture3D> ResourceManager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::EditableTexture> ResourceManager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat)
 	{
-		return CreateDDS3D(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aHeight, aDepth, aTextureFormat);
+		return CreateEditableDDS(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aHeight, aDepth, aTextureFormat);
 	}
 
-	std::shared_ptr<Core::TextureCube> ResourceManager::CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::EditableTexture> ResourceManager::CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat)
 	{
-		return CreateDDSCube(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aTextureFormat);
+		return CreateEditableDDS(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aWidth, aWidth, aTextureFormat);
 	}
 
 	std::shared_ptr<SwapChain> ResourceManager::GetSwapChain(Core::Window& aWindow)

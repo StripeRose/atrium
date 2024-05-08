@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Common_Color.hpp"
+
 #include "Graphics_Enums.hpp"
 
 namespace RoseGold::Core
@@ -40,5 +42,22 @@ namespace RoseGold::Core
 		* Todo:
 		* Anisotropy level
 		*/
+	};
+
+	// Todo: Needs a better name.
+	class EditableTexture : public Texture
+	{
+	public:
+		virtual ~EditableTexture() = default;
+
+		void Apply() { Apply(true, false); }
+		virtual void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) = 0;
+
+		virtual TextureFormat GetFormat() const = 0;
+
+		virtual Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel = 0) const = 0;
+		virtual Color GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel = 0) const = 0;
+
+		virtual void SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const Color& aColor, unsigned int aMipLevel = 0) = 0;
 	};
 }
