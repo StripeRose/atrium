@@ -22,6 +22,9 @@ namespace RoseGold::DirectX12
 	class DirectX12API final : public Core::GraphicsAPI
 	{
 	public:
+		static std::size_t GetFramesInFlightAmount();
+
+	public:
 		DirectX12API();
 		~DirectX12API();
 
@@ -51,9 +54,14 @@ namespace RoseGold::DirectX12
 		std::unique_ptr<FrameGraphicsContext> myFrameGraphicsContext;
 		std::unique_ptr<UploadContext> myUploadContext;
 
-		std::array<std::uint64_t, DX12_FRAMES_IN_FLIGHT> myComputeQueueFrameEndFence;
-		std::array<std::uint64_t, DX12_FRAMES_IN_FLIGHT> myCopyQueueFrameEndFence;
-		std::array<std::uint64_t, DX12_FRAMES_IN_FLIGHT> myGraphicsQueueFrameEndFence;
+		struct FrameEndFences
+		{
+			std::uint64_t ComputeQueue;
+			std::uint64_t CopyQueue;
+			std::uint64_t GraphicsQueue;
+		};
+
+		std::vector<FrameEndFences> myFrameEndFences;
 
 		std::uint64_t myFrameIndex;
 		std::uint_least8_t myFrameInFlight;

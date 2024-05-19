@@ -60,7 +60,7 @@ namespace RoseGold::DirectX12
 
 		D3D12_COMMAND_LIST_TYPE myCommandType;
 		ComPtr<ID3D12GraphicsCommandList6> myCommandList;
-		std::array<ComPtr<ID3D12CommandAllocator>, DX12_FRAMES_IN_FLIGHT> myFrameCommandAllocators;
+		std::vector<ComPtr<ID3D12CommandAllocator>> myFrameCommandAllocators;
 
 		RenderPassDescriptorHeap* myCurrentFrameHeap;
 

@@ -26,15 +26,24 @@ namespace RoseGold::DirectX12
 		return std::make_unique<DirectX12API>();
 	}
 
+	std::size_t DirectX12API::GetFramesInFlightAmount()
+	{
+		return DX12_FRAMES_IN_FLIGHT;
+	}
+
 	DirectX12API::DirectX12API()
 		: myFrameIndex(static_cast<std::uint64_t>(-1))
 		, myFrameInFlight(0)
 	{
 		ZoneScoped;
 
-		myComputeQueueFrameEndFence.fill(0);
-		myCopyQueueFrameEndFence.fill(0);
-		myGraphicsQueueFrameEndFence.fill(0);
+		myFrameEndFences.resize(DX12_FRAMES_IN_FLIGHT);
+		for (auto& frameEndFence : myFrameEndFences)
+		{
+			frameEndFence.ComputeQueue = 0;
+			frameEndFence.CopyQueue = 0;
+			frameEndFence.GraphicsQueue = 0;
+		}
 
 		Debug::Log("DX12 start");
 
@@ -81,9 +90,9 @@ namespace RoseGold::DirectX12
 		{
 			ZoneScopedN("Waiting for previous frame");
 
-			myCommandQueueManager->GetComputeQueue().WaitForFenceCPUBlocking(myComputeQueueFrameEndFence[myFrameInFlight]);
-			myCommandQueueManager->GetCopyQueue().WaitForFenceCPUBlocking(myCopyQueueFrameEndFence[myFrameInFlight]);
-			myCommandQueueManager->GetGraphicsQueue().WaitForFenceCPUBlocking(myGraphicsQueueFrameEndFence[myFrameInFlight]);
+			myCommandQueueManager->GetComputeQueue().WaitForFenceCPUBlocking(myFrameEndFences[myFrameInFlight].ComputeQueue);
+			myCommandQueueManager->GetCopyQueue().WaitForFenceCPUBlocking(myFrameEndFences[myFrameInFlight].CopyQueue);
+			myCommandQueueManager->GetGraphicsQueue().WaitForFenceCPUBlocking(myFrameEndFences[myFrameInFlight].GraphicsQueue);
 		}
 
 		myDevice->MarkFrameStart(myFrameIndex);
@@ -102,7 +111,7 @@ namespace RoseGold::DirectX12
 		{
 			ZoneScopedN("Process uploads");
 			myUploadContext->ProcessUploads();
-			myCopyQueueFrameEndFence[myFrameInFlight] = myCommandQueueManager->GetCopyQueue().ExecuteCommandList(
+			myFrameEndFences[myFrameInFlight].CopyQueue = myCommandQueueManager->GetCopyQueue().ExecuteCommandList(
 				myUploadContext->GetCommandList()
 			);
 		}
@@ -126,7 +135,7 @@ namespace RoseGold::DirectX12
 		{
 			ZoneScopedN("Submit graphic commands");
 			CommandQueue& graphicsQueue = myCommandQueueManager->GetGraphicsQueue();
-			myGraphicsQueueFrameEndFence[myFrameInFlight] = graphicsQueue.ExecuteCommandList(
+			myFrameEndFences[myFrameInFlight].GraphicsQueue = graphicsQueue.ExecuteCommandList(
 				myFrameGraphicsContext->GetCommandList()
 			);
 		}

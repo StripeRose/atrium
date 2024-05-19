@@ -22,6 +22,7 @@ namespace RoseGold::DirectX12
 #endif
 	{
 		ZoneScoped;
+		myFrameCommandAllocators.resize(DX12_FRAMES_IN_FLIGHT);
 
 		for (unsigned int i = 0; i < DX12_FRAMES_IN_FLIGHT; ++i)
 		{

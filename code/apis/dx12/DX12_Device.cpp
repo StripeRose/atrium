@@ -250,7 +250,7 @@ namespace RoseGold::DirectX12
 	{
 		ZoneScoped;
 
-		myDescriptorHeapManager.reset(new DescriptorHeapManager(myDevice));
+		myDescriptorHeapManager.reset(new DescriptorHeapManager(myDevice, DX12_FRAMES_IN_FLIGHT));
 		return myDescriptorHeapManager.get() != nullptr;
 	}
 }
