@@ -42,19 +42,19 @@ The executable is located at `./tools/tracy-profiler.exe`, which you can run bef
 To build the Tracy profiler program, ensure Visual Studio 2022 has been installed with CMake tools, and run `./code/libraries/build_tracy_server.bat`.
 
 ## Structure
-* `build`
+Rough project structure, both current and potential future data.
+* `build` - *The target build folder for everything.*
 * `code`
     * `apis` - *Non-platform specific API implementations.*
         * `dx12`
         * `xinput`
     * `client` - *Individual platform clients and any platform-specific code.*
-        * `bootstrapper`
         * `windows`
-    * `core` - *Core code in use by the engine and other projects.*
-        * `audio` - *Future API for creating audio playback.*
-        * `graphics` - *API for creating graphics renderers.*
-        * `input` - *API for creating input handlers.*
-        * `platform` - *API for creating platform handlers that tie things together.*
+    * `core` - *Smaller common interfaces to allow the engine to use any API. Primarily to simplify porting.*
+        * `audio` - *API for interfacing with audio playback and recording devices.*
+        * `graphics` - *API for interfacing with GPUs.*
+        * `input` - *API for interfacing with keyboards, mice, controllers, joysticks and other input devices.*
+        * `platform` - *API for interfacing with platform-specific features such as windows.*
     * `engine` - *Basics of the engine itself. Scene and component management, amongst other things.*
 	* `example`
     * `libraries` - *External code in use by the project.*
