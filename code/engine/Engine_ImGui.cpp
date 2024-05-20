@@ -74,6 +74,9 @@ namespace RoseGold
 
 	void ImGuiHandler::MarkFrameStart()
 	{
+		if (!myRenderTarget)
+			return;
+
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
@@ -83,6 +86,9 @@ namespace RoseGold
 
 	void ImGuiHandler::MarkFrameEnd()
 	{
+		if (!myRenderTarget)
+			return;
+
 		ImGui::Render();
 		ImGui::UpdatePlatformWindows();
 
@@ -99,9 +105,10 @@ namespace RoseGold
 	void ImGuiHandler::InitForWindow(Core::Window& aWindow)
 	{
 		aWindow.Closed.Connect(this, [this](Core::Window& aWindow) {
-			ImGui_ImplDX12_Shutdown();
+			static_cast<Win32::Window&>(aWindow).AdditionalWndProc = nullptr;
 			ImGui_ImplWin32_Shutdown();
-			aWindow.Closed.Disconnect(this);
+			ImGui_ImplDX12_Shutdown();
+			myRenderTarget.reset();
 			});
 
 		Win32::Window& win32Window = static_cast<Win32::Window&>(aWindow);
@@ -112,7 +119,6 @@ namespace RoseGold
 			data.BlockMouse = io.WantCaptureMouse;
 			data.BlockAllMessages = (result == TRUE);
 			};
-
 	}
 
 	void ImGuiHandler::SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, Core::GraphicsFormat aTargetFormat)
