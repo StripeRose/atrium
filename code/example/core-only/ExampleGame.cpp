@@ -47,7 +47,7 @@ void ExampleGame::OnStart()
 void ExampleGame::OnLoop()
 {
 	if (GetWindowManager().GetWindows().empty())
-		RequestShutDown();
+		ShutDown();
 
 	ZoneScoped;
 

@@ -7,36 +7,38 @@
 
 namespace RoseGold
 {
+	EngineInstance::~EngineInstance()
+	{
+	}
+
 	void EngineInstance::Run(Game& aGame)
 	{
 		Debug::Assert(myCurrentGame == nullptr, L"This engine instance is already running a game.");
-		Debug::Assert(aGame.myEngineInstance == nullptr, L"The game is already assigned to an engine instance.");
 
-		aGame.myEngineInstance = this;
 		myCurrentGame = &aGame;
-
-		RunGame();
-
-		aGame.myEngineInstance = nullptr;
-		myCurrentGame = nullptr;
-	}
-	
-	EngineInstance::EngineInstance()
-		: myCurrentGame(nullptr)
-	{ }
-		
-	void EngineInstance::RunGame()
-	{
 		myCurrentGame->OnStart();
+		myIsGameRunning = true;
 
-		while (!myCurrentGame->myHasRequestedShutdown)
+		while (myIsGameRunning)
 		{
 			myWindowManager->Update();
+
 			myGraphicsAPI->MarkFrameStart();
 			myCurrentGame->OnLoop();
 			myGraphicsAPI->MarkFrameEnd();
 		}
 
 		myCurrentGame->OnExit();
+		myCurrentGame = nullptr;
 	}
+
+	void EngineInstance::Stop()
+	{
+		myIsGameRunning = false;
+	}
+	
+	EngineInstance::EngineInstance()
+		: myCurrentGame(nullptr)
+		, myIsGameRunning(false)
+	{ }
 }

@@ -10,8 +10,14 @@ namespace RoseGold
 		Debug::Assert(myEngineInstance == nullptr, L"Game cannot still be assigned to an engine instance. It might still be running.");
 	}
 
-	void Game::RequestShutDown()
+	void Game::Run()
 	{
-		myHasRequestedShutdown = true;
+		myEngineInstance = EngineInstance::Create();
+		myEngineInstance->Run(*this);
+	}
+
+	void Game::ShutDown()
+	{
+		myEngineInstance->Stop();
 	}
 }

@@ -12,20 +12,24 @@ namespace RoseGold
 	public:
 		~Game();
 
+		void Run();
+
+		void ShutDown();
+
 	protected:
 		virtual void OnStart() { }
 		virtual void OnLoop() { }
 		virtual void OnExit() { }
 
 	protected:
+		EngineInstance& GetEngine() { return *myEngineInstance; }
+		const EngineInstance& GetEngine() const { return *myEngineInstance; }
+
 		Core::GraphicsAPI& GetGraphicsAPI() { return myEngineInstance->GetGraphicsAPI(); }
 
 		Core::WindowManager& GetWindowManager() { return myEngineInstance->GetWindowManager(); }
 
-		void RequestShutDown();
-
 	private:
-		EngineInstance* myEngineInstance = nullptr;
-		bool myHasRequestedShutdown = false;
+		std::unique_ptr<EngineInstance> myEngineInstance;
 	};
 }

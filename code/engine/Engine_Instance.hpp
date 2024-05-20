@@ -13,22 +13,25 @@ namespace RoseGold
 	class EngineInstance
 	{
 	public:
-		static EngineInstance Create();
+		static std::unique_ptr<EngineInstance> Create();
 
 	public:
+		~EngineInstance();
+
 		Core::GraphicsAPI& GetGraphicsAPI() { return *myGraphicsAPI; }
 
 		Core::WindowManager& GetWindowManager() { return *myWindowManager; }
 
 		void Run(Game& aGame);
 
+		void Stop();
+
 	private:
 		EngineInstance();
 
-		void RunGame();
-
 	private:
 		Game* myCurrentGame;
+		bool myIsGameRunning;
 
 		std::unique_ptr<Core::GraphicsAPI> myGraphicsAPI;
 		std::unique_ptr<Core::WindowManager> myWindowManager;

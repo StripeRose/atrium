@@ -8,15 +8,15 @@
 
 namespace RoseGold
 {
-	EngineInstance EngineInstance::Create()
+	std::unique_ptr<EngineInstance> EngineInstance::Create()
 	{
 		ZoneScoped;
 
-		EngineInstance instance;
+		std::unique_ptr<EngineInstance> instance(new EngineInstance());
 
 #if _WIN32
-		instance.myGraphicsAPI.reset(DirectX12::CreateDX12Manager().release());
-		instance.myWindowManager.reset(new Win32::WindowManager());
+		instance->myGraphicsAPI.reset(DirectX12::CreateDX12Manager().release());
+		instance->myWindowManager.reset(new Win32::WindowManager());
 #else
 		static_assert(false, "No engine instance available for this platform yet.");
 #endif
