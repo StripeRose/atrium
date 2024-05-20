@@ -549,8 +549,12 @@ namespace RoseGold::DirectX12
 		}
 
 		RenderTarget* dxDepthTarget = static_cast<RenderTarget*>(aDepthTarget.get());
-		AddBarrier(dxDepthTarget->GetDepthGPUResource(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
-		const D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = aDepthTarget ? dxDepthTarget->GetDepthStencilView().GetCPUHandle() : D3D12_CPU_DESCRIPTOR_HANDLE();
+		D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle;
+		if (dxDepthTarget)
+		{
+			AddBarrier(dxDepthTarget->GetDepthGPUResource(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
+			depthStencilHandle = dxDepthTarget->GetDepthStencilView().GetCPUHandle();
+		}
 
 		FlushBarriers();
 
@@ -558,7 +562,7 @@ namespace RoseGold::DirectX12
 			static_cast<UINT>(someTargets.size()),
 			colorHandles.data(),
 			false,
-			&depthStencilHandle);
+			dxDepthTarget ? &depthStencilHandle : nullptr);
 	}
 
 	void FrameGraphicsContext::SetViewportAndScissorRect(const Size& aScreenSize)
