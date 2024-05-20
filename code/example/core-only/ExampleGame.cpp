@@ -208,6 +208,8 @@ void ExampleGame::OnStart_SetupWindows()
 		myWindow1.reset();
 		});
 
+	GetEngine().InitializeImGui(*window1, myWindow1);
+
 	windowParams.Title = "Window 2";
 	windowParams.Size = { 640, 480 };
 	auto window2 = GetWindowManager().NewWindow(windowParams);

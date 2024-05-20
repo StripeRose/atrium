@@ -12,6 +12,19 @@ namespace RoseGold::Win32
 	{
 		friend WindowManager;
 	public:
+		struct AdditionalWndProcData
+		{
+			HWND WindowHandle;
+			UINT Message;
+			WPARAM WParam;
+			LPARAM LParam;
+
+			bool BlockAllMessages;
+			bool BlockKeyboard;
+			bool BlockMouse;
+		};
+
+	public:
 		~Window();
 
 		void Close() override;
@@ -28,6 +41,8 @@ namespace RoseGold::Win32
 		void SetSize(const Size& aSize) override;
 		void SetTitle(const char* aTitleText) override;
 		void SetTitle(const wchar_t* aTitleText) override;
+
+		std::function<void(AdditionalWndProcData&)> AdditionalWndProc;
 
 	private:
 		Window(const Core::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass);

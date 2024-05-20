@@ -10,6 +10,8 @@ using Sharpmake;
 [module: Sharpmake.Include("../apis/dx12/sharpmake.cs")]
 [module: Sharpmake.Include("../client/windows/sharpmake.cs")]
 
+[module: Sharpmake.Include("../libraries/imgui.sharpmake.cs")]
+
 namespace RoseGold
 {
     [Generate]
@@ -29,6 +31,8 @@ namespace RoseGold
             conf.AddPublicDependency<Common>(target);
             conf.AddPublicDependency<Platform>(target);
             conf.AddPublicDependency<Graphics>(target);
+
+            conf.AddPrivateDependency<DearImGui>(target);
 
             switch (target.Platform)
             {

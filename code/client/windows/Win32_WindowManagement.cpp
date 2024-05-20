@@ -154,6 +154,22 @@ namespace RoseGold::Win32
 
 	LRESULT Window::HandleWindowMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
+		AdditionalWndProcData wndProcData;
+		wndProcData.WindowHandle = hWnd;
+		wndProcData.Message = msg;
+		wndProcData.WParam = wParam;
+		wndProcData.LParam = lParam;
+
+		wndProcData.BlockAllMessages = false;
+		wndProcData.BlockKeyboard = false;
+		wndProcData.BlockMouse = false;
+
+		if (AdditionalWndProc)
+			AdditionalWndProc(wndProcData);
+
+		if (wndProcData.BlockAllMessages)
+			return TRUE;
+
 		// Messages breaking out of the switch block gets the default window proc as well.
 		// If not desired, instead return from the function as a whole.
 

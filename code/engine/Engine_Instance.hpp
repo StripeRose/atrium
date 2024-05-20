@@ -9,6 +9,7 @@
 namespace RoseGold
 {
 	class Game;
+	class ImGuiHandler;
 
 	class EngineInstance
 	{
@@ -22,6 +23,8 @@ namespace RoseGold
 
 		Core::WindowManager& GetWindowManager() { return *myWindowManager; }
 
+		void InitializeImGui(Core::Window& aPrimaryWindow, std::shared_ptr<Core::RenderTexture> aTarget);
+
 		void Run(Game& aGame);
 
 		void Stop();
@@ -32,6 +35,7 @@ namespace RoseGold
 	private:
 		Game* myCurrentGame;
 		bool myIsGameRunning;
+		std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
 		std::unique_ptr<Core::GraphicsAPI> myGraphicsAPI;
 		std::unique_ptr<Core::WindowManager> myWindowManager;
