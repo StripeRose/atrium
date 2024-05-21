@@ -116,7 +116,13 @@ namespace RoseGold::DirectX12
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
 		for (auto& swapChain : myDrawSurfaceSwapChain)
-			swapChain.second->UpdateResolution();
+		{
+			if (swapChain.second->NeedsResize())
+			{
+				myManager.GetCommandQueueManager().WaitForAllIdle();
+				swapChain.second->TriggerResize();
+			}
+		}
 	}
 
 	void ResourceManager::SetupRootSignature()

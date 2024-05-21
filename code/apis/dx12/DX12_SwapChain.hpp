@@ -17,7 +17,8 @@ namespace RoseGold::DirectX12
 		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Window& aWindow);
 
 		void Invalidate();
-		void UpdateResolution();
+		bool NeedsResize() const;
+		void TriggerResize();
 		void Present();
 
 		unsigned int GetCurrentBufferIndex() const;

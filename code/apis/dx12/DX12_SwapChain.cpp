@@ -40,9 +40,9 @@ namespace RoseGold::DirectX12
 		myDesiredResolution.reset();
 	}
 
-	void SwapChain::UpdateResolution()
+	bool SwapChain::NeedsResize() const
 	{
-		DoBufferResizing();
+		return myDesiredResolution.has_value();
 	}
 
 	void SwapChain::Present()
@@ -256,7 +256,7 @@ namespace RoseGold::DirectX12
 		myDevice->GetFactory()->MakeWindowAssociation(windowHandle, DXGI_MWA_NO_ALT_ENTER);
 	}
 
-	void SwapChain::DoBufferResizing()
+	void SwapChain::TriggerResize()
 	{
 		if (!myDesiredResolution.has_value())
 			return;
@@ -285,6 +285,9 @@ namespace RoseGold::DirectX12
 
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
 		{
+			HRESULT removalReason = myDevice->GetDevice()->GetDeviceRemovedReason();
+			removalReason;
+
 			Debug::Log("Device Lost on ResizeBuffers: Reason code 0x%08X\n",
 				static_cast<unsigned int>((hr == DXGI_ERROR_DEVICE_REMOVED) ? myDevice->GetDevice()->GetDeviceRemovedReason() : hr)
 			);
