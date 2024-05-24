@@ -12,8 +12,6 @@
 #include <backends/imgui_impl_win32.h>
 #include <Win32_WindowManagement.hpp>
 
-// https://gitlab.com/StripeRose/fireblade-engine/-/blob/master/Code/Graphics%20Backends/DirectX%2012/DX12_IMGUIHandler.cpp?ref_type=heads
-
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace RoseGold
