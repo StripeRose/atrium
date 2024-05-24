@@ -109,15 +109,6 @@ namespace RoseGold
                 conf.Defines.Add("IS_DEBUG_BUILD");
             if (target.Optimization != Sharpmake.Optimization.Retail)
                 conf.Defines.Add("IS_EDITOR_BUILD");
-
-            if (target.Optimization != Sharpmake.Optimization.Retail)
-            {
-                conf.Defines.Add("IS_PROFILING_ENABLED");
-
-                // Match with Tracy.ConfigureAll()
-                conf.Defines.Add("TRACY_ENABLE");
-                conf.Defines.Add("TRACY_CALLSTACK=4");
-            }
         }
     }
 

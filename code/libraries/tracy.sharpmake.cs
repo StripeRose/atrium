@@ -20,8 +20,14 @@ public class Tracy : RoseGold.ExternalLibraryProject
         
         conf.SolutionFolder = "rose-gold/external";
 
-        // Match with EngineProject.ConfigureAll()
-        conf.Defines.Add("TRACY_ENABLE");
-        conf.Defines.Add("TRACY_CALLSTACK=4");
+        if (target.Optimization != Sharpmake.Optimization.Retail)
+        {
+            conf.Defines.Add("TRACY_ENABLE");
+            conf.Defines.Add("TRACY_CALLSTACK=4");
+            
+            conf.ExportDefines.Add("IS_PROFILING_ENABLED");
+            conf.ExportDefines.Add("TRACY_ENABLE");
+            conf.ExportDefines.Add("TRACY_CALLSTACK=4");
+        }
     }
 }
