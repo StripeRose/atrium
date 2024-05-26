@@ -1,12 +1,12 @@
 #pragma once
 
-#include <imgui.h>
-
 #include <Graphics_Enums.hpp>
 #include <Graphics_Manager.hpp>
 #include <Platform_WindowManagement.hpp>
 
+#if IS_IMGUI_ENABLED
 #include <DX12_DescriptorHeap.hpp>
+#endif
 
 namespace RoseGold
 {
@@ -19,6 +19,7 @@ namespace RoseGold
 		void MarkFrameStart();
 		void MarkFrameEnd();
 		
+#if IS_IMGUI_ENABLED
 	private:
 		void InitForWindow(Core::Window& aWindow);
 		void SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, Core::GraphicsFormat aTargetFormat);
@@ -29,5 +30,6 @@ namespace RoseGold
 		std::shared_ptr<Core::RenderTexture> myRenderTarget;
 
 		std::unique_ptr<DirectX12::RenderPassDescriptorHeap> myCBV_SRVHeap;
+#endif
 	};
 }

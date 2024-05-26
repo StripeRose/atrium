@@ -1,6 +1,7 @@
 #include "stdafx.hpp"
 #include "Engine_ImGui.hpp"
 
+#if IS_IMGUI_ENABLED
 #include <imgui.h>
 
 #include <DX12_Device.hpp>
@@ -13,10 +14,12 @@
 #include <Win32_WindowManagement.hpp>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif
 
 namespace RoseGold
 {
-	ImGuiHandler::ImGuiHandler(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aPrimaryWindow, std::shared_ptr<Core::RenderTexture> aTarget)
+	ImGuiHandler::ImGuiHandler([[maybe_unused]] Core::GraphicsAPI& aGraphicsAPI, [[maybe_unused]] Core::Window& aPrimaryWindow, [[maybe_unused]] std::shared_ptr<Core::RenderTexture> aTarget)
+#if IS_IMGUI_ENABLED
 		: myGraphicsAPI(aGraphicsAPI)
 		, myRenderTarget(aTarget)
 	{
@@ -64,14 +67,20 @@ namespace RoseGold
 		InitForWindow(aPrimaryWindow);
 		SetupBackend(aGraphicsAPI, aPrimaryWindow, aTarget->GetDescriptor().ColorGraphicsFormat);
 	}
+#else
+	{ }
+#endif
 
 	ImGuiHandler::~ImGuiHandler()
 	{
+#if IS_IMGUI_ENABLED
 		ImGui::DestroyContext();
+#endif
 	}
 
 	void ImGuiHandler::MarkFrameStart()
 	{
+#if IS_IMGUI_ENABLED
 		if (!myRenderTarget)
 			return;
 
@@ -80,10 +89,12 @@ namespace RoseGold
 		ImGui::NewFrame();
 
 		ImGui::ShowDemoWindow();
+#endif
 	}
 
 	void ImGuiHandler::MarkFrameEnd()
 	{
+#if IS_IMGUI_ENABLED
 		if (!myRenderTarget)
 			return;
 
@@ -98,8 +109,10 @@ namespace RoseGold
 		commandList->SetDescriptorHeaps(1, myCBV_SRVHeap->GetHeap().GetAddressOf());
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
+#endif
 	}
 
+#if IS_IMGUI_ENABLED
 	void ImGuiHandler::InitForWindow(Core::Window& aWindow)
 	{
 		aWindow.Closed.Connect(this, [this](Core::Window& aWindow) {
@@ -246,4 +259,5 @@ namespace RoseGold
 		colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 		colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
+#endif
 }
