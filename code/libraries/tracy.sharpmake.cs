@@ -25,7 +25,7 @@ public class Tracy : RoseGold.ExternalLibraryProject
             conf.Defines.Add("TRACY_ENABLE");
             conf.Defines.Add("TRACY_CALLSTACK=4");
             
-            conf.ExportDefines.Add("IS_PROFILING_ENABLED");
+            conf.ExportDefines.Add("IS_PROFILING_ENABLED=1");
             conf.ExportDefines.Add("TRACY_ENABLE");
             conf.ExportDefines.Add("TRACY_CALLSTACK=4");
         }
