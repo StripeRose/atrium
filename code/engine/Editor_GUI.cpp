@@ -1,10 +1,19 @@
 #include "stdafx.hpp"
 #include "Editor_GUI.hpp"
 
+#if IS_IMGUI_ENABLED
 #include <imgui.h>
+#endif
+
+#if IS_IMGUI_ENABLED
+#define IMGUI_ONLY(x) x;
+#else
+#define IMGUI_ONLY(x)
+#endif
 
 #include <memory>
 
+#if IS_IMGUI_ENABLED
 namespace RoseGold::EditorGUI
 {
 	ImVec2 toVec(const Math::Vector2& aVector) { return ImVec2(aVector.X, aVector.Y); }
@@ -260,26 +269,31 @@ namespace RoseGold::EditorGUI
 		}
 	}*/
 }
+#endif
 
 namespace RoseGold::EditorGUI
 {
 	// Get current viewport, without potential global menu- and status-bars.
 	Math::Rectangle GetWorkSpaceRectangle()
 	{
+#if IS_IMGUI_ENABLED
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();
 		return Math::Rectangle::FromExtents(
 			{ viewport->WorkPos.x, viewport->WorkPos.y },
 			{ viewport->WorkPos.x + viewport->WorkSize.x, viewport->WorkPos.y + viewport->WorkSize.y }
 		);
+#else
+		return Math::Rectangle();
+#endif
 	}
 
-	IDScope::IDScope(const char* aStringId) { ImGui::PushID(aStringId); }
-	IDScope::IDScope(void* aPtrId) { ImGui::PushID(aPtrId); }
-	IDScope::IDScope(int anIntId) { ImGui::PushID(anIntId); }
-	IDScope::~IDScope() { ImGui::PopID(); }
+	IDScope::IDScope([[maybe_unused]] const char* aStringId) { IMGUI_ONLY(ImGui::PushID(aStringId)); }
+	IDScope::IDScope([[maybe_unused]] void* aPtrId) { IMGUI_ONLY(ImGui::PushID(aPtrId)); }
+	IDScope::IDScope([[maybe_unused]] int anIntId) { IMGUI_ONLY(ImGui::PushID(anIntId)); }
+	IDScope::~IDScope() { IMGUI_ONLY(ImGui::PopID()); }
 
-	DisableScope::DisableScope(bool anIsDisabled) { ImGui::BeginDisabled(anIsDisabled); }
-	DisableScope::~DisableScope() { ImGui::EndDisabled(); }
+	DisableScope::DisableScope([[maybe_unused]] bool anIsDisabled) { IMGUI_ONLY(ImGui::BeginDisabled(anIsDisabled)); }
+	DisableScope::~DisableScope() { IMGUI_ONLY(ImGui::EndDisabled()); }
 
 	//bool DragDropSource(const size_t& aTypeHash, const std::function<bool(std::any&)>& aDragCallback)
 	//{
@@ -330,94 +344,272 @@ namespace RoseGold::EditorGUI
 
 	namespace Example
 	{
-		void ShowDemoWindow(const Window::WindowData& aWindowData) { ImGui::ShowDemoWindow(aWindowData.OpenPtr); }
+		void ShowDemoWindow([[maybe_unused]] const Window::WindowData& aWindowData) { IMGUI_ONLY(ImGui::ShowDemoWindow(aWindowData.OpenPtr)); }
 	}
 
 	namespace Layout
 	{
-		void Separator() { ImGui::Separator(); }
-		void SameLine() { ImGui::SameLine(); }
-		void NewLine() { ImGui::NewLine(); }
-		void Spacing() { ImGui::Spacing(); }
-		void Dummy(const Size& aSize) { ImGui::Dummy(toVec(aSize)); }
-		void Indent() { ImGui::Indent(); }
-		void Unindent() { ImGui::Unindent(); }
-		void BeginGroup() { ImGui::BeginGroup(); }
-		void EndGroup() { ImGui::EndGroup(); }
+		void Separator() { IMGUI_ONLY(ImGui::Separator()); }
+		void SameLine() { IMGUI_ONLY(ImGui::SameLine()); }
+		void NewLine() { IMGUI_ONLY(ImGui::NewLine()); }
+		void Spacing() { IMGUI_ONLY(ImGui::Spacing()); }
+		void Dummy([[maybe_unused]] const Size& aSize) { IMGUI_ONLY(ImGui::Dummy(toVec(aSize))); }
+		void Indent() { IMGUI_ONLY(ImGui::Indent()); }
+		void Unindent() { IMGUI_ONLY(ImGui::Unindent()); }
+		void BeginGroup() { IMGUI_ONLY(ImGui::BeginGroup()); }
+		void EndGroup() { IMGUI_ONLY(ImGui::EndGroup()); }
 	}
 
 	namespace Menu
 	{
-		bool Item(const char* aLabel, const char* aShortcut, bool anIsSelected, bool anIsEnabled) { return ImGui::MenuItem(aLabel, aShortcut, anIsSelected, anIsEnabled); }
+		bool Item([[maybe_unused]] const char* aLabel, [[maybe_unused]] const char* aShortcut, [[maybe_unused]] bool anIsSelected, [[maybe_unused]] bool anIsEnabled)
+		{
+#if IS_IMGUI_ENABLED
+			return ImGui::MenuItem(aLabel, aShortcut, anIsSelected, anIsEnabled);
+#else
+			return false;
+#endif
+		}
 
-		SubMenuScope::SubMenuScope(const char* aLabel, bool anIsEnabled) : GUIScope(ImGui::BeginMenu(aLabel, anIsEnabled)) {}
-		void SubMenuScope::Dispose() { ImGui::EndMenu(); }
+		SubMenuScope::SubMenuScope([[maybe_unused]] const char* aLabel, [[maybe_unused]] bool anIsEnabled) : GUIScope(
+#if IS_IMGUI_ENABLED
+			ImGui::BeginMenu(aLabel, anIsEnabled)
+#else
+			false
+#endif
+		) {}
+		void SubMenuScope::Dispose() { IMGUI_ONLY(ImGui::EndMenu()); }
 
-		MenuBarScope::MenuBarScope() : GUIScope(ImGui::BeginMenuBar()) { }
-		void MenuBarScope::Dispose() { ImGui::EndMenuBar(); }
+		MenuBarScope::MenuBarScope() : GUIScope(
+#if IS_IMGUI_ENABLED
+			ImGui::BeginMenuBar()
+#else
+			false
+#endif
+		) { }
+		void MenuBarScope::Dispose() { IMGUI_ONLY(ImGui::EndMenuBar()); }
 
-		MainMenuBarScope::MainMenuBarScope() : GUIScope(ImGui::BeginMainMenuBar()) { }
-		void MainMenuBarScope::Dispose() { ImGui::EndMainMenuBar(); }
+		MainMenuBarScope::MainMenuBarScope() : GUIScope(
+#if IS_IMGUI_ENABLED
+			ImGui::BeginMainMenuBar()
+#else
+			false
+#endif
+		) { }
+		void MainMenuBarScope::Dispose() { IMGUI_ONLY(ImGui::EndMainMenuBar()); }
 	}
 
 	namespace TabBar
 	{
-		TabBarScope::TabBarScope(const char* aStringId, const TabBarOptions& someOptions) : GUIScope(ImGui::BeginTabBar(aStringId, toImGuiFlags(someOptions))) { }
-		void TabBarScope::Dispose() { ImGui::EndTabBar(); }
+		TabBarScope::TabBarScope([[maybe_unused]] const char* aStringId, [[maybe_unused]] const TabBarOptions& someOptions) : GUIScope(
+#if IS_IMGUI_ENABLED
+			ImGui::BeginTabBar(aStringId, toImGuiFlags(someOptions))
+#else
+			false
+#endif
+		) { }
+		void TabBarScope::Dispose() { IMGUI_ONLY(ImGui::EndTabBar()); }
 
-		bool TabBarScope::TabBarButton(const char* aLabel, const TabBarOptions& someOptions) { return ImGui::TabItemButton(aLabel, toImGuiFlags(someOptions)); }
+		bool TabBarScope::TabBarButton([[maybe_unused]] const char* aLabel, [[maybe_unused]] const TabBarOptions& someOptions)
+		{
+#if IS_IMGUI_ENABLED
+			return ImGui::TabItemButton(aLabel, toImGuiFlags(someOptions));
+#else
+			return false;
+#endif
+		}
 
-		TabBarScope::TabBarItemScope::TabBarItemScope(const char* aLabel, bool* anOpenPtr, const TabBarOptions& someOptions) : GUIScope(ImGui::BeginTabItem(aLabel, anOpenPtr, toImGuiFlags(someOptions))) { }
-		void TabBarScope::TabBarItemScope::Dispose() { ImGui::EndTabItem(); }
+		TabBarScope::TabBarItemScope::TabBarItemScope([[maybe_unused]] const char* aLabel, [[maybe_unused]] bool* anOpenPtr, [[maybe_unused]] const TabBarOptions& someOptions) : GUIScope(
+#if IS_IMGUI_ENABLED
+			ImGui::BeginTabItem(aLabel, anOpenPtr, toImGuiFlags(someOptions))
+#else
+			false
+#endif
+		) { }
+		void TabBarScope::TabBarItemScope::Dispose() { IMGUI_ONLY(ImGui::EndTabItem()); }
 	}
 
 	namespace Table
 	{
-		TableScope::TableScope(const char* aStringId, int aColumnCount, const TableOptions& someOptions)
-			: GUIScope(ImGui::BeginTable(aStringId, aColumnCount, toImGuiFlags(someOptions), toVec(someOptions.OuterSize), someOptions.InnerWidth))
+		TableScope::TableScope([[maybe_unused]] const char* aStringId, [[maybe_unused]] int aColumnCount, [[maybe_unused]] const TableOptions& someOptions)
+			: GUIScope(
+#if IS_IMGUI_ENABLED
+				ImGui::BeginTable(aStringId, aColumnCount, toImGuiFlags(someOptions), toVec(someOptions.OuterSize), someOptions.InnerWidth)
+#else
+				false
+#endif
+			)
 		{ }
 
-		void TableScope::Dispose() { ImGui::EndTable(); }
+		void TableScope::Dispose() { IMGUI_ONLY(ImGui::EndTable()); }
 
-		void TableScope::Setup_Column(const char* aColumnHeader, const TableColumnFlags& someOptions) { ImGui::TableSetupColumn(aColumnHeader, toImGuiFlags(someOptions)); }
-		void TableScope::Setup_HeadersRow() { ImGui::TableHeadersRow(); }
-		void TableScope::Setup_ScrollFreeze(int aColumnCount, int aRowCount) { ImGui::TableSetupScrollFreeze(aColumnCount, aRowCount); }
+		void TableScope::Setup_Column([[maybe_unused]] const char* aColumnHeader, [[maybe_unused]] const TableColumnFlags& someOptions)
+		{
+#if IS_IMGUI_ENABLED
+			ImGui::TableSetupColumn(aColumnHeader, toImGuiFlags(someOptions));
+#endif
+		}
+		void TableScope::Setup_HeadersRow() { IMGUI_ONLY(ImGui::TableHeadersRow()); }
+		void TableScope::Setup_ScrollFreeze([[maybe_unused]] int aColumnCount, [[maybe_unused]] int aRowCount)
+		{
+#if IS_IMGUI_ENABLED
+			ImGui::TableSetupScrollFreeze(aColumnCount, aRowCount);
+#endif
+		}
 
-		void TableScope::NextRow() { ImGui::TableNextRow(); }
-		bool TableScope::NextColumn() { return ImGui::TableNextColumn(); }
-		bool TableScope::SetColumn(int aColumnIndex) { return ImGui::TableSetColumnIndex(aColumnIndex); }
+		void TableScope::NextRow() { IMGUI_ONLY(ImGui::TableNextRow()); }
+		bool TableScope::NextColumn()
+		{
+#if IS_IMGUI_ENABLED
+			return ImGui::TableNextColumn();
+#else
+			return false;
+#endif
+		}
+
+		bool TableScope::SetColumn([[maybe_unused]] int aColumnIndex)
+		{
+#if IS_IMGUI_ENABLED
+			return ImGui::TableSetColumnIndex(aColumnIndex);
+#else
+			return false;
+#endif
+		}
 	}
 
 	namespace Text
 	{
-		void Unformatted(const char* aText) { ImGui::TextUnformatted(aText); }
-		void Formatted(const char* aFormat, ...) { va_list args; va_start(args, aFormat); FormattedV(aFormat, args); va_end(args); }
-		void FormattedV(const char* aFormat, const va_list& someVarArgs) { ImGui::TextV(aFormat, someVarArgs); }
-		void Formatted(const Color& aColor, const char* aFormat, ...) { va_list args; va_start(args, aFormat); FormattedV(aColor, aFormat, args); va_end(args); }
-		void FormattedV(const Color& aColor, const char* aFormat, const va_list& someVarArgs) { ImGui::TextColoredV(toColVec(aColor), aFormat, someVarArgs); }
-		void Disabled(const char* aFormat, ...) { va_list args; va_start(args, aFormat); DisabledV(aFormat, args); va_end(args); }
-		void DisabledV(const char* aFormat, const va_list& someVarArgs) { ImGui::TextDisabledV(aFormat, someVarArgs); }
-		void Wrapped(const char* aFormat, ...) { va_list args; va_start(args, aFormat); WrappedV(aFormat, args); va_end(args); }
-		void WrappedV(const char* aFormat, const va_list& someVarArgs) { ImGui::TextWrappedV(aFormat, someVarArgs); }
-		void Labelled(const char* aLabel, const char* aFormat, ...) { va_list args; va_start(args, aFormat); LabelledV(aLabel, aFormat, args); va_end(args); }
-		void LabelledV(const char* aLabel, const char* aFormat, const va_list& someVarArgs) { ImGui::LabelTextV(aLabel, aFormat, someVarArgs); }
-		void Bullet(const char* aFormat, ...) { va_list args; va_start(args, aFormat); BulletV(aFormat, args); va_end(args); }
-		void BulletV(const char* aFormat, const va_list& someVarArgs) { ImGui::BulletTextV(aFormat, someVarArgs); }
+		void Unformatted([[maybe_unused]] const char* aText) { IMGUI_ONLY(ImGui::TextUnformatted(aText)); }
+		void Formatted([[maybe_unused]] const char* aFormat, ...) {
+#if IS_IMGUI_ENABLED
+			va_list args; va_start(args, aFormat); FormattedV(aFormat, args); va_end(args);
+#endif
+		}
+		void FormattedV([[maybe_unused]] const char* aFormat, [[maybe_unused]] const va_list& someVarArgs) {
+#if IS_IMGUI_ENABLED
+			ImGui::TextV(aFormat, someVarArgs);
+#endif
+		}
+		void Formatted([[maybe_unused]] const Color& aColor, [[maybe_unused]] const char* aFormat, ...) {
+#if IS_IMGUI_ENABLED
+			va_list args; va_start(args, aFormat); FormattedV(aColor, aFormat, args); va_end(args);
+#endif
+		}
+		void FormattedV([[maybe_unused]] const Color& aColor, [[maybe_unused]] const char* aFormat, [[maybe_unused]] const va_list& someVarArgs) {
+#if IS_IMGUI_ENABLED
+			ImGui::TextColoredV(toColVec(aColor), aFormat, someVarArgs);
+#endif
+		}
+		void Disabled([[maybe_unused]] const char* aFormat, ...) {
+#if IS_IMGUI_ENABLED
+			va_list args; va_start(args, aFormat); DisabledV(aFormat, args); va_end(args);
+#endif
+		}
+		void DisabledV([[maybe_unused]] const char* aFormat, [[maybe_unused]] const va_list& someVarArgs) {
+#if IS_IMGUI_ENABLED
+			ImGui::TextDisabledV(aFormat, someVarArgs);
+#endif
+		}
+		void Wrapped([[maybe_unused]] const char* aFormat, ...) {
+#if IS_IMGUI_ENABLED
+			va_list args; va_start(args, aFormat); WrappedV(aFormat, args); va_end(args);
+#endif
+		}
+		void WrappedV([[maybe_unused]] const char* aFormat, [[maybe_unused]] const va_list& someVarArgs) {
+#if IS_IMGUI_ENABLED
+			ImGui::TextWrappedV(aFormat, someVarArgs);
+#endif
+		}
+		void Labelled([[maybe_unused]] const char* aLabel, [[maybe_unused]] const char* aFormat, ...) {
+#if IS_IMGUI_ENABLED
+			va_list args; va_start(args, aFormat); LabelledV(aLabel, aFormat, args); va_end(args);
+#endif
+		}
+		void LabelledV([[maybe_unused]] const char* aLabel, [[maybe_unused]] const char* aFormat, [[maybe_unused]] const va_list& someVarArgs) {
+#if IS_IMGUI_ENABLED
+			ImGui::LabelTextV(aLabel, aFormat, someVarArgs);
+#endif
+		}
+		void Bullet([[maybe_unused]] const char* aFormat, ...) {
+#if IS_IMGUI_ENABLED
+			va_list args; va_start(args, aFormat); BulletV(aFormat, args); va_end(args);
+#endif
+		}
+		void BulletV([[maybe_unused]] const char* aFormat, [[maybe_unused]] const va_list& someVarArgs) {
+#if IS_IMGUI_ENABLED
+			ImGui::BulletTextV(aFormat, someVarArgs);
+#endif
+		}
 	}
 
 	namespace Widget
 	{
-		bool Button(const char* aLabel, const Size& aSize) { return ImGui::Button(aLabel, toVec(aSize)); }
-		bool ButtonSmall(const char* aLabel) { return ImGui::SmallButton(aLabel); }
-		bool Checkbox(const char* aLabel, bool& aCheckedStatePtr) { return ImGui::Checkbox(aLabel, &aCheckedStatePtr); }
-		bool CheckboxFlags(const char* aLabel, int& aFlagsPtr, int aFlagValue) { return ImGui::CheckboxFlags(aLabel, &aFlagsPtr, aFlagValue); }
-		bool CheckboxFlags(const char* aLabel, unsigned int& aFlagsPtr, unsigned int aFlagValue) { return ImGui::CheckboxFlags(aLabel, &aFlagsPtr, aFlagValue); }
-		bool RadioButton(const char* aLabel, bool anIsActive) { return ImGui::RadioButton(aLabel, anIsActive); }
-		bool RadioButton(const char* aLabel, int& aValuePtr, int aButtonValue) { return ImGui::RadioButton(aLabel, &aValuePtr, aButtonValue); }
-		void ProgressBar(float aFraction, const Size& aSize, const char* aTextOverlay) { ImGui::ProgressBar(aFraction, toVec(aSize), aTextOverlay); }
-		void Bullet() { ImGui::Bullet(); }
+		bool Button([[maybe_unused]] const char* aLabel, [[maybe_unused]] const Size& aSize)
+		{
+#if IS_IMGUI_ENABLED
+			return ImGui::Button(aLabel, toVec(aSize));
+#else
+			return false;
+#endif
+		}
+		bool ButtonSmall([[maybe_unused]] const char* aLabel)
+		{
+#if IS_IMGUI_ENABLED
+			return ImGui::SmallButton(aLabel);
+#else
+			return false;
+#endif
+		}
+		bool Checkbox([[maybe_unused]] const char* aLabel, [[maybe_unused]] bool& aCheckedStatePtr)
+		{
+#if IS_IMGUI_ENABLED
+			return ImGui::Checkbox(aLabel, &aCheckedStatePtr);
+#else
+			return false;
+#endif
+		}
+		bool CheckboxFlags([[maybe_unused]] const char* aLabel, [[maybe_unused]] int& aFlagsPtr, [[maybe_unused]] int aFlagValue) {
+#if IS_IMGUI_ENABLED
+			return ImGui::CheckboxFlags(aLabel, &aFlagsPtr, aFlagValue);
+#else
+			return false;
+#endif
+		}
+		bool CheckboxFlags([[maybe_unused]] const char* aLabel, [[maybe_unused]] unsigned int& aFlagsPtr, [[maybe_unused]] unsigned int aFlagValue) {
+#if IS_IMGUI_ENABLED
+			return ImGui::CheckboxFlags(aLabel, &aFlagsPtr, aFlagValue);
+#else
+			return false;
+#endif
+		}
+		bool RadioButton([[maybe_unused]] const char* aLabel, [[maybe_unused]] bool anIsActive) {
+#if IS_IMGUI_ENABLED
+			return ImGui::RadioButton(aLabel, anIsActive);
+#else
+			return false;
+#endif
+		}
+		bool RadioButton([[maybe_unused]] const char* aLabel, [[maybe_unused]] int& aValuePtr, [[maybe_unused]] int aButtonValue) {
+#if IS_IMGUI_ENABLED
+			return ImGui::RadioButton(aLabel, &aValuePtr, aButtonValue);
+#else
+			return false;
+#endif
+		}
+		void ProgressBar([[maybe_unused]] float aFraction, [[maybe_unused]] const Size& aSize, [[maybe_unused]] const char* aTextOverlay) {
+#if IS_IMGUI_ENABLED
+			ImGui::ProgressBar(aFraction, toVec(aSize), aTextOverlay);
+#endif
+		}
+		void Bullet() { IMGUI_ONLY(ImGui::Bullet()); }
 
-		bool Combo(const char* aLabel, int& aCurrentItemIndex, const std::vector<const char*>& someItems) { return ImGui::Combo(aLabel, &aCurrentItemIndex, &someItems.front(), static_cast<int>(someItems.size())); }
+		bool Combo([[maybe_unused]] const char* aLabel, [[maybe_unused]] int& aCurrentItemIndex, [[maybe_unused]] const std::vector<const char*>& someItems) {
+#if IS_IMGUI_ENABLED
+			return ImGui::Combo(aLabel, &aCurrentItemIndex, &someItems.front(), static_cast<int>(someItems.size()));
+#else
+			return false;
+#endif
+		}
 
 		/*void Image(const Texture2D& aTexture, const System::Math::Vector2& aSize,
 			const System::Math::Vector2& aUV0, const System::Math::Vector2& aUV1,
@@ -429,35 +621,92 @@ namespace RoseGold::EditorGUI
 		/*bool Knob(const char* aLabel, float& aValue, const KnobOptions& someOptions) { return ImGuiKnobs::Knob(aLabel, &aValue, someOptions.Minimum, someOptions.Maximum, 0.f, someOptions.Format, toImGuiFlags(someOptions.Variant), 0.f, toImGuiFlags(someOptions), someOptions.Steps); }
 		bool Knob(const char* aLabel, int& aValue, const KnobOptions& someOptions) { return ImGuiKnobs::KnobInt(aLabel, &aValue, static_cast<int>(someOptions.Minimum), static_cast<int>(someOptions.Maximum), 0.f, someOptions.Format, toImGuiFlags(someOptions.Variant), 0.f, toImGuiFlags(someOptions), someOptions.Steps); }*/
 
-		bool Slider(const char* aLabel, float& aValue, const SliderOptions& someOptions) { return ImGui::SliderFloat(aLabel, &aValue, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions)); }
-		bool Slider(const char* aLabel, Math::Vector2& aValue, const SliderOptions& someOptions) { return ImGui::SliderFloat2(aLabel, &aValue.X, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions)); }
-		bool Slider(const char* aLabel, Math::Vector3& aValue, const SliderOptions& someOptions) { return ImGui::SliderFloat3(aLabel, &aValue.X, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions)); }
-		bool Slider(const char* aLabel, Math::Vector4& aValue, const SliderOptions& someOptions) { return ImGui::SliderFloat4(aLabel, &aValue.X, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions)); }
-		bool SliderBox(const char* aLabel, float& aValue, const SliderOptions& someOptions) { return ImGui::DragFloat(aLabel, &aValue, 1.0f, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions)); }
-		bool SliderBox(const char* aLabel, Math::Vector2& aValue, const SliderOptions& someOptions) { return ImGui::DragFloat2(aLabel, &aValue.X, 1.0f, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions)); }
-		bool SliderBox(const char* aLabel, Math::Vector3& aValue, const SliderOptions& someOptions) { return ImGui::DragFloat3(aLabel, &aValue.X, 1.0f, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions)); }
-		bool SliderBox(const char* aLabel, Math::Vector4& aValue, const SliderOptions& someOptions) { return ImGui::DragFloat4(aLabel, &aValue.X, 1.0f, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions)); }
+		bool Slider([[maybe_unused]] const char* aLabel, [[maybe_unused]] float& aValue, [[maybe_unused]] const SliderOptions& someOptions) {
+#if IS_IMGUI_ENABLED
+			return ImGui::SliderFloat(aLabel, &aValue, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions));
+#else
+			return false;
+#endif
+		}
+		bool Slider([[maybe_unused]] const char* aLabel, [[maybe_unused]] Math::Vector2& aValue, [[maybe_unused]] const SliderOptions& someOptions) {
+#if IS_IMGUI_ENABLED
+			return ImGui::SliderFloat2(aLabel, &aValue.X, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions));
+#else
+			return false;
+#endif
+		}
+		bool Slider([[maybe_unused]] const char* aLabel, [[maybe_unused]] Math::Vector3& aValue, [[maybe_unused]] const SliderOptions& someOptions) {
+#if IS_IMGUI_ENABLED
+			return ImGui::SliderFloat3(aLabel, &aValue.X, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions));
+#else
+			return false;
+#endif
+		}
+		bool Slider([[maybe_unused]] const char* aLabel, [[maybe_unused]] Math::Vector4& aValue, [[maybe_unused]] const SliderOptions& someOptions) {
+#if IS_IMGUI_ENABLED
+			return ImGui::SliderFloat4(aLabel, &aValue.X, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions));
+#else
+			return false;
+#endif
+		}
+		bool SliderBox([[maybe_unused]] const char* aLabel, [[maybe_unused]] float& aValue, [[maybe_unused]] const SliderOptions& someOptions) {
+#if IS_IMGUI_ENABLED
+			return ImGui::DragFloat(aLabel, &aValue, 1.0f, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions));
+#else
+			return false;
+#endif
+		}
+		bool SliderBox([[maybe_unused]] const char* aLabel, [[maybe_unused]] Math::Vector2& aValue, [[maybe_unused]] const SliderOptions& someOptions) {
+#if IS_IMGUI_ENABLED
+			return ImGui::DragFloat2(aLabel, &aValue.X, 1.0f, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions));
+#else
+			return false;
+#endif
+		}
+		bool SliderBox([[maybe_unused]] const char* aLabel, [[maybe_unused]] Math::Vector3& aValue, [[maybe_unused]] const SliderOptions& someOptions) {
+#if IS_IMGUI_ENABLED
+			return ImGui::DragFloat3(aLabel, &aValue.X, 1.0f, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions));
+#else
+			return false;
+#endif
+		}
+		bool SliderBox([[maybe_unused]] const char* aLabel, [[maybe_unused]] Math::Vector4& aValue, [[maybe_unused]] const SliderOptions& someOptions) {
+#if IS_IMGUI_ENABLED
+			return ImGui::DragFloat4(aLabel, &aValue.X, 1.0f, someOptions.Minimum, someOptions.Maximum, someOptions.Format, toImGuiFlags(someOptions));
+#else
+			return false;
+#endif
+		}
 
-		bool ColorBox(const char* aLabel, Color& aColor, ColorEditOptions someFlags)
+		bool ColorBox([[maybe_unused]] const char* aLabel, [[maybe_unused]] Color& aColor, [[maybe_unused]] ColorEditOptions someFlags)
 		{
+#if IS_IMGUI_ENABLED
 			ImVec4 colVec = toColVec(aColor);
 			if (!ImGui::ColorEdit4(aLabel, &colVec.x, toImGuiFlags(someFlags)))
 				return false;
 			aColor = fromColVec(colVec);
 			return true;
+#else
+			return false;
+#endif
 		}
 
-		bool ColorBox(const char* aLabel, Color32& aColor, ColorEditOptions someFlags)
+		bool ColorBox([[maybe_unused]] const char* aLabel, [[maybe_unused]] Color32& aColor, [[maybe_unused]] ColorEditOptions someFlags)
 		{
+#if IS_IMGUI_ENABLED
 			ImVec4 colVec = toCol32Vec(aColor);
 			if (!ImGui::ColorEdit4(aLabel, &colVec.x, toImGuiFlags(someFlags)))
 				return false;
 			aColor = fromCol32Vec(colVec);
 			return true;
+#else
+			return false;
+#endif
 		}
 
-		bool ColorPicker(const char* aLabel, Color& aColor, ColorEditOptions someFlags, const std::optional<Color>& aReferenceColor)
+		bool ColorPicker([[maybe_unused]] const char* aLabel, [[maybe_unused]] Color& aColor, [[maybe_unused]] ColorEditOptions someFlags, [[maybe_unused]] const std::optional<Color>& aReferenceColor)
 		{
+#if IS_IMGUI_ENABLED
 			ImVec4 colVec = toColVec(aColor);
 			ImVec4 refColVec;
 			if (aReferenceColor.has_value())
@@ -466,10 +715,14 @@ namespace RoseGold::EditorGUI
 				return false;
 			aColor = fromColVec(colVec);
 			return true;
+#else
+			return false;
+#endif
 		}
 
-		bool ColorPicker(const char* aLabel, Color32& aColor, ColorEditOptions someFlags, const std::optional<Color32>& aReferenceColor)
+		bool ColorPicker([[maybe_unused]] const char* aLabel, [[maybe_unused]] Color32& aColor, [[maybe_unused]] ColorEditOptions someFlags, [[maybe_unused]] const std::optional<Color32>& aReferenceColor)
 		{
+#if IS_IMGUI_ENABLED
 			ImVec4 colVec = toCol32Vec(aColor);
 			ImVec4 refColVec;
 			if (aReferenceColor.has_value())
@@ -478,99 +731,261 @@ namespace RoseGold::EditorGUI
 				return false;
 			aColor = fromCol32Vec(colVec);
 			return true;
+#else
+			return false;
+#endif
 		}
 
 		namespace Tree
 		{
-			NodeScope::NodeScope(const char* aLabel) : GUIScope(ImGui::TreeNode(aLabel)) {  }
-			NodeScope::NodeScope(const char* aStringId, const char* aFormat, ...) { va_list args; va_start(args, aFormat); SetValid(ImGui::TreeNodeV(aStringId, aFormat, args)); va_end(args); }
-			NodeScope::NodeScope(const void* aPtrId, const char* aFormat, ...) { va_list args; va_start(args, aFormat); SetValid(ImGui::TreeNodeV(aPtrId, aFormat, args)); va_end(args); }
-			void NodeScope::Dispose() { ImGui::TreePop(); }
+			NodeScope::NodeScope([[maybe_unused]] const char* aLabel) : GUIScope(
+#if IS_IMGUI_ENABLED
+				ImGui::TreeNode(aLabel)
+#else
+				false
+#endif
+			){  }
+			NodeScope::NodeScope([[maybe_unused]] const char* aStringId, [[maybe_unused]] const char* aFormat, ...) {
+#if IS_IMGUI_ENABLED
+				va_list args; va_start(args, aFormat); SetValid(ImGui::TreeNodeV(aStringId, aFormat, args)); va_end(args);
+#endif
+			}
+			NodeScope::NodeScope([[maybe_unused]] const void* aPtrId, [[maybe_unused]] const char* aFormat, ...) {
+#if IS_IMGUI_ENABLED
+				va_list args; va_start(args, aFormat); SetValid(ImGui::TreeNodeV(aPtrId, aFormat, args)); va_end(args);
+#endif
+			}
+			void NodeScope::Dispose() { IMGUI_ONLY(ImGui::TreePop()); }
 
-			NodeVScope::NodeVScope(const char* aStringId, const char* aFormat, const va_list& someArguments) : GUIScope(ImGui::TreeNodeV(aStringId, aFormat, someArguments)) { }
-			NodeVScope::NodeVScope(const void* aPtrId, const char* aFormat, const va_list& someArguments) : GUIScope(ImGui::TreeNodeV(aPtrId, aFormat, someArguments)) { }
+			NodeVScope::NodeVScope([[maybe_unused]] const char* aStringId, [[maybe_unused]] const char* aFormat, [[maybe_unused]] const va_list& someArguments) : GUIScope(
+#if IS_IMGUI_ENABLED
+				ImGui::TreeNodeV(aStringId, aFormat, someArguments)
+#else
+				false
+#endif
+			) { }
+			NodeVScope::NodeVScope([[maybe_unused]] const void* aPtrId, [[maybe_unused]] const char* aFormat, [[maybe_unused]] const va_list& someArguments) : GUIScope(
+#if IS_IMGUI_ENABLED
+				ImGui::TreeNodeV(aPtrId, aFormat, someArguments)
+#else
+				false
+#endif
+			) { }
 
-			NodeExScope::NodeExScope(const char* aLabel, TreeNodeOptions someOptions) : GUIScope(ImGui::TreeNodeEx(aLabel, toImGuiFlags(someOptions))) { }
-			NodeExScope::NodeExScope(const char* aStringId, TreeNodeOptions someOptions, const char* aFormat, ...) { va_list args; va_start(args, aFormat); SetValid(ImGui::TreeNodeExV(aStringId, toImGuiFlags(someOptions), aFormat, args)); va_end(args); }
-			NodeExScope::NodeExScope(const void* aPtrId, TreeNodeOptions someOptions, const char* aFormat, ...) { va_list args; va_start(args, aFormat); SetValid(ImGui::TreeNodeExV(aPtrId, toImGuiFlags(someOptions), aFormat, args)); va_end(args); }
+			NodeExScope::NodeExScope([[maybe_unused]] const char* aLabel, [[maybe_unused]] TreeNodeOptions someOptions) : GUIScope(
+#if IS_IMGUI_ENABLED
+				ImGui::TreeNodeEx(aLabel, toImGuiFlags(someOptions))
+#else
+				false
+#endif
+			) { }
+			NodeExScope::NodeExScope([[maybe_unused]] const char* aStringId, [[maybe_unused]] TreeNodeOptions someOptions, [[maybe_unused]] const char* aFormat, ...) {
+#if IS_IMGUI_ENABLED
+				va_list args; va_start(args, aFormat); SetValid(ImGui::TreeNodeExV(aStringId, toImGuiFlags(someOptions), aFormat, args)); va_end(args);
+#endif
+			}
+			NodeExScope::NodeExScope([[maybe_unused]] const void* aPtrId, [[maybe_unused]] TreeNodeOptions someOptions, [[maybe_unused]] const char* aFormat, ...) {
+#if IS_IMGUI_ENABLED
+				va_list args; va_start(args, aFormat); SetValid(ImGui::TreeNodeExV(aPtrId, toImGuiFlags(someOptions), aFormat, args)); va_end(args);
+#endif
+			}
 
-			NodeExVScope::NodeExVScope(const char* aStringId, TreeNodeOptions someOptions, const char* aFormat, const va_list& someArguments) : GUIScope(ImGui::TreeNodeExV(aStringId, toImGuiFlags(someOptions), aFormat, someArguments)) { }
-			NodeExVScope::NodeExVScope(const void* aPtrId, TreeNodeOptions someOptions, const char* aFormat, const va_list& someArguments) : GUIScope(ImGui::TreeNodeExV(aPtrId, toImGuiFlags(someOptions), aFormat, someArguments)) { }
+			NodeExVScope::NodeExVScope([[maybe_unused]] const char* aStringId, [[maybe_unused]] TreeNodeOptions someOptions, [[maybe_unused]] const char* aFormat, [[maybe_unused]] const va_list& someArguments) : GUIScope(
+#if IS_IMGUI_ENABLED
+				ImGui::TreeNodeExV(aStringId, toImGuiFlags(someOptions), aFormat, someArguments)
+#else
+				false
+#endif
+			) { }
+			NodeExVScope::NodeExVScope([[maybe_unused]] const void* aPtrId, [[maybe_unused]] TreeNodeOptions someOptions, [[maybe_unused]] const char* aFormat, [[maybe_unused]] const va_list& someArguments) : GUIScope(
+#if IS_IMGUI_ENABLED
+				ImGui::TreeNodeExV(aPtrId, toImGuiFlags(someOptions), aFormat, someArguments)
+#else
+				false
+#endif
+			) { }
 
-			void SetNextItemOpen(bool anIsOpen, Condition aCondition) { ImGui::SetNextItemOpen(anIsOpen, toImGuiFlags(aCondition)); }
+			void SetNextItemOpen([[maybe_unused]] bool anIsOpen, [[maybe_unused]] Condition aCondition) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetNextItemOpen(anIsOpen, toImGuiFlags(aCondition));
+#endif
+			}
 		}
 
-		bool ListBox(const char* aLabel, int& aCurrentItemIndex, std::vector<const char*>& someItems) { aLabel; aCurrentItemIndex; someItems; return false; /*return ImGui::ListBox(aLabel, &aCurrentItemIndex, someItems.begin(), static_cast<int>(someItems.size()));*/ }
+		bool ListBox([[maybe_unused]] const char* aLabel, [[maybe_unused]] int& aCurrentItemIndex, [[maybe_unused]] std::vector<const char*>& someItems) {
+			aLabel; aCurrentItemIndex; someItems; return false; /*return ImGui::ListBox(aLabel, &aCurrentItemIndex, someItems.begin(), static_cast<int>(someItems.size()));*/
+		}
 	}
 
 	namespace Window
 	{
-		WindowScope::WindowScope(const Window::WindowData& aWindowData)
-			: GUIScopeEndAlways(ImGui::Begin(
-				aWindowData.Name,
-				aWindowData.OpenPtr,
-				toImGuiFlags(aWindowData)))
+		WindowScope::WindowScope([[maybe_unused]] const Window::WindowData& aWindowData) : GUIScopeEndAlways(
+#if IS_IMGUI_ENABLED
+			ImGui::Begin(aWindowData.Name, aWindowData.OpenPtr, toImGuiFlags(aWindowData))
+#else
+			false
+#endif
+		)
 		{ }
-		void WindowScope::Dispose() { ImGui::End(); }
+		void WindowScope::Dispose() { IMGUI_ONLY(ImGui::End()); }
 
-		ChildWindowScope::ChildWindowScope(const char* anId, const Window::WindowChildData& aWindowData)
-			: GUIScopeEndAlways(ImGui::BeginChild(
-				anId,
-				toVec(aWindowData.Size),
-				aWindowData.HasBorder,
-				toImGuiFlags(aWindowData)))
+		ChildWindowScope::ChildWindowScope([[maybe_unused]] const char* anId, [[maybe_unused]] const Window::WindowChildData& aWindowData) : GUIScopeEndAlways(
+#if IS_IMGUI_ENABLED
+			ImGui::BeginChild(anId, toVec(aWindowData.Size), aWindowData.HasBorder, toImGuiFlags(aWindowData))
+#else
+			false
+#endif
+		)
 		{ }
 
-		void ChildWindowScope::Dispose() { ImGui::EndChild(); }
+		void ChildWindowScope::Dispose() { IMGUI_ONLY(ImGui::End()); }
 
 		namespace Current
 		{
-			bool IsWindowFocused(FocusedFlags someFocusedFlags) { return ImGui::IsWindowFocused(toImGuiFlags(someFocusedFlags)); }
-			bool IsWindowHovered(FocusedFlags someFocusedFlags) { return ImGui::IsWindowHovered(toImGuiFlags(someFocusedFlags)); }
-			Point GetWindowPosition() { return fromVec(ImGui::GetWindowPos()); }
-			Size GetWindowSize() { return fromVec(ImGui::GetWindowSize()); }
-			float GetWindowWidth() { return ImGui::GetWindowWidth(); }
-			float GetWindowHeight() { return ImGui::GetWindowHeight(); }
+			bool IsWindowFocused([[maybe_unused]] FocusedFlags someFocusedFlags) {
+#if IS_IMGUI_ENABLED
+				return ImGui::IsWindowFocused(toImGuiFlags(someFocusedFlags));
+#else
+				return false;
+#endif
+			}
+			bool IsWindowHovered([[maybe_unused]] FocusedFlags someFocusedFlags) {
+#if IS_IMGUI_ENABLED
+				return ImGui::IsWindowHovered(toImGuiFlags(someFocusedFlags));
+#else
+				return false;
+#endif
+			}
+			Point GetWindowPosition() {
+#if IS_IMGUI_ENABLED
+				return fromVec(ImGui::GetWindowPos());
+#else
+				return Point::Zero();
+#endif
+			}
+			Size GetWindowSize() {
+#if IS_IMGUI_ENABLED
+				return fromVec(ImGui::GetWindowSize());
+#else
+				return Size::Zero();
+#endif
+			}
+			float GetWindowWidth() {
+#if IS_IMGUI_ENABLED
+				return ImGui::GetWindowWidth();
+#else
+				return 0.f;
+#endif
+			}
+			float GetWindowHeight() {
+#if IS_IMGUI_ENABLED
+				return ImGui::GetWindowHeight();
+#else
+				return 0.f;
+#endif
+			}
 		}
 
 		namespace Next
 		{
-			void SetWindowPosition(const Point& aPosition, Condition aCondition) { ImGui::SetNextWindowPos(toVec(aPosition), toImGuiFlags(aCondition)); }
-			void SetWindowPosition(const Point& aPosition, const Point& aPivot, Condition aCondition) { ImGui::SetNextWindowPos(toVec(aPosition), toImGuiFlags(aCondition), toVec(aPivot)); }
-			void SetWindowSize(const Size& aSize, Condition aCondition) { ImGui::SetNextWindowSize(toVec(aSize), toImGuiFlags(aCondition)); }
-			void SetWindowSizeConstraints(const Size& aMinimumSize, const Size& aMaximumSize) { ImGui::SetNextWindowSizeConstraints(toVec(aMinimumSize), toVec(aMaximumSize)); }
-			void SetWindowContentSize(const Size& aSize) { ImGui::SetNextWindowContentSize(toVec(aSize)); }
-			void SetWindowCollapsed(bool anIsCollapsed, Condition aCondition) { ImGui::SetNextWindowCollapsed(anIsCollapsed, toImGuiFlags(aCondition)); }
-			void SetWindowFocus() { ImGui::SetNextWindowFocus(); }
-			void SetWindowBackgroundAlpha(float anAlpha) { ImGui::SetNextWindowBgAlpha(anAlpha); }
+			void SetWindowPosition([[maybe_unused]] const Point& aPosition, [[maybe_unused]] Condition aCondition) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetNextWindowPos(toVec(aPosition), toImGuiFlags(aCondition));
+#endif
+			}
+			void SetWindowPosition([[maybe_unused]] const Point& aPosition, [[maybe_unused]] const Point& aPivot, [[maybe_unused]] Condition aCondition) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetNextWindowPos(toVec(aPosition), toImGuiFlags(aCondition), toVec(aPivot));
+#endif
+			}
+			void SetWindowSize([[maybe_unused]] const Size& aSize, [[maybe_unused]] Condition aCondition) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetNextWindowSize(toVec(aSize), toImGuiFlags(aCondition));
+#endif
+			}
+			void SetWindowSizeConstraints([[maybe_unused]] const Size& aMinimumSize, [[maybe_unused]] const Size& aMaximumSize) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetNextWindowSizeConstraints(toVec(aMinimumSize), toVec(aMaximumSize));
+#endif
+			}
+			void SetWindowContentSize([[maybe_unused]] const Size& aSize) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetNextWindowContentSize(toVec(aSize));
+#endif
+			}
+			void SetWindowCollapsed([[maybe_unused]] bool anIsCollapsed, [[maybe_unused]] Condition aCondition) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetNextWindowCollapsed(anIsCollapsed, toImGuiFlags(aCondition));
+#endif
+			}
+			void SetWindowFocus() {
+#if IS_IMGUI_ENABLED
+				ImGui::SetNextWindowFocus();
+#endif
+			}
+			void SetWindowBackgroundAlpha([[maybe_unused]] float anAlpha) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetNextWindowBgAlpha(anAlpha);
+#endif
+			}
 		}
 
 		namespace Named
 		{
-			void SetWindowPosition(const char* aName, const Point& aPosition, Condition aCondition) { ImGui::SetWindowPos(aName, toVec(aPosition), toImGuiFlags(aCondition)); }
-			void SetWindowSize(const char* aName, const Size& aSize, Condition aCondition) { ImGui::SetWindowSize(aName, toVec(aSize), toImGuiFlags(aCondition)); }
-			void SetWindowCollapsed(const char* aName, bool anIsCollapsed, Condition aCondition) { ImGui::SetWindowCollapsed(aName, anIsCollapsed, toImGuiFlags(aCondition)); }
-			void SetWindowFocus(const char* aName) { ImGui::SetWindowFocus(aName); }
+			void SetWindowPosition([[maybe_unused]] const char* aName, [[maybe_unused]] const Point& aPosition, [[maybe_unused]] Condition aCondition) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetWindowPos(aName, toVec(aPosition), toImGuiFlags(aCondition));
+#endif
+			}
+			void SetWindowSize([[maybe_unused]] const char* aName, [[maybe_unused]] const Size& aSize, [[maybe_unused]] Condition aCondition) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetWindowSize(aName, toVec(aSize), toImGuiFlags(aCondition));
+#endif
+			}
+			void SetWindowCollapsed([[maybe_unused]] const char* aName, [[maybe_unused]] bool anIsCollapsed, [[maybe_unused]] Condition aCondition) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetWindowCollapsed(aName, anIsCollapsed, toImGuiFlags(aCondition));
+#endif
+			}
+			void SetWindowFocus([[maybe_unused]] const char* aName) {
+#if IS_IMGUI_ENABLED
+				ImGui::SetWindowFocus(aName);
+#endif
+			}
 		}
 
 		namespace Popup
 		{
-			PopupScope::PopupScope(const Window::WindowData& aWindowData)
-				: GUIScope(ImGui::BeginPopup(aWindowData.Name, toImGuiFlags(aWindowData)))
-			{ }
+			PopupScope::PopupScope([[maybe_unused]] const Window::WindowData& aWindowData) : GUIScope(
+#if IS_IMGUI_ENABLED
+				ImGui::BeginPopup(aWindowData.Name, toImGuiFlags(aWindowData))
+#else
+				false
+#endif
+			) { }
 
-			PopupScope::PopupScope(bool anIsModal, const Window::WindowData& aWindowData)
+			PopupScope::PopupScope([[maybe_unused]] bool anIsModal, [[maybe_unused]] const Window::WindowData& aWindowData)
 			{
+#if IS_IMGUI_ENABLED
 				if (anIsModal)
 					SetValid(ImGui::BeginPopupModal(aWindowData.Name, aWindowData.OpenPtr, toImGuiFlags(aWindowData)));
 				else
 					SetValid(ImGui::BeginPopup(aWindowData.Name, toImGuiFlags(aWindowData)));
+#endif
 			}
 
-			void PopupScope::Dispose() { ImGui::EndPopup(); }
-			void PopupScope::Close() { ImGui::CloseCurrentPopup(); }
-			void OpenPopup(const char* aStringId, const PopupData& someOptions) { ImGui::OpenPopup(aStringId, toImGuiFlags(someOptions)); }
-			void OpenPopupOnItemClick(const char* aStringId, const PopupData& someOptions) { ImGui::OpenPopupOnItemClick(aStringId, toImGuiFlags(someOptions)); }
+			void PopupScope::Dispose() { IMGUI_ONLY(ImGui::EndPopup()); }
+			void PopupScope::Close() { IMGUI_ONLY(ImGui::CloseCurrentPopup()); }
+			void OpenPopup([[maybe_unused]] const char* aStringId, [[maybe_unused]] const PopupData& someOptions) {
+#if IS_IMGUI_ENABLED
+				ImGui::OpenPopup(aStringId, toImGuiFlags(someOptions));
+#endif
+			}
+			void OpenPopupOnItemClick([[maybe_unused]] const char* aStringId, [[maybe_unused]] const PopupData& someOptions) {
+#if IS_IMGUI_ENABLED
+				ImGui::OpenPopupOnItemClick(aStringId, toImGuiFlags(someOptions));
+#endif
+			}
 		}
 	}
 }
