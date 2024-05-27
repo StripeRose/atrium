@@ -15,6 +15,7 @@ namespace RoseGold::DirectX12
 	{
 	public:
 		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Window& aWindow);
+		~SwapChain();
 
 		void Invalidate();
 		bool NeedsResize() const;

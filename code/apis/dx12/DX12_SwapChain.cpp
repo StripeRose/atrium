@@ -26,6 +26,11 @@ namespace RoseGold::DirectX12
 			});
 	}
 
+	SwapChain::~SwapChain()
+	{
+		Invalidate();
+	}
+
 	void SwapChain::Invalidate()
 	{
 		if (myWindow != nullptr)

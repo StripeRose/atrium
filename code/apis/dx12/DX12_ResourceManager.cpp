@@ -23,7 +23,6 @@ namespace RoseGold::DirectX12
 		swapChain->SetName(aWindow.GetTitle().c_str());
 
 		aWindow.Closed.Connect(this, [&](Core::Window& aWindow) {
-			myDrawSurfaceSwapChain.at(&aWindow)->Invalidate();
 			myDrawSurfaceSwapChain.erase(&aWindow);
 			});
 
