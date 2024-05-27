@@ -23,11 +23,13 @@ namespace RoseGold
 	private:
 		void InitForWindow(Core::Window& aWindow);
 		void SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, Core::GraphicsFormat aTargetFormat);
+		void Cleanup();
 
 		void StyleColorsNord();
 
 		Core::GraphicsAPI& myGraphicsAPI;
 		std::shared_ptr<Core::RenderTexture> myRenderTarget;
+		Core::Window* myWindow;
 
 		std::unique_ptr<DirectX12::RenderPassDescriptorHeap> myCBV_SRVHeap;
 #endif

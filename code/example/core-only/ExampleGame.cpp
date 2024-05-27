@@ -191,6 +191,31 @@ void ExampleGame::OnLoop()
 	}
 }
 
+void ExampleGame::OnImGui()
+{
+	RoseGold::EditorGUI::Example::ShowDemoWindow();
+
+	using namespace RoseGold;
+
+	EditorGUI::Window::WindowData window;
+	window.Name = "Test window";
+	if (EditorGUI::Window::WindowScope scope{window})
+	{
+		EditorGUI::Text::Unformatted("This is some testing text");
+
+		static Color color = Color::Predefined::Red;
+		static Color32 color32 = Color32::Predefined::Green;
+		EditorGUI::Widget::ColorBox("Color box", color);
+		EditorGUI::Widget::ColorBox("Color32 box", color32);
+
+		EditorGUI::Widget::ColorPicker("Color picker", color);
+		EditorGUI::Widget::ColorPicker("Color32 picker", color32);
+
+		if (EditorGUI::Widget::Button("Exit engine"))
+			ShutDown();
+	}
+}
+
 void ExampleGame::OnExit()
 {
 	ZoneScoped;

@@ -1,5 +1,9 @@
 #pragma once
 
+#if IS_EDITOR_BUILD
+#include "Editor_GUI.hpp"
+#endif
+
 #include "Engine_Instance.hpp"
 
 namespace RoseGold
@@ -19,6 +23,7 @@ namespace RoseGold
 	protected:
 		virtual void OnStart() { }
 		virtual void OnLoop() { }
+		virtual void OnImGui() { }
 		virtual void OnExit() { }
 
 	protected:

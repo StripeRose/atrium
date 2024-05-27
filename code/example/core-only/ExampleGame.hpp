@@ -95,6 +95,7 @@ class ExampleGame : public RoseGold::Game
 public:
 	void OnStart() override;
 	void OnLoop() override;
+	void OnImGui() override;
 	void OnExit() override;
 
 private:

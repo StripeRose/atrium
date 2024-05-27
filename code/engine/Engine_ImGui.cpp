@@ -22,6 +22,7 @@ namespace RoseGold
 #if IS_IMGUI_ENABLED
 		: myGraphicsAPI(aGraphicsAPI)
 		, myRenderTarget(aTarget)
+		, myWindow(nullptr)
 	{
 		IMGUI_CHECKVERSION();
 
@@ -43,6 +44,15 @@ namespace RoseGold
 		io.ConfigDockingTransparentPayload = true;
 
 		io.FontAllowUserScaling = true;
+
+		ImGui::SetColorEditOptions(0
+			| ImGuiColorEditFlags_AlphaBar
+			| ImGuiColorEditFlags_AlphaPreviewHalf
+			| ImGuiColorEditFlags_Float
+			| ImGuiColorEditFlags_DisplayRGB
+			| ImGuiColorEditFlags_InputRGB
+			| ImGuiColorEditFlags_PickerHueWheel
+		);
 
 		StyleColorsNord();
 
@@ -74,6 +84,7 @@ namespace RoseGold
 	ImGuiHandler::~ImGuiHandler()
 	{
 #if IS_IMGUI_ENABLED
+		Cleanup();
 		ImGui::DestroyContext();
 #endif
 	}
@@ -87,8 +98,6 @@ namespace RoseGold
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-
-		ImGui::ShowDemoWindow();
 #endif
 	}
 
@@ -115,12 +124,8 @@ namespace RoseGold
 #if IS_IMGUI_ENABLED
 	void ImGuiHandler::InitForWindow(Core::Window& aWindow)
 	{
-		aWindow.Closed.Connect(this, [this](Core::Window& aWindow) {
-			static_cast<Win32::Window&>(aWindow).AdditionalWndProc = nullptr;
-			ImGui_ImplWin32_Shutdown();
-			ImGui_ImplDX12_Shutdown();
-			myRenderTarget.reset();
-			});
+		myWindow = &aWindow;
+		aWindow.Closed.Connect(this, [this](Core::Window&) { Cleanup(); });
 
 		Win32::Window& win32Window = static_cast<Win32::Window&>(aWindow);
 		win32Window.AdditionalWndProc = [](Win32::Window::AdditionalWndProcData& data) {
@@ -153,6 +158,21 @@ namespace RoseGold
 			myCBV_SRVHeap->GetHeapCPUStart(),
 			myCBV_SRVHeap->GetHeapGPUStart()
 		);
+	}
+
+	void ImGuiHandler::Cleanup()
+	{
+		if (!myWindow)
+			return;
+
+		Win32::Window* win32Window = static_cast<Win32::Window*>(myWindow);
+		win32Window->Closed.Disconnect(this);
+		win32Window->AdditionalWndProc = nullptr;
+		ImGui_ImplWin32_Shutdown();
+		ImGui_ImplDX12_Shutdown();
+
+		myRenderTarget.reset();
+		myWindow = nullptr;
 	}
 
 	void ImGuiHandler::StyleColorsNord()

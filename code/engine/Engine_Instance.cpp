@@ -16,6 +16,7 @@ namespace RoseGold
 	{
 		Debug::Assert(!myImGuiHandler, "Only one primary ImGui window supported.");
 		myImGuiHandler.reset(new ImGuiHandler(*myGraphicsAPI, aPrimaryWindow, aTarget));
+		aPrimaryWindow.Closed.Connect(this, [&](Core::Window&) { myImGuiHandler.reset(); });
 	}
 
 	void EngineInstance::Run(Game& aGame)
@@ -38,7 +39,10 @@ namespace RoseGold
 			myCurrentGame->OnLoop();
 
 			if (myImGuiHandler)
+			{
+				myCurrentGame->OnImGui();
 				myImGuiHandler->MarkFrameEnd();
+			}
 
 			myGraphicsAPI->MarkFrameEnd();
 		}
