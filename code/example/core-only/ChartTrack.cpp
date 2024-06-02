@@ -2,6 +2,8 @@
 #include "stdafx.hpp"
 #include "ChartTrack.hpp"
 
+#include "MidiDecoder.hpp"
+
 #include "Common_Diagnostics.hpp"
 
 std::unique_ptr<ChartTrack> ChartTrack::CreateTrackByName(const std::string& aName)
@@ -34,38 +36,48 @@ void ChartGuitarTrack::AddNote(std::uint8_t aNote, std::uint32_t aNoteStart, std
 {
 	if (aNote < 103)
 	{
-		std::vector<NoteRange>* difficulty;
-		std::uint8_t offset = 0;
+		std::uint8_t lane = 0;
+		std::uint8_t difficulty = 0;
 		if (aNote >= 59 && aNote <= 66)
 		{
-			difficulty = &myNotes[ChartTrackDifficulty::Easy];
-			offset = 59;
+			difficulty = 0;
+			lane = aNote - 59;
 		}
 		else if (aNote >= 71 && aNote <= 78)
 		{
-			difficulty = &myNotes[ChartTrackDifficulty::Medium];
-			offset = 71;
+			difficulty = 1;
+			lane = aNote - 71;
 		}
 		else if (aNote >= 83 && aNote <= 90)
 		{
-			difficulty = &myNotes[ChartTrackDifficulty::Hard];
-			offset = 83;
+			difficulty = 2;
+			lane = aNote - 83;
 		}
 		else if (aNote >= 95 && aNote <= 102)
 		{
-			difficulty = &myNotes[ChartTrackDifficulty::Expert];
-			offset = 95;
+			difficulty = 3;
+			lane = aNote - 95;
 		}
 		else
 		{
-			return;
+			RoseGold::Debug::LogWarning("Unknown note %s (%u)", MidiDecoder::NoteNumberToString(aNote).c_str(), aNote);
 		}
 
-		const std::uint8_t lane = aNote - offset;
-		NoteRange& note = difficulty->emplace_back();
+		if (mySysEx_TapNote.test(difficulty))
+		{
+			NoteRange& hopo = myNotes[ChartTrackDifficulty(difficulty)].emplace_back();
+			hopo.Note = Note::ForceHOPO;
+			hopo.Start = aNoteStart;
+			hopo.End = aNoteEnd;
+		}
+
+		NoteRange& note = myNotes[ChartTrackDifficulty(difficulty)].emplace_back();
 		note.Note = Note(lane);
 		note.Start = aNoteStart;
 		note.End = aNoteEnd;
+
+		if (mySysEx_OpenNote.test(difficulty))
+			note.Note = Note::Open;
 	}
 	else
 	{
@@ -90,6 +102,70 @@ void ChartGuitarTrack::AddNote(std::uint8_t aNote, std::uint32_t aNoteStart, std
 
 		case 126: marker.Marker = Marker::TremoloLane; break;
 		case 127: marker.Marker = Marker::TrillLane; break;
+
+		default:
+			RoseGold::Debug::LogWarning("Unknown note %s (%u)", MidiDecoder::NoteNumberToString(aNote).c_str(), aNote);
+			break;
 		}
 	}
+}
+
+void ChartGuitarTrack::AddSysEx(std::uint32_t aTick, const std::span<std::uint8_t>& someData)
+{
+	if (AddPhaseShift(aTick, someData))
+		return;
+
+	std::string dataInHex;
+	dataInHex.reserve(someData.size() * 3);
+	static const char* digits = "0123456789ABCDEF";
+	for (std::uint8_t d : someData)
+	{
+		dataInHex += digits[(d >> 4) & 0xF];
+		dataInHex += digits[d & 0xF];
+		dataInHex += ' ';
+	}
+
+	RoseGold::Debug::Log("%08u: Unknown SysEx event - %s", aTick, dataInHex.c_str());
+}
+
+bool ChartGuitarTrack::AddPhaseShift(std::uint32_t, const std::span<std::uint8_t>& someData)
+{
+	if (someData.size() != 7)
+		return false;
+
+	if (someData[0] != 'P' || someData[1] != 'S')
+		return false;
+
+	static constexpr std::uint8_t Easy = 0;
+	static constexpr std::uint8_t Medium = 1;
+	static constexpr std::uint8_t Hard = 2;
+	static constexpr std::uint8_t Expert = 3;
+	static constexpr std::uint8_t All = 0xFF;
+
+	static constexpr std::uint8_t OpenNote = 0x10;
+	static constexpr std::uint8_t TapNote = 0x40;
+
+	const std::uint8_t difficulty = someData[4];
+	const std::uint8_t type = someData[5];
+	const std::uint8_t value = someData[6];
+
+	PerDifficultyFlag* flag = nullptr;
+	if (type == 0x01)
+		flag = &mySysEx_OpenNote;
+	else if (type == 0x04)
+		flag = &mySysEx_TapNote;
+	else
+		return false;
+
+	if (difficulty == All)
+	{
+		for (std::uint8_t i = 0; i < static_cast<std::uint8_t>(ChartTrackDifficulty::Count); ++i)
+			flag->set(i, value != 0);
+	}
+	else
+	{
+		flag->set(difficulty, value != 0);
+	}
+
+	return true;
 }

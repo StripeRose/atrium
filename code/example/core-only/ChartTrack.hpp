@@ -4,8 +4,10 @@
 #include "ChartEnums.hpp"
 
 #include <array>
+#include <bitset>
 #include <map>
 #include <memory>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -18,11 +20,13 @@ public:
 	virtual ~ChartTrack() = default;
 
 	virtual void AddNote(std::uint8_t aNote, std::uint32_t aNoteStart, std::uint32_t aNoteEnd) = 0;
+	virtual void AddSysEx(std::uint32_t aTick, const std::span<std::uint8_t>& someData) = 0;
+	virtual void AddLyric(std::uint32_t aTick, const std::string& aText) = 0;
 
 	ChartTrackType GetType() const { return myType; }
 
 private:
-	ChartTrackType myType;
+	ChartTrackType myType = ChartTrackType::LeadGuitar;
 };
 
 class ChartGuitarTrack : public ChartTrack
@@ -76,8 +80,17 @@ public:
 
 public:
 	void AddNote(std::uint8_t aNote, std::uint32_t aNoteStart, std::uint32_t aNoteEnd) override;
+	void AddSysEx(std::uint32_t aTick, const std::span<std::uint8_t>& someData) override;
+	void AddLyric(std::uint32_t, const std::string&) override { }
 
 private:
+	bool AddPhaseShift(std::uint32_t aTick, const std::span<std::uint8_t>& someData);
+
 	std::map<ChartTrackDifficulty, std::vector<NoteRange>> myNotes;
 	std::vector<MarkerRange> myMarkers;
+
+	using PerDifficultyFlag = std::bitset<static_cast<size_t>(ChartTrackDifficulty::Count)>;
+
+	PerDifficultyFlag mySysEx_OpenNote;
+	PerDifficultyFlag mySysEx_TapNote;
 };
