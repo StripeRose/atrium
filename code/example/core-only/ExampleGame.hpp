@@ -6,6 +6,8 @@
 #include <Graphics_Manager.hpp>
 #include <Graphics_Texture.hpp>
 
+#include "ChartDebugger.hpp"
+
 #include <memory>
 #include <vector>
 
@@ -121,4 +123,6 @@ private:
 	std::shared_ptr<RoseGold::Core::GraphicsBuffer> myRT2PyramidConstants, myRT2TriangleConstants, myRT2PlaneConstants;
 
 	std::chrono::high_resolution_clock::time_point myStartTime;
+
+	ChartInspector myChartDebugger;
 };
