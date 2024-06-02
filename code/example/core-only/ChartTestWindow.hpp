@@ -2,6 +2,7 @@
 #pragma once
 
 #include "ChartData.hpp"
+#include "ChartPlayback.hpp"
 
 #include <filesystem>
 #include <map>
@@ -14,12 +15,21 @@ public:
 private:
 	void ImGui_ChartList();
 
-	void RefreshSongList();
+	void ImGui_Player();
 
-	enum class State { SongList };
+	void RefreshSongList();
+	void SelectSong(const std::filesystem::path& aSong);
+	void ReturnToSongList();
+
+	enum class State { SongList, Player };
 
 	State myState = State::SongList;
 
 	std::filesystem::path mySongsDirectory;
 	std::map<std::filesystem::path, std::unique_ptr<ChartInfo>> myChartInfos;
+
+	std::string myCurrentSong;
+
+	ChartData myChartData;
+	ChartPlayer myChartPlayer;
 };

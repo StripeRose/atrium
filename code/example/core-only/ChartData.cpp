@@ -26,19 +26,6 @@ void ChartInfo::Load(const std::filesystem::path& aSongIni)
 	myDifficulties[ChartTrackType::Vocal_Harmony] = song.Has("diff_vocals_harm") ? song.Get<int>("diff_vocals_harm") : -1;
 }
 
-void ChartData::Load(const std::filesystem::path& aDirectory)
-{
-	const std::filesystem::path notesMid = aDirectory / "notes.mid";
-	const std::filesystem::path notesMidi = aDirectory / "notes.midi";
-
-	if (std::filesystem::exists(notesMid))
-		LoadMidi(notesMid);
-	else if (std::filesystem::exists(notesMidi))
-		LoadMidi(notesMidi);
-	else
-		throw std::runtime_error("No known chart note data available.");
-}
-
 void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 {
 	MidiDecoder decoder;

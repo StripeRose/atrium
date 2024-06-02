@@ -7,17 +7,30 @@
 #include "Editor_GUI.hpp"
 
 using namespace RoseGold::EditorGUI;
+using namespace std::chrono_literals;
+
+void TimeText(std::chrono::milliseconds aTime)
+{
+	std::int64_t lengthSeconds = aTime.count() / 1000;
+	std::int64_t lengthMinutes = lengthSeconds / 60;
+	lengthSeconds -= lengthMinutes * 60;
+	Text::Formatted("%02im %02is", lengthMinutes, lengthSeconds);
+}
 
 void ChartTestWindow::ImGui()
 {
 	Window::WindowData windowData;
-	windowData.Name = "Chart test window";
+	std::string title = std::format("Chart - {}###ChartTestWindow", myCurrentSong);
+	windowData.Name = title.c_str();
 	if (Window::WindowScope window{ windowData })
 	{
 		switch (myState)
 		{
 		case State::SongList:
 			ImGui_ChartList();
+			break;
+		case State::Player:
+			ImGui_Player();
 			break;
 		}
 	}
@@ -41,7 +54,7 @@ void ChartTestWindow::ImGui_ChartList()
 	if (Widget::Button("Refresh"))
 		RefreshSongList();
 
-	if (Table::TableScope songTable{ "Song table", 2 })
+	if (Table::TableScope songTable{ "Song table", 3 })
 	{
 		songTable.Setup_Column("Info");
 		songTable.Setup_Column("Details");
@@ -49,18 +62,16 @@ void ChartTestWindow::ImGui_ChartList()
 
 		for (const auto& it : myChartInfos)
 		{
+			IDScope idScope((void*)it.first.c_str());
+
 			const ChartInfo::SongInfo& songInfo = it.second->GetSongInfo();
-			//it.second->GetDifficulty();
 
 			songTable.NextColumn();
 			Text::Unformatted(songInfo.Title.c_str());
 			Text::Formatted("by %s", songInfo.Artist.c_str());
 			Text::Formatted("%s (%i)", songInfo.Album.c_str(), songInfo.Year);
 
-			std::int64_t lengthSeconds = songInfo.SongLength.count() / 1000;
-			std::int64_t lengthMinutes = lengthSeconds / 60;
-			lengthSeconds -= lengthMinutes * 60;
-			Text::Formatted("%im %is", lengthMinutes, lengthSeconds);
+			TimeText(songInfo.SongLength);
 
 			songTable.NextColumn();
 
@@ -81,8 +92,34 @@ void ChartTestWindow::ImGui_ChartList()
 			difficultyWidget(ChartTrackType::Drums, "Drums");
 			difficultyWidget(ChartTrackType::Vocal_Main, "Vocals");
 			difficultyWidget(ChartTrackType::Vocal_Harmony, "Harmony vocals");
+
+			songTable.NextColumn();
+
+			if (Widget::Button("Select"))
+				SelectSong(it.first);
 		}
 	}
+}
+
+void ChartTestWindow::ImGui_Player()
+{
+	if (Widget::Button("Back to song list"))
+		ReturnToSongList();
+
+	if (!myChartPlayer.IsPlaying())
+	{
+		if (Widget::Button("Play"))
+			myChartPlayer.Play();
+	}
+	else
+	{
+		if (Widget::Button("Stop"))
+			myChartPlayer.Stop();
+	}
+
+	Layout::SameLine();
+
+	TimeText(0ms);
 }
 
 void ChartTestWindow::RefreshSongList()
@@ -103,4 +140,19 @@ void ChartTestWindow::RefreshSongList()
 		chartInfo->Load(songIni);
 		myChartInfos[songIni] = std::move(chartInfo);
 	}
+}
+
+void ChartTestWindow::SelectSong(const std::filesystem::path& aSong)
+{
+	const std::unique_ptr<ChartInfo>& chart = myChartInfos.at(aSong);
+	myCurrentSong = chart->GetSongInfo().Title;
+	myChartData.LoadMidi(aSong.parent_path() / "notes.mid");
+	myState = State::Player;
+}
+
+void ChartTestWindow::ReturnToSongList()
+{
+	myCurrentSong.clear();
+	myChartPlayer.Stop();
+	myState = State::SongList;
 }

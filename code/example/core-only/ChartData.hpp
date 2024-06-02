@@ -88,11 +88,9 @@ public:
 	};
 
 public:
-	void Load(const std::filesystem::path& aDirectory);
-
-private:
 	void LoadMidi(const std::filesystem::path& aMidi);
 
+private:
 	std::map<ChartTrackType, std::unique_ptr<ChartTrack>> myTracks;
 	std::vector<std::pair<std::uint32_t, std::uint32_t>> myTempos;
 	std::vector<std::pair<std::uint32_t, TimeSignature>> myTimeSignatures;
