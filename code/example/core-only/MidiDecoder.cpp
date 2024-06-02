@@ -8,7 +8,7 @@
 using namespace RoseGold;
 
 template <typename T>
-std::uint32_t ReadFixed(std::istream& aStream, T& anOut, unsigned int anOffset = 0)
+std::uint8_t ReadFixed(std::istream& aStream, T& anOut, unsigned int anOffset = 0)
 {
 	aStream.read(reinterpret_cast<char*>(&anOut), sizeof(T) - anOffset);
 	if constexpr (sizeof(T) != 1)
@@ -17,10 +17,10 @@ std::uint32_t ReadFixed(std::istream& aStream, T& anOut, unsigned int anOffset =
 }
 
 [[nodiscard]]
-std::uint32_t ReadVariable(std::istream& aStream, std::uint32_t& anOut)
+std::uint8_t ReadVariable(std::istream& aStream, std::uint32_t& anOut)
 {
 	anOut = 0;
-	std::uint32_t readBytes = 0;
+	std::uint8_t readBytes = 0;
 
 	std::uint8_t c = 0;
 	readBytes += ReadFixed(aStream, c);
@@ -37,24 +37,6 @@ std::uint32_t ReadVariable(std::istream& aStream, std::uint32_t& anOut)
 	}
 
 	return readBytes;
-
-
-
-	/*bool keepReading = true;
-	while (keepReading)
-	{
-		std::uint8_t b;
-		const std::uint32_t previousReadBytes = readBytes;
-		readBytes += ReadFixed(aStream, b);
-
-		const std::uint32_t byteValue = (b & 0x7F);
-		const std::uint32_t bitShift = (7 * previousReadBytes);
-
-		anOut |= (byteValue << bitShift);
-		keepReading = ((b & 0x80) != 0);
-	}*/
-
-	//return readBytes;
 }
 
 std::string ReadText(std::istream& aStream, std::uint32_t aLength)
