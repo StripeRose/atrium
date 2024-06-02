@@ -60,30 +60,30 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 
 	decoder.OnNewTrack.Connect(this, [&]()
 		{
-			Debug::Log("--- [ TRACK ] -------------------------");
 			currentTrack = nullptr;
 			myPartialNotes.clear();
-		});
-
-	decoder.OnTrackName.Connect(this, [&](std::uint32_t, const std::string& aText) {
-		Debug::Log("NAME: %s", aText.c_str());
-		if (aText.starts_with("PART "))
-		{
-			std::unique_ptr<ChartTrack> track = ChartTrack::CreateTrackByName(aText.substr(5));
-			if (!track)
-				return;
-
-			if (myTracks.contains(track->GetType()))
-				return;
-
-			currentTrack = track.get();
-			myTracks[track->GetType()] = std::move(track);
 		}
-		});
+	);
 
-	decoder.OnNote.Connect(this, [&](std::uint32_t aTick, std::uint8_t aChannel, std::uint8_t aNote, std::uint8_t aVelocity)
+	decoder.OnTrackName.Connect(this, [&](std::uint32_t, const std::string& aText)
 		{
-			Debug::Log("%08u Ch%u: Note %s (%u) = %u", aTick, aChannel, MidiDecoder::NoteNumberToString(aNote).c_str(), aNote, aVelocity);
+			if (aText.starts_with("PART "))
+			{
+				std::unique_ptr<ChartTrack> track = ChartTrack::CreateTrackByName(aText.substr(5));
+				if (!track)
+					return;
+
+				if (myTracks.contains(track->GetType()))
+					return;
+
+				currentTrack = track.get();
+				myTracks[track->GetType()] = std::move(track);
+			}
+		}
+	);
+
+	decoder.OnNote.Connect(this, [&](std::uint32_t aTick, std::uint8_t /*aChannel*/, std::uint8_t aNote, std::uint8_t aVelocity)
+		{
 			if (!currentTrack)
 				return;
 
@@ -96,104 +96,54 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 			// New note to start
 			if (aVelocity > 0)
 				myPartialNotes[aNote] = aTick;
-		});
+		}
+	);
 
-	decoder.OnNotePressure.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel, std::uint8_t aNote, std::uint8_t aPressure) {
-		Debug::Log("%08u Ch%u: Note %s (%u) Pressure %u", aTick, aChannel, MidiDecoder::NoteNumberToString(aNote).c_str(), aNote, aPressure);
-		});
-
-	decoder.OnSoundOff.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel) {
-		Debug::Log("%08u Ch%u: Sound off.", aTick, aChannel);
-		});
-	decoder.OnResetAllControllers.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel, std::uint8_t aValue) {
-		Debug::Log("%08u Ch%u: Reset controllers. (%u)", aTick, aChannel, aValue);
-		});
-	decoder.OnLocalControl.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel) {
-		Debug::Log("%08u Ch%u: Local control.", aTick, aChannel);
-		});
-	decoder.OnAllNotesOff.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel) {
-		Debug::Log("%08u Ch%u: All notes off.", aTick, aChannel);
-		});
-	decoder.OnOmniOff.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel) {
-		Debug::Log("%08u Ch%u: Omni off.", aTick, aChannel);
-		});
-	decoder.OnOmniOn.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel) {
-		Debug::Log("%08u Ch%u: Omni on.", aTick, aChannel);
-		});
-	decoder.OnMonoOn.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel, std::uint8_t aValue) {
-		Debug::Log("%08u Ch%u: Mono on, poly off. (%u)", aTick, aChannel, aValue);
-		});
-	decoder.OnPolyOn.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel) {
-		Debug::Log("%08u Ch%u: Poly on, mono off.", aTick, aChannel);
-		});
-
-	decoder.OnProgramChange.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel, std::uint8_t aProgramNum) {
-		Debug::Log("%08u Ch%u: Program change: %u", aTick, aChannel, aProgramNum);
-		});
-	decoder.OnChannelPressure.Connect(this, [](std::uint32_t aTick, std::uint8_t aChannel, std::uint8_t aPressure) {
-		Debug::Log("%08u Ch%u: Channel pressure: %u", aTick, aChannel, aPressure);
-		});
-
-	decoder.OnSysEx.Connect(this, [](std::uint32_t aTick, const std::span<std::uint8_t>& someData)
+	decoder.OnSysEx.Connect(this, [&](std::uint32_t aTick, const std::span<std::uint8_t>& someData)
 		{
-			std::string dataInHex;
-			dataInHex.reserve(someData.size() * 3);
-			static const char* digits = "0123456789ABCDEF";
-			for (std::uint8_t d : someData)
+			if (currentTrack)
+				currentTrack->AddSysEx(aTick, someData);
+		}
+	);
+
+	decoder.OnText.Connect(this, [&](std::uint32_t aTick, const std::string& aText)
+		{
+			std::string::const_iterator nameStart, nameEnd;
+			if (aText.starts_with("[section"))
 			{
-				dataInHex += digits[d & 0xF];
-				dataInHex += digits[(d >> 4) & 0xF];
-				dataInHex += ' ';
+				nameStart = aText.cbegin() + 9;
+				nameEnd = aText.cend() - 1;
+			}
+			else if (aText.starts_with("[prc_"))
+			{
+				nameStart = aText.cbegin() + 5;
+				nameEnd = aText.cend() - 1;
 			}
 
-			Debug::Log("%08u: SysEx - %s", aTick, dataInHex.c_str());
-		});
-
-	decoder.OnSequenceNumber.Connect(this, [](std::uint32_t aTick, std::uint16_t aNum) {
-		Debug::Log("%08u: Sequence num %i", aTick, aNum);
-		});
-	decoder.OnText.Connect(this, [&](std::uint32_t aTick, const std::string& aText) {
-		std::string::const_iterator nameStart, nameEnd;
-		if (aText.starts_with("[section"))
-		{
-			nameStart = aText.cbegin() + 9;
-			nameEnd = aText.cend() - 1;
+			mySections.emplace_back(aTick, std::string(nameStart, nameEnd));
 		}
-		else if (aText.starts_with("[prc_"))
+	);
+
+	decoder.OnLyric.Connect(this, [&](std::uint32_t aTick, const std::string& aText)
 		{
-			nameStart = aText.cbegin() + 5;
-			nameEnd = aText.cend() - 1;
+			if (currentTrack)
+				currentTrack->AddLyric(aTick, aText);
 		}
+	);
 
-		mySections.emplace_back(aTick, std::string(nameStart, nameEnd));
-		});
-	// Todo: Lyric events for Vocal tracks.
-	decoder.OnLyric.Connect(this, [](std::uint32_t aTick, const std::string& aText) {
-		Debug::Log("%08u: Lyric: \"%s\"", aTick, aText.c_str());
-		});
-	decoder.OnMarker.Connect(this, [](std::uint32_t aTick, const std::string& aText) {
-		Debug::Log("%08u: Marker: \"%s\"", aTick, aText.c_str());
-		});
-	decoder.OnCuePoint.Connect(this, [](std::uint32_t aTick, const std::string& aText) {
-		Debug::Log("%08u: Cue: \"%s\"", aTick, aText.c_str());
-		});
-
-	decoder.OnTrackEnd.Connect(this, [&](std::uint32_t aTick) {
-		Debug::Log("%08u: End of track", aTick);
+	decoder.OnTrackEnd.Connect(this, [&](std::uint32_t) {
 		currentTrack = nullptr;
 		});
-	decoder.OnSetTempo.Connect(this, [&](std::uint32_t aTick, std::uint32_t aTempo) {
-		Debug::Log("%08u: Set tempo %u", aTick, aTempo);
-		myTempos.emplace_back(aTick, aTempo);
+	decoder.OnSetTempo.Connect(this, [&](std::uint32_t aTick, std::uint32_t aTempo)
+		{
+			myTempos.emplace_back(aTick, aTempo);
 		});
 
-	decoder.OnTimeSignature.Connect(this, [&](std::uint32_t aTick, std::uint8_t aNumerator, std::uint8_t aDenominator, std::uint8_t aClock, std::uint8_t aBase) {
-		Debug::Log("%08u: Time signature %u/%u;%u;%u", aTick, aNumerator, aDenominator, aClock, aBase);
-		myTimeSignatures.emplace_back(aTick, TimeSignature{ aNumerator, aDenominator, aClock, aBase });
-		});
-	decoder.OnKeySignature.Connect(this, [](std::uint32_t aTick, std::uint8_t aSharpFlat, std::uint8_t aMajorMinor) {
-		Debug::Log("%08u: Key signature SharpFlat %u, MajorMinor: %u", aTick, aSharpFlat, aMajorMinor);
-		});
+	decoder.OnTimeSignature.Connect(this, [&](std::uint32_t aTick, std::uint8_t aNumerator, std::uint8_t aDenominator, std::uint8_t aClock, std::uint8_t aBase)
+		{
+			myTimeSignatures.emplace_back(aTick, TimeSignature{ aNumerator, aDenominator, aClock, aBase });
+		}
+	);
 
 	decoder.ProcessFile(aMidi, formatType, ticksPerQuarterNote);
 }
