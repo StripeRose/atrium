@@ -28,21 +28,15 @@ void ChartInfo::Load(const std::filesystem::path& aSongIni)
 
 void ChartData::Load(const std::filesystem::path& aDirectory)
 {
-	const std::filesystem::path songIni = aDirectory / "song.ini";
 	const std::filesystem::path notesMid = aDirectory / "notes.mid";
 	const std::filesystem::path notesMidi = aDirectory / "notes.midi";
-
-	if (!std::filesystem::exists(songIni))
-		throw std::runtime_error("Song.ini missing.");
-
-	myInfo.Load(aDirectory / "song.ini");
 
 	if (std::filesystem::exists(notesMid))
 		LoadMidi(notesMid);
 	else if (std::filesystem::exists(notesMidi))
 		LoadMidi(notesMidi);
 	else
-		throw std::runtime_error("Notes file missing.");
+		throw std::runtime_error("No known chart note data available.");
 }
 
 void ChartData::LoadMidi(const std::filesystem::path& aMidi)

@@ -195,7 +195,7 @@ void ExampleGame::OnLoop()
 
 void ExampleGame::OnImGui()
 {
-	myChartDebugger.ImGui();
+	myChartTestWindow.ImGui();
 }
 
 void ExampleGame::OnExit()

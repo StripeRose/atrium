@@ -65,7 +65,7 @@ public:
 
 	const SongInfo& GetSongInfo() const { return mySongInfo; }
 
-	const int GetDifficult(ChartTrackType anInstrument) const { return myDifficulties.at(anInstrument); }
+	const int GetDifficulty(ChartTrackType anInstrument) const { return myDifficulties.at(anInstrument); }
 
 private:
 	RoseCommon::Ini myIni;
@@ -90,12 +90,8 @@ public:
 public:
 	void Load(const std::filesystem::path& aDirectory);
 
-	const ChartInfo& GetInfo() const { return myInfo; }
-
 private:
 	void LoadMidi(const std::filesystem::path& aMidi);
-
-	ChartInfo myInfo;
 
 	std::map<ChartTrackType, std::unique_ptr<ChartTrack>> myTracks;
 	std::vector<std::pair<std::uint32_t, std::uint32_t>> myTempos;

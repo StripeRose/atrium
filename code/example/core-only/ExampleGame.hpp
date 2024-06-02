@@ -6,7 +6,7 @@
 #include <Graphics_Manager.hpp>
 #include <Graphics_Texture.hpp>
 
-#include "ChartDebugger.hpp"
+#include "ChartTestWindow.hpp"
 
 #include <memory>
 #include <vector>
@@ -124,5 +124,5 @@ private:
 
 	std::chrono::high_resolution_clock::time_point myStartTime;
 
-	ChartInspector myChartDebugger;
+	ChartTestWindow myChartTestWindow;
 };

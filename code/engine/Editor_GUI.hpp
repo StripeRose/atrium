@@ -90,7 +90,7 @@ namespace RoseGold::EditorGUI
 			bool Feature_ContextMenuInBody : 1 = false;
 
 			// Set each RowBg color with ImGuiCol_TableRowBg or ImGuiCol_TableRowBgAlt (equivalent of calling TableSetBgColor with ImGuiTableBgFlags_RowBg0 on each row manually)
-			bool Decoration_RowBackground : 1 = false;
+			bool Decoration_RowBackground : 1 = true;
 			// Draw horizontal borders between rows.
 			bool Decoration_Border_InnerH : 1 = false;
 			// Draw horizontal borders at the top and bottom.
