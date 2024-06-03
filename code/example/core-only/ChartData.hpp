@@ -57,7 +57,7 @@ public:
 		std::string Album;
 		std::string Genre;
 		unsigned int Year = 0;
-		std::chrono::milliseconds SongLength;
+		std::chrono::milliseconds SongLength{ 0 };
 	};
 
 public:
@@ -88,11 +88,25 @@ public:
 	};
 
 public:
+	float GetBPMAt(std::uint32_t aTick) const;
+
+	std::uint32_t GetLength() const { return myChartEndInTicks; }
+
+	std::uint16_t GetTicksPerQuarterNote() const { return myTicksPerQuarterNote; }
+
 	void LoadMidi(const std::filesystem::path& aMidi);
 
+	std::chrono::microseconds TicksToTime(std::uint32_t aTick) const;
+
 private:
+	std::uint32_t GetTempoAt(std::uint32_t aTick) const;
+
 	std::map<ChartTrackType, std::unique_ptr<ChartTrack>> myTracks;
 	std::vector<std::pair<std::uint32_t, std::uint32_t>> myTempos;
 	std::vector<std::pair<std::uint32_t, TimeSignature>> myTimeSignatures;
 	std::vector<std::pair<std::uint32_t, std::string>> mySections;
+
+	std::uint16_t myTicksPerQuarterNote = 0;
+
+	std::uint32_t myChartEndInTicks = 0;
 };

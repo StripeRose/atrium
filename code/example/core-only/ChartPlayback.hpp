@@ -8,6 +8,8 @@ class ChartData;
 class ChartPlayer
 {
 public:
+	std::uint32_t GetTick() const { return 0; }
+
 	bool IsPlaying() const { return myIsPlaying; }
 
 	void Play(std::int32_t aSongOffset = 0);

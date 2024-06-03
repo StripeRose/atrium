@@ -9,9 +9,9 @@
 using namespace RoseGold::EditorGUI;
 using namespace std::chrono_literals;
 
-void TimeText(std::chrono::milliseconds aTime)
+void TimeText(std::chrono::microseconds aTime)
 {
-	std::int64_t lengthSeconds = aTime.count() / 1000;
+	std::int64_t lengthSeconds = std::chrono::duration_cast<std::chrono::seconds>(aTime).count();
 	std::int64_t lengthMinutes = lengthSeconds / 60;
 	lengthSeconds -= lengthMinutes * 60;
 	Text::Formatted("%02im %02is", lengthMinutes, lengthSeconds);
@@ -117,9 +117,14 @@ void ChartTestWindow::ImGui_Player()
 			myChartPlayer.Stop();
 	}
 
-	Layout::SameLine();
+	Text::Formatted("PPQ: %u", myChartData.GetTicksPerQuarterNote());
+	Text::Formatted("BPM: %f", myChartData.GetBPMAt(myChartPlayer.GetTick()));
 
-	TimeText(0ms);
+	TimeText(myChartData.TicksToTime(myChartPlayer.GetTick()));
+	Layout::SameLine();
+	Text::Unformatted(" / ");
+	Layout::SameLine();
+	TimeText(myChartData.TicksToTime(myChartData.GetLength()));
 }
 
 void ChartTestWindow::RefreshSongList()
