@@ -37,7 +37,8 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 
 	MidiDecoder::FormatType formatType = MidiDecoder::FormatType::SingleTrack;
 
-	ChartTrack* currentTrack = nullptr;
+	std::unique_ptr<ChartTrack> currentTrack;
+	ChartTrackLoadData currentTrackLoadData;
 	std::chrono::microseconds currentTrackTempoSectionStart(0);
 	std::uint32_t currentTrackTempo(0);
 	std::uint16_t ticksPerQuarterNote(0);
@@ -48,16 +49,12 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 			return currentTrackTempoSectionStart + std::chrono::microseconds(aTick * microsecondsPerTick);
 		};
 
-	std::map<std::uint8_t, std::chrono::microseconds> myPartialNotes;
-
-	using namespace RoseCommon;
-
 	decoder.OnNewTrack.Connect(this, [&]()
 		{
-			currentTrack = nullptr;
+			currentTrackLoadData = ChartTrackLoadData();
+			currentTrack.reset();
 			currentTrackTempoSectionStart = std::chrono::microseconds(0);
 			currentTrackTempo = static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)).count()) * 120; // 120 Beats Per Minute (MIDI default)
-			myPartialNotes.clear();
 		}
 	);
 
@@ -65,40 +62,27 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 		{
 			if (aText.starts_with("PART "))
 			{
-				std::unique_ptr<ChartTrack> track = ChartTrack::CreateTrackByName(aText.substr(5));
-				if (!track)
-					return;
+				currentTrack = ChartTrack::CreateTrackByName(aText.substr(5));
 
-				if (myTracks.contains(track->GetType()))
-					return;
-
-				currentTrack = track.get();
-				myTracks[track->GetType()] = std::move(track);
+				if (currentTrack && myTracks.contains(currentTrack->GetType()))
+				{
+					RoseGold::Debug::LogError("Duplicate track won't be processed.");
+					currentTrack.reset();
+				}
 			}
 		}
 	);
 
 	decoder.OnNote.Connect(this, [&](std::uint32_t aTick, std::uint8_t /*aChannel*/, std::uint8_t aNote, std::uint8_t aVelocity)
 		{
-			if (!currentTrack)
-				return;
-
-			if (myPartialNotes.contains(aNote))
-			{
-				currentTrack->AddNote(aNote, myPartialNotes.at(aNote), ticksToTime(aTick));
-				myPartialNotes.erase(aNote);
-			}
-
-			// New note to start
-			if (aVelocity > 0)
-				myPartialNotes[aNote] = ticksToTime(aTick);
+			currentTrackLoadData.AddNote(ticksToTime(aTick), aNote, aVelocity);
 		}
 	);
 
 	decoder.OnSysEx.Connect(this, [&](std::uint32_t aTick, const std::span<std::uint8_t>& someData)
 		{
 			if (currentTrack)
-				currentTrack->AddSysEx(ticksToTime(aTick), someData);
+				currentTrackLoadData.AddSysEx(ticksToTime(aTick), someData);
 		}
 	);
 
@@ -123,14 +107,20 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 	decoder.OnLyric.Connect(this, [&](std::uint32_t aTick, const std::string& aText)
 		{
 			if (currentTrack)
-				currentTrack->AddLyric(ticksToTime(aTick), aText);
+				currentTrackLoadData.AddLyric(ticksToTime(aTick), aText);
 		}
 	);
 
 	decoder.OnTrackEnd.Connect(this, [&](std::uint32_t aTick)
 		{
 			myChartDuration = std::max(myChartDuration, ticksToTime(aTick));
-			currentTrack = nullptr;
+			if (!currentTrack)
+				return;
+
+			if (currentTrack->Load(currentTrackLoadData) && !myTracks.contains(currentTrack->GetType()))
+				myTracks[currentTrack->GetType()] = std::move(currentTrack);
+
+			currentTrack.reset();
 		}
 	);
 
@@ -145,6 +135,13 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 	decoder.OnTimeSignature.Connect(this, [&](std::uint32_t aTick, std::uint8_t aNumerator, std::uint8_t aDenominator, std::uint8_t aClock, std::uint8_t aBase)
 		{
 			myTimeSignatures.emplace_back(ticksToTime(aTick), TimeSignature{ aNumerator, aDenominator, aClock, aBase });
+		}
+	);
+
+	decoder.OnText.Connect(this, [&](std::uint32_t, const std::string& aText)
+		{
+			if (aText.find("ENHANCED_OPENS") != std::string::npos)
+				currentTrackLoadData.EnhancedOpens = true;
 		}
 	);
 

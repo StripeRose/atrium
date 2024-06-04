@@ -6,11 +6,28 @@
 #include <array>
 #include <bitset>
 #include <chrono>
+#include <functional>
 #include <map>
 #include <memory>
 #include <span>
 #include <string>
 #include <vector>
+
+struct ChartTrackLoadData
+{
+	using PerDifficultyFlag = std::bitset<static_cast<std::size_t>(ChartTrackDifficulty::Count)>;
+	void AddNote(std::chrono::microseconds aTime, std::uint8_t aNote, std::uint8_t aVelocity);
+	void AddSysEx(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData);
+	void AddLyric(std::chrono::microseconds aTime, const std::string& aText);
+
+	std::map<std::uint8_t, std::chrono::microseconds> myPartialNotes;
+
+	std::vector<std::pair<std::uint8_t, std::pair<std::chrono::microseconds, std::chrono::microseconds>>> NoteRanges;
+	std::vector<std::pair<std::chrono::microseconds, std::vector<std::uint8_t>>> SysExEvents;
+	std::map<std::chrono::microseconds, std::string> Lyrics;
+
+	bool EnhancedOpens = false;
+};
 
 class ChartTrack
 {
@@ -20,9 +37,7 @@ public:
 public:
 	virtual ~ChartTrack() = default;
 
-	virtual void AddNote(std::uint8_t aNote, std::chrono::microseconds aNoteStart, std::chrono::microseconds aNoteEnd) = 0;
-	virtual void AddSysEx(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData) = 0;
-	virtual void AddLyric(std::chrono::microseconds aTime, const std::string& aText) = 0;
+	virtual bool Load(const ChartTrackLoadData& someData) = 0;
 
 	ChartTrackType GetType() const { return myType; }
 
@@ -33,22 +48,28 @@ private:
 class ChartGuitarTrack : public ChartTrack
 {
 public:
-	enum class Note
+	enum class Lane
 	{
-		Open,
 		Green,
 		Red,
 		Yellow,
 		Blue,
-		Orange,
+		Orange
+	};
 
-		ForceHOPO,
-		ForceStrum
+	enum class NoteType
+	{
+		Strum,
+		HOPO,
+		Tap
 	};
 
 	struct NoteRange
 	{
-		Note Note = Note::Open;
+		Lane Lane = Lane::Green;
+		NoteType Type = NoteType::Strum;
+		bool CanBeOpen = false;
+
 		std::chrono::microseconds Start = std::chrono::microseconds(0);
 		std::chrono::microseconds End = std::chrono::microseconds(0);
 	};
@@ -80,18 +101,15 @@ public:
 	};
 
 public:
-	void AddNote(std::uint8_t aNote, std::chrono::microseconds aNoteStart, std::chrono::microseconds aNoteEnd) override;
-	void AddSysEx(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData) override;
-	void AddLyric(std::chrono::microseconds, const std::string&) override { }
+	bool Load(const ChartTrackLoadData& someData) override;
 
 private:
-	bool AddPhaseShift(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData);
+	bool Load_AddNotes(const ChartTrackLoadData& someData);
+	bool Load_UpdateDefaultNoteTypes();
+	bool Load_ProcessSysEx(const ChartTrackLoadData& someData);
+	bool Load_ProcessMarkers(const ChartTrackLoadData& someData);
+	void Load_ForEachNoteInRange(std::function<void(NoteRange&)> aCallback, const ChartTrackLoadData::PerDifficultyFlag& someDifficulties, std::optional<std::chrono::microseconds> aMinimumRange = {}, std::optional<std::chrono::microseconds> aMaximumRange = {});
 
-	std::map<ChartTrackDifficulty, std::vector<NoteRange>> myNotes;
+	std::map<ChartTrackDifficulty, std::vector<NoteRange>> myNoteRanges;
 	std::vector<MarkerRange> myMarkers;
-
-	using PerDifficultyFlag = std::bitset<static_cast<size_t>(ChartTrackDifficulty::Count)>;
-
-	PerDifficultyFlag mySysEx_OpenNote;
-	PerDifficultyFlag mySysEx_TapNote;
 };
