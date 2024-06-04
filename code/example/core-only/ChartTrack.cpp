@@ -32,7 +32,7 @@ std::unique_ptr<ChartTrack> ChartTrack::CreateTrackByName(const std::string& aNa
 	return track;
 }
 
-void ChartGuitarTrack::AddNote(std::uint8_t aNote, std::uint32_t aNoteStart, std::uint32_t aNoteEnd)
+void ChartGuitarTrack::AddNote(std::uint8_t aNote, std::chrono::microseconds aNoteStart, std::chrono::microseconds aNoteEnd)
 {
 	if (aNote < 103)
 	{
@@ -110,9 +110,9 @@ void ChartGuitarTrack::AddNote(std::uint8_t aNote, std::uint32_t aNoteStart, std
 	}
 }
 
-void ChartGuitarTrack::AddSysEx(std::uint32_t aTick, const std::span<std::uint8_t>& someData)
+void ChartGuitarTrack::AddSysEx(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData)
 {
-	if (AddPhaseShift(aTick, someData))
+	if (AddPhaseShift(aTime, someData))
 		return;
 
 	std::string dataInHex;
@@ -125,10 +125,10 @@ void ChartGuitarTrack::AddSysEx(std::uint32_t aTick, const std::span<std::uint8_
 		dataInHex += ' ';
 	}
 
-	RoseGold::Debug::Log("%08u: Unknown SysEx event - %s", aTick, dataInHex.c_str());
+	RoseGold::Debug::Log("Unknown SysEx event - % s", dataInHex.c_str());
 }
 
-bool ChartGuitarTrack::AddPhaseShift(std::uint32_t, const std::span<std::uint8_t>& someData)
+bool ChartGuitarTrack::AddPhaseShift(std::chrono::microseconds, const std::span<std::uint8_t>& someData)
 {
 	if (someData.size() != 7)
 		return false;

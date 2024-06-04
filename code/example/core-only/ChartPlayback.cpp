@@ -2,10 +2,12 @@
 #include "stdafx.hpp"
 #include "ChartPlayback.hpp"
 
-void ChartPlayer::Play(std::int32_t aSongOffset)
+#include "ChartData.hpp"
+
+void ChartPlayer::Play(std::chrono::microseconds aPlayTime)
 {
-	myStartPoint = std::chrono::high_resolution_clock::now();
-	mySongTicksOffset = aSongOffset;
+	myStartTime = myLastUpdateTime = std::chrono::high_resolution_clock::now();
+	myPlayhead = aPlayTime;
 	myIsPlaying = true;
 }
 
@@ -17,4 +19,20 @@ void ChartPlayer::SetChartData(const ChartData& aData)
 void ChartPlayer::Stop()
 {
 	myIsPlaying = false;
+	myPlayhead = std::chrono::microseconds(0);
+}
+
+void ChartPlayer::Update()
+{
+	if (!myIsPlaying)
+		return;
+
+	const auto newUpdateTime = std::chrono::high_resolution_clock::now();
+	const auto lastUpdatePoint = std::chrono::duration_cast<std::chrono::microseconds>(myLastUpdateTime - myStartTime);
+	const auto thisUpdatePoint = std::chrono::duration_cast<std::chrono::microseconds>(newUpdateTime - myStartTime);
+
+	// Todo: Process (lastUpdatePoint <= X < thisUpdatePoint)
+
+	myLastUpdateTime = newUpdateTime;
+	myPlayhead = thisUpdatePoint;
 }

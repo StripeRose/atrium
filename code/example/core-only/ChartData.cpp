@@ -26,9 +26,9 @@ void ChartInfo::Load(const std::filesystem::path& aSongIni)
 	myDifficulties[ChartTrackType::Vocal_Harmony] = song.Has("diff_vocals_harm") ? song.Get<int>("diff_vocals_harm") : -1;
 }
 
-float ChartData::GetBPMAt(std::uint32_t aTick) const
+float ChartData::GetBPMAt(std::chrono::microseconds aTime) const
 {
-	return static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)).count()) / static_cast<float>(GetTempoAt(aTick));
+	return static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)).count()) / static_cast<float>(GetTempoAt(aTime));
 }
 
 void ChartData::LoadMidi(const std::filesystem::path& aMidi)
@@ -38,14 +38,25 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 	MidiDecoder::FormatType formatType = MidiDecoder::FormatType::SingleTrack;
 
 	ChartTrack* currentTrack = nullptr;
+	std::chrono::microseconds currentTrackTempoSectionStart(0);
+	std::uint32_t currentTrackTempo(0);
+	std::uint16_t ticksPerQuarterNote(0);
 
-	std::map<std::uint8_t, std::uint32_t> myPartialNotes;
+	auto ticksToTime = [&](std::uint32_t aTick) -> std::chrono::microseconds
+		{
+			const std::chrono::microseconds microsecondsPerTick(currentTrackTempo / ticksPerQuarterNote);
+			return currentTrackTempoSectionStart + std::chrono::microseconds(aTick * microsecondsPerTick);
+		};
+
+	std::map<std::uint8_t, std::chrono::microseconds> myPartialNotes;
 
 	using namespace RoseCommon;
 
 	decoder.OnNewTrack.Connect(this, [&]()
 		{
 			currentTrack = nullptr;
+			currentTrackTempoSectionStart = std::chrono::microseconds(0);
+			currentTrackTempo = static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)).count()) * 120; // 120 Beats Per Minute (MIDI default)
 			myPartialNotes.clear();
 		}
 	);
@@ -74,20 +85,20 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 
 			if (myPartialNotes.contains(aNote))
 			{
-				currentTrack->AddNote(aNote, myPartialNotes.at(aNote), aTick);
+				currentTrack->AddNote(aNote, myPartialNotes.at(aNote), ticksToTime(aTick));
 				myPartialNotes.erase(aNote);
 			}
 
 			// New note to start
 			if (aVelocity > 0)
-				myPartialNotes[aNote] = aTick;
+				myPartialNotes[aNote] = ticksToTime(aTick);
 		}
 	);
 
 	decoder.OnSysEx.Connect(this, [&](std::uint32_t aTick, const std::span<std::uint8_t>& someData)
 		{
 			if (currentTrack)
-				currentTrack->AddSysEx(aTick, someData);
+				currentTrack->AddSysEx(ticksToTime(aTick), someData);
 		}
 	);
 
@@ -105,70 +116,102 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 				nameEnd = aText.cend() - 1;
 			}
 
-			mySections.emplace_back(aTick, std::string(nameStart, nameEnd));
+			mySections.emplace_back(ticksToTime(aTick), std::string(nameStart, nameEnd));
 		}
 	);
 
 	decoder.OnLyric.Connect(this, [&](std::uint32_t aTick, const std::string& aText)
 		{
 			if (currentTrack)
-				currentTrack->AddLyric(aTick, aText);
+				currentTrack->AddLyric(ticksToTime(aTick), aText);
 		}
 	);
 
 	decoder.OnTrackEnd.Connect(this, [&](std::uint32_t aTick)
 		{
-			myChartEndInTicks = std::max(myChartEndInTicks, aTick);
+			myChartDuration = std::max(myChartDuration, ticksToTime(aTick));
 			currentTrack = nullptr;
 		}
 	);
 
 	decoder.OnSetTempo.Connect(this, [&](std::uint32_t aTick, std::uint32_t aTempo)
 		{
-			myTempos.emplace_back(aTick, aTempo);
+			currentTrackTempoSectionStart = ticksToTime(aTick);
+			currentTrackTempo = aTempo;
+			myTempos.emplace_back(currentTrackTempoSectionStart, aTempo);
 		}
 	);
 
 	decoder.OnTimeSignature.Connect(this, [&](std::uint32_t aTick, std::uint8_t aNumerator, std::uint8_t aDenominator, std::uint8_t aClock, std::uint8_t aBase)
 		{
-			myTimeSignatures.emplace_back(aTick, TimeSignature{ aNumerator, aDenominator, aClock, aBase });
+			myTimeSignatures.emplace_back(ticksToTime(aTick), TimeSignature{ aNumerator, aDenominator, aClock, aBase });
 		}
 	);
 
-	decoder.ProcessFile(aMidi, formatType, myTicksPerQuarterNote);
+	decoder.ProcessFile(aMidi, formatType, ticksPerQuarterNote);
 }
 
-std::chrono::microseconds ChartData::TicksToTime(std::uint32_t aTick) const
-{
-	std::chrono::microseconds totalTimeAtTick(0);
+//std::chrono::microseconds ChartData::TicksToTime(std::uint32_t aTick) const
+//{
+//	std::chrono::microseconds totalTimeAtTick(0);
+//
+//	for (auto tempoSection = myTempos.begin(); tempoSection != myTempos.end(); ++tempoSection)
+//	{
+//		if (tempoSection->first > aTick)
+//			break;
+//
+//		auto nextTempoSection = tempoSection + 1;
+//		const std::chrono::microseconds microsecondsPerTick(tempoSection->second / myTicksPerQuarterNote);
+//
+//		const bool isContainingSection = (nextTempoSection == myTempos.end() || (tempoSection->first <= aTick && aTick < nextTempoSection->first));
+//
+//		std::int64_t sectionTickCount = ((isContainingSection ? aTick : nextTempoSection->first) - tempoSection->first);
+//		totalTimeAtTick += std::chrono::microseconds(sectionTickCount * microsecondsPerTick);
+//	}
+//
+//	return totalTimeAtTick;
+//}
+//
+//std::uint32_t ChartData::TimeToTicks(std::chrono::microseconds aTime) const
+//{
+//	std::chrono::microseconds totalTimeAtTick(0);
+//
+//	for (auto tempoSection = myTempos.begin(); tempoSection != myTempos.end(); ++tempoSection)
+//	{
+//		std::chrono::microseconds sectionDuration(0);
+//
+//		const std::chrono::microseconds microsecondsPerTick(tempoSection->second / myTicksPerQuarterNote);
+//
+//		auto nextTempoSection = tempoSection + 1;
+//		bool isCurrentSection = nextTempoSection == myTempos.end();
+//		if (!isCurrentSection)
+//		{
+//			const std::uint32_t sectionTickCount = nextTempoSection->first - tempoSection->first;
+//			sectionDuration = std::chrono::microseconds(sectionTickCount * microsecondsPerTick);
+//			isCurrentSection = (totalTimeAtTick <= aTime) && aTime < (totalTimeAtTick + sectionDuration);
+//		}
+//
+//		if (isCurrentSection)
+//		{
+//			const std::chrono::microseconds timeInSection = (aTime - totalTimeAtTick);
+//			const std::uint32_t microsecondsInSection = static_cast<std::uint32_t>(timeInSection.count());
+//			return tempoSection->first + (microsecondsInSection / myTicksPerQuarterNote);
+//		}
+//		else
+//		{
+//			totalTimeAtTick += sectionDuration;
+//		}
+//	}
+//
+//	return 0;
+//}
 
-	for (auto tempoSection = myTempos.begin(); tempoSection != myTempos.end(); ++tempoSection)
-	{
-		auto nextTempoSection = tempoSection + 1;
-		const std::chrono::microseconds microsecondsPerTick(tempoSection->second / myTicksPerQuarterNote);
-
-		if (nextTempoSection == myTempos.end() || (tempoSection->first >= aTick && aTick < nextTempoSection->first))
-		{
-			std::int64_t sectionTickCount = (aTick - tempoSection->first);
-			totalTimeAtTick += std::chrono::microseconds(sectionTickCount * microsecondsPerTick);
-			break;
-		}
-		else
-		{
-			std::int64_t sectionTickCount = (nextTempoSection->first - tempoSection->first);
-			totalTimeAtTick += std::chrono::microseconds(sectionTickCount * microsecondsPerTick);
-		}
-	}
-
-	return totalTimeAtTick;
-}
-
-std::uint32_t ChartData::GetTempoAt(std::uint32_t aTick) const
+std::uint32_t ChartData::GetTempoAt(std::chrono::microseconds aTime) const
 {
 	std::uint32_t currentTempo = 0;
 	for (const auto& it : myTempos)
 	{
-		if (it.first <= aTick)
+		if (it.first <= aTime)
 			currentTempo = it.second;
 		else
 			break;

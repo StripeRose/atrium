@@ -103,6 +103,8 @@ void ChartTestWindow::ImGui_ChartList()
 
 void ChartTestWindow::ImGui_Player()
 {
+	myChartPlayer.Update();
+
 	if (Widget::Button("Back to song list"))
 		ReturnToSongList();
 
@@ -117,14 +119,12 @@ void ChartTestWindow::ImGui_Player()
 			myChartPlayer.Stop();
 	}
 
-	Text::Formatted("PPQ: %u", myChartData.GetTicksPerQuarterNote());
-	Text::Formatted("BPM: %f", myChartData.GetBPMAt(myChartPlayer.GetTick()));
-
-	TimeText(myChartData.TicksToTime(myChartPlayer.GetTick()));
+	Text::Formatted("BPM: %f", myChartData.GetBPMAt(myChartPlayer.GetPlayhead()));
+	TimeText(myChartPlayer.GetPlayhead());
 	Layout::SameLine();
 	Text::Unformatted(" / ");
 	Layout::SameLine();
-	TimeText(myChartData.TicksToTime(myChartData.GetLength()));
+	TimeText(myChartData.GetDuration());
 }
 
 void ChartTestWindow::RefreshSongList()
@@ -152,6 +152,7 @@ void ChartTestWindow::SelectSong(const std::filesystem::path& aSong)
 	const std::unique_ptr<ChartInfo>& chart = myChartInfos.at(aSong);
 	myCurrentSong = chart->GetSongInfo().Title;
 	myChartData.LoadMidi(aSong.parent_path() / "notes.mid");
+	myChartPlayer.SetChartData(myChartData);
 	myState = State::Player;
 }
 

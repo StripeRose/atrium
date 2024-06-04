@@ -88,25 +88,19 @@ public:
 	};
 
 public:
-	float GetBPMAt(std::uint32_t aTick) const;
+	float GetBPMAt(std::chrono::microseconds aTime) const;
 
-	std::uint32_t GetLength() const { return myChartEndInTicks; }
-
-	std::uint16_t GetTicksPerQuarterNote() const { return myTicksPerQuarterNote; }
+	std::chrono::microseconds GetDuration() const { return myChartDuration; }
 
 	void LoadMidi(const std::filesystem::path& aMidi);
 
-	std::chrono::microseconds TicksToTime(std::uint32_t aTick) const;
-
 private:
-	std::uint32_t GetTempoAt(std::uint32_t aTick) const;
+	std::uint32_t GetTempoAt(std::chrono::microseconds aTime) const;
 
 	std::map<ChartTrackType, std::unique_ptr<ChartTrack>> myTracks;
-	std::vector<std::pair<std::uint32_t, std::uint32_t>> myTempos;
-	std::vector<std::pair<std::uint32_t, TimeSignature>> myTimeSignatures;
-	std::vector<std::pair<std::uint32_t, std::string>> mySections;
+	std::vector<std::pair<std::chrono::microseconds, std::uint32_t>> myTempos;
+	std::vector<std::pair<std::chrono::microseconds, TimeSignature>> myTimeSignatures;
+	std::vector<std::pair<std::chrono::microseconds, std::string>> mySections;
 
-	std::uint16_t myTicksPerQuarterNote = 0;
-
-	std::uint32_t myChartEndInTicks = 0;
+	std::chrono::microseconds myChartDuration;
 };

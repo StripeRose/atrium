@@ -5,6 +5,7 @@
 
 #include <array>
 #include <bitset>
+#include <chrono>
 #include <map>
 #include <memory>
 #include <span>
@@ -19,9 +20,9 @@ public:
 public:
 	virtual ~ChartTrack() = default;
 
-	virtual void AddNote(std::uint8_t aNote, std::uint32_t aNoteStart, std::uint32_t aNoteEnd) = 0;
-	virtual void AddSysEx(std::uint32_t aTick, const std::span<std::uint8_t>& someData) = 0;
-	virtual void AddLyric(std::uint32_t aTick, const std::string& aText) = 0;
+	virtual void AddNote(std::uint8_t aNote, std::chrono::microseconds aNoteStart, std::chrono::microseconds aNoteEnd) = 0;
+	virtual void AddSysEx(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData) = 0;
+	virtual void AddLyric(std::chrono::microseconds aTime, const std::string& aText) = 0;
 
 	ChartTrackType GetType() const { return myType; }
 
@@ -48,8 +49,8 @@ public:
 	struct NoteRange
 	{
 		Note Note = Note::Open;
-		std::uint32_t Start = 0;
-		std::uint32_t End = 0;
+		std::chrono::microseconds Start = std::chrono::microseconds(0);
+		std::chrono::microseconds End = std::chrono::microseconds(0);
 	};
 
 	enum class Marker
@@ -74,17 +75,17 @@ public:
 	struct MarkerRange
 	{
 		Marker Marker = Marker::Solo;
-		std::uint32_t Start = 0;
-		std::uint32_t End = 0;
+		std::chrono::microseconds Start = std::chrono::microseconds(0);
+		std::chrono::microseconds End = std::chrono::microseconds(0);
 	};
 
 public:
-	void AddNote(std::uint8_t aNote, std::uint32_t aNoteStart, std::uint32_t aNoteEnd) override;
-	void AddSysEx(std::uint32_t aTick, const std::span<std::uint8_t>& someData) override;
-	void AddLyric(std::uint32_t, const std::string&) override { }
+	void AddNote(std::uint8_t aNote, std::chrono::microseconds aNoteStart, std::chrono::microseconds aNoteEnd) override;
+	void AddSysEx(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData) override;
+	void AddLyric(std::chrono::microseconds, const std::string&) override { }
 
 private:
-	bool AddPhaseShift(std::uint32_t aTick, const std::span<std::uint8_t>& someData);
+	bool AddPhaseShift(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData);
 
 	std::map<ChartTrackDifficulty, std::vector<NoteRange>> myNotes;
 	std::vector<MarkerRange> myMarkers;
