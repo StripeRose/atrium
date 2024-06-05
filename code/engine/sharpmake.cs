@@ -33,7 +33,7 @@ namespace RoseGold
             conf.AddPublicDependency<Graphics>(target);
 
             if (target.Optimization != Sharpmake.Optimization.Retail)
-                conf.AddPrivateDependency<DearImGui>(target);
+                conf.AddPublicDependency<DearImGui>(target);
 
             switch (target.Platform)
             {

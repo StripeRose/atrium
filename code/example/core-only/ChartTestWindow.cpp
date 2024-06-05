@@ -6,42 +6,41 @@
 #include "Editor_FileDialog.hpp"
 #include "Editor_GUI.hpp"
 
-using namespace RoseGold::EditorGUI;
-using namespace std::chrono_literals;
-
+#if IS_IMGUI_ENABLED
 void TimeText(std::chrono::microseconds aTime)
 {
 	std::int64_t lengthSeconds = std::chrono::duration_cast<std::chrono::seconds>(aTime).count();
 	std::int64_t lengthMinutes = lengthSeconds / 60;
 	lengthSeconds -= lengthMinutes * 60;
-	Text::Formatted("%02im %02is", lengthMinutes, lengthSeconds);
+	ImGui::Text("%02im %02is", lengthMinutes, lengthSeconds);
 }
+#endif
 
 void ChartTestWindow::ImGui()
 {
-	Window::WindowData windowData;
+#if IS_IMGUI_ENABLED
 	std::string title = std::format("Chart - {}###ChartTestWindow", myCurrentSong);
-	windowData.Name = title.c_str();
-	if (Window::WindowScope window{ windowData })
+	ImGui::Begin(title.c_str());
+	switch (myState)
 	{
-		switch (myState)
-		{
-		case State::SongList:
-			ImGui_ChartList();
-			break;
-		case State::Player:
-			ImGui_Player();
-			break;
-		}
+	case State::SongList:
+		ImGui_ChartList();
+		break;
+	case State::Player:
+		ImGui_Player();
+		break;
 	}
+	ImGui::End();
+#endif
 }
 
 void ChartTestWindow::ImGui_ChartList()
 {
-	Text::Unformatted(mySongsDirectory.string().c_str());
-	Layout::SameLine();
+#if IS_IMGUI_ENABLED
+	ImGui::TextUnformatted(mySongsDirectory.string().c_str());
+	ImGui::SameLine();
 
-	if (Widget::Button("..."))
+	if (ImGui::Button("..."))
 	{
 		RoseGold::Editor::FolderBrowserDialog pickFolder;
 		auto pickedFolder = pickFolder.GetSingle();
@@ -49,31 +48,33 @@ void ChartTestWindow::ImGui_ChartList()
 			mySongsDirectory = pickedFolder.value();
 	}
 
-	Layout::NewLine();
+	ImGui::NewLine();
 
-	if (Widget::Button("Refresh"))
+	if (ImGui::Button("Refresh"))
 		RefreshSongList();
 
-	if (Table::TableScope songTable{ "Song table", 3 })
+	if (ImGui::BeginTable("Song table", 3))
 	{
-		songTable.Setup_Column("Info");
-		songTable.Setup_Column("Details");
-		songTable.Setup_HeadersRow();
+		ImGui::TableSetupColumn("Info");
+		ImGui::TableSetupColumn("Details");
+		ImGui::TableSetupColumn("Actions");
+		ImGui::TableHeadersRow();
 
 		for (const auto& it : myChartInfos)
 		{
-			IDScope idScope((void*)it.first.c_str());
+			ImGui::TableNextRow();
+			ImGui::PushID(it.first.c_str());
 
 			const ChartInfo::SongInfo& songInfo = it.second->GetSongInfo();
 
-			songTable.NextColumn();
-			Text::Unformatted(songInfo.Title.c_str());
-			Text::Formatted("by %s", songInfo.Artist.c_str());
-			Text::Formatted("%s (%i)", songInfo.Album.c_str(), songInfo.Year);
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(songInfo.Title.c_str());
+			ImGui::Text("by %s", songInfo.Artist.c_str());
+			ImGui::Text("%s (%i)", songInfo.Album.c_str(), songInfo.Year);
 
 			TimeText(songInfo.SongLength);
 
-			songTable.NextColumn();
+			ImGui::TableNextColumn();
 
 			auto difficultyWidget = [&](ChartTrackType aTrack, const char* aTitle)
 				{
@@ -83,7 +84,7 @@ void ChartTestWindow::ImGui_ChartList()
 
 					const float max = static_cast<float>(ChartInfo::MaxDifficulty);
 					const float current = std::clamp(static_cast<float>(difficulty), 0.f, max);
-					Widget::ProgressBar(current / max, { 0, 0 }, aTitle);
+					ImGui::ProgressBar(current / max, { 0, 0 }, aTitle);
 				};
 
 			difficultyWidget(ChartTrackType::LeadGuitar, "Lead guitar");
@@ -93,38 +94,45 @@ void ChartTestWindow::ImGui_ChartList()
 			difficultyWidget(ChartTrackType::Vocal_Main, "Vocals");
 			difficultyWidget(ChartTrackType::Vocal_Harmony, "Harmony vocals");
 
-			songTable.NextColumn();
+			ImGui::TableNextColumn();
 
-			if (Widget::Button("Select"))
+			if (ImGui::Button("Select"))
 				SelectSong(it.first);
+
+			ImGui::PopID();
 		}
+
+		ImGui::EndTable();
 	}
+#endif
 }
 
 void ChartTestWindow::ImGui_Player()
 {
+#if IS_IMGUI_ENABLED
 	myChartPlayer.Update();
 
-	if (Widget::Button("Back to song list"))
+	if (ImGui::Button("Back to song list"))
 		ReturnToSongList();
 
 	if (!myChartPlayer.IsPlaying())
 	{
-		if (Widget::Button("Play"))
+		if (ImGui::Button("Play"))
 			myChartPlayer.Play();
 	}
 	else
 	{
-		if (Widget::Button("Stop"))
+		if (ImGui::Button("Stop"))
 			myChartPlayer.Stop();
 	}
 
-	Text::Formatted("BPM: %f", myChartData.GetBPMAt(myChartPlayer.GetPlayhead()));
+	ImGui::Text("BPM: %f", myChartData.GetBPMAt(myChartPlayer.GetPlayhead()));
 	TimeText(myChartPlayer.GetPlayhead());
-	Layout::SameLine();
-	Text::Unformatted(" / ");
-	Layout::SameLine();
+	ImGui::SameLine();
+	ImGui::TextUnformatted(" / ");
+	ImGui::SameLine();
 	TimeText(myChartData.GetDuration());
+#endif
 }
 
 void ChartTestWindow::RefreshSongList()
