@@ -39,6 +39,34 @@ std::chrono::microseconds ChartData::GetDuration() const
 		return std::chrono::microseconds(0);
 }
 
+const std::string ChartData::GetSectionNameAt(std::chrono::microseconds aTime) const
+{
+	const std::string* currentSection = nullptr;
+	for (const auto& it : mySections)
+	{
+		if (it.first <= aTime)
+			currentSection = &it.second;
+		else
+			break;
+	}
+
+	return *currentSection;
+}
+
+const ChartData::TimeSignature ChartData::GetTimeSignatureAt(std::chrono::microseconds aTime) const
+{
+	const TimeSignature* currentTimeSignature = nullptr;
+	for (const auto& it : myTimeSignatures)
+	{
+		if (it.first <= aTime)
+			currentTimeSignature = &it.second;
+		else
+			break;
+	}
+
+	return *currentTimeSignature;
+}
+
 void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 {
 	myTempos.clear();

@@ -101,6 +101,8 @@ public:
 	};
 
 public:
+	const std::map<ChartTrackDifficulty, std::vector<NoteRange>>& GetNoteRanges() const { return myNoteRanges; }
+
 	bool Load(const ChartTrackLoadData& someData) override;
 
 private:

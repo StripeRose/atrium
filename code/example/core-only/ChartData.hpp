@@ -92,6 +92,12 @@ public:
 
 	std::chrono::microseconds GetDuration() const;
 
+	const std::string GetSectionNameAt(std::chrono::microseconds aTime) const;
+
+	const TimeSignature GetTimeSignatureAt(std::chrono::microseconds aTime) const;
+
+	const std::map<ChartTrackType, std::unique_ptr<ChartTrack>>& GetTracks() const { return myTracks; }
+
 	void LoadMidi(const std::filesystem::path& aMidi);
 
 private:
