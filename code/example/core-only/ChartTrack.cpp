@@ -57,6 +57,9 @@ std::unique_ptr<ChartTrack> ChartTrack::CreateTrackByName(const std::string& aNa
 
 bool ChartGuitarTrack::Load(const ChartTrackLoadData& someData)
 {
+	myNoteRanges.clear();
+	myMarkers.clear();
+
 	return Load_AddNotes(someData)
 		&& Load_UpdateDefaultNoteTypes()
 		&& Load_ProcessMarkers(someData)

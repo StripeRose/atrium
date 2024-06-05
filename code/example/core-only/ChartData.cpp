@@ -31,30 +31,51 @@ float ChartData::GetBPMAt(std::chrono::microseconds aTime) const
 	return static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)).count()) / static_cast<float>(GetTempoAt(aTime));
 }
 
+std::chrono::microseconds ChartData::GetDuration() const
+{
+	if (!myTempos.empty())
+		return myTempos.back().first;
+	else
+		return std::chrono::microseconds(0);
+}
+
 void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 {
+	myTempos.clear();
+	mySections.clear();
+	myTimeSignatures.clear();
+	myTracks.clear();
+
 	MidiDecoder decoder;
 
+	std::uint16_t ticksPerQuarterNote(0);
 	MidiDecoder::FormatType formatType = MidiDecoder::FormatType::SingleTrack;
 
 	std::unique_ptr<ChartTrack> currentTrack;
 	ChartTrackLoadData currentTrackLoadData;
-	std::chrono::microseconds currentTrackTempoSectionStart(0);
-	std::uint32_t currentTrackTempo(0);
-	std::uint16_t ticksPerQuarterNote(0);
+	std::uint32_t currentTrackTempoStartInTicks(0);
+	static constexpr std::uint32_t DefaultMidiTempo = 120 * static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)).count());
 
 	auto ticksToTime = [&](std::uint32_t aTick) -> std::chrono::microseconds
 		{
-			const std::chrono::microseconds microsecondsPerTick(currentTrackTempo / ticksPerQuarterNote);
-			return currentTrackTempoSectionStart + std::chrono::microseconds(aTick * microsecondsPerTick);
+			std::chrono::microseconds currentTempoStart{ 0 };
+			std::uint32_t currentTempo = DefaultMidiTempo;
+			if (!myTempos.empty())
+			{
+				currentTempoStart = myTempos.back().first;
+				currentTempo = myTempos.back().second;
+			}
+
+			const std::chrono::microseconds microsecondsPerTick(currentTempo / ticksPerQuarterNote);
+			std::int64_t sectionTickCount = aTick;
+			sectionTickCount -= currentTrackTempoStartInTicks;
+			return currentTempoStart + std::chrono::microseconds(sectionTickCount * microsecondsPerTick);
 		};
 
 	decoder.OnNewTrack.Connect(this, [&]()
 		{
 			currentTrackLoadData = ChartTrackLoadData();
 			currentTrack.reset();
-			currentTrackTempoSectionStart = std::chrono::microseconds(0);
-			currentTrackTempo = static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)).count()) * 120; // 120 Beats Per Minute (MIDI default)
 		}
 	);
 
@@ -81,8 +102,7 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 
 	decoder.OnSysEx.Connect(this, [&](std::uint32_t aTick, const std::span<std::uint8_t>& someData)
 		{
-			if (currentTrack)
-				currentTrackLoadData.AddSysEx(ticksToTime(aTick), someData);
+			currentTrackLoadData.AddSysEx(ticksToTime(aTick), someData);
 		}
 	);
 
@@ -106,14 +126,12 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 
 	decoder.OnLyric.Connect(this, [&](std::uint32_t aTick, const std::string& aText)
 		{
-			if (currentTrack)
-				currentTrackLoadData.AddLyric(ticksToTime(aTick), aText);
+			currentTrackLoadData.AddLyric(ticksToTime(aTick), aText);
 		}
 	);
 
-	decoder.OnTrackEnd.Connect(this, [&](std::uint32_t aTick)
+	decoder.OnTrackEnd.Connect(this, [&](std::uint32_t)
 		{
-			myChartDuration = std::max(myChartDuration, ticksToTime(aTick));
 			if (!currentTrack)
 				return;
 
@@ -126,9 +144,8 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 
 	decoder.OnSetTempo.Connect(this, [&](std::uint32_t aTick, std::uint32_t aTempo)
 		{
-			currentTrackTempoSectionStart = ticksToTime(aTick);
-			currentTrackTempo = aTempo;
-			myTempos.emplace_back(currentTrackTempoSectionStart, aTempo);
+			myTempos.emplace_back(ticksToTime(aTick), aTempo);
+			currentTrackTempoStartInTicks = aTick;
 		}
 	);
 
@@ -147,61 +164,6 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 
 	decoder.ProcessFile(aMidi, formatType, ticksPerQuarterNote);
 }
-
-//std::chrono::microseconds ChartData::TicksToTime(std::uint32_t aTick) const
-//{
-//	std::chrono::microseconds totalTimeAtTick(0);
-//
-//	for (auto tempoSection = myTempos.begin(); tempoSection != myTempos.end(); ++tempoSection)
-//	{
-//		if (tempoSection->first > aTick)
-//			break;
-//
-//		auto nextTempoSection = tempoSection + 1;
-//		const std::chrono::microseconds microsecondsPerTick(tempoSection->second / myTicksPerQuarterNote);
-//
-//		const bool isContainingSection = (nextTempoSection == myTempos.end() || (tempoSection->first <= aTick && aTick < nextTempoSection->first));
-//
-//		std::int64_t sectionTickCount = ((isContainingSection ? aTick : nextTempoSection->first) - tempoSection->first);
-//		totalTimeAtTick += std::chrono::microseconds(sectionTickCount * microsecondsPerTick);
-//	}
-//
-//	return totalTimeAtTick;
-//}
-//
-//std::uint32_t ChartData::TimeToTicks(std::chrono::microseconds aTime) const
-//{
-//	std::chrono::microseconds totalTimeAtTick(0);
-//
-//	for (auto tempoSection = myTempos.begin(); tempoSection != myTempos.end(); ++tempoSection)
-//	{
-//		std::chrono::microseconds sectionDuration(0);
-//
-//		const std::chrono::microseconds microsecondsPerTick(tempoSection->second / myTicksPerQuarterNote);
-//
-//		auto nextTempoSection = tempoSection + 1;
-//		bool isCurrentSection = nextTempoSection == myTempos.end();
-//		if (!isCurrentSection)
-//		{
-//			const std::uint32_t sectionTickCount = nextTempoSection->first - tempoSection->first;
-//			sectionDuration = std::chrono::microseconds(sectionTickCount * microsecondsPerTick);
-//			isCurrentSection = (totalTimeAtTick <= aTime) && aTime < (totalTimeAtTick + sectionDuration);
-//		}
-//
-//		if (isCurrentSection)
-//		{
-//			const std::chrono::microseconds timeInSection = (aTime - totalTimeAtTick);
-//			const std::uint32_t microsecondsInSection = static_cast<std::uint32_t>(timeInSection.count());
-//			return tempoSection->first + (microsecondsInSection / myTicksPerQuarterNote);
-//		}
-//		else
-//		{
-//			totalTimeAtTick += sectionDuration;
-//		}
-//	}
-//
-//	return 0;
-//}
 
 std::uint32_t ChartData::GetTempoAt(std::chrono::microseconds aTime) const
 {

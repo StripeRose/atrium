@@ -90,7 +90,7 @@ public:
 public:
 	float GetBPMAt(std::chrono::microseconds aTime) const;
 
-	std::chrono::microseconds GetDuration() const { return myChartDuration; }
+	std::chrono::microseconds GetDuration() const;
 
 	void LoadMidi(const std::filesystem::path& aMidi);
 
@@ -101,6 +101,4 @@ private:
 	std::vector<std::pair<std::chrono::microseconds, std::uint32_t>> myTempos;
 	std::vector<std::pair<std::chrono::microseconds, TimeSignature>> myTimeSignatures;
 	std::vector<std::pair<std::chrono::microseconds, std::string>> mySections;
-
-	std::chrono::microseconds myChartDuration;
 };
