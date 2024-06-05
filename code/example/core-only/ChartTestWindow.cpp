@@ -6,16 +6,6 @@
 #include "Editor_FileDialog.hpp"
 #include "Editor_GUI.hpp"
 
-#if IS_IMGUI_ENABLED
-void TimeText(std::chrono::microseconds aTime)
-{
-	std::int64_t lengthSeconds = std::chrono::duration_cast<std::chrono::seconds>(aTime).count();
-	std::int64_t lengthMinutes = lengthSeconds / 60;
-	lengthSeconds -= lengthMinutes * 60;
-	ImGui::Text("%02im %02is", lengthMinutes, lengthSeconds);
-}
-#endif
-
 void ChartTestWindow::ImGui()
 {
 #if IS_IMGUI_ENABLED
@@ -71,8 +61,7 @@ void ChartTestWindow::ImGui_ChartList()
 			ImGui::TextUnformatted(songInfo.Title.c_str());
 			ImGui::Text("by %s", songInfo.Artist.c_str());
 			ImGui::Text("%s (%i)", songInfo.Album.c_str(), songInfo.Year);
-
-			TimeText(songInfo.SongLength);
+			ImGui::TextUnformatted(std::format("{:%M:%S}", std::chrono::round<std::chrono::seconds>(songInfo.SongLength)).c_str());
 
 			ImGui::TableNextColumn();
 
@@ -111,27 +100,54 @@ void ChartTestWindow::ImGui_Player()
 {
 #if IS_IMGUI_ENABLED
 	myChartPlayer.Update();
-
 	if (ImGui::Button("Back to song list"))
 		ReturnToSongList();
 
-	if (!myChartPlayer.IsPlaying())
+	ImGui_Player_PlayControls();
+#endif
+}
+
+void ChartTestWindow::ImGui_Player_PlayControls()
+{
+#if IS_IMGUI_ENABLED
+	ImGui::Text("BPM: %f", myChartData.GetBPMAt(myChartPlayer.GetPlayhead()));
+
+	const ChartPlayer::State playerState = myChartPlayer.GetState();
+	ImGui::BeginDisabled(playerState == ChartPlayer::State::Seeking);
+
+	ImGui::BeginDisabled(playerState == ChartPlayer::State::Playing);
+	if (ImGui::Button("Play"))
+		myChartPlayer.Play();
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+
+	ImGui::BeginDisabled(playerState == ChartPlayer::State::Paused);
+	if (ImGui::Button("Pause"))
+		myChartPlayer.Pause();
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+
+	ImGui::BeginDisabled(playerState == ChartPlayer::State::Stopped);
+	if (ImGui::Button("Stop"))
+		myChartPlayer.Stop();
+	ImGui::EndDisabled();
+
+	ImGui::EndDisabled();
+
+	const auto playhead = myChartPlayer.GetPlayhead();
+	const auto duration = myChartData.GetDuration();
+	const auto playheadSeconds = std::chrono::round<std::chrono::seconds>(playhead);
+	const auto durationSeconds = std::chrono::round<std::chrono::seconds>(duration);
+	int playheadMicroseconds = static_cast<int>(playhead.count());
+	if (ImGui::SliderInt("###SeekBar", &playheadMicroseconds, 0, static_cast<int>(duration.count()), std::format("{:%M:%S} / {:%M:%S}", playheadSeconds, durationSeconds).c_str()))
 	{
-		if (ImGui::Button("Play"))
-			myChartPlayer.Play();
-	}
-	else
-	{
-		if (ImGui::Button("Stop"))
-			myChartPlayer.Stop();
+		if (playerState == ChartPlayer::State::Stopped)
+			myChartPlayer.Pause();
+		myChartPlayer.Seek(std::chrono::microseconds(playheadMicroseconds));
 	}
 
-	ImGui::Text("BPM: %f", myChartData.GetBPMAt(myChartPlayer.GetPlayhead()));
-	TimeText(myChartPlayer.GetPlayhead());
-	ImGui::SameLine();
-	ImGui::TextUnformatted(" / ");
-	ImGui::SameLine();
-	TimeText(myChartData.GetDuration());
 #endif
 }
 

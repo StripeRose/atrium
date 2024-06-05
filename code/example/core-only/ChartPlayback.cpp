@@ -4,11 +4,64 @@
 
 #include "ChartData.hpp"
 
-void ChartPlayer::Play(std::chrono::microseconds aPlayTime)
+ChartPlayer::State ChartPlayer::GetState() const
 {
-	myStartTime = myLastUpdateTime = std::chrono::high_resolution_clock::now();
+	switch (myState)
+	{
+	case InternalState::Playing:
+		return State::Playing;
+	case InternalState::Paused:
+		return State::Paused;
+	case InternalState::SeekingPaused:
+	case InternalState::SeekingPlaying:
+		return State::Seeking;
+	case InternalState::Stopped:
+		return State::Stopped;
+	}
+
+	return State::Stopped;
+}
+
+void ChartPlayer::Pause()
+{
+	myState = InternalState::Paused;
+}
+
+void ChartPlayer::Play()
+{
+	switch (myState)
+	{
+	case InternalState::Playing:
+		return;
+	case InternalState::Paused:
+		myState = InternalState::Playing;
+		return;
+	case InternalState::SeekingPaused:
+	case InternalState::SeekingPlaying:
+		return;
+	case InternalState::Stopped:
+		myStartTime = std::chrono::high_resolution_clock::now();
+		myLastUpdateTime = myStartTime;
+		myState = InternalState::Playing;
+		return;
+	}
+}
+
+void ChartPlayer::Seek(std::chrono::microseconds aPlayTime)
+{
+	switch (myState)
+	{
+	case InternalState::Playing:
+		myState = InternalState::SeekingPlaying;
+		break;
+	case InternalState::Paused:
+		myState = InternalState::SeekingPaused;
+		break;
+	default:
+		return;
+	}
+
 	myPlayhead = aPlayTime;
-	myIsPlaying = true;
 }
 
 void ChartPlayer::SetChartData(const ChartData& aData)
@@ -18,21 +71,33 @@ void ChartPlayer::SetChartData(const ChartData& aData)
 
 void ChartPlayer::Stop()
 {
-	myIsPlaying = false;
+	myState = InternalState::Stopped;
 	myPlayhead = std::chrono::microseconds(0);
 }
 
 void ChartPlayer::Update()
 {
-	if (!myIsPlaying)
-		return;
-
 	const auto newUpdateTime = std::chrono::high_resolution_clock::now();
 	const auto lastUpdatePoint = std::chrono::duration_cast<std::chrono::microseconds>(myLastUpdateTime - myStartTime);
 	const auto thisUpdatePoint = std::chrono::duration_cast<std::chrono::microseconds>(newUpdateTime - myStartTime);
 
-	// Todo: Process (lastUpdatePoint <= X < thisUpdatePoint)
-
 	myLastUpdateTime = newUpdateTime;
-	myPlayhead = thisUpdatePoint;
+
+	switch (myState)
+	{
+	case InternalState::Playing:
+		// Todo: Process (lastUpdatePoint <= X < thisUpdatePoint)
+		myPlayhead = thisUpdatePoint;
+		break;
+	case InternalState::Paused:
+		myStartTime += (thisUpdatePoint - lastUpdatePoint);
+		break;
+	case InternalState::SeekingPlaying:
+	case InternalState::SeekingPaused:
+		myStartTime = (newUpdateTime - myPlayhead);
+		myState = (myState == InternalState::SeekingPlaying ? InternalState::Playing : InternalState::Paused);
+		break;
+	case InternalState::Stopped:
+		break;
+	}
 }

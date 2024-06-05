@@ -16,6 +16,7 @@ private:
 	void ImGui_ChartList();
 
 	void ImGui_Player();
+	void ImGui_Player_PlayControls();
 
 	void RefreshSongList();
 	void SelectSong(const std::filesystem::path& aSong);

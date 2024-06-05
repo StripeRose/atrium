@@ -8,11 +8,18 @@ class ChartData;
 class ChartPlayer
 {
 public:
+	enum class State { Playing, Paused, Seeking, Stopped };
+
+public:
 	std::chrono::microseconds GetPlayhead() const { return myPlayhead; }
 
-	bool IsPlaying() const { return myIsPlaying; }
+	State GetState() const;
 
-	void Play(std::chrono::microseconds aPlayTime = std::chrono::microseconds(0));
+	void Pause();
+
+	void Play();
+
+	void Seek(std::chrono::microseconds aPlayTime);
 
 	void SetChartData(const ChartData& aData);
 
@@ -21,9 +28,14 @@ public:
 	void Update();
 
 private:
+	enum class InternalState
+	{
+		Playing, Paused, SeekingPlaying, SeekingPaused, Stopped
+	};
+
 	const ChartData* myChartData = nullptr;
 
-	bool myIsPlaying = false;
+	InternalState myState = InternalState::Stopped;
 	std::chrono::high_resolution_clock::time_point myStartTime;
 	std::chrono::high_resolution_clock::time_point myLastUpdateTime;
 
