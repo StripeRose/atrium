@@ -9,6 +9,38 @@
 #include "Editor_FileDialog.hpp"
 #include "Editor_GUI.hpp"
 
+#if IS_IMGUI_ENABLED
+#define NOTE_SILVER       IM_COL32(217, 226, 228, 255)
+#define NOTE_BLACK        IM_COL32(10, 10, 10, 255)
+
+#define NOTE_HOPO         IM_COL32(250, 250, 200, 255)
+#define NOTE_STARPOWER    IM_COL32(83, 254, 254, 255)
+
+#define NOTE_OPEN         IM_COL32(150, 65, 197, 255)
+
+#define NOTE_GREEN        IM_COL32(0, 240, 0, 255)
+#define NOTE_RED          IM_COL32(240, 120, 120, 255)
+#define NOTE_YELLOW       IM_COL32(240, 240, 70, 255)
+#define NOTE_BLUE         IM_COL32(105, 184, 240, 255)
+#define NOTE_ORANGE       IM_COL32(240, 180, 45, 255)
+
+#define NOTE_TAP_GREEN    IM_COL32(0, 250, 0, 255)
+#define NOTE_TAP_RED      IM_COL32(250, 0, 0, 255)
+#define NOTE_TAP_YELLOW   IM_COL32(250, 250, 0, 255)
+#define NOTE_TAP_BLUE     IM_COL32(0, 135, 250, 255)
+#define NOTE_TAP_ORANGE   IM_COL32(255, 180, 0, 255)
+
+#define NOTE_RADIUS_SP 13
+#define NOTE_RADIUS_OUTLINE 11
+#define NOTE_RADIUS 10
+#define NOTE_RADIUS_TAP 5
+#define NOTE_RADIUS_TIP 3
+
+#define NOTE_RADIUS_OPEN_HOPO 9
+#define NOTE_RADIUS_OPEN_OUTLINE 7
+#define NOTE_RADIUS_OPEN 5
+#endif
+
 ChartTestWindow::ChartTestWindow()
 	: myLookAhead(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(5)))
 {
@@ -202,17 +234,16 @@ void ChartTestWindow::ImGui_Player_Track(ChartTrack& aTrack)
 	if (!ImGui::TreeNode(trackTypeString))
 		return;
 
-	if (!myDifficulties.contains(aTrack.GetType()))
-		myDifficulties[aTrack.GetType()] = ChartTrackDifficulty::Hard;
-
 	{
-		int currentDifficulty = static_cast<int>(myDifficulties[aTrack.GetType()]);
+		int currentDifficulty = static_cast<int>(myTrackSettings[aTrack.GetType()].Difficulty);
 		ImGui::Combo("Difficulty", &currentDifficulty, "Easy\0Medium\0Hard\0Expert\0\0");
-		myDifficulties[aTrack.GetType()] = ChartTrackDifficulty(currentDifficulty);
+		myTrackSettings[aTrack.GetType()].Difficulty = ChartTrackDifficulty(currentDifficulty);
 	}
 
+	ImGui::Checkbox("Show open notes", &myTrackSettings[aTrack.GetType()].ShowOpen);
+
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-	ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(50, 50, 50, 255));
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(34, 34, 34, 255));
 	const bool isVisible = ImGui::BeginChild("track", ImVec2(0, 150.f), ImGuiChildFlags_Border, ImGuiWindowFlags_NoMove);
 	ImGui::PopStyleColor();
 	ImGui::PopStyleVar();
@@ -292,19 +323,12 @@ void ChartTestWindow::ImGui_Player_Track(ChartGuitarTrack& aTrack, RoseGold::Mat
 		ImVec2(canvasTopLeft.x + 20.f, canvasBottomRight.y),
 		IM_COL32(100, 100, 100, 255), 2.f);
 
-	static const ImColor mainNoteColors[5] = {
-		IM_COL32(20, 200, 20, 255),
-		IM_COL32(200, 20, 20, 255),
-		IM_COL32(200, 200, 20, 255),
-		IM_COL32(20, 20, 200, 255),
-		IM_COL32(200, 150, 20, 255)
-	};
-
 	// Draw notes.
-	if (!aTrack.GetNoteRanges().contains(myDifficulties.at(aTrack.GetType())))
+	const TrackSettings& trackSettings = myTrackSettings.at(aTrack.GetType());
+	if (!aTrack.GetNoteRanges().contains(trackSettings.Difficulty))
 		return;
 
-	const std::vector<ChartGuitarTrack::NoteRange>& difficultyNotes = aTrack.GetNoteRanges().at(myDifficulties.at(aTrack.GetType()));
+	const std::vector<ChartGuitarTrack::NoteRange>& difficultyNotes = aTrack.GetNoteRanges().at(trackSettings.Difficulty);
 	for (const ChartGuitarTrack::NoteRange& note : difficultyNotes)
 	{
 		const float noteXStart = ImGui_GetNoteXFraction(note.Start);
@@ -312,25 +336,137 @@ void ChartTestWindow::ImGui_Player_Track(ChartGuitarTrack& aTrack, RoseGold::Mat
 		if (noteXEnd < -2.f || 1.2f < noteXStart)
 			continue;
 
-		const ImVec2 noteStartPosition(
-			std::lerp(canvasTopLeft.x + 20.f, canvasBottomRight.x, noteXStart),
-			laneY[static_cast<int>(note.Lane)]
-		);
+		const float noteStart = std::lerp(canvasTopLeft.x + 20.f, canvasBottomRight.x, noteXStart);
+		const float noteEnd = std::lerp(canvasTopLeft.x + 20.f, canvasBottomRight.x, noteXEnd);
 
-		const ImVec2 noteEndPosition(
-			std::lerp(canvasTopLeft.x + 20.f, canvasBottomRight.x, noteXEnd),
-			laneY[static_cast<int>(note.Lane)]
-		);
-
-		drawList->AddCircleFilled(noteStartPosition, 8.f, mainNoteColors[static_cast<int>(note.Lane)]);
-		drawList->AddRect(
-			ImVec2(noteStartPosition.x, noteStartPosition.y - 4.f),
-			ImVec2(noteEndPosition.x, noteEndPosition.y + 4.f),
-			mainNoteColors[static_cast<int>(note.Lane)]
-		);
+		if (trackSettings.ShowOpen && note.CanBeOpen)
+			ImGui_OpenNote(note.Type != ChartGuitarTrack::NoteType::Strum, noteStart, noteEnd, laneY[0], laneY[4]);
+		else
+			ImGui_Note(note, noteStart, noteEnd, laneY[static_cast<int>(note.Lane)]);
 	}
 
 #endif
+}
+
+void ChartTestWindow::ImGui_Note(const ChartGuitarTrack::NoteRange& aNote, float aStartX, float anEndX, float aLaneY)
+{
+	ImVec2 startPosition(aStartX, aLaneY);
+	ImVec2 endPosition(anEndX, aLaneY);
+
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	ImU32 strumColor = NOTE_BLACK;
+	switch (aNote.Lane)
+	{
+	case ChartGuitarTrack::Lane::Green:
+		strumColor = NOTE_GREEN;
+		break;
+	case ChartGuitarTrack::Lane::Red:
+		strumColor = NOTE_RED;
+		break;
+	case ChartGuitarTrack::Lane::Yellow:
+		strumColor = NOTE_YELLOW;
+		break;
+	case ChartGuitarTrack::Lane::Blue:
+		strumColor = NOTE_BLUE;
+		break;
+	case ChartGuitarTrack::Lane::Orange:
+		strumColor = NOTE_ORANGE;
+		break;
+	}
+
+	drawList->AddRectFilled(
+		ImVec2(startPosition.x, startPosition.y - 2.f),
+		ImVec2(endPosition.x, endPosition.y + 2.f),
+		strumColor,
+		2.f
+	);
+
+	const bool isStarPower = false;
+	drawList->AddCircleFilled(startPosition, NOTE_RADIUS_SP, isStarPower ? NOTE_STARPOWER : NOTE_SILVER);
+
+	switch (aNote.Type)
+	{
+	case ChartGuitarTrack::NoteType::Strum:
+	case ChartGuitarTrack::NoteType::HOPO:
+	{
+		drawList->AddCircleFilled(startPosition, NOTE_RADIUS, strumColor);
+		break;
+	}
+	case ChartGuitarTrack::NoteType::Tap:
+	{
+		ImU32 noteColor = NOTE_BLACK;
+		switch (aNote.Lane)
+		{
+		case ChartGuitarTrack::Lane::Green:
+			noteColor = NOTE_TAP_GREEN;
+			break;
+		case ChartGuitarTrack::Lane::Red:
+			noteColor = NOTE_TAP_RED;
+			break;
+		case ChartGuitarTrack::Lane::Yellow:
+			noteColor = NOTE_TAP_YELLOW;
+			break;
+		case ChartGuitarTrack::Lane::Blue:
+			noteColor = NOTE_TAP_BLUE;
+			break;
+		case ChartGuitarTrack::Lane::Orange:
+			noteColor = NOTE_TAP_ORANGE;
+			break;
+		}
+		drawList->AddCircle(startPosition, NOTE_RADIUS, noteColor);
+		drawList->AddCircle(startPosition, NOTE_RADIUS - 1, noteColor);
+		break;
+	}
+	}
+
+	drawList->AddCircle(startPosition, NOTE_RADIUS_OUTLINE, NOTE_BLACK);
+
+	drawList->AddCircleFilled(
+		startPosition,
+		NOTE_RADIUS_TAP,
+		aNote.Type == ChartGuitarTrack::NoteType::HOPO ? NOTE_HOPO : NOTE_BLACK
+	);
+
+	drawList->AddCircleFilled(startPosition, NOTE_RADIUS_TIP, NOTE_SILVER);
+}
+
+void ChartTestWindow::ImGui_OpenNote(bool isHOPO, float aNoteStart, float aNoteEnd, float aTopLane, float aBottomLane)
+{
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	drawList->AddRectFilled(
+		{ aNoteStart, aTopLane },
+		{ aNoteEnd, aBottomLane },
+		(NOTE_OPEN) & IM_COL32(255, 255, 255, 100),
+		NOTE_RADIUS_OPEN_HOPO
+	);
+
+	drawList->AddRect(
+		{ aNoteStart, aTopLane },
+		{ aNoteEnd, aBottomLane },
+		NOTE_OPEN,
+		NOTE_RADIUS_OPEN_HOPO
+	);
+
+	drawList->AddRectFilled(
+		{ aNoteStart - NOTE_RADIUS_OPEN_HOPO, aTopLane - NOTE_RADIUS_OPEN_HOPO },
+		{ aNoteStart + NOTE_RADIUS_OPEN_HOPO, aBottomLane + NOTE_RADIUS_OPEN_HOPO },
+		isHOPO ? NOTE_HOPO : NOTE_SILVER,
+		NOTE_RADIUS_OPEN_HOPO);
+
+	drawList->AddRectFilled(
+		{ aNoteStart - NOTE_RADIUS_OPEN_OUTLINE, aTopLane - NOTE_RADIUS_OPEN_OUTLINE },
+		{ aNoteStart + NOTE_RADIUS_OPEN_OUTLINE, aBottomLane + NOTE_RADIUS_OPEN_OUTLINE },
+		isHOPO ? NOTE_HOPO : NOTE_BLACK,
+		NOTE_RADIUS_OPEN_OUTLINE);
+
+	const bool isStarPower = false;
+	drawList->AddRectFilled(
+		{ aNoteStart - NOTE_RADIUS_OPEN, aTopLane - NOTE_RADIUS_OPEN },
+		{ aNoteStart + NOTE_RADIUS_OPEN, aBottomLane + NOTE_RADIUS_OPEN },
+		isStarPower ? NOTE_STARPOWER : NOTE_OPEN,
+		NOTE_RADIUS_OPEN);
 }
 
 float ChartTestWindow::ImGui_GetNoteXFraction(std::chrono::microseconds aTime) const
