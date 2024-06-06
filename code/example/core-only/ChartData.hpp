@@ -101,10 +101,17 @@ public:
 	void LoadMidi(const std::filesystem::path& aMidi);
 
 private:
+	struct TempoSection
+	{
+		std::uint32_t TickStart;
+		std::chrono::microseconds TimeStart;
+		std::uint32_t Tempo;
+	};
+
 	std::uint32_t GetTempoAt(std::chrono::microseconds aTime) const;
 
 	std::map<ChartTrackType, std::unique_ptr<ChartTrack>> myTracks;
-	std::vector<std::pair<std::chrono::microseconds, std::uint32_t>> myTempos;
+	std::vector<TempoSection> myTempos;
 	std::vector<std::pair<std::chrono::microseconds, TimeSignature>> myTimeSignatures;
 	std::vector<std::pair<std::chrono::microseconds, std::string>> mySections;
 };
