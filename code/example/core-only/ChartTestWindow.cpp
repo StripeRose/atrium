@@ -69,6 +69,7 @@ void ChartTestWindow::ImGui()
 #if IS_IMGUI_ENABLED
 void ChartTestWindow::ImGui_ChartList()
 {
+	ZoneScoped;
 	ImGui::TextUnformatted(mySongsDirectory.string().c_str());
 	ImGui::SameLine();
 
@@ -139,6 +140,7 @@ void ChartTestWindow::ImGui_ChartList()
 
 void ChartTestWindow::ImGui_Player()
 {
+	ZoneScoped;
 	myChartPlayer.Update();
 	if (ImGui::Button("Back to song list"))
 		ReturnToSongList();
@@ -158,6 +160,7 @@ void ChartTestWindow::ImGui_Player()
 
 void ChartTestWindow::ImGui_Player_PlayControls()
 {
+	ZoneScoped;
 	ImGui::Text("BPM: %f", myChartData.GetBPMAt(myChartPlayer.GetPlayhead()));
 
 	const ChartPlayer::State playerState = myChartPlayer.GetState();
@@ -200,6 +203,7 @@ void ChartTestWindow::ImGui_Player_PlayControls()
 
 void ChartTestWindow::ImGui_Player_Track(ChartTrack& aTrack)
 {
+	ZoneScoped;
 	const char* trackTypeString = nullptr;
 	switch (aTrack.GetType())
 	{
@@ -282,6 +286,7 @@ void ChartTestWindow::ImGui_Player_Track(ChartTrack& aTrack)
 
 void ChartTestWindow::ImGui_Player_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize)
 {
+	ZoneScoped;
 	const ImVec2 canvasTopLeft(aPoint.X, aPoint.Y);
 	const ImVec2 canvasSize(aSize.X, aSize.Y);
 	const ImVec2 canvasBottomRight(aPoint.X + aSize.X, aPoint.Y + aSize.Y);
@@ -468,6 +473,7 @@ float ChartTestWindow::ImGui_GetNoteXFraction(std::chrono::microseconds aTime) c
 
 void ChartTestWindow::RefreshSongList()
 {
+	ZoneScoped;
 	if (!std::filesystem::exists(mySongsDirectory) || !std::filesystem::is_directory(mySongsDirectory))
 		return;
 

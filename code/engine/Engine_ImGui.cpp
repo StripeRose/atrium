@@ -24,6 +24,7 @@ namespace RoseGold
 		, myRenderTarget(aTarget)
 		, myWindow(nullptr)
 	{
+		ZoneScoped;
 		IMGUI_CHECKVERSION();
 
 		ImGui::CreateContext();
@@ -95,6 +96,7 @@ namespace RoseGold
 		if (!myRenderTarget)
 			return;
 
+		ZoneScoped;
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
@@ -107,6 +109,7 @@ namespace RoseGold
 		if (!myRenderTarget)
 			return;
 
+		ZoneScoped;
 		ImGui::Render();
 		ImGui::UpdatePlatformWindows();
 
@@ -124,6 +127,7 @@ namespace RoseGold
 #if IS_IMGUI_ENABLED
 	void ImGuiHandler::InitForWindow(Core::Window& aWindow)
 	{
+		ZoneScoped;
 		myWindow = &aWindow;
 		aWindow.Closed.Connect(this, [this](Core::Window&) { Cleanup(); });
 
@@ -139,6 +143,7 @@ namespace RoseGold
 
 	void ImGuiHandler::SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, Core::GraphicsFormat aTargetFormat)
 	{
+		ZoneScoped;
 		ImGui_ImplWin32_Init(std::any_cast<HWND>(aWindow.GetNativeHandle()));
 
 		DirectX12::DirectX12API& dxAPI = static_cast<DirectX12::DirectX12API&>(aGraphicsAPI);
@@ -165,6 +170,7 @@ namespace RoseGold
 		if (!myWindow)
 			return;
 
+		ZoneScoped;
 		Win32::Window* win32Window = static_cast<Win32::Window*>(myWindow);
 		win32Window->Closed.Disconnect(this);
 		win32Window->AdditionalWndProc = nullptr;
