@@ -16,7 +16,6 @@ ChartTestWindow::ChartTestWindow()
 
 void ChartTestWindow::ImGui()
 {
-	ImGui::ShowDemoWindow();
 #if IS_IMGUI_ENABLED
 	std::string title = std::format("Chart - {}###ChartTestWindow", myCurrentSong);
 	if (ImGui::Begin(title.c_str()))
@@ -259,7 +258,6 @@ void ChartTestWindow::ImGui_Player_Track(ChartTrack& aTrack)
 
 void ChartTestWindow::ImGui_Player_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize)
 {
-	aTrack;
 #if IS_IMGUI_ENABLED
 	const ImVec2 canvasTopLeft(aPoint.X, aPoint.Y);
 	const ImVec2 canvasSize(aSize.X, aSize.Y);
