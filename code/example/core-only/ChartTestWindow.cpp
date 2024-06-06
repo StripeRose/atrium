@@ -66,9 +66,9 @@ void ChartTestWindow::ImGui()
 #endif
 }
 
+#if IS_IMGUI_ENABLED
 void ChartTestWindow::ImGui_ChartList()
 {
-#if IS_IMGUI_ENABLED
 	ImGui::TextUnformatted(mySongsDirectory.string().c_str());
 	ImGui::SameLine();
 
@@ -135,12 +135,10 @@ void ChartTestWindow::ImGui_ChartList()
 
 		ImGui::EndTable();
 	}
-#endif
 }
 
 void ChartTestWindow::ImGui_Player()
 {
-#if IS_IMGUI_ENABLED
 	myChartPlayer.Update();
 	if (ImGui::Button("Back to song list"))
 		ReturnToSongList();
@@ -156,12 +154,10 @@ void ChartTestWindow::ImGui_Player()
 
 	for (const auto& track : myChartData.GetTracks())
 		ImGui_Player_Track(*track.second);
-#endif
 }
 
 void ChartTestWindow::ImGui_Player_PlayControls()
 {
-#if IS_IMGUI_ENABLED
 	ImGui::Text("BPM: %f", myChartData.GetBPMAt(myChartPlayer.GetPlayhead()));
 
 	const ChartPlayer::State playerState = myChartPlayer.GetState();
@@ -200,12 +196,10 @@ void ChartTestWindow::ImGui_Player_PlayControls()
 		myChartPlayer.Seek(std::chrono::microseconds(playheadMicroseconds));
 	}
 
-#endif
 }
 
 void ChartTestWindow::ImGui_Player_Track(ChartTrack& aTrack)
 {
-#if IS_IMGUI_ENABLED
 	const char* trackTypeString = nullptr;
 	switch (aTrack.GetType())
 	{
@@ -284,12 +278,10 @@ void ChartTestWindow::ImGui_Player_Track(ChartTrack& aTrack)
 	ImGui::EndChild();
 
 	ImGui::TreePop();
-#endif
 }
 
 void ChartTestWindow::ImGui_Player_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize)
 {
-#if IS_IMGUI_ENABLED
 	const ImVec2 canvasTopLeft(aPoint.X, aPoint.Y);
 	const ImVec2 canvasSize(aSize.X, aSize.Y);
 	const ImVec2 canvasBottomRight(aPoint.X + aSize.X, aPoint.Y + aSize.Y);
@@ -344,8 +336,6 @@ void ChartTestWindow::ImGui_Player_Track(ChartGuitarTrack& aTrack, RoseGold::Mat
 		else
 			ImGui_Note(note, noteStart, noteEnd, laneY[static_cast<int>(note.Lane)]);
 	}
-
-#endif
 }
 
 void ChartTestWindow::ImGui_Note(const ChartGuitarTrack::NoteRange& aNote, float aStartX, float anEndX, float aLaneY)
@@ -474,6 +464,7 @@ float ChartTestWindow::ImGui_GetNoteXFraction(std::chrono::microseconds aTime) c
 	aTime -= myChartPlayer.GetPlayhead();
 	return static_cast<float>(aTime.count()) / static_cast<float>(myLookAhead.count());
 }
+#endif
 
 void ChartTestWindow::RefreshSongList()
 {

@@ -16,6 +16,7 @@ public:
 	void ImGui();
 
 private:
+#if IS_IMGUI_ENABLED
 	void ImGui_ChartList();
 
 	void ImGui_Player();
@@ -27,6 +28,7 @@ private:
 	void ImGui_OpenNote(bool isHOPO, float aNoteStart, float aNoteEnd, float aTopLane, float aBottomLane);
 
 	float ImGui_GetNoteXFraction(std::chrono::microseconds aTime) const;
+#endif
 
 	void RefreshSongList();
 	void SelectSong(const std::filesystem::path& aSong);
