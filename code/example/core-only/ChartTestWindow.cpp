@@ -39,6 +39,8 @@
 #define NOTE_RADIUS_OPEN_HOPO 9
 #define NOTE_RADIUS_OPEN_OUTLINE 7
 #define NOTE_RADIUS_OPEN 5
+
+#define HIT_WINDOW_OFFSET 30.f
 #endif
 
 ChartTestWindow::ChartTestWindow()
@@ -154,8 +156,12 @@ void ChartTestWindow::ImGui_Player()
 			myLookAhead = std::chrono::microseconds(lookaheadMicroseconds);
 	}
 
+	ImGui::Text("Section: %s", myChartData.GetSectionNameAt(myChartPlayer.GetPlayhead()).c_str());
+
+	ImGui_Track_TimeSignatures();
+
 	for (const auto& track : myChartData.GetTracks())
-		ImGui_Player_Track(*track.second);
+		ImGui_Track(*track.second);
 }
 
 void ChartTestWindow::ImGui_Player_PlayControls()
@@ -201,7 +207,7 @@ void ChartTestWindow::ImGui_Player_PlayControls()
 
 }
 
-void ChartTestWindow::ImGui_Player_Track(ChartTrack& aTrack)
+void ChartTestWindow::ImGui_Track(ChartTrack& aTrack)
 {
 	ZoneScoped;
 	const char* trackTypeString = nullptr;
@@ -266,7 +272,7 @@ void ChartTestWindow::ImGui_Player_Track(ChartTrack& aTrack)
 		case ChartTrackType::LeadGuitar:
 		case ChartTrackType::RhythmGuitar:
 		case ChartTrackType::BassGuitar:
-			ImGui_Player_Track(
+			ImGui_Track(
 				static_cast<ChartGuitarTrack&>(aTrack),
 				{ canvasTopLeft.x + 1, canvasTopLeft.y + 1 },
 				{ canvasSize.x - 2, canvasSize.y - 2 });
@@ -284,7 +290,7 @@ void ChartTestWindow::ImGui_Player_Track(ChartTrack& aTrack)
 	ImGui::TreePop();
 }
 
-void ChartTestWindow::ImGui_Player_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize)
+void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize)
 {
 	ZoneScoped;
 	const ImVec2 canvasTopLeft(aPoint.X, aPoint.Y);
@@ -315,12 +321,9 @@ void ChartTestWindow::ImGui_Player_Track(ChartGuitarTrack& aTrack, RoseGold::Mat
 	drawGuitarLane(ChartGuitarTrack::Lane::Blue, IM_COL32(20, 20, 100, 255));
 	drawGuitarLane(ChartGuitarTrack::Lane::Orange, IM_COL32(100, 70, 20, 255));
 
-	drawList->AddLine(
-		ImVec2(canvasTopLeft.x + 20.f, canvasTopLeft.y),
-		ImVec2(canvasTopLeft.x + 20.f, canvasBottomRight.y),
-		IM_COL32(100, 100, 100, 255), 2.f);
+	ImGui_Track_Beats(aPoint, aSize);
+	ImGui_Track_HitWindow(aPoint, aSize);
 
-	// Draw notes.
 	const TrackSettings& trackSettings = myTrackSettings.at(aTrack.GetType());
 	if (!aTrack.GetNoteRanges().contains(trackSettings.Difficulty))
 		return;
@@ -328,22 +331,107 @@ void ChartTestWindow::ImGui_Player_Track(ChartGuitarTrack& aTrack, RoseGold::Mat
 	const std::vector<ChartGuitarTrack::NoteRange>& difficultyNotes = aTrack.GetNoteRanges().at(trackSettings.Difficulty);
 	for (const ChartGuitarTrack::NoteRange& note : difficultyNotes)
 	{
-		const float noteXStart = ImGui_GetNoteXFraction(note.Start);
-		const float noteXEnd = ImGui_GetNoteXFraction(note.End);
-		if (noteXEnd < -2.f || 1.2f < noteXStart)
+		const float noteXStart = ImGui_TimeToTrackPosition(aSize.X, note.Start);
+		const float noteXEnd = ImGui_TimeToTrackPosition(aSize.X, note.Start);
+
+		if (noteXEnd < 0.f || aSize.X < noteXStart)
 			continue;
 
-		const float noteStart = std::lerp(canvasTopLeft.x + 20.f, canvasBottomRight.x, noteXStart);
-		const float noteEnd = std::lerp(canvasTopLeft.x + 20.f, canvasBottomRight.x, noteXEnd);
-
 		if (trackSettings.ShowOpen && note.CanBeOpen)
-			ImGui_OpenNote(note.Type != ChartGuitarTrack::NoteType::Strum, noteStart, noteEnd, laneY[0], laneY[4]);
+			ImGui_Track_OpenNote(note.Type != ChartGuitarTrack::NoteType::Strum, canvasTopLeft.x + noteXStart, canvasTopLeft.x + noteXEnd, laneY[0], laneY[4]);
 		else
-			ImGui_Note(note, noteStart, noteEnd, laneY[static_cast<int>(note.Lane)]);
+			ImGui_Track_Note(note, canvasTopLeft.x + noteXStart, canvasTopLeft.x + noteXEnd, laneY[static_cast<int>(note.Lane)]);
 	}
 }
 
-void ChartTestWindow::ImGui_Note(const ChartGuitarTrack::NoteRange& aNote, float aStartX, float anEndX, float aLaneY)
+void ChartTestWindow::ImGui_Track_HitWindow(RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize)
+{
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	drawList->AddLine(
+		ImVec2(aPoint.X + HIT_WINDOW_OFFSET, aPoint.Y),
+		ImVec2(aPoint.X + HIT_WINDOW_OFFSET, aPoint.Y + aSize.Y),
+		IM_COL32(100, 100, 100, 255), 2.f);
+}
+
+void ChartTestWindow::ImGui_Track_Beats(RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize)
+{
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	std::uint32_t beat = 0;
+
+	const std::vector<ChartData::TempoSection>& tempoSections = myChartData.GetTempoSections();
+	for (auto section = tempoSections.cbegin(); section != tempoSections.cend(); section++)
+	{
+		const auto next = section + 1;
+		const std::chrono::microseconds start = section->TimeStart;
+		const std::chrono::microseconds end = (next != tempoSections.cend()) ? next->TimeStart : myChartData.GetDuration();
+
+		std::chrono::microseconds beatTime = start;
+		const ChartData::TimeSignature& timeSignature = myChartData.GetTimeSignatureAt(start);
+		while (beatTime < end)
+		{
+			const float trackPosition = ImGui_TimeToTrackPosition(aSize.X, beatTime);
+			if (beat == 0)
+			{
+				drawList->AddLine(
+					ImVec2(aPoint.X + trackPosition, aPoint.Y),
+					ImVec2(aPoint.X + trackPosition, aPoint.Y + aSize.Y),
+					IM_COL32(180, 180, 180, 255), 4.f);
+			}
+			else
+			{
+				drawList->AddLine(
+					ImVec2(aPoint.X + trackPosition, aPoint.Y),
+					ImVec2(aPoint.X + trackPosition, aPoint.Y + aSize.Y),
+					IM_COL32(60, 60, 60, 255), 2.f);
+			}
+
+			beat = (beat + 1) % timeSignature.Numerator;
+			beatTime += section->TimePerBeat;
+		}
+	}
+}
+
+void ChartTestWindow::ImGui_Track_TimeSignatures()
+{
+	ImGui::Indent();
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(34, 34, 34, 255));
+	const bool isVisible = ImGui::BeginChild("track", ImVec2(0, 30.f), ImGuiChildFlags_Border, ImGuiWindowFlags_NoMove);
+	ImGui::PopStyleColor();
+	ImGui::PopStyleVar();
+
+	if (isVisible)
+	{
+		const RoseGold::Math::Vector2 point(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
+		const RoseGold::Math::Vector2 size(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y);
+
+		ImGui_Track_Beats(point, size);
+		ImGui_Track_HitWindow(point, size);
+
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+		const std::vector<std::pair<std::chrono::microseconds, ChartData::TimeSignature>>& timeSignatures = myChartData.GetTimeSignatures();
+		for (auto it = timeSignatures.cbegin(); it != timeSignatures.cend(); it++)
+		{
+			const auto next = it + 1;
+			const std::chrono::microseconds start = it->first;
+			const std::chrono::microseconds end = (next != timeSignatures.cend()) ? next->first : myChartData.GetDuration();
+			const float startPosition = ImGui_TimeToTrackPosition(size.X, start);
+			const float endPosition = ImGui_TimeToTrackPosition(size.X, end);
+
+			const float labelPosition = std::min(std::max(startPosition, HIT_WINDOW_OFFSET), endPosition - 30.f);
+			const std::string timeSignatureString(std::format("{}/{}", it->second.Numerator, it->second.Denominator));
+			drawList->AddText(ImVec2(point.X + labelPosition + 5.f, point.Y), IM_COL32_WHITE, timeSignatureString.c_str());
+		}
+	}
+
+	ImGui::EndChild();
+	ImGui::Unindent();
+}
+
+void ChartTestWindow::ImGui_Track_Note(const ChartGuitarTrack::NoteRange& aNote, float aStartX, float anEndX, float aLaneY)
 {
 	ImVec2 startPosition(aStartX, aLaneY);
 	ImVec2 endPosition(anEndX, aLaneY);
@@ -426,7 +514,7 @@ void ChartTestWindow::ImGui_Note(const ChartGuitarTrack::NoteRange& aNote, float
 	drawList->AddCircleFilled(startPosition, NOTE_RADIUS_TIP, NOTE_SILVER);
 }
 
-void ChartTestWindow::ImGui_OpenNote(bool isHOPO, float aNoteStart, float aNoteEnd, float aTopLane, float aBottomLane)
+void ChartTestWindow::ImGui_Track_OpenNote(bool isHOPO, float aNoteStart, float aNoteEnd, float aTopLane, float aBottomLane)
 {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -464,10 +552,12 @@ void ChartTestWindow::ImGui_OpenNote(bool isHOPO, float aNoteStart, float aNoteE
 		NOTE_RADIUS_OPEN);
 }
 
-float ChartTestWindow::ImGui_GetNoteXFraction(std::chrono::microseconds aTime) const
+float ChartTestWindow::ImGui_TimeToTrackPosition(float aTrackWidth, std::chrono::microseconds aTime) const
 {
-	aTime -= myChartPlayer.GetPlayhead();
-	return static_cast<float>(aTime.count()) / static_cast<float>(myLookAhead.count());
+	const auto relativeToPlayhead = aTime - myChartPlayer.GetPlayhead();
+	const float playheadToLookahead = static_cast<float>(relativeToPlayhead.count()) / static_cast<float>(myLookAhead.count());
+
+	return std::lerp(HIT_WINDOW_OFFSET, aTrackWidth, playheadToLookahead);
 }
 #endif
 

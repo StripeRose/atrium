@@ -79,6 +79,13 @@ class ChartTrack;
 class ChartData
 {
 public:
+	struct TempoSection
+	{
+		std::uint32_t TickStart;
+		std::chrono::microseconds TimeStart;
+		std::chrono::microseconds TimePerBeat;
+	};
+
 	struct TimeSignature
 	{
 		std::uint8_t Numerator = 0;
@@ -88,28 +95,27 @@ public:
 	};
 
 public:
+	std::chrono::microseconds GetBeatLengthAt(std::chrono::microseconds aTime) const;
+
 	float GetBPMAt(std::chrono::microseconds aTime) const;
 
 	std::chrono::microseconds GetDuration() const;
 
 	const std::string GetSectionNameAt(std::chrono::microseconds aTime) const;
 
+	const std::vector<std::pair<std::chrono::microseconds, std::string>>& GetSectionNames() const { return mySections; }
+
+	const std::vector<TempoSection>& GetTempoSections() const { return myTempos; }
+
 	const TimeSignature GetTimeSignatureAt(std::chrono::microseconds aTime) const;
+
+	const std::vector<std::pair<std::chrono::microseconds, TimeSignature>>& GetTimeSignatures() const { return myTimeSignatures; }
 
 	const std::map<ChartTrackType, std::unique_ptr<ChartTrack>>& GetTracks() const { return myTracks; }
 
 	void LoadMidi(const std::filesystem::path& aMidi);
 
 private:
-	struct TempoSection
-	{
-		std::uint32_t TickStart;
-		std::chrono::microseconds TimeStart;
-		std::uint32_t Tempo;
-	};
-
-	std::uint32_t GetTempoAt(std::chrono::microseconds aTime) const;
-
 	std::map<ChartTrackType, std::unique_ptr<ChartTrack>> myTracks;
 	std::vector<TempoSection> myTempos;
 	std::vector<std::pair<std::chrono::microseconds, TimeSignature>> myTimeSignatures;

@@ -21,13 +21,17 @@ private:
 
 	void ImGui_Player();
 	void ImGui_Player_PlayControls();
-	void ImGui_Player_Track(ChartTrack& aTrack);
-	void ImGui_Player_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize);
 
-	void ImGui_Note(const ChartGuitarTrack::NoteRange& aNote, float aStartX, float anEndX, float aLaneY);
-	void ImGui_OpenNote(bool isHOPO, float aNoteStart, float aNoteEnd, float aTopLane, float aBottomLane);
+	void ImGui_Track(ChartTrack& aTrack);
+	void ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize);
+	void ImGui_Track_HitWindow(RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize);
+	void ImGui_Track_Beats(RoseGold::Math::Vector2 aPoint, RoseGold::Math::Vector2 aSize);
+	void ImGui_Track_TimeSignatures();
 
-	float ImGui_GetNoteXFraction(std::chrono::microseconds aTime) const;
+	void ImGui_Track_Note(const ChartGuitarTrack::NoteRange& aNote, float aStartX, float anEndX, float aLaneY);
+	void ImGui_Track_OpenNote(bool isHOPO, float aNoteStart, float aNoteEnd, float aTopLane, float aBottomLane);
+
+	float ImGui_TimeToTrackPosition(float aTrackWidth, std::chrono::microseconds aTime) const;
 #endif
 
 	void RefreshSongList();

@@ -39,5 +39,5 @@ private:
 	std::chrono::high_resolution_clock::time_point myStartTime;
 	std::chrono::high_resolution_clock::time_point myLastUpdateTime;
 
-	std::chrono::microseconds myPlayhead;
+	std::chrono::microseconds myPlayhead{ 0 };
 };

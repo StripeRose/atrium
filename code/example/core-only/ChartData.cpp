@@ -6,7 +6,7 @@
 
 #include "Common_Diagnostics.hpp"
 
-#define MIDI_DEFAULT_TEMPO (120 * static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)).count()));
+#define MIDI_DEFAULT_TEMPO (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)) * 120);
 
 void ChartInfo::Load(const std::filesystem::path& aSongIni)
 {
@@ -28,9 +28,23 @@ void ChartInfo::Load(const std::filesystem::path& aSongIni)
 	myDifficulties[ChartTrackType::Vocal_Harmony] = song.Has("diff_vocals_harm") ? song.Get<int>("diff_vocals_harm") : -1;
 }
 
+std::chrono::microseconds ChartData::GetBeatLengthAt(std::chrono::microseconds aTime) const
+{
+	std::chrono::microseconds currentTempo = MIDI_DEFAULT_TEMPO;
+	for (const auto& it : myTempos)
+	{
+		if (it.TimeStart <= aTime)
+			currentTempo = it.TimePerBeat;
+		else
+			break;
+	}
+
+	return currentTempo;
+}
+
 float ChartData::GetBPMAt(std::chrono::microseconds aTime) const
 {
-	return static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)).count()) / static_cast<float>(GetTempoAt(aTime));
+	return static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)).count()) / static_cast<float>(GetBeatLengthAt(aTime).count());
 }
 
 std::chrono::microseconds ChartData::GetDuration() const
@@ -94,7 +108,7 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 					break;
 
 				auto nextTempoSection = tempoSection + 1;
-				const std::chrono::microseconds microsecondsPerTick(tempoSection->Tempo / ticksPerQuarterNote);
+				const std::chrono::microseconds microsecondsPerTick(tempoSection->TimePerBeat / ticksPerQuarterNote);
 
 				const bool isContainingSection = (nextTempoSection == myTempos.end() || (tempoSection->TickStart <= aTick && aTick < nextTempoSection->TickStart));
 
@@ -177,7 +191,7 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 
 	decoder.OnSetTempo.Connect(this, [&](std::uint32_t aTick, std::uint32_t aTempo)
 		{
-			myTempos.emplace_back(aTick, ticksToTime(aTick), aTempo);
+			myTempos.emplace_back(aTick, ticksToTime(aTick), std::chrono::microseconds(aTempo));
 		}
 	);
 
@@ -195,18 +209,4 @@ void ChartData::LoadMidi(const std::filesystem::path& aMidi)
 	);
 
 	decoder.ProcessFile(aMidi, formatType, ticksPerQuarterNote);
-}
-
-std::uint32_t ChartData::GetTempoAt(std::chrono::microseconds aTime) const
-{
-	std::uint32_t currentTempo = MIDI_DEFAULT_TEMPO;
-	for (const auto& it : myTempos)
-	{
-		if (it.TimeStart <= aTime)
-			currentTempo = it.Tempo;
-		else
-			break;
-	}
-
-	return currentTempo;
 }
