@@ -261,9 +261,7 @@ void ChartTestWindow::ImGui_Track(ChartTrack& aTrack)
 		if (canvasSize.y < 50.0f) canvasSize.y = 50.0f;
 		ImVec2 canvasBottomRight = ImVec2(canvasTopLeft.x + canvasSize.x, canvasTopLeft.y + canvasSize.y);
 
-		//ImGuiIO& io = ImGui::GetIO();
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		drawList->AddRectFilled(canvasTopLeft, canvasBottomRight, IM_COL32(50, 50, 50, 255));
 
 		switch (aTrack.GetType())
 		{
@@ -315,13 +313,14 @@ void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vect
 		drawList->AddLine(centerLeft, centerRight, aColor, 2.f);
 		};
 
+	ImGui_Track_Beats(aPoint, aSize);
+
 	drawGuitarLane(ChartGuitarTrack::Lane::Green, IM_COL32(20, 100, 20, 255));
 	drawGuitarLane(ChartGuitarTrack::Lane::Red, IM_COL32(100, 20, 20, 255));
 	drawGuitarLane(ChartGuitarTrack::Lane::Yellow, IM_COL32(100, 100, 20, 255));
 	drawGuitarLane(ChartGuitarTrack::Lane::Blue, IM_COL32(20, 20, 100, 255));
 	drawGuitarLane(ChartGuitarTrack::Lane::Orange, IM_COL32(100, 70, 20, 255));
 
-	ImGui_Track_Beats(aPoint, aSize);
 	ImGui_Track_HitWindow(aPoint, aSize);
 
 	const TrackSettings& trackSettings = myTrackSettings.at(aTrack.GetType());
@@ -334,7 +333,7 @@ void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vect
 		const float noteXStart = ImGui_TimeToTrackPosition(aSize.X, note.Start);
 		const float noteXEnd = ImGui_TimeToTrackPosition(aSize.X, note.Start);
 
-		if (noteXEnd < 0.f || aSize.X < noteXStart)
+		if (noteXEnd < -NOTE_RADIUS_SP || (aSize.X + NOTE_RADIUS_SP) < noteXStart)
 			continue;
 
 		if (trackSettings.ShowOpen && note.CanBeOpen)
@@ -497,6 +496,7 @@ void ChartTestWindow::ImGui_Track_Note(const ChartGuitarTrack::NoteRange& aNote,
 			noteColor = NOTE_TAP_ORANGE;
 			break;
 		}
+		drawList->AddCircleFilled(startPosition, NOTE_RADIUS - 1, IM_COL32_BLACK);
 		drawList->AddCircle(startPosition, NOTE_RADIUS, noteColor);
 		drawList->AddCircle(startPosition, NOTE_RADIUS - 1, noteColor);
 		break;
