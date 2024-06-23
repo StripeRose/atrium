@@ -1,7 +1,7 @@
 // Filter "Chart"
 #pragma once
 
-#include "ChartEnums.hpp"
+#include "ChartCommonStructures.hpp"
 
 #include <array>
 #include <bitset>
@@ -15,7 +15,7 @@
 
 struct ChartTrackLoadData
 {
-	using PerDifficultyFlag = std::bitset<static_cast<std::size_t>(ChartTrackDifficulty::Count)>;
+	using PerDifficultyFlag = std::bitset<ChartTrackDifficultyCount>;
 	void AddNote(std::chrono::microseconds aTime, std::uint8_t aNote, std::uint8_t aVelocity);
 	void AddSysEx(std::chrono::microseconds aTime, const std::span<std::uint8_t>& someData);
 	void AddLyric(std::chrono::microseconds aTime, const std::string& aText);
@@ -37,6 +37,12 @@ public:
 public:
 	virtual ~ChartTrack() = default;
 
+	virtual const ChartNoteRange* GetClosestNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const = 0;
+
+	virtual const ChartNoteRange* GetNextNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const = 0;
+
+	virtual std::vector<ChartNoteRange> GetNotesInRange(ChartTrackDifficulty aDifficulty, std::chrono::microseconds aStart, std::chrono::microseconds anEnd) const = 0;
+
 	virtual bool Load(const ChartTrackLoadData& someData) = 0;
 
 	ChartTrackType GetType() const { return myType; }
@@ -48,32 +54,6 @@ private:
 class ChartGuitarTrack : public ChartTrack
 {
 public:
-	enum class Lane
-	{
-		Green,
-		Red,
-		Yellow,
-		Blue,
-		Orange
-	};
-
-	enum class NoteType
-	{
-		Strum,
-		HOPO,
-		Tap
-	};
-
-	struct NoteRange
-	{
-		Lane Lane = Lane::Green;
-		NoteType Type = NoteType::Strum;
-		bool CanBeOpen = false;
-
-		std::chrono::microseconds Start = std::chrono::microseconds(0);
-		std::chrono::microseconds End = std::chrono::microseconds(0);
-	};
-
 	enum class Marker
 	{
 		Solo,
@@ -101,7 +81,12 @@ public:
 	};
 
 public:
-	const std::map<ChartTrackDifficulty, std::vector<NoteRange>>& GetNoteRanges() const { return myNoteRanges; }
+	const std::map<ChartTrackDifficulty, std::vector<ChartNoteRange>>& GetNoteRanges() const { return myNoteRanges; }
+	const ChartNoteRange* GetClosestNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const override;
+
+	const ChartNoteRange* GetNextNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const override;
+
+	std::vector<ChartNoteRange> GetNotesInRange(ChartTrackDifficulty aDifficulty, std::chrono::microseconds aStart, std::chrono::microseconds anEnd) const override;
 
 	bool Load(const ChartTrackLoadData& someData) override;
 
@@ -110,8 +95,8 @@ private:
 	bool Load_UpdateDefaultNoteTypes();
 	bool Load_ProcessSysEx(const ChartTrackLoadData& someData);
 	bool Load_ProcessMarkers(const ChartTrackLoadData& someData);
-	void Load_ForEachNoteInRange(std::function<void(NoteRange&)> aCallback, const ChartTrackLoadData::PerDifficultyFlag& someDifficulties, std::optional<std::chrono::microseconds> aMinimumRange = {}, std::optional<std::chrono::microseconds> aMaximumRange = {});
+	void Load_ForEachNoteInRange(std::function<void(ChartNoteRange&)> aCallback, const ChartTrackLoadData::PerDifficultyFlag& someDifficulties, std::optional<std::chrono::microseconds> aMinimumRange = {}, std::optional<std::chrono::microseconds> aMaximumRange = {});
 
-	std::map<ChartTrackDifficulty, std::vector<NoteRange>> myNoteRanges;
+	std::map<ChartTrackDifficulty, std::vector<ChartNoteRange>> myNoteRanges;
 	std::vector<MarkerRange> myMarkers;
 };

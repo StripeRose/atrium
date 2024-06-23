@@ -2,7 +2,7 @@
 #pragma once
 
 #include "ChartTrack.hpp"
-#include "ChartEnums.hpp"
+#include "ChartCommonStructures.hpp"
 
 #include <rose-common/fileformat/Ini.hpp>
 

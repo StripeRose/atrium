@@ -5,6 +5,7 @@
 #include "MidiDecoder.hpp"
 
 #include "Common_Diagnostics.hpp"
+#include "Common_Math.hpp"
 
 void ChartTrackLoadData::AddNote(std::chrono::microseconds aTime, std::uint8_t aNote, std::uint8_t aVelocity)
 {
@@ -55,6 +56,81 @@ std::unique_ptr<ChartTrack> ChartTrack::CreateTrackByName(const std::string& aNa
 	return track;
 }
 
+const ChartNoteRange* ChartGuitarTrack::GetClosestNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const
+{
+	const std::vector<ChartNoteRange>& difficultyNotes = myNoteRanges.at(aDifficulty);
+
+	const ChartNoteRange* closestNote = nullptr;
+	std::chrono::microseconds distance = std::chrono::microseconds::max();
+
+	for (const ChartNoteRange& noteRange : difficultyNotes)
+	{
+		if (noteRange.Lane != aLane)
+			continue;
+
+		const std::chrono::microseconds distanceToStart = RoseGold::Math::Abs(noteRange.Start - aTimepoint);
+		const std::chrono::microseconds distanceToEnd = RoseGold::Math::Abs(noteRange.End - aTimepoint);
+
+		if (distanceToStart < distance)
+		{
+			distance = distanceToStart;
+			closestNote = &noteRange;
+		}
+		
+		if (distanceToEnd < distance)
+		{
+			distance = distanceToEnd;
+			closestNote = &noteRange;
+		}
+	}
+
+	return closestNote;
+}
+
+const ChartNoteRange* ChartGuitarTrack::GetNextNote(ChartTrackDifficulty aDifficulty, std::uint8_t aLane, std::chrono::microseconds aTimepoint) const
+{
+	const std::vector<ChartNoteRange>& difficultyNotes = myNoteRanges.at(aDifficulty);
+
+	const ChartNoteRange* closestNote = nullptr;
+	std::chrono::microseconds distance = std::chrono::microseconds::max();
+
+	for (const ChartNoteRange& noteRange : difficultyNotes)
+	{
+		if (noteRange.Lane != aLane)
+			continue;
+
+		const std::chrono::microseconds distanceToStart = (noteRange.Start - aTimepoint);
+		if (distanceToStart.count() < 0)
+			continue;
+
+		if (distanceToStart < distance)
+		{
+			distance = distanceToStart;
+			closestNote = &noteRange;
+		}
+	}
+
+	return closestNote;
+}
+
+std::vector<ChartNoteRange> ChartGuitarTrack::GetNotesInRange(ChartTrackDifficulty aDifficulty, std::chrono::microseconds aStart, std::chrono::microseconds anEnd) const
+{
+	const std::vector<ChartNoteRange>& difficultyNotes = myNoteRanges.at(aDifficulty);
+
+	std::vector<ChartNoteRange> notesInRange;
+	notesInRange.reserve(difficultyNotes.size());
+
+	for (const ChartNoteRange& noteRange : difficultyNotes)
+	{
+		if (noteRange.End < aStart || noteRange.Start >= anEnd)
+			continue;
+
+		notesInRange.push_back(noteRange);
+	}
+
+	return notesInRange;
+}
+
 bool ChartGuitarTrack::Load(const ChartTrackLoadData& someData)
 {
 	myNoteRanges.clear();
@@ -82,8 +158,8 @@ bool ChartGuitarTrack::Load_AddNotes(const ChartTrackLoadData& someData)
 
 		if (lane < 5)
 		{
-			NoteRange& newNoteRange = myNoteRanges[ChartTrackDifficulty(octave - 5)].emplace_back();
-			newNoteRange.Lane = Lane(lane);
+			ChartNoteRange& newNoteRange = myNoteRanges[ChartTrackDifficulty(octave - 5)].emplace_back();
+			newNoteRange.Lane = lane;
 			newNoteRange.Start = range.first;
 			newNoteRange.End = range.second;
 		}
@@ -93,7 +169,7 @@ bool ChartGuitarTrack::Load_AddNotes(const ChartTrackLoadData& someData)
 	// Debug-only sorting of notes to make them make a bit more sense when inspecting.
 	for (auto& difficulty : myNoteRanges)
 	{
-		std::sort(difficulty.second.begin(), difficulty.second.end(), [](const NoteRange& a, const NoteRange& b)
+		std::sort(difficulty.second.begin(), difficulty.second.end(), [](const ChartNoteRange& a, const ChartNoteRange& b)
 			{
 				return a.Start < b.Start;
 			}
@@ -143,7 +219,7 @@ bool ChartGuitarTrack::Load_ProcessSysEx(const ChartTrackLoadData& someData)
 			const std::uint8_t type = someData[5];
 			const std::uint8_t value = someData[6];
 
-			for (std::uint8_t i = 0; i < static_cast<std::uint8_t>(ChartTrackDifficulty::Count); ++i)
+			for (std::uint8_t i = 0; i < ChartTrackDifficultyCount; ++i)
 			{
 				if (difficulty != All && i != difficulty)
 					continue;
@@ -164,11 +240,11 @@ bool ChartGuitarTrack::Load_ProcessSysEx(const ChartTrackLoadData& someData)
 				}
 				else
 				{
-					Load_ForEachNoteInRange([type](NoteRange& aRange) {
+					Load_ForEachNoteInRange([type](ChartNoteRange& aRange) {
 						if (type == 0x01)
 							aRange.CanBeOpen = true;
 						else if (type == 0x04)
-							aRange.Type = NoteType::Tap;
+							aRange.Type = ChartNoteType::Tap;
 						},
 						ChartTrackLoadData::PerDifficultyFlag().set(i),
 						flag->value(),
@@ -217,7 +293,7 @@ bool ChartGuitarTrack::Load_ProcessMarkers(const ChartTrackLoadData& someData)
 			{
 			case 5: // Force HOPO
 				Load_ForEachNoteInRange(
-					[](NoteRange& noteRange) { noteRange.Type = NoteType::HOPO; },
+					[](ChartNoteRange& noteRange) { noteRange.Type = ChartNoteType::HOPO; },
 					ChartTrackLoadData::PerDifficultyFlag().set(octave - 5),
 					range.first,
 					range.second
@@ -225,7 +301,7 @@ bool ChartGuitarTrack::Load_ProcessMarkers(const ChartTrackLoadData& someData)
 				break;
 			case 6: // Force strum
 				Load_ForEachNoteInRange(
-					[](NoteRange& noteRange) { noteRange.Type = NoteType::Strum; },
+					[](ChartNoteRange& noteRange) { noteRange.Type = ChartNoteType::Strum; },
 					ChartTrackLoadData::PerDifficultyFlag().set(octave - 5),
 					range.first,
 					range.second
@@ -235,7 +311,7 @@ bool ChartGuitarTrack::Load_ProcessMarkers(const ChartTrackLoadData& someData)
 				if (someData.EnhancedOpens)
 				{
 					Load_ForEachNoteInRange(
-						[](NoteRange& noteRange) { noteRange.CanBeOpen = true; },
+						[](ChartNoteRange& noteRange) { noteRange.CanBeOpen = true; },
 						ChartTrackLoadData::PerDifficultyFlag().set(octave - 4), // Enhanced opens is one octave below the difficulty octave they belong to.
 						range.first,
 						range.second
@@ -278,7 +354,7 @@ bool ChartGuitarTrack::Load_ProcessMarkers(const ChartTrackLoadData& someData)
 	return true;
 }
 
-void ChartGuitarTrack::Load_ForEachNoteInRange(std::function<void(NoteRange&)> aCallback, const ChartTrackLoadData::PerDifficultyFlag& someDifficulties, std::optional<std::chrono::microseconds> aMinimumRange, std::optional<std::chrono::microseconds> aMaximumRange)
+void ChartGuitarTrack::Load_ForEachNoteInRange(std::function<void(ChartNoteRange&)> aCallback, const ChartTrackLoadData::PerDifficultyFlag& someDifficulties, std::optional<std::chrono::microseconds> aMinimumRange, std::optional<std::chrono::microseconds> aMaximumRange)
 {
 	for (auto& noteRanges : myNoteRanges)
 	{

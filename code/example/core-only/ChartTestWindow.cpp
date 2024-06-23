@@ -43,25 +43,43 @@
 #define HIT_WINDOW_OFFSET 30.f
 #endif
 
-ChartTestWindow::ChartTestWindow()
+ChartTestWindow::ChartTestWindow(ChartPlayer& aPlayer)
 	: myLookAhead(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(5)))
+	, myChartPlayer(aPlayer)
 {
 }
 
 void ChartTestWindow::ImGui()
 {
+	myChartPlayer.Update();
+
 #if IS_IMGUI_ENABLED
 	std::string title = std::format("Chart - {}###ChartTestWindow", myCurrentSong);
 	if (ImGui::Begin(title.c_str()))
 	{
-		switch (myState)
+		if (ImGui::BeginTabBar("tabs"))
 		{
-		case State::SongList:
-			ImGui_ChartList();
-			break;
-		case State::Player:
-			ImGui_Player();
-			break;
+			if (ImGui::BeginTabItem("Songs"))
+			{
+				ImGui_ChartList();
+				ImGui::EndTabItem();
+			}
+
+			std::size_t activePlayers = 0;
+			for (const std::unique_ptr<ChartController>& controller : myChartPlayer.GetControllers())
+			{
+				if (controller != nullptr)
+					activePlayers++;
+			}
+
+			if (ImGui::BeginTabItem("Player"))
+			{
+				ImGui_Controllers();
+				ImGui_Player();
+				ImGui::EndTabItem();
+			}
+
+			ImGui::EndTabBar();
 		}
 	}
 	ImGui::End();
@@ -130,8 +148,8 @@ void ChartTestWindow::ImGui_ChartList()
 
 			ImGui::TableNextColumn();
 
-			if (ImGui::Button("Select"))
-				SelectSong(it.first);
+			if (ImGui::Button("Load"))
+				LoadSong(it.first);
 
 			ImGui::PopID();
 		}
@@ -140,13 +158,39 @@ void ChartTestWindow::ImGui_ChartList()
 	}
 }
 
+void ChartTestWindow::ImGui_Controllers()
+{
+	if (ImGui::Button("Add AI"))
+		myChartPlayer.AddController<ChartAIController>();
+
+	ChartController* removedController = nullptr;
+
+	for (std::size_t i = 0; i < myChartPlayer.GetControllers().size(); ++i)
+	{
+		ImGui::PushID(static_cast<int>(i));
+
+		const std::unique_ptr<ChartController>& controller = myChartPlayer.GetControllers()[i];
+		bool keepOpen = true;
+		if (ImGui::CollapsingHeader(std::format("{}: {}", i + 1, controller->GetName()).c_str(), &keepOpen, ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::Indent();
+			controller->ImGui();
+			ImGui::Unindent();
+		}
+
+		if (!keepOpen)
+			removedController = controller.get();
+
+		ImGui::PopID();
+	}
+
+	if (removedController)
+		myChartPlayer.RemoveController(*removedController);
+}
+
 void ChartTestWindow::ImGui_Player()
 {
 	ZoneScoped;
-	myChartPlayer.Update();
-	if (ImGui::Button("Back to song list"))
-		ReturnToSongList();
-
 	ImGui_Player_PlayControls();
 
 	{
@@ -240,7 +284,7 @@ void ChartTestWindow::ImGui_Track(ChartTrack& aTrack)
 
 	{
 		int currentDifficulty = static_cast<int>(myTrackSettings[aTrack.GetType()].Difficulty);
-		ImGui::Combo("Difficulty", &currentDifficulty, "Easy\0Medium\0Hard\0Expert\0\0");
+		ImGui::Combo("Difficulty", &currentDifficulty, ChartTrackDifficultyCombo);
 		myTrackSettings[aTrack.GetType()].Difficulty = ChartTrackDifficulty(currentDifficulty);
 	}
 
@@ -299,7 +343,7 @@ void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vect
 
 	float laneY[5];
 
-	auto drawGuitarLane = [&](ChartGuitarTrack::Lane aLane, ImColor aColor) {
+	auto drawGuitarLane = [&](std::uint8_t aLane, ImColor aColor) {
 
 		const float laneHeight = (canvasSize.y / 5);
 		ImVec2 topLeft = canvasTopLeft;
@@ -315,11 +359,11 @@ void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vect
 
 	ImGui_Track_Beats(aPoint, aSize);
 
-	drawGuitarLane(ChartGuitarTrack::Lane::Green, IM_COL32(20, 100, 20, 255));
-	drawGuitarLane(ChartGuitarTrack::Lane::Red, IM_COL32(100, 20, 20, 255));
-	drawGuitarLane(ChartGuitarTrack::Lane::Yellow, IM_COL32(100, 100, 20, 255));
-	drawGuitarLane(ChartGuitarTrack::Lane::Blue, IM_COL32(20, 20, 100, 255));
-	drawGuitarLane(ChartGuitarTrack::Lane::Orange, IM_COL32(100, 70, 20, 255));
+	drawGuitarLane(0, IM_COL32(20, 100, 20, 255));
+	drawGuitarLane(1, IM_COL32(100, 20, 20, 255));
+	drawGuitarLane(2, IM_COL32(100, 100, 20, 255));
+	drawGuitarLane(3, IM_COL32(20, 20, 100, 255));
+	drawGuitarLane(4, IM_COL32(100, 70, 20, 255));
 
 	ImGui_Track_HitWindow(aPoint, aSize);
 
@@ -327,8 +371,8 @@ void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vect
 	if (!aTrack.GetNoteRanges().contains(trackSettings.Difficulty))
 		return;
 
-	const std::vector<ChartGuitarTrack::NoteRange>& difficultyNotes = aTrack.GetNoteRanges().at(trackSettings.Difficulty);
-	for (const ChartGuitarTrack::NoteRange& note : difficultyNotes)
+	const std::vector<ChartNoteRange>& difficultyNotes = aTrack.GetNoteRanges().at(trackSettings.Difficulty);
+	for (const ChartNoteRange& note : difficultyNotes)
 	{
 		const float noteXStart = ImGui_TimeToTrackPosition(aSize.X, note.Start);
 		const float noteXEnd = ImGui_TimeToTrackPosition(aSize.X, note.Start);
@@ -337,7 +381,7 @@ void ChartTestWindow::ImGui_Track(ChartGuitarTrack& aTrack, RoseGold::Math::Vect
 			continue;
 
 		if (trackSettings.ShowOpen && note.CanBeOpen)
-			ImGui_Track_OpenNote(note.Type != ChartGuitarTrack::NoteType::Strum, canvasTopLeft.x + noteXStart, canvasTopLeft.x + noteXEnd, laneY[0], laneY[4]);
+			ImGui_Track_OpenNote(note.Type != ChartNoteType::Strum, canvasTopLeft.x + noteXStart, canvasTopLeft.x + noteXEnd, laneY[0], laneY[4]);
 		else
 			ImGui_Track_Note(note, canvasTopLeft.x + noteXStart, canvasTopLeft.x + noteXEnd, laneY[static_cast<int>(note.Lane)]);
 	}
@@ -430,7 +474,7 @@ void ChartTestWindow::ImGui_Track_TimeSignatures()
 	ImGui::Unindent();
 }
 
-void ChartTestWindow::ImGui_Track_Note(const ChartGuitarTrack::NoteRange& aNote, float aStartX, float anEndX, float aLaneY)
+void ChartTestWindow::ImGui_Track_Note(const ChartNoteRange& aNote, float aStartX, float anEndX, float aLaneY)
 {
 	ImVec2 startPosition(aStartX, aLaneY);
 	ImVec2 endPosition(anEndX, aLaneY);
@@ -440,19 +484,19 @@ void ChartTestWindow::ImGui_Track_Note(const ChartGuitarTrack::NoteRange& aNote,
 	ImU32 strumColor = NOTE_BLACK;
 	switch (aNote.Lane)
 	{
-	case ChartGuitarTrack::Lane::Green:
+	case 0:
 		strumColor = NOTE_GREEN;
 		break;
-	case ChartGuitarTrack::Lane::Red:
+	case 1:
 		strumColor = NOTE_RED;
 		break;
-	case ChartGuitarTrack::Lane::Yellow:
+	case 2:
 		strumColor = NOTE_YELLOW;
 		break;
-	case ChartGuitarTrack::Lane::Blue:
+	case 3:
 		strumColor = NOTE_BLUE;
 		break;
-	case ChartGuitarTrack::Lane::Orange:
+	case 4:
 		strumColor = NOTE_ORANGE;
 		break;
 	}
@@ -469,30 +513,30 @@ void ChartTestWindow::ImGui_Track_Note(const ChartGuitarTrack::NoteRange& aNote,
 
 	switch (aNote.Type)
 	{
-	case ChartGuitarTrack::NoteType::Strum:
-	case ChartGuitarTrack::NoteType::HOPO:
+	case ChartNoteType::Strum:
+	case ChartNoteType::HOPO:
 	{
 		drawList->AddCircleFilled(startPosition, NOTE_RADIUS, strumColor);
 		break;
 	}
-	case ChartGuitarTrack::NoteType::Tap:
+	case ChartNoteType::Tap:
 	{
 		ImU32 noteColor = NOTE_BLACK;
 		switch (aNote.Lane)
 		{
-		case ChartGuitarTrack::Lane::Green:
+		case 0:
 			noteColor = NOTE_TAP_GREEN;
 			break;
-		case ChartGuitarTrack::Lane::Red:
+		case 1:
 			noteColor = NOTE_TAP_RED;
 			break;
-		case ChartGuitarTrack::Lane::Yellow:
+		case 2:
 			noteColor = NOTE_TAP_YELLOW;
 			break;
-		case ChartGuitarTrack::Lane::Blue:
+		case 3:
 			noteColor = NOTE_TAP_BLUE;
 			break;
-		case ChartGuitarTrack::Lane::Orange:
+		case 4:
 			noteColor = NOTE_TAP_ORANGE;
 			break;
 		}
@@ -508,7 +552,7 @@ void ChartTestWindow::ImGui_Track_Note(const ChartGuitarTrack::NoteRange& aNote,
 	drawList->AddCircleFilled(
 		startPosition,
 		NOTE_RADIUS_TAP,
-		aNote.Type == ChartGuitarTrack::NoteType::HOPO ? NOTE_HOPO : NOTE_BLACK
+		aNote.Type == ChartNoteType::HOPO ? NOTE_HOPO : NOTE_BLACK
 	);
 
 	drawList->AddCircleFilled(startPosition, NOTE_RADIUS_TIP, NOTE_SILVER);
@@ -582,18 +626,10 @@ void ChartTestWindow::RefreshSongList()
 	}
 }
 
-void ChartTestWindow::SelectSong(const std::filesystem::path& aSong)
+void ChartTestWindow::LoadSong(const std::filesystem::path& aSong)
 {
 	const std::unique_ptr<ChartInfo>& chart = myChartInfos.at(aSong);
 	myCurrentSong = chart->GetSongInfo().Title;
 	myChartData.LoadMidi(aSong.parent_path() / "notes.mid");
 	myChartPlayer.SetChartData(myChartData);
-	myState = State::Player;
-}
-
-void ChartTestWindow::ReturnToSongList()
-{
-	myCurrentSong.clear();
-	myChartPlayer.Stop();
-	myState = State::SongList;
 }

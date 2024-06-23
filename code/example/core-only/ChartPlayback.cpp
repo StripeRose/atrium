@@ -3,6 +3,7 @@
 #include "ChartPlayback.hpp"
 
 #include "ChartData.hpp"
+#include "Common_Diagnostics.hpp"
 
 ChartPlayer::State ChartPlayer::GetState() const
 {
@@ -24,11 +25,16 @@ ChartPlayer::State ChartPlayer::GetState() const
 
 void ChartPlayer::Pause()
 {
+	RoseGold::Debug::Log("Chart pause.");
 	myState = InternalState::Paused;
 }
 
 void ChartPlayer::Play()
 {
+	if (myChartData == nullptr)
+		return;
+
+	RoseGold::Debug::Log("Chart play.");
 	switch (myState)
 	{
 	case InternalState::Playing:
@@ -45,6 +51,18 @@ void ChartPlayer::Play()
 		myState = InternalState::Playing;
 		return;
 	}
+}
+
+void ChartPlayer::RemoveController(ChartController& aController)
+{
+	const auto it = std::find_if(
+		myControllers.begin(),
+		myControllers.end(),
+		[&aController](const std::unique_ptr<ChartController>& listController)
+		{ return listController.get() == &aController; }
+	);
+
+	myControllers.erase(it);
 }
 
 void ChartPlayer::Seek(std::chrono::microseconds aPlayTime)
@@ -67,10 +85,13 @@ void ChartPlayer::Seek(std::chrono::microseconds aPlayTime)
 void ChartPlayer::SetChartData(const ChartData& aData)
 {
 	myChartData = &aData;
+	for (const std::unique_ptr<ChartController>& controller : myControllers)
+		controller->OnChartChange(aData);
 }
 
 void ChartPlayer::Stop()
 {
+	RoseGold::Debug::Log("Chart stop.");
 	myState = InternalState::Stopped;
 	myPlayhead = std::chrono::microseconds(0);
 }
@@ -86,7 +107,8 @@ void ChartPlayer::Update()
 	switch (myState)
 	{
 	case InternalState::Playing:
-		// Todo: Process (lastUpdatePoint <= X < thisUpdatePoint)
+		for (const std::unique_ptr<ChartController>& controller : myControllers)
+			controller->OnPlayheadStep(lastUpdatePoint, thisUpdatePoint);
 		myPlayhead = thisUpdatePoint;
 		break;
 	case InternalState::Paused:
