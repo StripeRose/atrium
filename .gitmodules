@@ -12,5 +12,5 @@
 	url = git@github.com:wolfpld/tracy.git
 [submodule "code/libraries/imgui"]
 	path = code/libraries/imgui
-	url = https://github.com/ocornut/imgui
+	url = https://github.com/ocornut/imgui.git
 	branch = docking
