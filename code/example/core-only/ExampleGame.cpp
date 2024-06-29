@@ -13,9 +13,9 @@ void ExampleGame::OnStart()
 {
 	ZoneScoped;
 
-	myChartRenderer.SetupResources();
-
 	OnStart_SetupWindows();
+
+	myChartRenderer.SetupResources(GetGraphicsAPI(), myWindow1->GetDescriptor().ColorGraphicsFormat, myWindow1->GetDescriptor().DepthStencilFormat);
 }
 
 void ExampleGame::OnLoop()

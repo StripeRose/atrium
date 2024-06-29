@@ -6,22 +6,32 @@
 #include "Graphics_Manager.hpp"
 #include "Graphics_Pipeline.hpp"
 
-template <typename VertexType>
 class Mesh
 {
 public:
-	Mesh()
+	virtual ~Mesh() = default;
+
+	virtual void DrawToFrame(RoseGold::Core::FrameContext& aFrameContext) = 0;
+
+	virtual void SetName(const std::wstring& aName) = 0;
+};
+
+template <typename VertexType>
+class MeshT : public Mesh
+{
+public:
+	MeshT()
 		: myManager(nullptr)
 		, myVertexCount(0)
 	{ }
 
-	Mesh(RoseGold::Core::GraphicsAPI* aManager)
-		: myManager(aManager)
+	MeshT(RoseGold::Core::GraphicsAPI& aManager)
+		: myManager(&aManager)
 		, myVertexCount(0)
 		, myName(L"Mesh")
 	{ }
 
-	void DrawToFrame(RoseGold::Core::FrameContext& aFrameContext)
+	void DrawToFrame(RoseGold::Core::FrameContext& aFrameContext) override
 	{
 		aFrameContext.SetPrimitiveTopology(RoseGold::Core::PrimitiveTopology::TriangleList);
 		aFrameContext.SetVertexBuffer(myVertexBuffer);
@@ -47,7 +57,7 @@ public:
 		);
 	}
 
-	void SetName(const std::wstring& aName)
+	void SetName(const std::wstring& aName) override
 	{
 		myName = aName;
 		if (myVertexBuffer)
@@ -74,4 +84,4 @@ struct ColoredVertex
 	float Position[3];
 	float Color[4];
 };
-using ColoredMesh = Mesh<ColoredVertex>;
+using ColoredMesh = MeshT<ColoredVertex>;
