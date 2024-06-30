@@ -15,8 +15,8 @@ struct ModelViewProjection
 void locMakeCameraMatrices(RoseGold::Math::Matrix& aView, RoseGold::Math::Matrix& aProjection)
 {
 	constexpr RoseGold::Math::Matrix viewMatrix = (
-		RoseGold::Math::MakeMatrix::RotationX(RoseGold::Math::ToRadians(45.f)) *
-		RoseGold::Math::MakeMatrix::Translation(0, 1.4f, 0.f)
+		RoseGold::Math::MakeMatrix::RotationX(RoseGold::Math::ToRadians(35.f)) *
+		RoseGold::Math::MakeMatrix::Translation(0, 1.3f, 0.f)
 		).Invert().value();
 
 	constexpr RoseGold::Math::Matrix projectionMatrix = RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(
