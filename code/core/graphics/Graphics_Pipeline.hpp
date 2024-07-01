@@ -107,7 +107,7 @@ namespace RoseGold::Core
 		};
 
 	public:
-		inline bool IsValid() const { return VertexShader && PixelShader; }
+		inline bool IsValid() const { return RootSignature && VertexShader && PixelShader; }
 
 	public:
 		std::shared_ptr<RootSignature> RootSignature;
