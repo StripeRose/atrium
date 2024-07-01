@@ -9,9 +9,7 @@ namespace RoseGold::DirectX12
 {
 	ResourceManager::ResourceManager(DirectX12API& aManager)
 		: myManager(aManager)
-	{
-		SetupRootSignature();
-	}
+	{ }
 
 	std::shared_ptr<Core::RenderTexture> ResourceManager::CreateRenderTextureForWindow(Core::Window& aWindow)
 	{
@@ -46,12 +44,16 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::PipelineState> ResourceManager::CreateOrGetPipelineState(const Core::PipelineStateDescription& aPipelineState)
+	std::shared_ptr<Core::PipelineState> ResourceManager::CreatePipelineState(const Core::PipelineStateDescription& aPipelineState)
 	{
 		return DirectX12::PipelineState::CreateFrom(
 			*myManager.GetDevice().GetDevice().Get(),
-			myDefaultRootSignature,
 			aPipelineState);
+	}
+
+	std::unique_ptr<Core::RootSignatureBuilder> ResourceManager::CreateRootSignature()
+	{
+		return std::unique_ptr<Core::RootSignatureBuilder>(new RootSignatureCreator(myManager.GetDevice().GetDevice().Get()));
 	}
 
 	std::shared_ptr<Core::Shader> ResourceManager::CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint)
@@ -122,41 +124,5 @@ namespace RoseGold::DirectX12
 				swapChain.second->TriggerResize();
 			}
 		}
-	}
-
-	void ResourceManager::SetupRootSignature()
-	{
-		ZoneScoped;
-
-		RootSignatureCreator signature;
-
-		signature.SetVisibility(D3D12_SHADER_VISIBILITY_VERTEX);
-		{
-			signature.AddDescriptorTable()
-				.AddCBVRange(1, 0, Core::ResourceUpdateFrequency::PerObject) // Model, View, Projection data.
-				;
-		}
-
-		signature.SetVisibility(D3D12_SHADER_VISIBILITY_PIXEL);
-		{
-			signature.AddDescriptorTable()
-				.AddSRVRange(4, 0, Core::ResourceUpdateFrequency::PerMaterial)
-				;
-
-			signature.AddSampler(0) // Clamping Point
-				.Filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
-				;
-			signature.AddSampler(1) // Clamping Linear
-				.Filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
-				;
-			signature.AddSampler(2) // Clamping Anisotropic
-				.Filter(D3D12_FILTER_ANISOTROPIC)
-				.Address(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
-				;
-		}
-
-		myDefaultRootSignature = signature.Finalize(myManager.GetDevice().GetDevice().Get());
 	}
 }

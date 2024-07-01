@@ -21,7 +21,9 @@ namespace RoseGold::Core
 
 			virtual std::shared_ptr<GraphicsBuffer> CreateGraphicsBuffer(GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) = 0;
 
-			virtual std::shared_ptr<PipelineState> CreateOrGetPipelineState(const PipelineStateDescription& aPipelineState) = 0;
+			virtual std::shared_ptr<PipelineState> CreatePipelineState(const PipelineStateDescription& aPipelineState) = 0;
+
+			virtual std::unique_ptr<RootSignatureBuilder> CreateRootSignature() = 0;
 
 			virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& aShaderSource, Shader::Type aShaderType, const char* anEntryPoint) = 0;
 

@@ -35,7 +35,30 @@ void ChartRenderer::SetupResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, Ro
 {
 	ZoneScoped;
 
-	SetupFretboardResources(aGraphicsAPI, aColorTargetFormat, aDepthStencilFormat);
+	std::unique_ptr<RoseGold::Core::RootSignatureBuilder> builder = aGraphicsAPI.GetResourceManager().CreateRootSignature();
+
+	builder->SetVisibility(RoseGold::Core::ShaderVisibility::Vertex);
+
+	// Model, view, projection.
+	builder->AddTable().AddCBVRange(1, 0, RoseGold::Core::ResourceUpdateFrequency::PerObject);
+
+	builder->SetVisibility(RoseGold::Core::ShaderVisibility::Pixel);
+
+	builder->AddTable().AddSRVRange(4, 0, RoseGold::Core::ResourceUpdateFrequency::PerMaterial);
+
+	builder->AddSampler(0) // Clamping point
+		.Filter(RoseGold::Core::FilterMode::Point)
+		.Address(RoseGold::Core::TextureWrapMode::Clamp)
+		;
+
+	builder->AddSampler(1) // Clamping linear
+		.Filter(RoseGold::Core::FilterMode::Bilinear)
+		.Address(RoseGold::Core::TextureWrapMode::Clamp)
+		;
+
+	std::shared_ptr<RoseGold::Core::RootSignature> rootSignature = builder->Finalize();
+
+	SetupFretboardResources(aGraphicsAPI, rootSignature, aColorTargetFormat, aDepthStencilFormat);
 }
 
 void ChartRenderer::Render(RoseGold::Core::FrameContext& aContext, const std::shared_ptr<RoseGold::Core::RenderTexture>& aTarget)
@@ -68,7 +91,7 @@ void ChartRenderer::Render(RoseGold::Core::FrameContext& aContext, const std::sh
 	}
 }
 
-void ChartRenderer::SetupFretboardResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, RoseGold::Core::GraphicsFormat aColorTargetFormat, RoseGold::Core::GraphicsFormat aDepthStencilFormat)
+void ChartRenderer::SetupFretboardResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<RoseGold::Core::RootSignature>& aRootSignature, RoseGold::Core::GraphicsFormat aColorTargetFormat, RoseGold::Core::GraphicsFormat aDepthStencilFormat)
 {
 	ZoneScoped;
 
@@ -76,13 +99,14 @@ void ChartRenderer::SetupFretboardResources(RoseGold::Core::GraphicsAPI& aGraphi
 	myFretboardMesh->SetName(L"Fretboard vertices");
 
 	RoseGold::Core::PipelineStateDescription fretboardPipelineDescription;
+	fretboardPipelineDescription.RootSignature = aRootSignature;
 	fretboardPipelineDescription.InputLayout = ChartFretboardVertex::GetInputLayout();
 	const std::filesystem::path shaderPath = "example/ChartFretboard.hlsl";
 	fretboardPipelineDescription.VertexShader = aGraphicsAPI.GetResourceManager().CreateShader(shaderPath, RoseGold::Core::Shader::Type::Vertex, "vertexShader");
 	fretboardPipelineDescription.PixelShader = aGraphicsAPI.GetResourceManager().CreateShader(shaderPath, RoseGold::Core::Shader::Type::Pixel, "pixelShader");
 	fretboardPipelineDescription.OutputFormats = { aColorTargetFormat };
 	fretboardPipelineDescription.DepthTargetFormat = aDepthStencilFormat;
-	myFretboardPipelineState = aGraphicsAPI.GetResourceManager().CreateOrGetPipelineState(fretboardPipelineDescription);
+	myFretboardPipelineState = aGraphicsAPI.GetResourceManager().CreatePipelineState(fretboardPipelineDescription);
 
 	ModelViewProjection fretboardMatrices;
 	fretboardMatrices.Model = RoseGold::Math::Matrix::Identity();

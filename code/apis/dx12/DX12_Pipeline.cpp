@@ -78,12 +78,90 @@ namespace RoseGold::DirectX12
 		return static_cast<unsigned int>(mySingleParameters.size() + myTableParameters.size());
 	}
 
-	std::shared_ptr<RootSignature> RootSignatureCreator::Finalize(ID3D12Device* aDevice) const
+	RootSignatureCreator::Sampler::Sampler(D3D12_STATIC_SAMPLER_DESC& aDescriptor)
+		: myDescriptor(aDescriptor)
+	{
+		ZeroMemory(&aDescriptor, sizeof(Sampler));
+		myDescriptor.MaxLOD = D3D12_FLOAT32_MAX;
+		myDescriptor.MaxAnisotropy = 16;
+	}
+
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::Address(Core::TextureWrapMode aMode)
+	{
+		return AddressU(aMode).AddressV(aMode).AddressW(aMode);
+	}
+
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressU(Core::TextureWrapMode aMode)
+	{
+		myDescriptor.AddressU = WrapMode(aMode);
+		return *this;
+	}
+
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressV(Core::TextureWrapMode aMode)
+	{
+		myDescriptor.AddressV = WrapMode(aMode);
+		return *this;
+	}
+
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressW(Core::TextureWrapMode aMode)
+	{
+		myDescriptor.AddressW = WrapMode(aMode);
+		return *this;
+	}
+
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::Filter(Core::FilterMode aFilter)
+	{
+		switch (aFilter)
+		{
+		case Core::FilterMode::Point:
+			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+			break;
+		case Core::FilterMode::Bilinear:
+			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+			break;
+		case Core::FilterMode::Trilinear:
+			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+			break;
+		}
+		
+		return *this;
+	}
+
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::LevelOfDetail(std::pair<float, float> aLodRange)
+	{
+		myDescriptor.MinLOD = aLodRange.first;
+		myDescriptor.MaxLOD = aLodRange.second;
+		return *this;
+	}
+
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::MaxAnisotropy(unsigned int aMax)
+	{
+		myDescriptor.MaxAnisotropy = aMax;
+		return *this;
+	}
+
+	D3D12_TEXTURE_ADDRESS_MODE RootSignatureCreator::Sampler::WrapMode(Core::TextureWrapMode aMode) const
+	{
+		switch (aMode)
+		{
+		case Core::TextureWrapMode::Clamp:
+			return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		case Core::TextureWrapMode::Mirror:
+			return D3D12_TEXTURE_ADDRESS_MODE_MIRROR;
+		case Core::TextureWrapMode::MirrorOnce:
+			return D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE;
+		case Core::TextureWrapMode::Repeat:
+		default:
+			return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		}
+	}
+
+	std::shared_ptr<Core::RootSignature> RootSignatureCreator::Finalize() const
 	{
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = { };
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
 
-		if (FAILED(aDevice->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
+		if (FAILED(myDevice->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
 		{
 			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 		}
@@ -209,12 +287,73 @@ namespace RoseGold::DirectX12
 		HRESULT result = S_OK;
 		result = D3D12SerializeVersionedRootSignature(&rootSignatureDesc, &signature, &error);
 		if (SUCCEEDED(result))
-			result = aDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(dxRootSignature.ReleaseAndGetAddressOf()));
+			result = myDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(dxRootSignature.ReleaseAndGetAddressOf()));
 		
 		if (!VerifyAction(result, "Create root signature", error.Get()))
 			return nullptr;
 
-		return std::shared_ptr<RootSignature>(new RootSignature(dxRootSignature, parameterMapping));
+		return std::shared_ptr<Core::RootSignature>(new RootSignature(dxRootSignature, parameterMapping));
+	}
+
+	void RootSignatureCreator::SetVisibility(Core::ShaderVisibility aShaderVisibility)
+	{
+		switch (aShaderVisibility)
+		{
+		default:
+		case Core::ShaderVisibility::All:
+			myCurrentVisibility = D3D12_SHADER_VISIBILITY_ALL;
+			break;
+		case Core::ShaderVisibility::Vertex:
+			myCurrentVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+			break;
+		case Core::ShaderVisibility::Pixel:
+			myCurrentVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+			break;
+		}
+	}
+
+	RootSignatureCreator::RootSignatureCreator(ID3D12Device* aDevice)
+		: myDevice(aDevice)
+	{ }
+
+	void RootSignatureCreator::AddCBV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
+	{
+		AddParameter(Parameter::Type::CBV, aRegister, anUpdateFrequency);
+	}
+
+	void RootSignatureCreator::AddConstant(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
+	{
+		AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency);
+	}
+
+	void RootSignatureCreator::AddConstants(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
+	{
+		AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency).myCount = aCount;
+	}
+
+	Core::RootSignatureBuilder::DescriptorTable& RootSignatureCreator::AddTable()
+	{
+		return AddParameter<DescriptorTable>();
+	}
+
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::AddSampler(unsigned int aRegister)
+	{
+		D3D12_STATIC_SAMPLER_DESC& descriptor = myStaticSamplers.emplace_back();
+		descriptor.ShaderVisibility = myCurrentVisibility;
+		descriptor.ShaderRegister = aRegister;
+		descriptor.RegisterSpace = static_cast<unsigned int>(Core::ResourceUpdateFrequency::Constant);
+
+		return mySamplerCreators.emplace_back(descriptor);
+	}
+
+	void RootSignatureCreator::AddSRV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
+	{
+		AddParameter(Parameter::Type::SRV, aRegister, anUpdateFrequency);
+	}
+
+	void RootSignatureCreator::AddUAV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
+	{
+		AddParameter(Parameter::Type::UAV, aRegister, anUpdateFrequency);
 	}
 
 	bool RootSignatureCreator::PopulateTable(RootParameterMapping& aParameterMapping, std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable)
@@ -292,7 +431,7 @@ namespace RoseGold::DirectX12
 		return true;
 	}
 
-	std::shared_ptr<PipelineState> PipelineState::CreateFrom(ID3D12Device& aDevice, const std::shared_ptr<DirectX12::RootSignature>& aRootSignature, const Core::PipelineStateDescription& aPipelineStateDescription)
+	std::shared_ptr<PipelineState> PipelineState::CreateFrom(ID3D12Device& aDevice, const Core::PipelineStateDescription& aPipelineStateDescription)
 	{
 		if (!aPipelineStateDescription.IsValid())
 			return nullptr;
@@ -319,7 +458,8 @@ namespace RoseGold::DirectX12
 		psoDesc.InputLayout.NumElements = static_cast<UINT>(inputElementDescs.size());
 
 		// Resources
-		psoDesc.pRootSignature = aRootSignature->GetRootSignatureObject().Get();
+		RootSignature* rootSignature = static_cast<RootSignature*>(aPipelineStateDescription.RootSignature.get());
+		psoDesc.pRootSignature = rootSignature->GetRootSignatureObject().Get();
 
 		std::shared_ptr<DirectX12::Shader> vertexShader = std::static_pointer_cast<DirectX12::Shader>(aPipelineStateDescription.VertexShader);
 		std::shared_ptr<DirectX12::Shader> pixelShader = std::static_pointer_cast<DirectX12::Shader>(aPipelineStateDescription.PixelShader);
@@ -379,7 +519,7 @@ namespace RoseGold::DirectX12
 		psoDesc.SampleMask = UINT_MAX;
 
 		std::shared_ptr<PipelineState> createdPipelineState(new PipelineState());
-		createdPipelineState->myRootSignature = aRootSignature;
+		createdPipelineState->myRootSignature = std::static_pointer_cast<RootSignature>(aPipelineStateDescription.RootSignature);
 		createdPipelineState->myVertexShader = vertexShader;
 		createdPipelineState->myPixelShader = pixelShader;
 

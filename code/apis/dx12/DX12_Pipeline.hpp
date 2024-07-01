@@ -83,7 +83,7 @@ namespace RoseGold::DirectX12
 		std::vector<Table> myTableParameters;
 	};
 
-	class RootSignature
+	class RootSignature : public Core::RootSignature
 	{
 		friend class RootSignatureCreator;
 
@@ -109,12 +109,15 @@ namespace RoseGold::DirectX12
 		const RootParameterMapping myParameterMapping;
 	};
 
-	class RootSignatureCreator
+	class RootSignatureCreator : public Core::RootSignatureBuilder
 	{
 	private:
 		class Parameter
 		{
 			friend RootSignatureCreator;
+		public:
+			virtual ~Parameter() = default;
+
 		protected:
 			enum class Type { Table, Constant, CBV, SRV, UAV, Sampler } myType = Type::Constant;
 
@@ -125,14 +128,14 @@ namespace RoseGold::DirectX12
 		};
 
 	public:
-		class DescriptorTable : protected Parameter
+		class DescriptorTable : public Core::RootSignatureBuilder::DescriptorTable, protected Parameter
 		{
 			friend RootSignatureCreator;
 		public:
-			DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::CBV, aCount, aRegister, anUpdateFrequency); }
-			DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::SRV, aCount, aRegister, anUpdateFrequency); }
-			DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::UAV, aCount, aRegister, anUpdateFrequency); }
-			DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) { return AddRange(Parameter::Type::Sampler, aCount, aRegister, anUpdateFrequency); }
+			Core::RootSignatureBuilder::DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::CBV, aCount, aRegister, anUpdateFrequency); }
+			Core::RootSignatureBuilder::DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::SRV, aCount, aRegister, anUpdateFrequency); }
+			Core::RootSignatureBuilder::DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::UAV, aCount, aRegister, anUpdateFrequency); }
+			Core::RootSignatureBuilder::DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::Sampler, aCount, aRegister, anUpdateFrequency); }
 
 		private:
 			DescriptorTable() { myType = Type::Table; }
@@ -151,57 +154,47 @@ namespace RoseGold::DirectX12
 			std::vector<Parameter> myRanges;
 		};
 
-		class Sampler : public D3D12_STATIC_SAMPLER_DESC
+		class Sampler : public Core::RootSignatureBuilder::Sampler
 		{
 			friend RootSignatureCreator;
 		public:
-			Sampler()
-			{
-				ZeroMemory(this, sizeof(Sampler));
-				D3D12_STATIC_SAMPLER_DESC::MaxLOD = D3D12_FLOAT32_MAX;
-				D3D12_STATIC_SAMPLER_DESC::MaxAnisotropy = 16;
-			}
+			Sampler(D3D12_STATIC_SAMPLER_DESC& aDescriptor);
 
-			Sampler& Address(D3D12_TEXTURE_ADDRESS_MODE aMode) { return AddressU(aMode).AddressV(aMode).AddressW(aMode); }
-			Sampler& AddressU(D3D12_TEXTURE_ADDRESS_MODE aMode) { D3D12_STATIC_SAMPLER_DESC::AddressU = aMode; return *this; }
-			Sampler& AddressV(D3D12_TEXTURE_ADDRESS_MODE aMode) { D3D12_STATIC_SAMPLER_DESC::AddressV = aMode; return *this; }
-			Sampler& AddressW(D3D12_TEXTURE_ADDRESS_MODE aMode) { D3D12_STATIC_SAMPLER_DESC::AddressW = aMode; return *this; }
+			Core::RootSignatureBuilder::Sampler& Address(Core::TextureWrapMode aMode) override;
+			Core::RootSignatureBuilder::Sampler& AddressU(Core::TextureWrapMode aMode) override;
+			Core::RootSignatureBuilder::Sampler& AddressV(Core::TextureWrapMode aMode) override;
+			Core::RootSignatureBuilder::Sampler& AddressW(Core::TextureWrapMode aMode) override;
 
-			Sampler& Filter(D3D12_FILTER aFilter) { D3D12_STATIC_SAMPLER_DESC::Filter = aFilter; return *this; }
+			Core::RootSignatureBuilder::Sampler& Filter(Core::FilterMode aFilter) override;
 
-			Sampler& Lod(FLOAT aLodLevel) { return Lod({ aLodLevel, aLodLevel }); }
-			Sampler& Lod(std::pair<FLOAT, FLOAT> aLodRange)
-			{
-				D3D12_STATIC_SAMPLER_DESC::MinLOD = aLodRange.first;
-				D3D12_STATIC_SAMPLER_DESC::MaxLOD = aLodRange.second;
-				return *this;
-			}
+			Core::RootSignatureBuilder::Sampler& LevelOfDetail(float aLodLevel) override { return LevelOfDetail({ aLodLevel, aLodLevel }); }
+			Core::RootSignatureBuilder::Sampler& LevelOfDetail(std::pair<float, float> aLodRange) override;
 
-			Sampler& MaxAnisotropy(UINT aMax) { D3D12_STATIC_SAMPLER_DESC::MaxAnisotropy = aMax; return *this; }
+			Core::RootSignatureBuilder::Sampler& MaxAnisotropy(unsigned int aMax) override;
+
+		private:
+			D3D12_TEXTURE_ADDRESS_MODE WrapMode(Core::TextureWrapMode aMode) const;
+
+			D3D12_STATIC_SAMPLER_DESC& myDescriptor;
 		};
 
 	public:
-		void AddCBV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::CBV, aRegister, anUpdateFrequency); }
-		void AddConstant(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency); }
-		void AddConstants(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency).myCount = aCount; }
+		RootSignatureCreator(ID3D12Device* aDevice);
 
-		DescriptorTable& AddDescriptorTable() { return AddParameter<DescriptorTable>(); }
+		void AddCBV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override;
+		void AddConstant(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override;
+		void AddConstants(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override;
 
-		Sampler& AddSampler(unsigned int aRegister)
-		{
-			Sampler& sampler = myStaticSamplers.emplace_back();
-			sampler.ShaderVisibility = myCurrentVisibility;
-			sampler.ShaderRegister = aRegister;
-			sampler.RegisterSpace = static_cast<unsigned int>(Core::ResourceUpdateFrequency::Constant);
-			return sampler;
-		}
+		Core::RootSignatureBuilder::DescriptorTable& AddTable() override;
 
-		void AddSRV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::SRV, aRegister, anUpdateFrequency); }
-		void AddUAV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) { AddParameter(Parameter::Type::UAV, aRegister, anUpdateFrequency); }
+		Core::RootSignatureBuilder::Sampler& AddSampler(unsigned int aRegister) override;
 
-		std::shared_ptr<RootSignature> Finalize(ID3D12Device* aDevice) const;
+		void AddSRV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override;
+		void AddUAV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override;
 
-		void SetVisibility(D3D12_SHADER_VISIBILITY aVisibility) { myCurrentVisibility = aVisibility; }
+		std::shared_ptr<Core::RootSignature> Finalize() const override;
+
+		void SetVisibility(Core::ShaderVisibility aShaderVisibility) override;
 
 	private:
 		static bool PopulateTable(RootParameterMapping& aParameterMapping, std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable);
@@ -225,8 +218,10 @@ namespace RoseGold::DirectX12
 			return static_cast<T&>(param);
 		}
 
+		ID3D12Device* myDevice;
 		std::vector<std::unique_ptr<Parameter>> myParameters;
-		std::vector<Sampler> myStaticSamplers;
+		std::vector<Sampler> mySamplerCreators;
+		std::vector<D3D12_STATIC_SAMPLER_DESC> myStaticSamplers;
 
 		D3D12_SHADER_VISIBILITY myCurrentVisibility = D3D12_SHADER_VISIBILITY_ALL;
 	};
@@ -234,7 +229,7 @@ namespace RoseGold::DirectX12
 	class PipelineState : public Core::PipelineState
 	{
 	public:
-		static std::shared_ptr<PipelineState> CreateFrom(ID3D12Device& aDevice, const std::shared_ptr<RootSignature>& aRootSignature, const Core::PipelineStateDescription& aPipelineStateDescription);
+		static std::shared_ptr<PipelineState> CreateFrom(ID3D12Device& aDevice, const Core::PipelineStateDescription& aPipelineStateDescription);
 
 		const ComPtr<ID3D12PipelineState>& GetPipelineStateObject() const { return myPipelineState; }
 		const std::shared_ptr<RootSignature>& GetRootSignature() const { return myRootSignature; }

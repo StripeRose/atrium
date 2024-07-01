@@ -15,15 +15,6 @@
 
 namespace RoseGold::Core
 {
-	enum class ResourceUpdateFrequency
-	{
-		PerObject,
-		PerMaterial,
-		PerPass,
-		PerFrame,
-		Constant
-	};
-
 	enum class PrimitiveTopology
 	{
 		PointList,

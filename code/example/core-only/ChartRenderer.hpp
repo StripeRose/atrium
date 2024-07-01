@@ -19,7 +19,7 @@ public:
 	void Render(RoseGold::Core::FrameContext& aContext, const std::shared_ptr<RoseGold::Core::RenderTexture>& aTarget);
 
 private:
-	void SetupFretboardResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, RoseGold::Core::GraphicsFormat aColorTargetFormat, RoseGold::Core::GraphicsFormat aDepthStencilFormat);
+	void SetupFretboardResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<RoseGold::Core::RootSignature>& aRootSignature, RoseGold::Core::GraphicsFormat aColorTargetFormat, RoseGold::Core::GraphicsFormat aDepthStencilFormat);
 	void RenderController(RoseGold::Core::FrameContext& aContext, ChartController& aController, const RoseGold::Math::Rectangle& aDrawingRect);
 
 	ChartPlayer& myPlayer;

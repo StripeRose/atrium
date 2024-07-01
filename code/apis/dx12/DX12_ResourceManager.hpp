@@ -21,7 +21,9 @@ namespace RoseGold::DirectX12
 
 		std::shared_ptr<Core::GraphicsBuffer> CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) override;
 
-		std::shared_ptr<Core::PipelineState> CreateOrGetPipelineState(const Core::PipelineStateDescription& aPipelineState) override;
+		std::shared_ptr<Core::PipelineState> CreatePipelineState(const Core::PipelineStateDescription& aPipelineState) override;
+
+		std::unique_ptr<Core::RootSignatureBuilder> CreateRootSignature() override;
 
 		std::shared_ptr<Core::Shader> CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint) override;
 
@@ -40,13 +42,9 @@ namespace RoseGold::DirectX12
 		void MarkFrameStart();
 
 	private:
-		void SetupRootSignature();
-
 		DirectX12API& myManager;
 
 		std::mutex mySwapChainMutex;
 		std::map<Core::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
-
-		std::shared_ptr<RootSignature> myDefaultRootSignature;
 	};
 }
