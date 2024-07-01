@@ -55,7 +55,7 @@ namespace RoseGold::DirectX12
 		{
 			for (const auto& range : table.myRanges)
 			{
-				if (range.myUpdateFrequency != anUpdateFrequency &&
+				if (range.myUpdateFrequency != anUpdateFrequency ||
 					range.myRegisterType != aRegisterType)
 					continue;
 
@@ -434,7 +434,10 @@ namespace RoseGold::DirectX12
 	std::shared_ptr<PipelineState> PipelineState::CreateFrom(ID3D12Device& aDevice, const Core::PipelineStateDescription& aPipelineStateDescription)
 	{
 		if (!aPipelineStateDescription.IsValid())
+		{
+			Debug::LogError("Pipeline state description requires a root signature, vertex shader and pixel shader to be valid.");
 			return nullptr;
+		}
 
 		// Define the Graphics Pipeline
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
