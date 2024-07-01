@@ -59,7 +59,7 @@ namespace RoseGold::Core
 
 		virtual void SetBlendFactor(Color aBlendFactor) = 0;
 		virtual void SetPipelineState(const std::shared_ptr<Core::PipelineState>& aPipelineState) = 0;
-		virtual void SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer) = 0;
+		virtual void SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot = 0) = 0;
 		virtual void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer) = 0;
 		virtual void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture) = 0;
 		virtual void SetPrimitiveTopology(PrimitiveTopology aTopology) = 0;

@@ -136,7 +136,7 @@ namespace RoseGold::DirectX12
 
 		void SetBlendFactor(Color aBlendFactor) override;
 		void SetPipelineState(const std::shared_ptr<Core::PipelineState>& aPipelineState) override;
-		void SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer) override;
+		void SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot) override;
 		void SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer) override;
 		void SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture) override;
 		void SetPrimitiveTopology(Core::PrimitiveTopology aTopology) override;

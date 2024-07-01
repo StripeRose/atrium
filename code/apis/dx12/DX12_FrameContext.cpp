@@ -431,11 +431,11 @@ namespace RoseGold::DirectX12
 		myCommandList->SetGraphicsRootSignature(myCurrentPipelineState->GetRootSignature()->GetRootSignatureObject().Get());
 	}
 
-	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer)
+	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set vertex buffer");
 		const VertexBuffer& vertexBuffer = static_cast<const VertexBuffer&>(*aVertexBuffer);
-		myCommandList->IASetVertexBuffers(0, 1, &vertexBuffer.GetBufferView());
+		myCommandList->IASetVertexBuffers(aSlot, 1, &vertexBuffer.GetBufferView());
 	}
 
 	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer)

@@ -450,10 +450,10 @@ namespace RoseGold::DirectX12
 				inputLayoutEntry.SemanticName.c_str(),
 				inputLayoutEntry.SemanticIndex,
 				ToDXGIFormat(inputLayoutEntry.Format),
-				0,
+				inputLayoutEntry.InputSlot,
 				D3D12_APPEND_ALIGNED_ELEMENT,
-				D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-				0
+				inputLayoutEntry.InstancePerStep == 0 ? D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA : D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+				inputLayoutEntry.InstancePerStep
 				});
 		}
 

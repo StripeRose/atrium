@@ -12,6 +12,7 @@ public:
 	virtual ~Mesh() = default;
 
 	virtual void DrawToFrame(RoseGold::Core::FrameContext& aFrameContext) = 0;
+	virtual void DrawInstancedToFrame(RoseGold::Core::FrameContext& aFrameContext, unsigned int anInstanceCount, unsigned int anInstanceStart) = 0;
 
 	virtual void SetName(const std::wstring& aName) = 0;
 };
@@ -36,6 +37,13 @@ public:
 		aFrameContext.SetPrimitiveTopology(RoseGold::Core::PrimitiveTopology::TriangleList);
 		aFrameContext.SetVertexBuffer(myVertexBuffer);
 		aFrameContext.Draw(myVertexCount, 0);
+	}
+
+	void DrawInstancedToFrame(RoseGold::Core::FrameContext& aFrameContext, unsigned int anInstanceCount, unsigned int anInstanceStart) override
+	{
+		aFrameContext.SetPrimitiveTopology(RoseGold::Core::PrimitiveTopology::TriangleList);
+		aFrameContext.SetVertexBuffer(myVertexBuffer);
+		aFrameContext.DrawInstanced(myVertexCount, anInstanceCount, 0, anInstanceStart);
 	}
 
 	void SetVertices(const std::vector<VertexType>& someVertices)

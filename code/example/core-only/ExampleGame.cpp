@@ -15,7 +15,7 @@ void ExampleGame::OnStart()
 
 	OnStart_SetupWindows();
 
-	myChartRenderer.SetupResources(GetGraphicsAPI(), myWindow1->GetDescriptor().ColorGraphicsFormat, myWindow1->GetDescriptor().DepthStencilFormat);
+	myChartRenderer.SetupResources(GetGraphicsAPI(), myWindow1->GetDescriptor().ColorGraphicsFormat);
 }
 
 void ExampleGame::OnLoop()
