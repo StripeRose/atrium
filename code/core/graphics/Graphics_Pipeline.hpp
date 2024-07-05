@@ -129,6 +129,46 @@ namespace RoseGold::Core
 			unsigned int InstancePerStep;
 		};
 
+		enum class BlendFactor
+		{
+			Zero,
+			One,
+			SourceColor,
+			SourceAlpha,
+			DestinationColor,
+			DestinationAlpha,
+			OneMinusSourceColor,
+			OneMinusSourceAlpha,
+			OneMinusDestinationColor,
+			OneMinusDestinationAlpha
+		};
+
+		enum class BlendOperation
+		{
+			Add,
+			Subtract,
+			ReverseSubtract,
+			Min,
+			Max
+		};
+
+		struct Blend
+		{
+			bool Enabled = false;
+			BlendFactor SourceFactor = BlendFactor::SourceAlpha;
+			BlendFactor SourceAlphaFactor = BlendFactor::SourceAlpha;
+			BlendFactor DestinationFactor = BlendFactor::OneMinusSourceAlpha;
+			BlendFactor DestinationAlphaFactor = BlendFactor::OneMinusSourceAlpha;
+			BlendOperation Operation = BlendOperation::Add;
+		};
+
+		struct BlendMode
+		{
+			bool AlphaToMask = false;
+			bool IndividualBlending = false;
+			Blend BlendFactors[8];
+		};
+
 	public:
 		inline bool IsValid() const { return RootSignature && VertexShader && PixelShader; }
 
@@ -160,6 +200,7 @@ namespace RoseGold::Core
 		// (OM) Output merger
 		std::vector<GraphicsFormat> OutputFormats;
 		std::optional<GraphicsFormat> DepthTargetFormat;
+		BlendMode BlendMode;
 	};
 
 	class PipelineState

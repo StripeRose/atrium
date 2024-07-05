@@ -487,22 +487,25 @@ namespace RoseGold::DirectX12
 
 		// Color/Blend
 		D3D12_BLEND_DESC blendDesc;
-		blendDesc.AlphaToCoverageEnable = FALSE;
-		blendDesc.IndependentBlendEnable = FALSE;
-		const D3D12_RENDER_TARGET_BLEND_DESC defaultRenderTargetBlendDesc = {
-			FALSE,
-			FALSE,
-			D3D12_BLEND_ONE,
-			D3D12_BLEND_ZERO,
-			D3D12_BLEND_OP_ADD,
-			D3D12_BLEND_ONE,
-			D3D12_BLEND_ZERO,
-			D3D12_BLEND_OP_ADD,
-			D3D12_LOGIC_OP_NOOP,
-			D3D12_COLOR_WRITE_ENABLE_ALL,
-		};
+		blendDesc.AlphaToCoverageEnable = aPipelineStateDescription.BlendMode.AlphaToMask ? TRUE : FALSE;
+		blendDesc.IndependentBlendEnable = aPipelineStateDescription.BlendMode.IndividualBlending ? TRUE : FALSE;
 		for (UINT i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
-			blendDesc.RenderTarget[i] = defaultRenderTargetBlendDesc;
+		{
+			const Core::PipelineStateDescription::Blend& blend = aPipelineStateDescription.BlendMode.BlendFactors[i];
+
+			blendDesc.RenderTarget[i] = D3D12_RENDER_TARGET_BLEND_DESC {
+				blend.Enabled ? TRUE : FALSE,
+				FALSE,
+				ToDXBlend(blend.SourceFactor),
+				ToDXBlend(blend.DestinationFactor),
+				ToDXBlend(blend.Operation),
+				ToDXBlend(blend.SourceAlphaFactor),
+				ToDXBlend(blend.DestinationAlphaFactor),
+				ToDXBlend(blend.Operation),
+				D3D12_LOGIC_OP_NOOP,
+				D3D12_COLOR_WRITE_ENABLE_ALL,
+			};
+		}
 		psoDesc.BlendState = blendDesc;
 
 		// Depth/Stencil State
@@ -555,6 +558,52 @@ namespace RoseGold::DirectX12
 		else
 		{
 			return nullptr;
+		}
+	}
+
+	D3D12_BLEND PipelineState::ToDXBlend(Core::PipelineStateDescription::BlendFactor aFactor)
+	{
+		switch (aFactor)
+		{
+		default:
+		case Core::PipelineStateDescription::BlendFactor::Zero:
+			return D3D12_BLEND_ZERO;
+		case Core::PipelineStateDescription::BlendFactor::One:
+			return D3D12_BLEND_ONE;
+		case Core::PipelineStateDescription::BlendFactor::SourceColor:
+			return D3D12_BLEND_SRC_COLOR;
+		case Core::PipelineStateDescription::BlendFactor::SourceAlpha:
+			return D3D12_BLEND_SRC_ALPHA;
+		case Core::PipelineStateDescription::BlendFactor::DestinationColor:
+			return D3D12_BLEND_DEST_COLOR;
+		case Core::PipelineStateDescription::BlendFactor::DestinationAlpha:
+			return D3D12_BLEND_DEST_ALPHA;
+		case Core::PipelineStateDescription::BlendFactor::OneMinusSourceColor:
+			return D3D12_BLEND_INV_SRC_COLOR;
+		case Core::PipelineStateDescription::BlendFactor::OneMinusSourceAlpha:
+			return D3D12_BLEND_INV_SRC_ALPHA;
+		case Core::PipelineStateDescription::BlendFactor::OneMinusDestinationColor:
+			return D3D12_BLEND_INV_DEST_COLOR;
+		case Core::PipelineStateDescription::BlendFactor::OneMinusDestinationAlpha:
+			return D3D12_BLEND_INV_DEST_ALPHA;
+		}
+	}
+
+	D3D12_BLEND_OP PipelineState::ToDXBlend(Core::PipelineStateDescription::BlendOperation anOperation)
+	{
+		switch (anOperation)
+		{
+		default:
+		case Core::PipelineStateDescription::BlendOperation::Add:
+			return D3D12_BLEND_OP_ADD;
+		case Core::PipelineStateDescription::BlendOperation::Subtract:
+			return D3D12_BLEND_OP_SUBTRACT;
+		case Core::PipelineStateDescription::BlendOperation::ReverseSubtract:
+			return D3D12_BLEND_OP_REV_SUBTRACT;
+		case Core::PipelineStateDescription::BlendOperation::Max:
+			return D3D12_BLEND_OP_MAX;
+		case Core::PipelineStateDescription::BlendOperation::Min:
+			return D3D12_BLEND_OP_MIN;
 		}
 	}
 }

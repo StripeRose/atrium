@@ -240,6 +240,9 @@ namespace RoseGold::DirectX12
 	private:
 		PipelineState() = default;
 
+		static D3D12_BLEND ToDXBlend(Core::PipelineStateDescription::BlendFactor aFactor);
+		static D3D12_BLEND_OP ToDXBlend(Core::PipelineStateDescription::BlendOperation anOperation);
+
 		ComPtr<ID3D12PipelineState> myPipelineState;
 
 		std::shared_ptr<RootSignature> myRootSignature;
