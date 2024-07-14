@@ -4,29 +4,43 @@
 
 #include <Common_Diagnostics.hpp>
 
-ExampleGame::ExampleGame()
-	: myChartTestWindow(myChartPlayer)
+ExampleGame::ExampleGame(RoseGold::EngineInstance& anEngineInstance)
+	: myEngineInstance(anEngineInstance)
+	, myChartTestWindow(myChartPlayer)
 	, myChartRenderer(myChartPlayer)
-{ }
+{
+	myEngineInstance.OnStart.Connect(this, [&]() { HandleStart(); });
+	myEngineInstance.OnLoop.Connect(this, [&]() { HandleLoop(); });
+	myEngineInstance.OnImGui.Connect(this, [&]() { HandleImGui(); });
+	myEngineInstance.OnExit.Connect(this, [&]() { HandleExit(); });
+}
 
-void ExampleGame::OnStart()
+ExampleGame::~ExampleGame()
+{
+	myEngineInstance.OnStart.Disconnect(this);
+	myEngineInstance.OnLoop.Disconnect(this);
+	myEngineInstance.OnImGui.Disconnect(this);
+	myEngineInstance.OnExit.Disconnect(this);
+}
+
+void ExampleGame::HandleStart()
 {
 	ZoneScoped;
 
 	OnStart_SetupWindows();
 
-	myChartRenderer.SetupResources(GetGraphicsAPI(), myWindow1->GetDescriptor().ColorGraphicsFormat);
+	myChartRenderer.SetupResources(myEngineInstance.GetGraphicsAPI(), myWindow1->GetDescriptor().ColorGraphicsFormat);
 }
 
-void ExampleGame::OnLoop()
+void ExampleGame::HandleLoop()
 {
-	if (GetWindowManager().GetWindows().empty())
-		ShutDown();
+	if (myEngineInstance.GetWindowManager().GetWindows().empty())
+		myEngineInstance.Stop();
 
 	ZoneScoped;
 
 	using namespace RoseGold::Core;
-	FrameContext& frameContext = GetGraphicsAPI().GetCurrentFrameContext();
+	FrameContext& frameContext = myEngineInstance.GetGraphicsAPI().GetCurrentFrameContext();
 
 	if (myWindow1)
 	{
@@ -40,12 +54,12 @@ void ExampleGame::OnLoop()
 	}
 }
 
-void ExampleGame::OnImGui()
+void ExampleGame::HandleImGui()
 {
 	myChartTestWindow.ImGui();
 }
 
-void ExampleGame::OnExit()
+void ExampleGame::HandleExit()
 {
 	ZoneScoped;
 }
@@ -56,11 +70,11 @@ void ExampleGame::OnStart_SetupWindows()
 	RoseGold::Core::WindowManager::CreationParameters windowParams;
 	windowParams.Title = "Window 1";
 	windowParams.Size = { 640, 480 };
-	auto window1 = GetWindowManager().NewWindow(windowParams);
-	myWindow1 = GetGraphicsAPI().GetResourceManager().CreateRenderTextureForWindow(*window1);
+	auto window1 = myEngineInstance.GetWindowManager().NewWindow(windowParams);
+	myWindow1 = myEngineInstance.GetGraphicsAPI().GetResourceManager().CreateRenderTextureForWindow(*window1);
 	window1->Closed.Connect(nullptr, [&](RoseGold::Core::Window&) {
 		myWindow1.reset();
 		});
 
-	GetEngine().InitializeImGui(*window1, myWindow1);
+	myEngineInstance.InitializeImGui(*window1, myWindow1);
 }

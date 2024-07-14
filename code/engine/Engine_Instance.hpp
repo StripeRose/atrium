@@ -8,7 +8,6 @@
 
 namespace RoseGold
 {
-	class Game;
 	class ImGuiHandler;
 
 	class EngineInstance
@@ -25,16 +24,21 @@ namespace RoseGold
 
 		void InitializeImGui(Core::Window& aPrimaryWindow, std::shared_ptr<Core::RenderTexture> aTarget);
 
-		void Run(Game& aGame);
+		void Run();
 
 		void Stop();
+
+	public:
+		RoseCommon::EventSlot<> OnStart;
+		RoseCommon::EventSlot<> OnLoop;
+		RoseCommon::EventSlot<> OnImGui;
+		RoseCommon::EventSlot<> OnExit;
 
 	private:
 		EngineInstance();
 
 	private:
-		Game* myCurrentGame;
-		bool myIsGameRunning;
+		bool myIsRunning;
 		std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
 		std::unique_ptr<Core::GraphicsAPI> myGraphicsAPI;

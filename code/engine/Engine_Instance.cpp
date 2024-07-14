@@ -1,7 +1,6 @@
 #include "stdafx.hpp"
 #include "Engine_Instance.hpp"
 
-#include "Engine_Game.hpp"
 #include "Engine_ImGui.hpp"
 
 #include "Common_Diagnostics.hpp"
@@ -19,15 +18,12 @@ namespace RoseGold
 		aPrimaryWindow.Closed.Connect(this, [&](Core::Window&) { myImGuiHandler.reset(); });
 	}
 
-	void EngineInstance::Run(Game& aGame)
+	void EngineInstance::Run()
 	{
-		Debug::Assert(myCurrentGame == nullptr, L"This engine instance is already running a game.");
+		myIsRunning = true;
+		OnStart.Invoke();
 
-		myCurrentGame = &aGame;
-		myCurrentGame->OnStart();
-		myIsGameRunning = true;
-
-		while (myIsGameRunning)
+		while (myIsRunning)
 		{
 			myWindowManager->Update();
 
@@ -36,11 +32,11 @@ namespace RoseGold
 			if (myImGuiHandler)
 				myImGuiHandler->MarkFrameStart();
 
-			myCurrentGame->OnLoop();
+			OnLoop.Invoke();
 
 			if (myImGuiHandler)
 			{
-				myCurrentGame->OnImGui();
+				OnImGui.Invoke();
 				myImGuiHandler->MarkFrameEnd();
 			}
 
@@ -48,17 +44,15 @@ namespace RoseGold
 		}
 
 		myImGuiHandler.reset();
-		myCurrentGame->OnExit();
-		myCurrentGame = nullptr;
+		OnExit.Invoke();
 	}
 
 	void EngineInstance::Stop()
 	{
-		myIsGameRunning = false;
+		myIsRunning = false;
 	}
 	
 	EngineInstance::EngineInstance()
-		: myCurrentGame(nullptr)
-		, myIsGameRunning(false)
+		: myIsRunning(false)
 	{ }
 }

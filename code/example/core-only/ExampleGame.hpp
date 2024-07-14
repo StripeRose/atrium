@@ -1,8 +1,6 @@
 #pragma once
 
-#include <Engine_Game.hpp>
-
-#include <Graphics_Manager.hpp>
+#include <Engine_Instance.hpp>
 
 #include "ChartRenderer.hpp"
 #include "ChartTestWindow.hpp"
@@ -11,18 +9,21 @@
 #include <memory>
 #include <vector>
 
-class ExampleGame : public RoseGold::Game
+class ExampleGame
 {
 public:
-	ExampleGame();
-
-	void OnStart() override;
-	void OnLoop() override;
-	void OnImGui() override;
-	void OnExit() override;
+	ExampleGame(RoseGold::EngineInstance& anEngineInstance);
+	~ExampleGame();
 
 private:
+	void HandleStart();
+	void HandleLoop();
+	void HandleImGui();
+	void HandleExit();
+
 	void OnStart_SetupWindows();
+
+	RoseGold::EngineInstance& myEngineInstance;
 
 	std::shared_ptr<RoseGold::Core::RenderTexture> myWindow1;
 
