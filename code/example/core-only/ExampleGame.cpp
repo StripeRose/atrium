@@ -32,7 +32,7 @@ void ExampleGame::OnLoop()
 	{
 		{
 			CONTEXT_ZONE(frameContext, "Clear");
-			frameContext.ClearColor(myWindow1, RoseGold::Color::Predefined::CornflowerBlue);
+			frameContext.ClearColor(myWindow1, RoseGold::Color::Predefined::Black);
 			frameContext.ClearDepth(myWindow1, 1.f, 0);
 		}
 

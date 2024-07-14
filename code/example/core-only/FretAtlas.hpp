@@ -44,13 +44,13 @@ namespace FretAtlas
 
 namespace FretboardMatrices
 {
-	constexpr RoseGold::Math::Vector3 CameraPosition(0, 1.3f, -1);
+	constexpr RoseGold::Math::Vector3 CameraPosition(0, 1, 0.2f);
 	constexpr RoseGold::Math::Matrix CameraTranslation = RoseGold::Math::MakeMatrix::Translation(FretboardMatrices::CameraPosition.X, FretboardMatrices::CameraPosition.Y, FretboardMatrices::CameraPosition.Z);
-	constexpr RoseGold::Math::Matrix CameraRotation = RoseGold::Math::MakeMatrix::RotationX(RoseGold::Math::ToRadians(35.f));
+	constexpr RoseGold::Math::Matrix CameraRotation = RoseGold::Math::MakeMatrix::RotationX(RoseGold::Math::ToRadians(60.f));
 
 	constexpr RoseGold::Math::Matrix CameraViewMatrix = (CameraRotation * CameraTranslation).Invert().value();
 
-	constexpr RoseGold::Math::Matrix CameraProjectionMatrix = RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseGold::Math::ToRadians(90.f), 1.f, 0.0001f, 100.f);
+	constexpr RoseGold::Math::Matrix CameraProjectionMatrix = RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseGold::Math::ToRadians(80.f), 1.f, 0.0001f, 100.f);
 
 	constexpr float String_Offset[] =
 	{
@@ -94,13 +94,13 @@ namespace FretboardMatrices
 			;
 	}
 
-	constexpr float TargetOffset = 0.325f;
+	constexpr float TargetOffset = 0.15f;
 
 	constexpr RoseGold::Math::Matrix Targets[] = {
-		FaceCamera({ String_Offset[0], 0, 0.325f }, { 0.18f, 0.09f }, { 0.5f, 0.f }),
-		FaceCamera({ String_Offset[1], 0, 0.325f }, { 0.18f, 0.09f }, { 0.5f, 0.f }),
-		FaceCamera({ String_Offset[2], 0, 0.325f }, { 0.18f, 0.09f }, { 0.5f, 0.f }),
-		FaceCamera({ String_Offset[3], 0, 0.325f }, { 0.18f, 0.09f }, { 0.5f, 0.f }),
-		FaceCamera({ String_Offset[4], 0, 0.325f }, { 0.18f, 0.09f }, { 0.5f, 0.f })
+		FaceCamera({ String_Offset[0], 0, TargetOffset }, { 0.18f, 0.09f }, { 0.5f, 0.f }),
+		FaceCamera({ String_Offset[1], 0, TargetOffset }, { 0.18f, 0.09f }, { 0.5f, 0.f }),
+		FaceCamera({ String_Offset[2], 0, TargetOffset }, { 0.18f, 0.09f }, { 0.5f, 0.f }),
+		FaceCamera({ String_Offset[3], 0, TargetOffset }, { 0.18f, 0.09f }, { 0.5f, 0.f }),
+		FaceCamera({ String_Offset[4], 0, TargetOffset }, { 0.18f, 0.09f }, { 0.5f, 0.f })
 	};
 }
