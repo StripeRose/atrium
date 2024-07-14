@@ -8,7 +8,9 @@
 #include "Graphics_FrameContext.hpp"
 
 class ChartController;
+class ChartGuitarTrack;
 class ChartPlayer;
+struct ChartNoteRange;
 class ChartRenderer
 {
 public:
@@ -30,7 +32,14 @@ private:
 private:
 	void SetupQuadResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<RoseGold::Core::RootSignature>& aRootSignature, RoseGold::Core::GraphicsFormat aColorTargetFormat);
 	void SetupFretboardResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<RoseGold::Core::RootSignature>& aRootSignature, RoseGold::Core::GraphicsFormat aColorTargetFormat);
-	void RenderController(RoseGold::Core::FrameContext& aContext, ChartController& aController);
+
+	std::pair<int, int> GetControllerRectanglesGrid(RoseGold::Math::Rectangle aTotalRectangle, float aGridCellAspectRatio, std::size_t aControllerCount) const;
+	std::vector<RoseGold::Math::Rectangle> GetControllerRectangles(RoseGold::Math::Rectangle aTotalRectangle, std::size_t aControllerCount) const;
+
+	void RenderController(ChartController& aController);
+	void RenderNotes(ChartController& aController, const ChartGuitarTrack& aTrack);
+
+	void QueueFretboardQuads();
 
 	void QueueQuad(RoseGold::Math::Matrix aTransform, std::optional<RoseGold::Color32> aColor, std::optional<RoseGold::Math::Rectangle> aUVRectangle);
 	void FlushQuads(RoseGold::Core::FrameContext& aContext);
@@ -39,6 +48,9 @@ private:
 
 	std::unique_ptr<Mesh> myQuadMesh;
 	std::shared_ptr<RoseGold::Core::PipelineState> myQuadPipelineState;
+
+	std::shared_ptr<RoseGold::Core::Texture> myAtlas;
+	std::shared_ptr<RoseGold::Core::Texture> myFretboardTexture;
 
 	std::vector<QuadInstanceData> myQuadInstanceData;
 	std::shared_ptr<RoseGold::Core::GraphicsBuffer> myQuadInstanceBuffer;

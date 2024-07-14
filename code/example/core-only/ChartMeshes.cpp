@@ -7,13 +7,13 @@ std::unique_ptr<Mesh> CreateFretboardMesh(RoseGold::Core::GraphicsAPI& aGraphics
 	std::unique_ptr<ChartFretboardMesh> mesh(new ChartFretboardMesh(aGraphicsAPI));
 	std::vector<ChartFretboardVertex> vertices;
 
-	vertices.emplace_back(ChartFretboardVertex{ { -0.4803, 0, 0 },		{ 0, 0 } });
-	vertices.emplace_back(ChartFretboardVertex{ { -0.4803, 0, 1.9212 },	{ 0, 1 } });
-	vertices.emplace_back(ChartFretboardVertex{ { 0.4803, 0, 0 },		{ 1, 0 } });
+	vertices.emplace_back(ChartFretboardVertex{ { -FretboardHalfWidth, 0, 0 },					{ 0, 0 } });
+	vertices.emplace_back(ChartFretboardVertex{ { -FretboardHalfWidth, 0, FretboardLength },	{ 0, 1 } });
+	vertices.emplace_back(ChartFretboardVertex{ { FretboardHalfWidth, 0, 0 },					{ 1, 0 } });
 
-	vertices.emplace_back(ChartFretboardVertex{ { 0.4803, 0, 0 },		{ 1, 0 } });
-	vertices.emplace_back(ChartFretboardVertex{ { -0.4803, 0, 1.9212 },	{ 0, 1 } });
-	vertices.emplace_back(ChartFretboardVertex{ { 0.4803, 0, 1.9212 },	{ 1, 1 } });
+	vertices.emplace_back(ChartFretboardVertex{ { FretboardHalfWidth, 0, 0 },					{ 1, 0 } });
+	vertices.emplace_back(ChartFretboardVertex{ { -FretboardHalfWidth, 0, FretboardLength },	{ 0, 1 } });
+	vertices.emplace_back(ChartFretboardVertex{ { FretboardHalfWidth, 0, FretboardLength },		{ 1, 1 } });
 
 	mesh->SetVertices(vertices);
 	return mesh;
@@ -25,12 +25,12 @@ std::unique_ptr<Mesh> CreateQuadMesh(RoseGold::Core::GraphicsAPI& aGraphicsAPI)
 	std::vector<ChartQuadVertex> vertices;
 
 	vertices.emplace_back(ChartQuadVertex{ 0, 0, 0 });
-	vertices.emplace_back(ChartQuadVertex{ 0, 1, 0 });
 	vertices.emplace_back(ChartQuadVertex{ 1, 0, 0 });
+	vertices.emplace_back(ChartQuadVertex{ 0, 1, 0 });
 
 	vertices.emplace_back(ChartQuadVertex{ 1, 0, 0 });
-	vertices.emplace_back(ChartQuadVertex{ 0, 1, 0 });
 	vertices.emplace_back(ChartQuadVertex{ 1, 1, 0 });
+	vertices.emplace_back(ChartQuadVertex{ 0, 1, 0 });
 
 	mesh->SetVertices(vertices);
 	return mesh;

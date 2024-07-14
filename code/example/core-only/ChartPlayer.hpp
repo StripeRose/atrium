@@ -19,6 +19,8 @@ public:
 	template <typename T>
 	T* AddController();
 
+	const ChartData* GetChartData() { return myChartData; }
+
 	const std::vector<std::unique_ptr<ChartController>>& GetControllers() const { return myControllers; }
 
 	std::chrono::microseconds GetPlayhead() const { return myPlayhead; }

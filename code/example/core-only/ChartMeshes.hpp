@@ -6,6 +6,9 @@
 // Todo: Generalize to a Chart Quad, which is just a textured, colored quad for displaying graphics onto.
 // It should be instantiable if all graphics are on a single texture, with a color.
 
+static constexpr float FretboardHalfWidth = 0.4803f;
+static constexpr float FretboardLength = 1.9212f;
+
 struct ChartFretboardVertex
 {
 	static std::vector<RoseGold::Core::PipelineStateDescription::InputLayoutEntry> GetInputLayout();
