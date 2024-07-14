@@ -58,6 +58,7 @@ void ChartRenderer::SetupResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, Ro
 void ChartRenderer::Render(RoseGold::Core::FrameContext& aContext, const std::shared_ptr<RoseGold::Core::RenderTexture>& aTarget)
 {
 	ZoneScoped;
+	CONTEXT_ZONE(aContext, "Chart");
 
 	myLastQuadFlush = 0;
 	myQuadInstanceData.clear();
@@ -70,6 +71,7 @@ void ChartRenderer::Render(RoseGold::Core::FrameContext& aContext, const std::sh
 	const std::vector<RoseGold::Math::Rectangle> controllerRects = GetControllerRectangles(RoseGold::Math::Rectangle::FromExtents({ 0, 0 }, targetSize), controllers.size());
 	for (unsigned int i = 0; i < controllers.size(); ++i)
 	{
+		ZoneScopedN("Controller");
 		aContext.SetViewport(controllerRects[i]);
 
 		aContext.SetPipelineState(myFretboardPipelineState);
@@ -351,6 +353,8 @@ void ChartRenderer::QueueQuad(RoseGold::Math::Matrix aTransform, std::optional<R
 
 void ChartRenderer::FlushQuads(RoseGold::Core::FrameContext& aContext)
 {
+	CONTEXT_ZONE(aContext, "Render quads");
+
 	const std::size_t queuedSinceLastFlush = myQuadInstanceData.size() - myLastQuadFlush;
 	if (queuedSinceLastFlush == 0)
 		return;
