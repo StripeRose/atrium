@@ -22,7 +22,5 @@ namespace ImGui
 	bool ColorEdit3(const char* label, RoseGold::Color32& color, ImGuiColorEditFlags flags);
 	bool ColorPicker3(const char* label, RoseGold::Color& color, ImGuiColorEditFlags flags, const RoseGold::Color* referenceCol = nullptr);
 	bool ColorPicker3(const char* label, RoseGold::Color32& color, ImGuiColorEditFlags flags, const RoseGold::Color32* referenceCol = nullptr);
-	
-	// Todo: RGB-only ColorXXX3 variants.
 }
 #endif
