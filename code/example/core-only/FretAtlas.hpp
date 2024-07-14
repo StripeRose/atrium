@@ -44,13 +44,13 @@ namespace FretAtlas
 
 namespace FretboardMatrices
 {
-	constexpr RoseGold::Math::Vector3 CameraPosition(0, 1, 0.2f);
+	constexpr RoseGold::Math::Vector3 CameraPosition(0, 0.9f, -0.55f);
 	constexpr RoseGold::Math::Matrix CameraTranslation = RoseGold::Math::MakeMatrix::Translation(FretboardMatrices::CameraPosition.X, FretboardMatrices::CameraPosition.Y, FretboardMatrices::CameraPosition.Z);
-	constexpr RoseGold::Math::Matrix CameraRotation = RoseGold::Math::MakeMatrix::RotationX(RoseGold::Math::ToRadians(60.f));
+	constexpr RoseGold::Math::Matrix CameraRotation = RoseGold::Math::MakeMatrix::RotationX(RoseGold::Math::ToRadians(30.f));
 
 	constexpr RoseGold::Math::Matrix CameraViewMatrix = (CameraRotation * CameraTranslation).Invert().value();
 
-	constexpr RoseGold::Math::Matrix CameraProjectionMatrix = RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseGold::Math::ToRadians(80.f), 1.f, 0.0001f, 100.f);
+	constexpr RoseGold::Math::Matrix CameraProjectionMatrix = RoseGold::Math::MakeMatrix::PerspectiveFieldOfView(RoseGold::Math::ToRadians(55.f), 1.f, 0.0001f, 100.f);
 
 	constexpr float String_Offset[] =
 	{
