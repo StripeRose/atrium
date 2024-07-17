@@ -39,7 +39,7 @@ namespace RoseGold::DirectX12
 
 		// Implementing GraphicsBuffer
 	public:
-		void SetData(const void* aDataPtr, std::uint32_t aDataSize) override;
+		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
 
 		std::uint32_t GetCount() const override { return myBufferView.SizeInBytes / myBufferView.StrideInBytes; }
 		std::uint32_t GetStride() const override { return myBufferView.StrideInBytes; }
@@ -58,7 +58,7 @@ namespace RoseGold::DirectX12
 
 		// Implementing GraphicsBuffer
 	public:
-		void SetData(const void* aDataPtr, std::uint32_t aDataSize) override;
+		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
 
 		std::uint32_t GetCount() const override { return myBufferView.SizeInBytes / GetStride(); }
 		std::uint32_t GetStride() const override { return sizeof(std::uint32_t); }
@@ -74,7 +74,7 @@ namespace RoseGold::DirectX12
 		ConstantBuffer(Device& aDevice, std::uint32_t aBufferSize);
 		~ConstantBuffer() override;
 
-		void SetData(const void* aDataPtr, std::uint32_t aDataSize) override;
+		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
 		const DescriptorHeapHandle& GetViewHandle() const { return myConstantBufferViewHandle; }
 
 		std::uint32_t GetCount() const { return 1; }
@@ -93,8 +93,7 @@ namespace RoseGold::DirectX12
 		UploadBuffer(Device& aDevice, std::uint32_t aBufferSize);
 		~UploadBuffer() override;
 
-		void SetData(const void* aDataPtr, std::uint32_t aDataSize) override;
-		void SetData(std::size_t aDestinationOffset, const void* aDataPtr, std::uint32_t aDataSize);
+		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
 
 		std::uint32_t GetCount() const { return 1; }
 		std::uint32_t GetStride() const { return myBufferSize; }

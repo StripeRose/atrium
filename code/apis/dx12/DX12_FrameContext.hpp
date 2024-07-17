@@ -80,6 +80,11 @@ namespace RoseGold::DirectX12
 
 		struct TextureUpload
 		{
+			TextureUpload()
+			{
+				std::memset(&SubresourceLayouts.front(), 0, sizeof(SubresourceLayouts[0]) * FrameContext::MaxTextureSubresourceCount);
+			}
+
 			std::shared_ptr<GPUResource> Resource;
 			std::unique_ptr<std::uint8_t> BufferData;
 			std::uint64_t BufferSize = 0;
@@ -148,7 +153,16 @@ namespace RoseGold::DirectX12
 
 	private:
 		inline std::uint32_t GetGroupCount(std::uint32_t threadCount, std::uint32_t groupSize) { return (threadCount + groupSize - 1) / groupSize; }
+		void FlushPipelineConstantBuffers();
+		void FlushPipelineTextures();
+		void FlushPipelineResources();
 
 		PipelineState* myCurrentPipelineState;
+
+		std::map<std::vector<std::shared_ptr<Core::GraphicsBuffer>>, DescriptorHeapHandle> myBufferHeapHandles;
+		std::map<std::vector<std::shared_ptr<Core::Texture>>, DescriptorHeapHandle> myTextureHeapHandles;
+
+		std::map<std::uint32_t, std::vector<std::shared_ptr<Core::GraphicsBuffer>>> myPendingBufferResources;
+		std::map<std::uint32_t, std::vector<std::shared_ptr<Core::Texture>>> myPendingTextureResources;
 	};
 }

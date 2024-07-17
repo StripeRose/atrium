@@ -26,6 +26,15 @@ struct ChartQuadVertex
 
 	float Position[3];
 };
+
+struct ChartQuadInstance
+{
+	RoseGold::Math::Matrix Transform;
+	RoseGold::Math::Vector2 UVMin;
+	RoseGold::Math::Vector2 UVMax;
+	float Color[4];
+};
+
 using ChartQuadMesh = MeshT<ChartQuadVertex>;
 
 std::unique_ptr<Mesh> CreateQuadMesh(RoseGold::Core::GraphicsAPI& aGraphicsAPI);

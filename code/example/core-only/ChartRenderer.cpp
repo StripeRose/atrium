@@ -86,7 +86,7 @@ void ChartRenderer::Render(RoseGold::Core::FrameContext& aContext, const std::sh
 		FlushQuads(aContext);
 	}
 
-	myQuadInstanceBuffer->SetData<QuadInstanceData>(myQuadInstanceData);
+	myQuadInstanceBuffer->SetData<ChartQuadInstance>(myQuadInstanceData);
 }
 
 void ChartRenderer::SetupQuadResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<RoseGold::Core::RootSignature>& aRootSignature, RoseGold::Core::GraphicsFormat aColorTargetFormat)
@@ -118,7 +118,7 @@ void ChartRenderer::SetupQuadResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI
 	myCameraMatrices = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(RoseGold::Core::GraphicsBuffer::Target::Constant, 1, sizeof(CameraMatrices));
 	myCameraMatrices->SetData(&cameraMatrices, sizeof(CameraMatrices));
 
-	myQuadInstanceBuffer = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(RoseGold::Core::GraphicsBuffer::Target::Vertex, 512, sizeof(QuadInstanceData));
+	myQuadInstanceBuffer = aGraphicsAPI.GetResourceManager().CreateGraphicsBuffer(RoseGold::Core::GraphicsBuffer::Target::Vertex, 512, sizeof(ChartQuadInstance));
 }
 
 void ChartRenderer::SetupFretboardResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<RoseGold::Core::RootSignature>& aRootSignature, RoseGold::Core::GraphicsFormat aColorTargetFormat)
@@ -336,7 +336,7 @@ void ChartRenderer::QueueFretboardQuads()
 
 void ChartRenderer::QueueQuad(RoseGold::Math::Matrix aTransform, std::optional<RoseGold::Color32> aColor, std::optional<RoseGold::Math::Rectangle> aUVRectangle)
 {
-	QuadInstanceData& instance = myQuadInstanceData.emplace_back();
+	ChartQuadInstance& instance = myQuadInstanceData.emplace_back();
 	instance.Transform = aTransform;
 
 	const RoseGold::Color32 color = aColor.value_or(RoseGold::Color32::Predefined::White);

@@ -61,13 +61,15 @@ namespace RoseGold::DirectX12
 		myBufferView.BufferLocation = GetGPUAddress();
 	}
 
-	void VertexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize)
+	void VertexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
 		void* mappedBuffer;
 		if (!VerifyAction(myResource->Map(0, nullptr, &mappedBuffer), "Mapping vertex buffer to CPU."))
 			return;
 
-		std::memcpy(mappedBuffer, aDataPtr, aDataSize);
+		Debug::Assert((aDataSize + aDestinationOffset) <= myBufferSize, "Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.", myBufferSize, aDestinationOffset + aDataSize);
+
+		std::memcpy((char*)mappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
 		myResource->Unmap(0, nullptr);
 		myBufferView.SizeInBytes = aDataSize;
 		myIsReady = true;
@@ -82,13 +84,15 @@ namespace RoseGold::DirectX12
 		myBufferView.BufferLocation = GetGPUAddress();
 	}
 
-	void IndexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize)
+	void IndexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
 		void* mappedBuffer;
 		if (!VerifyAction(myResource->Map(0, nullptr, &mappedBuffer), "Mapping index buffer to CPU."))
 			return;
 
-		std::memcpy(mappedBuffer, aDataPtr, aDataSize);
+		Debug::Assert((aDataSize + aDestinationOffset) <= myBufferSize, "Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.", myBufferSize, aDestinationOffset + aDataSize);
+
+		std::memcpy((char*)mappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
 		myResource->Unmap(0, nullptr);
 		myBufferView.SizeInBytes = aDataSize;
 		myIsReady = true;
@@ -118,10 +122,10 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	void ConstantBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize)
+	void ConstantBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
-		Debug::Assert(aDataSize <= myBufferSize, "Data size(%i bytes) less or equal to buffer size(%i bytes).", aDataSize, myBufferSize);
-		std::memcpy(myMappedBuffer, aDataPtr, aDataSize);
+		Debug::Assert((aDataSize + aDestinationOffset) <= myBufferSize, "Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.", myBufferSize, aDestinationOffset + aDataSize);
+		std::memcpy((char*)myMappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
 	}
 
 	UploadBuffer::UploadBuffer(Device& aDevice, std::uint32_t aBufferSize)
@@ -141,17 +145,9 @@ namespace RoseGold::DirectX12
 		}
 	}
 
-	void UploadBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize)
+	void UploadBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
-		Debug::Assert(aDataSize <= myBufferSize, "Data size(%i bytes) less or equal to buffer size(%i bytes).", aDataSize, myBufferSize);
-		std::memcpy(myMappedBuffer, aDataPtr, aDataSize);
-	}
-
-	void UploadBuffer::SetData(std::size_t aDestinationOffset, const void* aDataPtr, std::uint32_t aDataSize)
-	{
-		Debug::Assert(aDataSize <= (myBufferSize - aDestinationOffset), "Data size(%i bytes) less or equal to the remaining buffer size(%i bytes).", aDataSize, myBufferSize - aDestinationOffset);
-
-		std::uint8_t* mappedData = static_cast<std::uint8_t*>(myMappedBuffer);
-		std::memcpy(&mappedData[aDestinationOffset], aDataPtr, aDataSize);
+		Debug::Assert((aDataSize + aDestinationOffset) <= myBufferSize, "Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.", myBufferSize, aDestinationOffset + aDataSize);
+		std::memcpy((std::uint8_t*)myMappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
 	}
 }

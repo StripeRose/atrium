@@ -59,6 +59,7 @@ namespace RoseGold::DirectX12
 		{
 			unsigned int RootParameterIndex;
 			unsigned int Count;
+			unsigned int RegisterOffset;
 		};
 
 	public:

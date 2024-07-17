@@ -182,7 +182,7 @@ namespace RoseGold::DirectX12
 			if ((bufferUploadHeapOffset + currentUpload.BufferSize) > myBufferUploadHeap->GetStride())
 				break;
 
-			myBufferUploadHeap->SetData(bufferUploadHeapOffset, currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize));
+			myBufferUploadHeap->SetData(currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize), static_cast<std::uint32_t>(bufferUploadHeapOffset));
 			TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Buffer upload");
 			CopyBufferRegion(*currentUpload.Resource, 0, *myBufferUploadHeap, bufferUploadHeapOffset, currentUpload.BufferSize);
 
@@ -197,7 +197,7 @@ namespace RoseGold::DirectX12
 			if ((textureUploadHeapOffset + currentUpload.BufferSize) > myTextureUploadHeap->GetStride())
 				break;
 
-			myTextureUploadHeap->SetData(textureUploadHeapOffset, currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize));
+			myTextureUploadHeap->SetData(currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize), static_cast<std::uint32_t>(textureUploadHeapOffset));
 			TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Texture upload");
 			CopyTextureRegion(*myTextureUploadHeap, textureUploadHeapOffset, currentUpload.SubresourceLayouts, currentUpload.SubresourceCount, *currentUpload.Resource);
 
@@ -266,6 +266,12 @@ namespace RoseGold::DirectX12
 	void FrameGraphicsContext::Reset(const std::uint64_t& aFrameIndex)
 	{
 		DirectX12::FrameContext::Reset(aFrameIndex);
+
+		myBufferHeapHandles.clear();
+		myTextureHeapHandles.clear();
+
+		myPendingBufferResources.clear();
+		myPendingTextureResources.clear();
 	}
 
 	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Core::RenderTexture>& aTarget, Color aClearColor)
@@ -327,6 +333,7 @@ namespace RoseGold::DirectX12
 	void FrameGraphicsContext::Dispatch(std::uint32_t aGroupCountX, std::uint32_t aGroupCountY, std::uint32_t aGroupCountZ)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Dispatch");
+		FlushPipelineResources();
 		myCommandList->Dispatch(aGroupCountX, aGroupCountY, aGroupCountZ);
 	}
 
@@ -363,12 +370,14 @@ namespace RoseGold::DirectX12
 	void FrameGraphicsContext::DrawInstanced(std::uint32_t aVertexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartVertexLocation, std::uint32_t aStartInstanceLocation)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Draw instanced");
+		FlushPipelineResources();
 		myCommandList->DrawInstanced(aVertexCountPerInstance, anInstanceCount, aStartVertexLocation, aStartInstanceLocation);
 	}
 
 	void FrameGraphicsContext::DrawIndexedInstanced(std::uint32_t anIndexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation, std::uint32_t aStartInstanceLocation)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Draw indexed instanced");
+		FlushPipelineResources();
 		myCommandList->DrawIndexedInstanced(anIndexCountPerInstance, anInstanceCount, aStartIndexLocation, aBaseVertexLocation, aStartInstanceLocation);
 	}
 
@@ -440,8 +449,6 @@ namespace RoseGold::DirectX12
 
 	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer)
 	{
-		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline buffer resource");
-
 		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
 			RootParameterMapping::RegisterType::ConstantBuffer,
@@ -454,36 +461,15 @@ namespace RoseGold::DirectX12
 			return;
 		}
 
-		if (parameterInfo.value().Count != 1)
-		{
-			Debug::LogError("Root parameter %i requires more than 1 resources.", parameterInfo.value().RootParameterIndex);
-			return;
-		}
+		if (!myPendingBufferResources.contains(parameterInfo.value().RootParameterIndex))
+			myPendingBufferResources[parameterInfo.value().RootParameterIndex].resize(parameterInfo.value().Count);
 
-		ConstantBuffer& cpuBuffer = static_cast<ConstantBuffer&>(*aBuffer);
-		AddBarrier(cpuBuffer, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-		
-		RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
-		DescriptorHeapHandle gpuBuffer = renderPassHeap.GetHeapHandleBlock(1);
-
-		myDevice.GetDevice()->CopyDescriptorsSimple(
-			1,
-			gpuBuffer.GetCPUHandle(),
-			cpuBuffer.GetViewHandle().GetCPUHandle(),
-			renderPassHeap.GetHeapType()
-		);
-
-		myCommandList->SetGraphicsRootDescriptorTable(parameterInfo.value().RootParameterIndex, gpuBuffer.GetGPUHandle());
+		std::vector<std::shared_ptr<Core::GraphicsBuffer>>& parameterBuffers = myPendingBufferResources.at(parameterInfo.value().RootParameterIndex);
+		parameterBuffers[parameterInfo.value().RegisterOffset] = aBuffer;
 	}
 
 	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture)
 	{
-		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline texture resource");
-
-		SimpleTexture* textureBackend = static_cast<SimpleTexture*>(aTexture.get());
-
-		Debug::Assert(!!aTexture && textureBackend, "Has a valid texture.");
-
 		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
 			RootParameterMapping::RegisterType::Texture,
@@ -496,37 +482,11 @@ namespace RoseGold::DirectX12
 			return;
 		}
 
-		RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
-		DescriptorHeapHandle gpuBuffer = renderPassHeap.GetHeapHandleBlock(parameterInfo.value().Count);
+		if (!myPendingTextureResources.contains(parameterInfo.value().RootParameterIndex))
+			myPendingTextureResources[parameterInfo.value().RootParameterIndex].resize(parameterInfo.value().Count);
 
-		
-		myDevice.GetDevice()->CopyDescriptorsSimple(
-			1,
-			gpuBuffer.GetCPUHandle(),
-			textureBackend->GetSRVHandle().GetCPUHandle(),
-			renderPassHeap.GetHeapType()
-		);
-
-		// Setup null descriptors for remaining slots
-		D3D12_SHADER_RESOURCE_VIEW_DESC nullDesc = { };
-		nullDesc.Format = textureBackend->GetDXGIFormat();
-		nullDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		nullDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		nullDesc.Texture2D.MipLevels = 1;
-		nullDesc.Texture2D.MostDetailedMip = 0;
-		nullDesc.Texture2D.PlaneSlice = 0;
-		nullDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-
-		for (unsigned int i = 1; i < parameterInfo.value().Count; ++i)
-		{
-			myDevice.GetDevice()->CreateShaderResourceView(
-				nullptr,
-				&nullDesc,
-				gpuBuffer.GetCPUHandle(i)
-				);
-		}
-
-		myCommandList->SetGraphicsRootDescriptorTable(parameterInfo.value().RootParameterIndex, gpuBuffer.GetGPUHandle());
+		std::vector<std::shared_ptr<Core::Texture>>& parameterBuffers = myPendingTextureResources.at(parameterInfo.value().RootParameterIndex);
+		parameterBuffers[parameterInfo.value().RegisterOffset] = aTexture;
 	}
 
 	void FrameGraphicsContext::SetStencilRef(std::uint32_t aStencilRef)
@@ -600,5 +560,130 @@ namespace RoseGold::DirectX12
 		viewport.MaxDepth = 1.0f;
 
 		myCommandList->RSSetViewports(1, &viewport);
+	}
+
+	void FrameGraphicsContext::FlushPipelineConstantBuffers()
+	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline buffer resources");
+
+		for (const auto& rootParameterBuffers : myPendingBufferResources)
+		{
+			const auto existingHeapHandle = std::find_if(
+				myBufferHeapHandles.cbegin(), myBufferHeapHandles.cend(),
+				[&](const decltype(myBufferHeapHandles)::value_type& aHeapHandlePair) -> bool
+				{
+					if (aHeapHandlePair.first.size() != rootParameterBuffers.second.size())
+						return false;
+
+					for (std::size_t i = 0; i < aHeapHandlePair.first.size(); ++i)
+					{
+						const std::shared_ptr<Core::GraphicsBuffer>& bufferA = rootParameterBuffers.second.at(i);
+						if (bufferA != nullptr && bufferA != aHeapHandlePair.first.at(i))
+							return false;
+					}
+
+					return true;
+				}
+			);
+
+			if (existingHeapHandle != myBufferHeapHandles.cend())
+			{
+				myCommandList->SetGraphicsRootDescriptorTable(rootParameterBuffers.first, existingHeapHandle->second.GetGPUHandle());
+				continue;
+			}
+
+			RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
+			DescriptorHeapHandle heapHandle = renderPassHeap.GetHeapHandleBlock(RoseGold::Math::TruncateTo<uint32_t>(rootParameterBuffers.second.size()));
+
+			for (std::size_t i = 0; i < rootParameterBuffers.second.size(); ++i)
+			{
+				ConstantBuffer* constantBuffer = static_cast<ConstantBuffer*>(rootParameterBuffers.second.at(i).get());
+				Debug::Assert(constantBuffer, "Trying to apply null buffers, but no handling for that currently exists.");
+
+				myDevice.GetDevice()->CopyDescriptorsSimple(
+					1,
+					heapHandle.GetCPUHandle(RoseGold::Math::TruncateTo<unsigned int>(i)),
+					constantBuffer->GetViewHandle().GetCPUHandle(),
+					renderPassHeap.GetHeapType()
+				);
+			}
+
+			myBufferHeapHandles[rootParameterBuffers.second] = heapHandle;
+			myCommandList->SetGraphicsRootDescriptorTable(rootParameterBuffers.first, heapHandle.GetGPUHandle());
+		}
+	}
+
+	void FrameGraphicsContext::FlushPipelineTextures()
+	{
+		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline texture resources");
+
+		for (const auto& rootParameterTextures : myPendingTextureResources)
+		{
+			const auto existingHeapHandle = std::find_if(
+				myTextureHeapHandles.cbegin(), myTextureHeapHandles.cend(),
+				[&](const decltype(myTextureHeapHandles)::value_type& aHeapHandlePair) -> bool
+				{
+					if (aHeapHandlePair.first.size() != rootParameterTextures.second.size())
+						return false;
+
+					for (std::size_t i = 0; i < aHeapHandlePair.first.size(); ++i)
+					{
+						const std::shared_ptr<Core::Texture>& texture = rootParameterTextures.second.at(i);
+						if (texture != nullptr && texture != aHeapHandlePair.first.at(i))
+							return false;
+					}
+
+					return true;
+				}
+			);
+
+			if (existingHeapHandle != myTextureHeapHandles.cend())
+			{
+				myCommandList->SetGraphicsRootDescriptorTable(rootParameterTextures.first, existingHeapHandle->second.GetGPUHandle());
+				continue;
+			}
+
+			RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
+			DescriptorHeapHandle heapHandle = renderPassHeap.GetHeapHandleBlock(RoseGold::Math::TruncateTo<uint32_t>(rootParameterTextures.second.size()));
+
+			for (std::size_t i = 0; i < rootParameterTextures.second.size(); ++i)
+			{
+				if (SimpleTexture* texture = static_cast<SimpleTexture*>(rootParameterTextures.second.at(i).get()))
+				{
+					myDevice.GetDevice()->CopyDescriptorsSimple(
+						1,
+						heapHandle.GetCPUHandle(RoseGold::Math::TruncateTo<unsigned int>(i)),
+						texture->GetSRVHandle().GetCPUHandle(),
+						renderPassHeap.GetHeapType()
+					);
+				}
+				else
+				{
+					D3D12_SHADER_RESOURCE_VIEW_DESC nullDesc = { };
+					nullDesc.Format = DXGI_FORMAT_R8_UINT;
+					nullDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+					nullDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+					nullDesc.Texture2D.MipLevels = 1;
+					nullDesc.Texture2D.MostDetailedMip = 0;
+					nullDesc.Texture2D.PlaneSlice = 0;
+					nullDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+					myDevice.GetDevice()->CreateShaderResourceView(
+						nullptr,
+						&nullDesc,
+						heapHandle.GetCPUHandle(RoseGold::Math::TruncateTo<unsigned int>(i))
+					);
+				}
+			}
+
+			myTextureHeapHandles[rootParameterTextures.second] = heapHandle;
+			myCommandList->SetGraphicsRootDescriptorTable(rootParameterTextures.first, heapHandle.GetGPUHandle());
+		}
+	}
+
+	void FrameGraphicsContext::FlushPipelineResources()
+	{
+		FlushPipelineConstantBuffers();
+		FlushPipelineTextures();
 	}
 }

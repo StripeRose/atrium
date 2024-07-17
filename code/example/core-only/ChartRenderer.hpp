@@ -1,6 +1,7 @@
 // Filter "Chart/Rendering"
 #pragma once
 
+#include "ChartMeshes.hpp"
 #include "Mesh.hpp"
 
 #include "Common_Math.hpp"
@@ -19,15 +20,6 @@ public:
 	void SetupResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, RoseGold::Core::GraphicsFormat aColorTargetFormat);
 
 	void Render(RoseGold::Core::FrameContext& aContext, const std::shared_ptr<RoseGold::Core::RenderTexture>& aTarget);
-
-private:
-	struct QuadInstanceData
-	{
-		RoseGold::Math::Matrix Transform;
-		RoseGold::Math::Vector2 UVMin;
-		RoseGold::Math::Vector2 UVMax;
-		float Color[4];
-	};
 
 private:
 	void SetupQuadResources(RoseGold::Core::GraphicsAPI& aGraphicsAPI, const std::shared_ptr<RoseGold::Core::RootSignature>& aRootSignature, RoseGold::Core::GraphicsFormat aColorTargetFormat);
@@ -52,7 +44,7 @@ private:
 	std::shared_ptr<RoseGold::Core::Texture> myAtlas;
 	std::shared_ptr<RoseGold::Core::Texture> myFretboardTexture;
 
-	std::vector<QuadInstanceData> myQuadInstanceData;
+	std::vector<ChartQuadInstance> myQuadInstanceData;
 	std::shared_ptr<RoseGold::Core::GraphicsBuffer> myQuadInstanceBuffer;
 	std::size_t myLastQuadFlush = 0;
 

@@ -47,6 +47,7 @@ namespace RoseGold::DirectX12
 				ParameterInfo info;
 				info.RootParameterIndex = param.second;
 				info.Count = 1;
+				info.RegisterOffset = 0;
 				return info;
 			}
 		}
@@ -65,6 +66,7 @@ namespace RoseGold::DirectX12
 					ParameterInfo info;
 					info.RootParameterIndex = table.myRootParameterIndex;
 					info.Count = range.myCount;
+					info.RegisterOffset = (aRegisterIndex - range.myRegisterIndex);
 					return info;
 				}
 			}
