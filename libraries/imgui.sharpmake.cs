@@ -10,9 +10,7 @@ public class DearImGui : RoseGold.ExternalLibraryProject
         Name = "imgui";
         SourceRootPath = Path.Combine("[project.SharpmakeCsPath]", "imgui");
         
-        SourceFilesExcludeRegex.Add(@".*docs.*");
-        SourceFilesExcludeRegex.Add(@".*examples.*");
-        SourceFilesExcludeRegex.Add(@".*misc.*");
+        SourceFilesExcludeRegex.Add(@".*imgui(\\|\/)(examples|misc).*");
     }
 
     public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)

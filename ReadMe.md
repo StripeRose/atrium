@@ -18,19 +18,27 @@ The intent of this project is to create a graphics library and game engine that 
  * Windows 11
  * Visual Studio 2022 (Tracy profiler requires CMake tools to build)
 
-### Setting up the repository
+### Adding and setting up the repository
 
-Once cloned on its own or as part of a larger project, run `setup_repo.bat`.
-This script will automatically do the following.
+In your desired project directory, either:
 
-1. Clone all submodules the in use.
-2. Build the tools in use by the project; [Sharpmake](https://github.com/ubisoft/Sharpmake/).
+1. Clone into your own directory with `git clone https://github.com/StripeRose/rose-gold` **OR**
+2. Add it as a sub-module with `git submodule add https://github.com/StripeRose/rose-gold`
 
-### Open the example project
+This will set up the engine in the `./rose-gold/` directory.
 
-Run `./code/generate_example_solution.bat` to use Sharpmake to generate the example game solution.
+Navigate into the directory, and run `./setup_repo.bat` to clone all submodules in use, and build [Sharpmake](https://github.com/ubisoft/Sharpmake/), the Visual Studio solution generator.
 
-This will create all the current example solutions in the same directory.
+### Create a new project
+
+Copy and rename the `example` directory so it lies next to `rose-gold`.
+The directory contains a basic program that sets up the engine to open a blank window, and exits when you close it.
+
+Once copied, run `generate_solution.bat` from within the directory. This should create a solution to open and run from Visual Studio.
+
+## Example code
+
+Further example projects are located in [rose-gold-examples](https://github.com/StripeRose/rose-gold-examples).
 
 ## Performance profiling
 
@@ -43,35 +51,17 @@ To build the Tracy profiler program, ensure Visual Studio 2022 has been installe
 
 ## Structure
 Rough project structure, both current and potential future data.
-* `build` - *The target build folder for everything.*
+* `build` — *The target build directory for everything.*
 * `code`
-    * `apis` - *Non-platform specific API implementations.*
-        * `dx12`
-        * `xinput`
-    * `client` - *Individual platform clients and any platform-specific code.*
-        * `windows`
-    * `core` - *Smaller common interfaces to allow the engine to use any API. Primarily to simplify porting.*
-        * `audio` - *API for interfacing with audio playback and recording devices.*
-        * `graphics` - *API for interfacing with GPUs.*
-        * `input` - *API for interfacing with keyboards, mice, controllers, joysticks and other input devices.*
-        * `platform` - *API for interfacing with platform-specific features such as windows.*
-    * `engine` - *Basics of the engine itself. Scene and component management, amongst other things.*
-	* `example`
-    * `libraries` - *External code in use by the project.*
-	* `modules` - *Add-on modules for the engine.*
-        * `node-editor`
-        * `user-interface`
-        * `...`
+    * `apis` — *Non-platform specific API implementations.*
+    * `client` — *Individual platform clients and any platform-specific code.*
+    * `core` — *Smaller common interfaces to allow the engine to use any API. Primarily to simplify porting.*
+        * `audio` — *API for interfacing with audio playback and recording devices.*
+        * `graphics` — *API for interfacing with GPUs.*
+        * `input` — *API for interfacing with keyboards, mice, controllers, joysticks and other input devices.*
+        * `platform` — *API for interfacing with platform-specific features such as windows.*
+    * `engine` — *Basics of the engine itself, such as scene and component management.*
+	* `example` — *An empty example project.*
+    * `libraries` — *External code in use by the project.*
 * `config`
-* `data` - *Example assets and structure.*
-    * `assets`
-        * `audio`
-        * `fonts`
-        * `images`
-        * `models`
-        * `shaders`
-        * `video`
-    * `docs`
-    * `localization`
-    * `scripts`
-* `tools`
+* `tools` — *Any programs or scripts to help build executables or data.*

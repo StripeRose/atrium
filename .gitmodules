@@ -2,15 +2,15 @@
 	path = tools/Sharpmake
 	url = https://github.com/ubisoft/Sharpmake
 [submodule "code/libraries/rose-common"]
-	path = code/libraries/rose-common
+	path = libraries/rose-common
 	url = https://github.com/StripeRose/rose-common.git
 [submodule "code/libraries/DirectXTex"]
-	path = code/libraries/DirectXTex
+	path = libraries/DirectXTex
 	url = https://github.com/Microsoft/DirectXTex
 [submodule "code/libraries/tracy"]
-	path = code/libraries/tracy
+	path = libraries/tracy
 	url = git@github.com:wolfpld/tracy.git
 [submodule "code/libraries/imgui"]
-	path = code/libraries/imgui
+	path = libraries/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
