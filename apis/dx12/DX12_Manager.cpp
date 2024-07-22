@@ -1,5 +1,3 @@
-#include "stdafx.hpp"
-
 #include "Common_Diagnostics.hpp"
 
 #include "DX12_ComPtr.hpp"

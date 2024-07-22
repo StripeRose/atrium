@@ -1,5 +1,3 @@
-#include "stdafx.hpp"
-
 #include "DX12_Diagnostics.hpp"
 
 #include <comdef.h>

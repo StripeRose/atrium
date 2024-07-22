@@ -100,9 +100,6 @@ namespace RoseGold
         {
             base.ConfigureAll(conf, target);
 
-            conf.PrecompHeader = "stdafx.hpp";
-            conf.PrecompSource = "stdafx.cpp";
-
             conf.Defines.Add("NOMINMAX");
 
             if (target.Optimization == Sharpmake.Optimization.Debug)

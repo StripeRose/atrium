@@ -1,4 +1,3 @@
-#include "stdafx.hpp"
 #include "DX12_ResourceManager.hpp"
 
 #include "DX12_DDS.hpp"

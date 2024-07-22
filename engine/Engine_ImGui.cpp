@@ -1,4 +1,3 @@
-#include "stdafx.hpp"
 #include "Engine_ImGui.hpp"
 
 #if IS_IMGUI_ENABLED

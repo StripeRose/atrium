@@ -1,5 +1,4 @@
 // Filter "Editor"
-#include "stdafx.hpp"
 #include "Editor_FileDialog.hpp"
 
 #if _WIN32

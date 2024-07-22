@@ -1,4 +1,3 @@
-#include "stdafx.hpp"
 #include "Engine_Instance.hpp"
 
 #include "Engine_ImGui.hpp"

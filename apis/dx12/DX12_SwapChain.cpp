@@ -1,7 +1,5 @@
 // Filter "Resources"
 
-#include "stdafx.hpp"
-
 #include "Common_Math.hpp"
 
 #include "DX12_CommandQueue.hpp"

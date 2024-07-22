@@ -1,6 +1,6 @@
-#include "stdafx.hpp"
-
 #include "Win32_WindowManagement.hpp"
+
+#include "Common_Diagnostics.hpp"
 
 #include <memory>
 #include <windowsx.h>

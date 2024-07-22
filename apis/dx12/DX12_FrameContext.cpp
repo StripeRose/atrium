@@ -1,7 +1,5 @@
 // Filter "Frame contexts"
 
-#include "stdafx.hpp"
-
 #include "DX12_Texture.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"

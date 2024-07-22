@@ -1,5 +1,6 @@
-#include "stdafx.hpp"
 #include "DX12_DescriptorHeapManager.hpp"
+
+#include <string>
 
 namespace RoseGold::DirectX12
 {
