@@ -1,18 +1,18 @@
 using System.IO;
 using Sharpmake;
 
-[module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
-[module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
-[module: Sharpmake.Include("../../libraries/tracy.sharpmake.cs")]
+[module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
+[module: Sharpmake.Include("../libraries/rose-common.sharpmake.cs")]
+[module: Sharpmake.Include("../libraries/tracy.sharpmake.cs")]
 
 namespace Atrium
 {
     [Generate]
-    public class Common : StaticLibraryProject
+    public class Core : StaticLibraryProject
     {
-        public Common()
+        public Core()
         {
-            Name = "Common";
+            Name = "Atrium Core";
             SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
@@ -20,7 +20,7 @@ namespace Atrium
         {
             base.ConfigureAll(conf, target);
 
-            conf.SolutionFolder = "Atrium/core";
+            conf.SolutionFolder = "Atrium";
             conf.AddPublicDependency<RoseCommon>(target);
             conf.AddPublicDependency<Tracy>(target);
         }

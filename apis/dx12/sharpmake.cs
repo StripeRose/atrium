@@ -2,8 +2,7 @@ using System.IO;
 using Sharpmake;
 
 [module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
-[module: Sharpmake.Include("../../core/graphics/sharpmake.cs")]
-[module: Sharpmake.Include("../../core/platform/sharpmake.cs")]
+[module: Sharpmake.Include("../../core/sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/directxtex.sharpmake.cs")]
 
@@ -26,10 +25,8 @@ namespace Atrium
             base.ConfigureAll(conf, target);
             conf.SolutionFolder = "Atrium/apis";
 
-            conf.AddPrivateDependency<Atrium.Common>(target);
+            conf.AddPrivateDependency<Atrium.Core>(target);
             conf.AddPrivateDependency<DirectXTex>(target);
-            conf.AddPrivateDependency<Graphics>(target);
-            conf.AddPrivateDependency<Platform>(target);
 
             conf.Defines.Add("DX12_FRAMES_IN_FLIGHT=2");
 

@@ -3,9 +3,7 @@ using Sharpmake;
 
 [module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 
-[module: Sharpmake.Include("../core/common/sharpmake.cs")]
-[module: Sharpmake.Include("../core/graphics/sharpmake.cs")]
-[module: Sharpmake.Include("../core/platform/sharpmake.cs")]
+[module: Sharpmake.Include("../core/sharpmake.cs")]
 
 [module: Sharpmake.Include("../apis/dx12/sharpmake.cs")]
 [module: Sharpmake.Include("../client/windows/sharpmake.cs")]
@@ -19,7 +17,7 @@ namespace Atrium
     {
         public Engine()
         {
-            Name = "Engine";
+            Name = "Atrium";
             SourceRootPath = "[project.SharpmakeCsPath]";
         }
 
@@ -28,9 +26,7 @@ namespace Atrium
             base.ConfigureAll(conf, target);
             conf.SolutionFolder = "Atrium";
 
-            conf.AddPublicDependency<Common>(target);
-            conf.AddPublicDependency<Platform>(target);
-            conf.AddPublicDependency<Graphics>(target);
+            conf.AddPublicDependency<Atrium.Core>(target);
 
             if (target.Optimization != Sharpmake.Optimization.Retail)
                 conf.AddPublicDependency<DearImGui>(target);
