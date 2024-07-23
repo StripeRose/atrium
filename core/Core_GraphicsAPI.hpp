@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Graphics_Buffer.hpp"
-#include "Graphics_FrameContext.hpp"
-#include "Graphics_RenderTexture.hpp"
-#include "Graphics_Pipeline.hpp"
+#include "Core_FrameContext.hpp"
+#include "Core_GraphicsBuffer.hpp"
+#include "Core_GraphicsPipeline.hpp"
+#include "Core_RenderTexture.hpp"
 
 #include <filesystem>
 

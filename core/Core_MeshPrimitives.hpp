@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common_Math.hpp"
+#include "Core_Math.hpp"
 
 #include <functional>
 #include <vector>

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Common_Color.hpp"
+#include "Core_Color.hpp"
 
-#include "Graphics_Enums.hpp"
+#include "Core_GraphicsEnums.hpp"
 
 namespace Atrium::Core
 {

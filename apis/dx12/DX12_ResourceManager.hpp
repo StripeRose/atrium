@@ -3,7 +3,7 @@
 #include "DX12_Pipeline.hpp"
 #include "DX12_SwapChain.hpp"
 
-#include "Graphics_Manager.hpp"
+#include "Core_GraphicsAPI.hpp"
 
 #include <map>
 #include <memory>

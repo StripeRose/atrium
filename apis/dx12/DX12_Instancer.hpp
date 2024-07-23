@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Graphics_Manager.hpp"
+#include "Core_GraphicsAPI.hpp"
 
 #include <memory>
 

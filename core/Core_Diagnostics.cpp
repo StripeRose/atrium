@@ -1,5 +1,5 @@
 
-#include "Common_Diagnostics.hpp"
+#include "Core_Diagnostics.hpp"
 
 #ifdef TRACY_ENABLE
 _NODISCARD

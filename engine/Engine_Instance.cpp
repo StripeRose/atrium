@@ -2,7 +2,7 @@
 
 #include "Engine_ImGui.hpp"
 
-#include "Common_Diagnostics.hpp"
+#include "Core_Diagnostics.hpp"
 
 namespace Atrium
 {

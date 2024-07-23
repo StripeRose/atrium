@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Graphics_Enums.hpp"
+#include "Core_GraphicsEnums.hpp"
 
 #include <memory>
 #include <optional>

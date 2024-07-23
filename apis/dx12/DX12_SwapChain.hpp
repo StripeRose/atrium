@@ -5,7 +5,7 @@
 #include "DX12_Enums.hpp"
 #include "DX12_RenderTexture.hpp"
 
-#include "Platform_WindowManagement.hpp"
+#include "Core_WindowManagement.hpp"
 
 namespace Atrium::DirectX12
 {

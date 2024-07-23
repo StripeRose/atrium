@@ -1,5 +1,5 @@
 
-#include "Graphics_MeshPrimitives.hpp"
+#include "Core_MeshPrimitives.hpp"
 
 #include <vector>
 

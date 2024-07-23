@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Common_Color.hpp"
-#include "Common_Diagnostics.hpp"
-#include "Common_Math.hpp"
-
-#include "Graphics_Buffer.hpp"
-#include "Graphics_RenderTexture.hpp"
-#include "Graphics_Pipeline.hpp"
+#include "Core_Color.hpp"
+#include "Core_Diagnostics.hpp"
+#include "Core_GraphicsBuffer.hpp"
+#include "Core_GraphicsPipeline.hpp"
+#include "Core_Math.hpp"
+#include "Core_RenderTexture.hpp"
 
 #include <functional>
 #include <memory>

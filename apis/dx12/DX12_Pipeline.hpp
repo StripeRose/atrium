@@ -5,9 +5,9 @@
 #include "DX12_ComPtr.hpp"
 #include "DX12_Shader.hpp"
 
-#include "Graphics_FrameContext.hpp"
-#include "Graphics_Pipeline.hpp"
-#include "Graphics_RenderTexture.hpp"
+#include "Core_FrameContext.hpp"
+#include "Core_GraphicsPipeline.hpp"
+#include "Core_RenderTexture.hpp"
 
 #include <d3d12.h>
 

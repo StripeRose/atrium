@@ -6,9 +6,8 @@
 #include "DX12_ResourceManager.hpp"
 #include "DX12_SwapChain.hpp"
 
-#include "Graphics_Manager.hpp"
-
-#include "Platform_WindowManagement.hpp"
+#include "Core_GraphicsAPI.hpp"
+#include "Core_WindowManagement.hpp"
 
 #include <d3d12.h>
 

@@ -1,4 +1,4 @@
-#include "Common_Diagnostics.hpp"
+#include "Core_Diagnostics.hpp"
 
 #include "DX12_ComPtr.hpp"
 #include "DX12_DDS.hpp"

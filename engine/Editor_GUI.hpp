@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Common_Color.hpp>
-#include <Common_Math.hpp>
+#include <Core_Color.hpp>
+#include <Core_Math.hpp>
 
 #include <any>
 #include <optional>

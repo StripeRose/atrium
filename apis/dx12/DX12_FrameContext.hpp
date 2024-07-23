@@ -2,8 +2,10 @@
 
 #pragma once
 
-#include "Common_Color.hpp"
-#include "Common_Math.hpp"
+#include "Core_Color.hpp"
+#include "Core_FrameContext.hpp"
+#include "Core_Math.hpp"
+#include "Core_RenderTexture.hpp"
 
 #include "DX12_CommandQueue.hpp"
 #include "DX12_ComPtr.hpp"
@@ -12,9 +14,6 @@
 #include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Pipeline.hpp"
 #include "DX12_RenderTexture.hpp"
-
-#include <Graphics_FrameContext.hpp>
-#include <Graphics_RenderTexture.hpp>
 
 #include <d3d12.h>
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <Graphics_Texture.hpp>
+#include <Core_Texture.hpp>
 
 #include <filesystem>
 

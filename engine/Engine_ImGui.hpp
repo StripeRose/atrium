@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Graphics_Enums.hpp>
-#include <Graphics_Manager.hpp>
-#include <Platform_WindowManagement.hpp>
+#include <Core_GraphicsAPI.hpp>
+#include <Core_GraphicsEnums.hpp>
+#include <Core_WindowManagement.hpp>
 
 #if IS_IMGUI_ENABLED
 #include <DX12_DescriptorHeap.hpp>
