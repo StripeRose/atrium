@@ -4,7 +4,7 @@ using Sharpmake;
 [module: Sharpmake.Include("../common/sharpmake.cs")]
 [module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
 
-namespace RoseGold
+namespace Atrium
 {
     [Generate]
     public class Platform : StaticLibraryProject
@@ -18,9 +18,9 @@ namespace RoseGold
         public override void ConfigureAll(Project.Configuration conf, Target target)
         {
             base.ConfigureAll(conf, target);
-            conf.SolutionFolder = "rose-gold/core";
+            conf.SolutionFolder = "Atrium/core";
 
-            conf.AddPublicDependency<RoseGold.Common>(target);
+            conf.AddPublicDependency<Atrium.Common>(target);
 
             conf.Output = Configuration.OutputType.Utility; // Remove when there's code to build.
         }

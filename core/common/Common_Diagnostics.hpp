@@ -2,7 +2,7 @@
 
 #include <rose-common/Debug.hpp>
 
-namespace RoseGold
+namespace Atrium
 {
 	using Debug = RoseCommon::Debug;
 }

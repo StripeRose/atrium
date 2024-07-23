@@ -16,7 +16,7 @@
 #include <optional>
 #include <vector>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	class RootParameterMapping
 	{

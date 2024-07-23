@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	DescriptorHeapManager::DescriptorHeapManager(ComPtr<ID3D12Device> aDevice, std::size_t aNumberOfFramesInFlight)
 		: mySRVHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128)

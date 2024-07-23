@@ -8,7 +8,7 @@
 #include <DX12_DescriptorHeap.hpp>
 #endif
 
-namespace RoseGold
+namespace Atrium
 {
 	class ImGuiHandler
 	{

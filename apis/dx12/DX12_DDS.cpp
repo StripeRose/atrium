@@ -4,7 +4,7 @@
 #include "DX12_Diagnostics.hpp"
 #include "DX12_Texture.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	std::shared_ptr<Core::Texture> LoadDDSFromFile(Device& aDevice, UploadContext& anUploader, const std::filesystem::path& aPath)
 	{

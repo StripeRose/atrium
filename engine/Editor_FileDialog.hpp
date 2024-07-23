@@ -11,7 +11,7 @@
 #include <wrl.h>
 #endif
 
-namespace RoseGold::Editor
+namespace Atrium::Editor
 {
 	using FileDialogFilter = std::pair<std::string_view, std::filesystem::path>;
 

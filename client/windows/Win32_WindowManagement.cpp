@@ -5,7 +5,7 @@
 #include <memory>
 #include <windowsx.h>
 
-namespace RoseGold::Win32
+namespace Atrium::Win32
 {
 	Window::~Window()
 	{

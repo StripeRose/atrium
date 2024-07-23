@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <d3d12.h>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	template <typename T>
 	inline T Align(T aLocation, T anAlignment)

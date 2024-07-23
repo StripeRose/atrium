@@ -4,7 +4,7 @@
 
 #include "Graphics_Enums.hpp"
 
-namespace RoseGold::Core
+namespace Atrium::Core
 {
 	class Texture
 	{

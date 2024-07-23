@@ -5,7 +5,7 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	DXGI_FORMAT ToDXGIFormat(const Core::GraphicsFormat& aFormat);
 	Core::GraphicsFormat ToGraphicsFormat(const Core::RenderTextureFormat& aRTFormat);

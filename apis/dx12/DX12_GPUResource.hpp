@@ -8,7 +8,7 @@
 
 #include <optional>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	class GPUResource
 	{

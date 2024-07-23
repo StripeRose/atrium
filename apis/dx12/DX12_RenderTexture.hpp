@@ -8,7 +8,7 @@
 
 #include "Graphics_RenderTexture.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	class RenderTarget : public Core::RenderTexture
 	{

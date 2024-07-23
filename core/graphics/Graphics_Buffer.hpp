@@ -3,7 +3,7 @@
 #include <memory>
 #include <span>
 
-namespace RoseGold::Core
+namespace Atrium::Core
 {
 	class GraphicsBuffer
 	{

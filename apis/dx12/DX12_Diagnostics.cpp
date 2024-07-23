@@ -2,7 +2,7 @@
 
 #include <comdef.h>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	void AssertAction(HRESULT aResult, const char* anAction)
 	{

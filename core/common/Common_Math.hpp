@@ -8,7 +8,7 @@
 #include <rose-common/math/Trigonometry.hpp>
 #include <rose-common/math/Vector.hpp>
 
-namespace RoseGold
+namespace Atrium
 {
 	using Point = RoseCommon::Math::Vector2<int>;
 	using Size = RoseCommon::Math::Vector2<int>;

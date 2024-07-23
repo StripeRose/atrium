@@ -15,7 +15,7 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
 
-namespace RoseGold
+namespace Atrium
 {
 	ImGuiHandler::ImGuiHandler([[maybe_unused]] Core::GraphicsAPI& aGraphicsAPI, [[maybe_unused]] Core::Window& aPrimaryWindow, [[maybe_unused]] std::shared_ptr<Core::RenderTexture> aTarget)
 #if IS_IMGUI_ENABLED

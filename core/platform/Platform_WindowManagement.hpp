@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace RoseGold::Core
+namespace Atrium::Core
 {
 	class Window
 	{

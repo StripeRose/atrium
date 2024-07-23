@@ -5,7 +5,7 @@
 #include "DX12_Enums.hpp"
 #include "DX12_RenderTexture.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	RenderTexture::RenderTexture(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor)
 		: RenderTexture(aDevice, aDescriptor, nullptr, nullptr)

@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace RoseGold::Core
+namespace Atrium::Core
 {
 	struct RenderTextureDescriptor
 	{

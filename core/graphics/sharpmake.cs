@@ -4,7 +4,7 @@ using Sharpmake;
 [module: Sharpmake.Include("../common/sharpmake.cs")]
 [module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
 
-namespace RoseGold
+namespace Atrium
 {
     [Generate]
     public class Graphics : StaticLibraryProject
@@ -19,9 +19,9 @@ namespace RoseGold
         {
             base.ConfigureAll(conf, target);
 
-            conf.SolutionFolder = "rose-gold/core";
+            conf.SolutionFolder = "Atrium/core";
 
-            conf.AddPublicDependency<RoseGold.Common>(target);
+            conf.AddPublicDependency<Atrium.Common>(target);
         }
     }
 }

@@ -13,7 +13,7 @@
 #include <source_location>
 #include <vector>
 
-namespace RoseGold::Core
+namespace Atrium::Core
 {
 	enum class PrimitiveTopology
 	{
@@ -74,7 +74,7 @@ namespace RoseGold::Core
 #ifdef TRACY_ENABLE
 #define CONTEXT_ZONE(aContext, aName) \
 	static constexpr tracy::SourceLocationData TracyConcat(__tracy_source_location, TracyLine) { aName, TracyFunction, TracyFile, (uint32_t)TracyLine, 0 };  \
-	RoseGold::Core::FrameContext::ContextZone TracyConcat(contextZoneScope, __LINE__); \
+	Atrium::Core::FrameContext::ContextZone TracyConcat(contextZoneScope, __LINE__); \
 	(aContext).BeginZone(TracyConcat(contextZoneScope, __LINE__), TracyConcat(__tracy_source_location, TracyLine));
 #else
 #define CONTEXT_ZONE(aContext, aName)

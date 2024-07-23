@@ -14,7 +14,7 @@
 
 #include <filesystem>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	class Device;
 	class UploadContext;

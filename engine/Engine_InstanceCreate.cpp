@@ -5,7 +5,7 @@
 #include "Win32_WindowManagement.hpp"
 #endif
 
-namespace RoseGold
+namespace Atrium
 {
 	std::unique_ptr<EngineInstance> EngineInstance::Create()
 	{

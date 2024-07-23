@@ -9,7 +9,7 @@
 #include <memory>
 #include <mutex>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	class DirectX12API;
 	class ResourceManager : public Core::GraphicsAPI::ResourceManager

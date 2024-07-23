@@ -4,7 +4,7 @@
 
 #include "Common_Diagnostics.hpp"
 
-namespace RoseGold
+namespace Atrium
 {
 	EngineInstance::~EngineInstance()
 	{

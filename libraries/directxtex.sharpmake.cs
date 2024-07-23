@@ -3,7 +3,7 @@ using System.IO;
 [module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 
 [Sharpmake.Generate]
-public class DirectXTex : RoseGold.ExternalLibraryProject
+public class DirectXTex : Atrium.ExternalLibraryProject
 {
     public DirectXTex()
     {
@@ -15,7 +15,7 @@ public class DirectXTex : RoseGold.ExternalLibraryProject
     {
         base.ConfigureAll(conf, target);
 
-        conf.SolutionFolder = "rose-gold/external";
+        conf.SolutionFolder = "Atrium/external";
         conf.SourceFilesBuildExclude.Add("BCDirectCompute.cpp");
     }
 }

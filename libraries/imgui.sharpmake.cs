@@ -3,7 +3,7 @@ using System.IO;
 [module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 
 [Sharpmake.Generate]
-public class DearImGui : RoseGold.ExternalLibraryProject
+public class DearImGui : Atrium.ExternalLibraryProject
 {
     public DearImGui()
     {
@@ -16,7 +16,7 @@ public class DearImGui : RoseGold.ExternalLibraryProject
     public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
     {
         base.ConfigureAll(conf, target);
-        conf.SolutionFolder = "rose-gold/external";
+        conf.SolutionFolder = "Atrium/external";
 
         conf.Defines.Add("IMGUI_DEFINE_MATH_OPERATORS");
         conf.ExportDefines.Add("IS_IMGUI_ENABLED=1");

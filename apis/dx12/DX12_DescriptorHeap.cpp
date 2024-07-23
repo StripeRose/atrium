@@ -1,7 +1,7 @@
 #include "DX12_DescriptorHeap.hpp"
 #include "DX12_Diagnostics.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeapHandle::GetCPUHandle() const
 	{

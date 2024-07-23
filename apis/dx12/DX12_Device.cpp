@@ -7,7 +7,7 @@
 #include <d3d12sdklayers.h>
 #endif
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	Device::Device(const DeviceParameters& someParameters)
 		: myFeatureLevel(someParameters.MinimumFeatureLevel)

@@ -7,7 +7,7 @@
 
 #include "Platform_WindowManagement.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	class CommandQueue;
 	class Device;

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace RoseGold
+namespace Atrium
 {
 	class ImGuiHandler;
 

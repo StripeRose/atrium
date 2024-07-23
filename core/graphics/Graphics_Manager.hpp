@@ -7,9 +7,9 @@
 
 #include <filesystem>
 
-namespace RoseGold::Core { class Window; }
+namespace Atrium::Core { class Window; }
 
-namespace RoseGold::Core
+namespace Atrium::Core
 {
 	class GraphicsAPI
 	{

@@ -5,7 +5,7 @@ using Sharpmake;
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/tracy.sharpmake.cs")]
 
-namespace RoseGold
+namespace Atrium
 {
     [Generate]
     public class Common : StaticLibraryProject
@@ -20,7 +20,7 @@ namespace RoseGold
         {
             base.ConfigureAll(conf, target);
 
-            conf.SolutionFolder = "rose-gold/core";
+            conf.SolutionFolder = "Atrium/core";
             conf.AddPublicDependency<RoseCommon>(target);
             conf.AddPublicDependency<Tracy>(target);
         }

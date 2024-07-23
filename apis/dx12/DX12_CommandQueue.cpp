@@ -3,7 +3,7 @@
 #include "DX12_CommandQueue.hpp"
 #include "DX12_Diagnostics.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	CommandQueue::CommandQueue(ComPtr<ID3D12Device> aDevice, D3D12_COMMAND_LIST_TYPE aQueueType)
 		: myQueueType(aQueueType)

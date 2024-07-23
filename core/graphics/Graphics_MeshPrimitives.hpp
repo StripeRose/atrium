@@ -5,7 +5,7 @@
 #include <functional>
 #include <vector>
 
-namespace RoseGold::Core
+namespace Atrium::Core
 {
 	enum class MeshPrimitiveType
 	{

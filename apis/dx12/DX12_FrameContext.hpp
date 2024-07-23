@@ -24,7 +24,7 @@
 // https://alextardif.com/D3D11To12P3.html
 // https://alextardif.com/DX12Tutorial.html
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	class Device;
 

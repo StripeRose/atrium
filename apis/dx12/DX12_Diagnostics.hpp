@@ -5,7 +5,7 @@
 #include <d3d12.h>
 #include <Windows.h>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	// Asserts that the result was successful, with no message otherwise.
 	void AssertAction(HRESULT aResult, const char* anAction);

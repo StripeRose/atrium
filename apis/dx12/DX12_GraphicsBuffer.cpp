@@ -5,7 +5,7 @@
 #include "DX12_GraphicsBuffer.hpp"
 #include "DX12_MemoryAlignment.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	GraphicsBuffer::GraphicsBuffer(Device& aDevice, std::uint32_t aBufferSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType)
 	{

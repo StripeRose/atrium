@@ -3,11 +3,11 @@
 
 #include <vector>
 
-namespace RoseGold::Core
+namespace Atrium::Core
 {
 	namespace MakeMeshPrimitives
 	{
-		using namespace RoseGold::Math;
+		using namespace Atrium::Math;
 
 		MeshPrimitive::Vertex LerpVertex(const MeshPrimitive::Vertex& aVertex, const MeshPrimitive::Vertex& anOtherVertex, const float anAmount)
 		{

@@ -7,7 +7,7 @@
 #include "DX12_Diagnostics.hpp"
 #include "DX12_SwapChain.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Window& aWindow)
 		: myDevice(&aDevice)

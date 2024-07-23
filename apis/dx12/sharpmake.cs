@@ -7,10 +7,10 @@ using Sharpmake;
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/directxtex.sharpmake.cs")]
 
-namespace RoseGold
+namespace Atrium
 {
     [Generate]
-    public class DirectX12 : RoseGold.StaticLibraryProject
+    public class DirectX12 : Atrium.StaticLibraryProject
     {
         public DirectX12()
         {
@@ -24,9 +24,9 @@ namespace RoseGold
         public override void ConfigureAll(Project.Configuration conf, Target target)
         {
             base.ConfigureAll(conf, target);
-            conf.SolutionFolder = "rose-gold/apis";
+            conf.SolutionFolder = "Atrium/apis";
 
-            conf.AddPrivateDependency<RoseGold.Common>(target);
+            conf.AddPrivateDependency<Atrium.Common>(target);
             conf.AddPrivateDependency<DirectXTex>(target);
             conf.AddPrivateDependency<Graphics>(target);
             conf.AddPrivateDependency<Platform>(target);

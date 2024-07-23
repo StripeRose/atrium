@@ -7,7 +7,7 @@
 
 #include <Windows.h>
 
-namespace RoseGold::Editor
+namespace Atrium::Editor
 {
 	namespace _Win32Dialog
 	{

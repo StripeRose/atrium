@@ -3,7 +3,7 @@ using System.IO;
 [module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 
 [Sharpmake.Generate]
-public class Tracy : RoseGold.ExternalLibraryProject
+public class Tracy : Atrium.ExternalLibraryProject
 {
     public Tracy()
     {
@@ -18,7 +18,7 @@ public class Tracy : RoseGold.ExternalLibraryProject
     {
         base.ConfigureAll(conf, target);
         
-        conf.SolutionFolder = "rose-gold/external";
+        conf.SolutionFolder = "Atrium/external";
 
         if (target.Optimization != Sharpmake.Optimization.Retail)
         {

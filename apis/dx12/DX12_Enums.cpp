@@ -1,7 +1,7 @@
 #include "DX12_Diagnostics.hpp"
 #include "DX12_Enums.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	using namespace Core;
 

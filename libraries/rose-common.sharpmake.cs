@@ -3,7 +3,7 @@ using System.IO;
 [module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
 
 [Sharpmake.Generate]
-public class RoseCommon : RoseGold.ExternalLibraryProject
+public class RoseCommon : Atrium.ExternalLibraryProject
 {
     public RoseCommon()
     {
@@ -16,6 +16,6 @@ public class RoseCommon : RoseGold.ExternalLibraryProject
     {
         base.ConfigureAll(conf, target);
 
-        conf.SolutionFolder = "rose-gold/external";
+        conf.SolutionFolder = "Atrium/external";
     }
 }

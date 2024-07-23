@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	std::unique_ptr<Core::GraphicsAPI> CreateDX12Manager();
 }

@@ -5,7 +5,7 @@
 #include <Windows.h>
 #include <windowsx.h>
 
-namespace RoseGold::Win32
+namespace Atrium::Win32
 {
 	class WindowManager;
 	class Window final : public Core::Window

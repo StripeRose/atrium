@@ -10,7 +10,7 @@
 
 #include <d3d12.h>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	class Device;
 	class GraphicsBuffer : public Core::GraphicsBuffer, public GPUResource

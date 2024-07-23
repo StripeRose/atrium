@@ -1,9 +1,9 @@
 using System.IO;
 
-[module: Sharpmake.Include("../rose-gold/engine/sharpmake.cs")]
+[module: Sharpmake.Include("../atrium/engine/sharpmake.cs")]
 
 [Sharpmake.Generate]
-public class Example_Executable : RoseGold.ExecutableProject
+public class Example_Executable : Atrium.ExecutableProject
 {
     public Example_Executable()
     {
@@ -17,12 +17,12 @@ public class Example_Executable : RoseGold.ExecutableProject
 
         conf.SolutionFolder = "Executables";
         
-        conf.AddPrivateDependency<RoseGold.Engine>(target);
+        conf.AddPrivateDependency<Atrium.Engine>(target);
     }
 }
 
 [Sharpmake.Generate]
-public class Example_Solution : RoseGold.Solution
+public class Example_Solution : Atrium.Solution
 {
     public Example_Solution()
     {
@@ -45,7 +45,7 @@ public static class Main
     {
         FileInfo fileInfo = Sharpmake.Util.GetCurrentSharpmakeFileInfo();
 
-        RoseGold.Configuration.BuildDirectory = Path.Combine(
+        Atrium.Configuration.BuildDirectory = Path.Combine(
             fileInfo.DirectoryName,
             "build"
         );

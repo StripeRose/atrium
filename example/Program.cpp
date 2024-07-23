@@ -3,19 +3,19 @@
 
 #include <Windows.h>
 
-std::unique_ptr<RoseGold::EngineInstance> ourEngineInstance;
+std::unique_ptr<Atrium::EngineInstance> ourEngineInstance;
 
-std::shared_ptr<RoseGold::Core::RenderTexture> ourWindowTarget;
+std::shared_ptr<Atrium::Core::RenderTexture> ourWindowTarget;
 
 void HandleStart()
 {
-	RoseGold::Core::WindowManager::CreationParameters windowParameters;
+	Atrium::Core::WindowManager::CreationParameters windowParameters;
 	windowParameters.Title = "Test window";
 	windowParameters.Size = { 640, 480 };
 
-	std::shared_ptr<RoseGold::Core::Window> window = ourEngineInstance->GetWindowManager().NewWindow(windowParameters);
+	std::shared_ptr<Atrium::Core::Window> window = ourEngineInstance->GetWindowManager().NewWindow(windowParameters);
 	ourWindowTarget = ourEngineInstance->GetGraphicsAPI().GetResourceManager().CreateRenderTextureForWindow(*window);
-	window->Closed.Connect(nullptr, [](RoseGold::Core::Window&) { ourWindowTarget.reset(); });
+	window->Closed.Connect(nullptr, [](Atrium::Core::Window&) { ourWindowTarget.reset(); });
 }
 
 void HandleLoop()
@@ -26,10 +26,10 @@ void HandleLoop()
 		return;
 	}
 
-	RoseGold::Core::FrameContext& frameContext = ourEngineInstance->GetGraphicsAPI().GetCurrentFrameContext();
+	Atrium::Core::FrameContext& frameContext = ourEngineInstance->GetGraphicsAPI().GetCurrentFrameContext();
 	if (ourWindowTarget)
 	{
-		frameContext.ClearColor(ourWindowTarget, RoseGold::Color::Predefined::CornflowerBlue);
+		frameContext.ClearColor(ourWindowTarget, Atrium::Color::Predefined::CornflowerBlue);
 	}
 }
 
@@ -44,7 +44,7 @@ int main(int, const char**)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 #endif
 {
-	if (ourEngineInstance = RoseGold::EngineInstance::Create())
+	if (ourEngineInstance = Atrium::EngineInstance::Create())
 	{
 		ourEngineInstance->OnStart.Connect(nullptr, HandleStart);
 		ourEngineInstance->OnLoop.Connect(nullptr, HandleLoop);

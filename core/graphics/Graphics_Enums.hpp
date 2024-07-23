@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RoseGold::Core
+namespace Atrium::Core
 {
 	enum class TextureDimension
 	{

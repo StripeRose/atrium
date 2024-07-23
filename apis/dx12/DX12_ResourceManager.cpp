@@ -4,7 +4,7 @@
 #include "DX12_Device.hpp"
 #include "DX12_Manager.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	ResourceManager::ResourceManager(DirectX12API& aManager)
 		: myManager(aManager)

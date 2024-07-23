@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace RoseGold
+namespace Atrium
 {
     public static class Configuration
     {
@@ -72,9 +72,9 @@ namespace RoseGold
             conf.ProjectPath = "[project.SharpmakeCsPath]";
             conf.ProjectFileName = "[project.Name] [target.DevEnv]";
 
-            conf.IntermediatePath = Path.Combine(RoseGold.Configuration.BuildDirectory, "Intermediate/[project.Name] [target.Optimization] [target.DevEnv]/");
+            conf.IntermediatePath = Path.Combine(Atrium.Configuration.BuildDirectory, "Intermediate/[project.Name] [target.Optimization] [target.DevEnv]/");
             
-            conf.TargetPath = RoseGold.Configuration.BuildDirectory;
+            conf.TargetPath = Atrium.Configuration.BuildDirectory;
             conf.TargetLibraryPath = Path.Combine(conf.TargetPath, "Lib");
             conf.TargetFileName = "[project.Name] [target.Optimization] [target.DevEnv]";
 
@@ -117,9 +117,9 @@ namespace RoseGold
             IsFileNameToLower = false;
 
             AddTargets(new Sharpmake.Target(
-                RoseGold.Configuration.Platform,
-                RoseGold.Configuration.DevEnv,
-                RoseGold.Configuration.Optimization));
+                Atrium.Configuration.Platform,
+                Atrium.Configuration.DevEnv,
+                Atrium.Configuration.Optimization));
         }
 
         [Sharpmake.Configure]
@@ -136,9 +136,9 @@ namespace RoseGold
             Name = "Executable";
 
             AddTargets(new Sharpmake.Target(
-                RoseGold.Configuration.Platform,
-                RoseGold.Configuration.DevEnv,
-                RoseGold.Configuration.Optimization));
+                Atrium.Configuration.Platform,
+                Atrium.Configuration.DevEnv,
+                Atrium.Configuration.Optimization));
         }
     }
 
@@ -149,9 +149,9 @@ namespace RoseGold
             Name = "Static library";
 
             AddTargets(new Sharpmake.Target(
-                RoseGold.Configuration.Platform,
-                RoseGold.Configuration.DevEnv,
-                RoseGold.Configuration.Optimization,
+                Atrium.Configuration.Platform,
+                Atrium.Configuration.DevEnv,
+                Atrium.Configuration.Optimization,
                 Sharpmake.OutputType.Lib));
         }
 
@@ -169,9 +169,9 @@ namespace RoseGold
             Name = "External library";
 
             AddTargets(new Sharpmake.Target(
-                RoseGold.Configuration.Platform,
-                RoseGold.Configuration.DevEnv,
-                RoseGold.Configuration.Optimization,
+                Atrium.Configuration.Platform,
+                Atrium.Configuration.DevEnv,
+                Atrium.Configuration.Optimization,
                 Sharpmake.OutputType.Lib));
         }
 

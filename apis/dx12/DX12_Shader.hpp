@@ -11,7 +11,7 @@
 #include <filesystem>
 #include <memory>
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	class Shader : public Core::Shader
 	{

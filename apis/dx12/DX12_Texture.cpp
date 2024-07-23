@@ -7,7 +7,7 @@
 #include "DX12_MemoryAlignment.hpp"
 #include "DX12_Texture.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	using namespace DirectX;
 

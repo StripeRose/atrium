@@ -1,4 +1,4 @@
-# Rose Gold
+# Atrium
 
 ## About the project
 
@@ -22,23 +22,23 @@ The intent of this project is to create a graphics library and game engine that 
 
 In your desired project directory, either:
 
-1. Clone into your own directory with `git clone https://github.com/StripeRose/rose-gold` **OR**
-2. Add it as a sub-module with `git submodule add https://github.com/StripeRose/rose-gold`
+1. Clone into your own directory with `git clone https://github.com/StripeRose/atrium` **OR**
+2. Add it as a sub-module with `git submodule add https://github.com/StripeRose/atrium`
 
-This will set up the engine in the `./rose-gold/` directory.
+This will set up the engine in the `./atrium/` directory.
 
 Navigate into the directory, and run `./setup_repo.bat` to clone all submodules in use, and build [Sharpmake](https://github.com/ubisoft/Sharpmake/), the Visual Studio solution generator.
 
 ### Create a new project
 
-Copy and rename the `example` directory so it lies next to `rose-gold`.
+Copy and rename the `example` directory so it lies next to `atrium`.
 The directory contains a basic program that sets up the engine to open a blank window, and exits when you close it.
 
 Once copied, run `generate_solution.bat` from within the directory. This should create a solution to open and run from Visual Studio.
 
 ## Example code
 
-Further example projects are located in [rose-gold-examples](https://github.com/StripeRose/rose-gold-examples).
+Further example projects are located in [atrium-examples](https://github.com/StripeRose/atrium-examples).
 
 ## Performance profiling
 

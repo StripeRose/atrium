@@ -5,10 +5,10 @@ using Sharpmake;
 [module: Sharpmake.Include("../../core/platform/sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 
-namespace RoseGold
+namespace Atrium
 {
     [Generate]
-    public class WindowsClient : RoseGold.StaticLibraryProject
+    public class WindowsClient : Atrium.StaticLibraryProject
     {
         public WindowsClient()
         {
@@ -19,9 +19,9 @@ namespace RoseGold
         public override void ConfigureAll(Project.Configuration conf, Target target)
         {
             base.ConfigureAll(conf, target);
-            conf.SolutionFolder = "rose-gold/client";
+            conf.SolutionFolder = "Atrium/client";
 
-            conf.AddPrivateDependency<RoseGold.Common>(target);
+            conf.AddPrivateDependency<Atrium.Common>(target);
             conf.AddPrivateDependency<Platform>(target);
         }
     }

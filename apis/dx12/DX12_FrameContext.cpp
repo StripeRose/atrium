@@ -8,7 +8,7 @@
 #include "DX12_MemoryAlignment.hpp"
 #include "DX12_RenderTexture.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	FrameContext::FrameContext(Device& aDevice, CommandQueue& aCommandQueue)
 		: myDevice(aDevice)
@@ -591,7 +591,7 @@ namespace RoseGold::DirectX12
 			}
 
 			RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
-			DescriptorHeapHandle heapHandle = renderPassHeap.GetHeapHandleBlock(RoseGold::Math::TruncateTo<uint32_t>(rootParameterBuffers.second.size()));
+			DescriptorHeapHandle heapHandle = renderPassHeap.GetHeapHandleBlock(Atrium::Math::TruncateTo<uint32_t>(rootParameterBuffers.second.size()));
 
 			for (std::size_t i = 0; i < rootParameterBuffers.second.size(); ++i)
 			{
@@ -600,7 +600,7 @@ namespace RoseGold::DirectX12
 
 				myDevice.GetDevice()->CopyDescriptorsSimple(
 					1,
-					heapHandle.GetCPUHandle(RoseGold::Math::TruncateTo<unsigned int>(i)),
+					heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i)),
 					constantBuffer->GetViewHandle().GetCPUHandle(),
 					renderPassHeap.GetHeapType()
 				);
@@ -642,7 +642,7 @@ namespace RoseGold::DirectX12
 			}
 
 			RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
-			DescriptorHeapHandle heapHandle = renderPassHeap.GetHeapHandleBlock(RoseGold::Math::TruncateTo<uint32_t>(rootParameterTextures.second.size()));
+			DescriptorHeapHandle heapHandle = renderPassHeap.GetHeapHandleBlock(Atrium::Math::TruncateTo<uint32_t>(rootParameterTextures.second.size()));
 
 			for (std::size_t i = 0; i < rootParameterTextures.second.size(); ++i)
 			{
@@ -650,7 +650,7 @@ namespace RoseGold::DirectX12
 				{
 					myDevice.GetDevice()->CopyDescriptorsSimple(
 						1,
-						heapHandle.GetCPUHandle(RoseGold::Math::TruncateTo<unsigned int>(i)),
+						heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i)),
 						texture->GetSRVHandle().GetCPUHandle(),
 						renderPassHeap.GetHeapType()
 					);
@@ -669,7 +669,7 @@ namespace RoseGold::DirectX12
 					myDevice.GetDevice()->CreateShaderResourceView(
 						nullptr,
 						&nullDesc,
-						heapHandle.GetCPUHandle(RoseGold::Math::TruncateTo<unsigned int>(i))
+						heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i))
 					);
 				}
 			}

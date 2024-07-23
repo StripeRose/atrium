@@ -5,7 +5,7 @@
 #include "DX12_Enums.hpp"
 #include "DX12_Pipeline.hpp"
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
 	void RootParameterMapping::Table::AddMapping(Core::ResourceUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex, unsigned int aCount)
 	{

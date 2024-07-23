@@ -12,10 +12,10 @@ using Sharpmake;
 
 [module: Sharpmake.Include("../libraries/imgui.sharpmake.cs")]
 
-namespace RoseGold
+namespace Atrium
 {
     [Generate]
-    public class Engine : RoseGold.StaticLibraryProject
+    public class Engine : Atrium.StaticLibraryProject
     {
         public Engine()
         {
@@ -26,7 +26,7 @@ namespace RoseGold
         public override void ConfigureAll(Project.Configuration conf, Target target)
         {
             base.ConfigureAll(conf, target);
-            conf.SolutionFolder = "rose-gold";
+            conf.SolutionFolder = "Atrium";
 
             conf.AddPublicDependency<Common>(target);
             conf.AddPublicDependency<Platform>(target);

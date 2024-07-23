@@ -7,7 +7,7 @@
 
 #pragma comment(lib, "d3dcompiler.lib")
 
-namespace RoseGold::DirectX12
+namespace Atrium::DirectX12
 {
     std::shared_ptr<Shader> Shader::CreateFromSource(const std::filesystem::path& aFilePath, const char* anEntryPoint, const char* aProfile)
     {
