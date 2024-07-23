@@ -28,7 +28,7 @@ namespace Atrium
 
             conf.AddPublicDependency<Atrium.Core>(target);
 
-            if (target.Optimization != Sharpmake.Optimization.Retail)
+            if (target.Optimization != Sharpmake.Optimization.Retail || Atrium.Configuration.ImGuiInRetail)
                 conf.AddPublicDependency<DearImGui>(target);
 
             switch (target.Platform)

@@ -10,6 +10,8 @@ namespace Atrium
         public static Sharpmake.Platform Platform = Sharpmake.Platform.win32 | Sharpmake.Platform.win64;
         public static Sharpmake.DevEnv DevEnv = Sharpmake.DevEnv.vs2022;
         public static Sharpmake.Optimization Optimization = Sharpmake.Optimization.Debug | Sharpmake.Optimization.Release | Sharpmake.Optimization.Retail;
+
+        public static bool ImGuiInRetail = false;
     }
     
     public class FilteredProject : Sharpmake.Project
