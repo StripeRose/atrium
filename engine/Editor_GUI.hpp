@@ -1,3 +1,4 @@
+// Filter "Editor"
 #pragma once
 
 #include <Core_Color.hpp>

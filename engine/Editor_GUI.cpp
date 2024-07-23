@@ -1,3 +1,4 @@
+// Filter "Editor"
 #include "Editor_GUI.hpp"
 
 #if IS_IMGUI_ENABLED
