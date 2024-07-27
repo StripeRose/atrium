@@ -230,7 +230,7 @@ namespace Atrium::Core
 				static constexpr std::size_t numSegments = 24;
 				for (std::size_t i = 0; i < numSegments; i++)
 				{
-					const float theta = Math::TwoPi<float> * static_cast<float>(i) / static_cast<float>(numSegments);
+					const float theta = Math::TwoPi * static_cast<float>(i) / static_cast<float>(numSegments);
 
 					const float x = cosf(theta);
 					const float y = sinf(theta);
