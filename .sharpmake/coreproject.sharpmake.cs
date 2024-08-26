@@ -87,7 +87,7 @@ namespace Atrium
             //conf.Options.Add(Sharpmake.Options.Vc.General.WarningLevel.EnableAllWarnings);
 
             //conf.Options.Add(Sharpmake.Options.Vc.Compiler.ConformanceMode.Enable);
-            conf.Options.Add(Sharpmake.Options.Vc.Compiler.CppLanguageStandard.CPP20);
+            conf.Options.Add(Sharpmake.Options.Vc.Compiler.CppLanguageStandard.Latest);
             conf.Options.Add(Sharpmake.Options.Vc.Compiler.MultiProcessorCompilation.Enable);
 
             conf.Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Enable);
