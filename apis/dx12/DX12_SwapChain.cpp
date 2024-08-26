@@ -223,8 +223,8 @@ namespace Atrium::DirectX12
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDescriptor = {};
 		const Size windowSize = myWindow->GetSize();
-		swapChainDescriptor.Width = windowSize.X;
-		swapChainDescriptor.Height = windowSize.Y;
+		swapChainDescriptor.Width = windowSize.Width;
+		swapChainDescriptor.Height = windowSize.Height;
 		swapChainDescriptor.Format = ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat()));
 		swapChainDescriptor.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDescriptor.BufferCount = 2;
@@ -267,7 +267,7 @@ namespace Atrium::DirectX12
 		const Size newResolution = myDesiredResolution.value();
 		myDesiredResolution.reset();
 
-		if (newResolution.LengthSquared() == 0)
+		if ((newResolution.Width * newResolution.Height) == 0)
 			return;
 
 		for (std::shared_ptr<SwapChainBackBuffer>& backBuffer : myBackBuffers)
@@ -280,8 +280,8 @@ namespace Atrium::DirectX12
 		Debug::Assert(mySwapChain, "There is a swap-chain to resize.");
 		HRESULT hr = mySwapChain->ResizeBuffers(
 			static_cast<UINT>(myBackBuffers.size()),
-			static_cast<UINT>(newResolution.X),
-			static_cast<UINT>(newResolution.Y),
+			static_cast<UINT>(newResolution.Width),
+			static_cast<UINT>(newResolution.Height),
 			ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat())),
 			myDevice->GetParameters().AllowTearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u
 		);
@@ -328,9 +328,9 @@ namespace Atrium::DirectX12
 				return;
 			}
 
-			const Math::RectangleT<LONG> windowRect = Math::RectangleT<LONG>::FromExtents(
-				{ windowBounds.left, windowBounds.top },
-				{ windowBounds.right, windowBounds.bottom }
+			const Math::RectangleT<LONG> windowRect = Math::RectangleT<LONG>(
+				PointT<LONG>(windowBounds.left, windowBounds.top),
+				PointT<LONG>(windowBounds.right, windowBounds.bottom)
 			);
 
 			ComPtr<IDXGIOutput> bestOutput;
@@ -349,17 +349,17 @@ namespace Atrium::DirectX12
 					// Get the rectangle bounds of current output.
 					DXGI_OUTPUT_DESC desc;
 					AssertAction(output->GetDesc(&desc), "Get adapter output description.");
-					const Math::RectangleT<LONG> desktopCoordinates = Math::RectangleT<LONG>::FromExtents(
-						{ desc.DesktopCoordinates.left, desc.DesktopCoordinates.top },
-						{ desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom });
+					const Math::RectangleT<LONG> desktopCoordinates = Math::RectangleT<LONG>(
+						PointT<LONG>(desc.DesktopCoordinates.left, desc.DesktopCoordinates.top),
+						PointT<LONG>(desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom));
 
 					// Compute the intersection
 					auto intersection = desktopCoordinates.Intersection(windowRect);
 
-					if (intersection.has_value() && intersection.value().Content() > bestIntersectArea)
+					if (intersection.has_value() && intersection.value().Area() > bestIntersectArea)
 					{
 						bestOutput = output;
-						bestIntersectArea = intersection.value().Content();
+						bestIntersectArea = intersection.value().Area();
 					}
 				}
 			}
@@ -426,8 +426,8 @@ namespace Atrium::DirectX12
 			rtDesc.DepthStencilFormat = Core::GraphicsFormat::D32_SFloat;
 			rtDesc.Dimension = Core::TextureDimension::Tex2D;
 			rtDesc.IsSRGB = false;
-			rtDesc.Size_Width = aSize.X;
-			rtDesc.Size_Height = aSize.Y;
+			rtDesc.Size_Width = aSize.Width;
+			rtDesc.Size_Height = aSize.Height;
 			rtDesc.Size_Depth = 1;
 
 			myBackBuffers.emplace_back(new SwapChainBackBuffer(*myDevice, rtDesc, backBufferResource, nullptr));
@@ -436,7 +436,7 @@ namespace Atrium::DirectX12
 
 	void SwapChain::OnDrawSurfaceResize(const Size& aSize)
 	{
-		if (aSize.X <= 0 || aSize.Y <= 0)
+		if (aSize.Width <= 0 || aSize.Height <= 0)
 			return;
 
 		myDesiredResolution = aSize;

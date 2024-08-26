@@ -389,13 +389,12 @@ namespace Atrium::DirectX12
 	void FrameGraphicsContext::SetScissorRect(const Math::RectangleT<int>& aRectangle)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set scissor rect");
-		const Math::Vector2T<int> halfSize = (aRectangle.Size / 2);
 
 		D3D12_RECT rect;
-		rect.left = aRectangle.Center.X - halfSize.X;
-		rect.right = aRectangle.Center.X + halfSize.X;
-		rect.top = aRectangle.Center.Y - halfSize.Y;
-		rect.bottom = aRectangle.Center.Y + halfSize.Y;
+		rect.left = aRectangle.Center().X - (aRectangle.Width / 2);
+		rect.right = aRectangle.Center().X + (aRectangle.Width / 2);
+		rect.top = aRectangle.Center().Y - (aRectangle.Height / 2);
+		rect.bottom = aRectangle.Center().Y + (aRectangle.Height / 2);
 
 		myCommandList->RSSetScissorRects(1, &rect);
 	}
@@ -527,8 +526,8 @@ namespace Atrium::DirectX12
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set viewport and scissor rect");
 		D3D12_VIEWPORT viewport;
-		viewport.Width = static_cast<float>(aScreenSize.X);
-		viewport.Height = static_cast<float>(aScreenSize.Y);
+		viewport.Width = static_cast<float>(aScreenSize.Width);
+		viewport.Height = static_cast<float>(aScreenSize.Height);
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
 		viewport.TopLeftX = 0;
@@ -537,8 +536,8 @@ namespace Atrium::DirectX12
 		D3D12_RECT scissor;
 		scissor.top = 0;
 		scissor.left = 0;
-		scissor.bottom = aScreenSize.Y;
-		scissor.right = aScreenSize.X;
+		scissor.bottom = aScreenSize.Height;
+		scissor.right = aScreenSize.Width;
 
 		myCommandList->RSSetViewports(1, &viewport);
 		myCommandList->RSSetScissorRects(1, &scissor);
@@ -547,13 +546,13 @@ namespace Atrium::DirectX12
 	void FrameGraphicsContext::SetViewport(const Math::Rectangle& aRectangle)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set viewport");
-		const Math::Vector2 topLeft = aRectangle.Center - (aRectangle.Size * 0.5f);
+		const PointT<float> topLeft = aRectangle.TopLeft();
 
 		D3D12_VIEWPORT viewport;
 		viewport.TopLeftX = topLeft.X;
 		viewport.TopLeftY = topLeft.Y;
-		viewport.Width = aRectangle.Size.X;
-		viewport.Height = aRectangle.Size.Y;
+		viewport.Width = aRectangle.Width;
+		viewport.Height = aRectangle.Height;
 		viewport.MinDepth = 0.1f;
 		viewport.MaxDepth = 1.0f;
 

@@ -64,7 +64,7 @@ namespace Atrium::Win32
 
 	void Window::SetSize(const Size& aSize)
 	{
-		RECT rect(0, 0, aSize.X, aSize.Y);
+		RECT rect(0, 0, aSize.Width, aSize.Height);
 		::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
 
 		::SetWindowPos(myWindowHandle, NULL,
