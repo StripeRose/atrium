@@ -328,9 +328,9 @@ namespace Atrium::DirectX12
 				return;
 			}
 
-			const Math::RectangleT<LONG> windowRect = Math::RectangleT<LONG>(
-				PointT<LONG>(windowBounds.left, windowBounds.top),
-				PointT<LONG>(windowBounds.right, windowBounds.bottom)
+			const Rectangle windowRect = Rectangle(
+				Point(windowBounds.left, windowBounds.top),
+				Point(windowBounds.right, windowBounds.bottom)
 			);
 
 			ComPtr<IDXGIOutput> bestOutput;
@@ -349,9 +349,9 @@ namespace Atrium::DirectX12
 					// Get the rectangle bounds of current output.
 					DXGI_OUTPUT_DESC desc;
 					AssertAction(output->GetDesc(&desc), "Get adapter output description.");
-					const Math::RectangleT<LONG> desktopCoordinates = Math::RectangleT<LONG>(
-						PointT<LONG>(desc.DesktopCoordinates.left, desc.DesktopCoordinates.top),
-						PointT<LONG>(desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom));
+					const Rectangle desktopCoordinates = Rectangle(
+						Point(desc.DesktopCoordinates.left, desc.DesktopCoordinates.top),
+						Point(desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom));
 
 					// Compute the intersection
 					auto intersection = desktopCoordinates.Intersection(windowRect);

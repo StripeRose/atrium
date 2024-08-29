@@ -62,11 +62,11 @@ namespace Atrium::Core
 		virtual void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer) = 0;
 		virtual void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture) = 0;
 		virtual void SetPrimitiveTopology(PrimitiveTopology aTopology) = 0;
-		virtual void SetScissorRect(const Math::RectangleT<int>& aRectangle) = 0;
+		virtual void SetScissorRect(const Rectangle& aRectangle) = 0;
 		virtual void SetStencilRef(std::uint32_t aStencilRef) = 0;
 		virtual void SetRenderTargets(const std::vector<std::shared_ptr<Core::RenderTexture>>& someTargets, const std::shared_ptr<Core::RenderTexture>& aDepthTarget) = 0;
 		virtual void SetViewportAndScissorRect(const Size& aScreenSize) = 0;
-		virtual void SetViewport(const Math::Rectangle& aRectangle) = 0;
+		virtual void SetViewport(const RectangleF& aRectangle) = 0;
 	};
 }
 

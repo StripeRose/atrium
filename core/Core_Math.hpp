@@ -9,31 +9,20 @@
 
 namespace Atrium
 {
+	using Matrix = RoseCommon::Math::Matrix3D<float>;
 	using Point = RoseCommon::Math::Point<int>;
+	using PointF = RoseCommon::Math::Point<float>;
+	using Rectangle = RoseCommon::Math::Rectangle<int>;
+	using RectangleF = RoseCommon::Math::Rectangle<float>;
 	using Size = RoseCommon::Math::Size<int>;
+	using SizeF = RoseCommon::Math::Size<float>;
 
-	template <typename T>
-	using PointT = RoseCommon::Math::Point<T>;
-	template <typename T>
-	using SizeT = RoseCommon::Math::Size<T>;
+	using Vector2 = RoseCommon::Math::Vector2<float>;
+	using Vector3 = RoseCommon::Math::Vector3<float>;
+	using Vector4 = RoseCommon::Math::Vector4<float>;
 
 	namespace Math
 	{
 		using namespace RoseCommon::Math;
-
-		using Vector2 = RoseCommon::Math::Vector2<float>;
-		using Vector3 = RoseCommon::Math::Vector3<float>;
-		using Vector4 = RoseCommon::Math::Vector4<float>;
-
-		template <typename T> using Vector2T = RoseCommon::Math::Vector2<T>;
-		template <typename T> using Vector3T = RoseCommon::Math::Vector3<T>;
-		template <typename T> using Vector4T = RoseCommon::Math::Vector4<T>;
-
-		using Rectangle = RoseCommon::Math::Rectangle<float>;
-
-		template <typename T>
-		using RectangleT = RoseCommon::Math::Rectangle<T>;
-
-		using Matrix = RoseCommon::Math::Matrix3D<float>;
 	}
 }

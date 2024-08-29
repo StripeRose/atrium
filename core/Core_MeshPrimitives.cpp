@@ -12,12 +12,12 @@ namespace Atrium::Core
 		MeshPrimitive::Vertex LerpVertex(const MeshPrimitive::Vertex& aVertex, const MeshPrimitive::Vertex& anOtherVertex, const float anAmount)
 		{
 			MeshPrimitive::Vertex vertex;
-			vertex.Position = Math::Vector3::Lerp(aVertex.Position, anOtherVertex.Position, anAmount);
-			vertex.Normal = Math::Vector3::Slerp(aVertex.Normal, anOtherVertex.Normal, anAmount);
-			vertex.UV = Math::Vector2::Lerp(aVertex.UV, anOtherVertex.UV, anAmount);
+			vertex.Position = Vector3::Lerp(aVertex.Position, anOtherVertex.Position, anAmount);
+			vertex.Normal = Vector3::Slerp(aVertex.Normal, anOtherVertex.Normal, anAmount);
+			vertex.UV = Vector2::Lerp(aVertex.UV, anOtherVertex.UV, anAmount);
 
-			vertex.Binormal = Math::Vector3::Slerp(aVertex.Binormal, anOtherVertex.Binormal, anAmount);
-			vertex.Tangent = Math::Vector3::Slerp(aVertex.Tangent, anOtherVertex.Tangent, anAmount);
+			vertex.Binormal = Vector3::Slerp(aVertex.Binormal, anOtherVertex.Binormal, anAmount);
+			vertex.Tangent = Vector3::Slerp(aVertex.Tangent, anOtherVertex.Tangent, anAmount);
 
 			return vertex;
 		}

@@ -2,11 +2,11 @@
 #include "Editor_GUI.hpp"
 
 #if IS_IMGUI_ENABLED
-ImVec2 toVec(const Atrium::Math::Vector2& aVector) { return ImVec2(aVector.X, aVector.Y); }
-Atrium::Math::Vector2 fromVec(const ImVec2& aVector) { return Atrium::Math::Vector2(aVector.x, aVector.y); }
+ImVec2 toVec(const Atrium::Vector2& aVector) { return ImVec2(aVector.X, aVector.Y); }
+Atrium::Vector2 fromVec(const ImVec2& aVector) { return Atrium::Vector2(aVector.x, aVector.y); }
 
-ImVec4 toVec(const Atrium::Math::Vector4& aVector) { return ImVec4(aVector.X, aVector.Y, aVector.Z, aVector.W); }
-Atrium::Math::Vector4 fromVec(const ImVec4& aVector) { return Atrium::Math::Vector4(aVector.x, aVector.y, aVector.z, aVector.w); }
+ImVec4 toVec(const Atrium::Vector4& aVector) { return ImVec4(aVector.X, aVector.Y, aVector.Z, aVector.W); }
+Atrium::Vector4 fromVec(const ImVec4& aVector) { return Atrium::Vector4(aVector.x, aVector.y, aVector.z, aVector.w); }
 
 ImVec4 toColVec(const Atrium::Color& aColor) { return ImVec4(aColor.R, aColor.G, aColor.B, aColor.A); }
 Atrium::Color fromColVec(const ImVec4& aVector) { return Atrium::Color(aVector.w, aVector.x, aVector.y, aVector.z); }

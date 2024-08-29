@@ -23,11 +23,11 @@ namespace Atrium::Core
 	{
 		struct Vertex
 		{
-			Math::Vector3 Position;
-			Math::Vector3 Normal;
-			Math::Vector3 Binormal;
-			Math::Vector3 Tangent;
-			Math::Vector2 UV;
+			Vector3 Position;
+			Vector3 Normal;
+			Vector3 Binormal;
+			Vector3 Tangent;
+			Vector2 UV;
 		};
 
 		struct Triangle

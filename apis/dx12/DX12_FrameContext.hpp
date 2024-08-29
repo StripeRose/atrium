@@ -144,11 +144,11 @@ namespace Atrium::DirectX12
 		void SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer) override;
 		void SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture) override;
 		void SetPrimitiveTopology(Core::PrimitiveTopology aTopology) override;
-		void SetScissorRect(const Math::RectangleT<int>& aRectangle) override;
+		void SetScissorRect(const Rectangle& aRectangle) override;
 		void SetStencilRef(std::uint32_t aStencilRef) override;
 		void SetRenderTargets(const std::vector<std::shared_ptr<Core::RenderTexture>>& someTargets, const std::shared_ptr<Core::RenderTexture>& aDepthTarget) override;
 		void SetViewportAndScissorRect(const Size& aScreenSize) override;
-		void SetViewport(const Math::Rectangle& aRectangle) override;
+		void SetViewport(const RectangleF& aRectangle) override;
 
 	private:
 		inline std::uint32_t GetGroupCount(std::uint32_t threadCount, std::uint32_t groupSize) { return (threadCount + groupSize - 1) / groupSize; }

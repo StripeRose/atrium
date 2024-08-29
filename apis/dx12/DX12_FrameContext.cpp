@@ -386,7 +386,7 @@ namespace Atrium::DirectX12
 		myCommandList->OMSetBlendFactor(color);
 	}
 
-	void FrameGraphicsContext::SetScissorRect(const Math::RectangleT<int>& aRectangle)
+	void FrameGraphicsContext::SetScissorRect(const Rectangle& aRectangle)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set scissor rect");
 
@@ -543,10 +543,10 @@ namespace Atrium::DirectX12
 		myCommandList->RSSetScissorRects(1, &scissor);
 	}
 
-	void FrameGraphicsContext::SetViewport(const Math::Rectangle& aRectangle)
+	void FrameGraphicsContext::SetViewport(const RectangleF& aRectangle)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set viewport");
-		const PointT<float> topLeft = aRectangle.TopLeft();
+		const PointF topLeft = aRectangle.TopLeft();
 
 		D3D12_VIEWPORT viewport;
 		viewport.TopLeftX = topLeft.X;
