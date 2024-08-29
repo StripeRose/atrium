@@ -136,7 +136,7 @@ namespace Atrium::DirectX12
 
 	void SwapChain::SetFilterMode(Core::FilterMode aFilterMode)
 	{
-		for (auto backBuffer : myBackBuffers)
+		for (auto& backBuffer : myBackBuffers)
 			backBuffer->SetFilterMode(aFilterMode);
 	}
 
@@ -192,25 +192,25 @@ namespace Atrium::DirectX12
 
 	void SwapChain::SetWrapMode(Core::TextureWrapMode aWrapMode)
 	{
-		for (auto backBuffer : myBackBuffers)
+		for (auto& backBuffer : myBackBuffers)
 			backBuffer->SetWrapMode(aWrapMode);
 	}
 
 	void SwapChain::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
 	{
-		for (auto backBuffer : myBackBuffers)
+		for (auto& backBuffer : myBackBuffers)
 			backBuffer->SetWrapModeU(aWrapMode);
 	}
 
 	void SwapChain::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
 	{
-		for (auto backBuffer : myBackBuffers)
+		for (auto& backBuffer : myBackBuffers)
 			backBuffer->SetWrapModeV(aWrapMode);
 	}
 
 	void SwapChain::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
 	{
-		for (auto backBuffer : myBackBuffers)
+		for (auto& backBuffer : myBackBuffers)
 			backBuffer->SetWrapModeW(aWrapMode);
 	}
 
