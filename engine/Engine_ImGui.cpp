@@ -152,11 +152,16 @@ namespace Atrium
 			new DirectX12::RenderPassDescriptorHeap(
 				dxDevice,
 				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-				static_cast<uint32_t>(dxAPI.GetFramesInFlightAmount())
+				1
 			)
 		);
+
+		// Imgui internally uses num_frames_in_flight for amount of back-buffers, which should be
+		// one above the amount of actual frames in flight, so increasing the number by 1 to keep it working even with only 1 frame in flight.
+		// Additionally, depending on the swapchain swap-effect, they may require a minimum of 2 or crash on init.
+
 		ImGui_ImplDX12_Init(
-			dxDevice.Get(), static_cast<int>(dxAPI.GetFramesInFlightAmount()),
+			dxDevice.Get(), static_cast<int>(dxAPI.GetFramesInFlightAmount() + 1),
 			DirectX12::ToDXGIFormat(aTargetFormat),
 			myCBV_SRVHeap->GetHeap().Get(),
 			myCBV_SRVHeap->GetHeapCPUStart(),

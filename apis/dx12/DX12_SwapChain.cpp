@@ -7,6 +7,10 @@
 #include "DX12_Diagnostics.hpp"
 #include "DX12_SwapChain.hpp"
 
+// There should be one more back-buffer than the amount of frames in flight,
+// so one can be presenting while the others are currently being processed.
+#define DX12_BACKBUFFER_COUNT (DX12_FRAMES_IN_FLIGHT + 1)
+
 namespace Atrium::DirectX12
 {
 	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Window& aWindow)
@@ -227,7 +231,7 @@ namespace Atrium::DirectX12
 		swapChainDescriptor.Height = windowSize.Height;
 		swapChainDescriptor.Format = ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat()));
 		swapChainDescriptor.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDescriptor.BufferCount = 2;
+		swapChainDescriptor.BufferCount = DX12_BACKBUFFER_COUNT;
 		swapChainDescriptor.SampleDesc.Count = 1;
 		swapChainDescriptor.SampleDesc.Quality = 0;
 		swapChainDescriptor.Scaling = DXGI_SCALING_STRETCH;
@@ -415,7 +419,7 @@ namespace Atrium::DirectX12
 
 		ComPtr<ID3D12Resource> backBufferResource;
 
-		for (unsigned int i = 0; i < 2; ++i)
+		for (unsigned int i = 0; i < DX12_BACKBUFFER_COUNT; ++i)
 		{
 			AssertAction(mySwapChain->GetBuffer(i, IID_PPV_ARGS(backBufferResource.ReleaseAndGetAddressOf())), "Get swapchain back buffer.");
 			//backBufferResource->SetName(BasicString<wchar_t>::Format(L"Backbuffer Texture #%i", i).ToCharArray());
