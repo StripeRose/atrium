@@ -16,7 +16,8 @@ The intent of this project is to create a graphics library and game engine that 
 ### Prerequisites
 
  * Windows 11
- * Visual Studio 2022 (Tracy profiler requires CMake tools to build)
+ * Visual Studio 2022
+ * Python 3 for scripts (Any version should do, but has been tested with 3.12)
 
 ### Adding and setting up the repository
 
@@ -46,8 +47,8 @@ The codebase uses [Tracy](https://github.com/wolfpld/tracy) for profiling on sup
 
 The executable is located at `./tools/tracy-profiler.exe`, which you can run before or while the project is running.
 
-### Building Tracy
-To build the Tracy profiler program, ensure Visual Studio 2022 has been installed with CMake tools, and run `./code/libraries/build_tracy_server.bat`.
+### Building Tracy with CMake
+==To build the Tracy profiler program, ensure Visual Studio 2022 has been installed with CMake tools, and run `./code/libraries/build_tracy_server.bat`.==
 
 ## Structure
 Rough project structure, both current and potential future data.
