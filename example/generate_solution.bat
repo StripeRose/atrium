@@ -1,3 +1,3 @@
 @echo off
 
-"../atrium/tools/Sharpmake/Sharpmake.Application/bin/Release/net6.0/Sharpmake.Application.exe" "/sources('sharpmake.cs')"
+call "%~dp0atrium/tools/generate_sharpmake.bat" "%~dp0sharpmake.cs"

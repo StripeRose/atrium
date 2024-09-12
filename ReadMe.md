@@ -8,7 +8,7 @@ The intent of this project is to create a graphics library and game engine that 
 
 * Modular and split in concrete blocks of functionality.
 * Keep it simple to use. Every part of the code should be relatively self-explanatory.
-* Allow room for expansion to console systems. Getting it to run on a PS Vita would be really cool.
+* Allow room for expansion to other platforms. Getting it to run on a PS Vita would be really cool.
 * Performance, performance, performance.
 
 ## Getting started
@@ -16,7 +16,7 @@ The intent of this project is to create a graphics library and game engine that 
 ### Prerequisites
 
  * Windows 11
- * Visual Studio 2022 (Tracy profiler requires CMake tools to build)
+ * Visual Studio 2022
 
 ### Adding and setting up the repository
 
@@ -27,14 +27,14 @@ In your desired project directory, either:
 
 This will set up the engine in the `./atrium/` directory.
 
-Navigate into the directory, and run `./setup_repo.bat` to clone all submodules in use, and build [Sharpmake](https://github.com/ubisoft/Sharpmake/), the Visual Studio solution generator.
+Navigate into the directory and execute `git submodule update --init --recursive` to clone all dependencies.
 
 ### Create a new project
 
-Copy and rename the `example` directory so it lies next to `atrium`.
+Copy and rename the `example` directory so it lies next to the `atrium` directory.
 The directory contains a basic program that sets up the engine to open a blank window, and exits when you close it.
 
-Once copied, run `generate_solution.bat` from within the directory. This should create a solution to open and run from Visual Studio.
+Once copied, run `generate_solution.bat` from within the directory. If it’s the first run, it will build [Sharpmake](https://github.com/ubisoft/Sharpmake/) and use it to generate a Visual Studio 2022 solution.
 
 ## Example code
 
@@ -47,7 +47,7 @@ The codebase uses [Tracy](https://github.com/wolfpld/tracy) for profiling on sup
 The executable is located at `./tools/tracy-profiler.exe`, which you can run before or while the project is running.
 
 ### Building Tracy
-To build the Tracy profiler program, ensure Visual Studio 2022 has been installed with CMake tools, and run `./code/libraries/build_tracy_server.bat`.
+To build the Tracy profiler program, ensure Visual Studio 2022 has been installed with CMake tools, and run `./libraries/build_tracy_server.bat`.
 
 ## Structure
 Rough project structure, both current and potential future data.

@@ -1,13 +1,9 @@
-@echo off
+@REM @echo off
 
-mkdir "tracy_build"
-cd "./tracy_build"
+mkdir "%~dp0tracy_build"
+cd "%~dp0tracy_build"
 
-call "../../../tools/compile_cmake.bat" "../tracy/profiler/CMakeLists.txt"
-call "../../../tools/compile_solution.bat" "./tracy-profiler.sln" "Release" "x64"
+call "%~dp0../tools/compile_cmake.bat" "%~dp0tracy/profiler/CMakeLists.txt"
+call "%~dp0../tools/compile_solution.bat" "%~dp0tracy_build/tracy-profiler.sln" "Release" "x64"
 
-cd "Release"
-move "tracy-profiler.exe" "../../../../tools/"
-
-cd "../../"
-rd /s /q "./tracy_build"
+move "%~dp0tracy_build\Release\tracy-profiler.exe" "%~dp0..\tools\"
