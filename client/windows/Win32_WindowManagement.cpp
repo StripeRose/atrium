@@ -96,7 +96,7 @@ namespace Atrium::Win32
 			std::placeholders::_3,
 			std::placeholders::_4
 		);
-		
+
 		LONG windowX = 100;
 		LONG windowY = 100;
 		LONG windowWidth = 640;
@@ -170,44 +170,42 @@ namespace Atrium::Win32
 		if (wndProcData.BlockAllMessages)
 			return TRUE;
 
-		// Messages breaking out of the switch block gets the default window proc as well.
-		// If not desired, instead return from the function as a whole.
+		if (!wndProcData.BlockMouse && msg == WM_MOUSEMOVE)
+		{
+			// Todo: Figure out a better way to handle application cursors.
+			::SetCursor(myDefaultCursor);
+		}
 
 		switch (msg)
 		{
-		case WM_MOUSEMOVE:
-			// Todo: Figure out a better way to handle application cursors.
-			::SetCursor(myDefaultCursor);
-			break;
+			case WM_SIZE:
+				SizeChanged.Invoke(*this);
+				break;
 
-		case WM_SIZE:
-			SizeChanged.Invoke(*this);
-			break;
+			case WM_MOVE:
+				Moved.Invoke(*this);
+				break;
 
-		case WM_MOVE:
-			Moved.Invoke(*this);
-			break;
+			case WM_KILLFOCUS:
+				LostFocus.Invoke(*this);
+				break;
 
-		case WM_KILLFOCUS:
-			LostFocus.Invoke(*this);
-			break;
+			case WM_SETFOCUS:
+				GotFocus.Invoke(*this);
+				break;
 
-		case WM_SETFOCUS:
-			GotFocus.Invoke(*this);
-			break;
+			case WM_SYSCOMMAND:
+				if ((wParam & 0xfff0) == SC_KEYMENU)
+					return 0;
+				break;
 
-		case WM_SYSCOMMAND:
-			if ((wParam & 0xfff0) == SC_KEYMENU)
+			case WM_CLOSE:
+				Close();
 				return 0;
-			break;
 
-		case WM_CLOSE:
-			Close();
-			return 0;
-
-		case WM_DESTROY:
-			::PostQuitMessage(0);
-			break;
+			case WM_DESTROY:
+				::PostQuitMessage(0);
+				break;
 		}
 
 		return ::DefWindowProc(hWnd, msg, wParam, lParam);

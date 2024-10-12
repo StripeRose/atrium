@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core_GraphicsAPI.hpp"
+#include "Core_InputDeviceAPI.hpp"
 #include "Core_WindowManagement.hpp"
 
 #include <memory>
@@ -18,6 +19,8 @@ namespace Atrium
 		~EngineInstance();
 
 		Core::GraphicsAPI& GetGraphicsAPI() { return *myGraphicsAPI; }
+
+		Core::InputDeviceAPI& GetInputAPI() { return *myInputDeviceAPI; }
 
 		Core::WindowManager& GetWindowManager() { return *myWindowManager; }
 
@@ -41,6 +44,7 @@ namespace Atrium
 		std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
 		std::unique_ptr<Core::GraphicsAPI> myGraphicsAPI;
+		std::unique_ptr<Core::InputDeviceAPI> myInputDeviceAPI;
 		std::unique_ptr<Core::WindowManager> myWindowManager;
 	};
 }

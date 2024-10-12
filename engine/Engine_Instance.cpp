@@ -31,6 +31,8 @@ namespace Atrium
 			if (myImGuiHandler)
 				myImGuiHandler->MarkFrameStart();
 
+			myInputDeviceAPI->ReportInputEvents(myImGuiHandler->GetAllowedInputs());
+
 			OnLoop.Invoke();
 
 			if (myImGuiHandler)

@@ -2,6 +2,7 @@
 
 #include <Core_GraphicsAPI.hpp>
 #include <Core_GraphicsEnums.hpp>
+#include <Core_InputDevice.hpp>
 #include <Core_WindowManagement.hpp>
 
 #if IS_IMGUI_ENABLED
@@ -15,6 +16,8 @@ namespace Atrium
 	public:
 		ImGuiHandler(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aPrimaryWindow, std::shared_ptr<Core::RenderTexture> aTarget);
 		~ImGuiHandler();
+
+		Core::InputDeviceType GetAllowedInputs() const;
 
 		void MarkFrameStart();
 		void MarkFrameEnd();

@@ -6,6 +6,7 @@ namespace Atrium
     public static class Configuration
     {
         public static string BuildDirectory = "";
+        public static string SolutionDirectory = "";
 
         public static Sharpmake.Platform Platform = Sharpmake.Platform.win32 | Sharpmake.Platform.win64;
         public static Sharpmake.DevEnv DevEnv = Sharpmake.DevEnv.vs2022;
@@ -84,9 +85,8 @@ namespace Atrium
             conf.Options.Add(Sharpmake.Options.Vc.General.TreatWarningsAsErrors.Enable);
             conf.Options.Add(Sharpmake.Options.Vc.General.WarningLevel.Level4);
             conf.Options.Add(Sharpmake.Options.Vc.General.WindowsTargetPlatformVersion.Latest);
-            //conf.Options.Add(Sharpmake.Options.Vc.General.WarningLevel.EnableAllWarnings);
 
-            //conf.Options.Add(Sharpmake.Options.Vc.Compiler.ConformanceMode.Enable);
+            //conf.Options.Add(Sharpmake.Options.Vc.Compiler.RTTI.Enable);
             conf.Options.Add(Sharpmake.Options.Vc.Compiler.CppLanguageStandard.Latest);
             conf.Options.Add(Sharpmake.Options.Vc.Compiler.MultiProcessorCompilation.Enable);
 
