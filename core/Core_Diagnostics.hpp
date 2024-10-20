@@ -8,7 +8,7 @@ namespace Atrium
 }
 
 #pragma warning(push)
-#pragma warning(disable: 26495 4100 6201)
+#pragma warning(disable: 26495 4100 4714 6201)
 #include <tracy/Tracy.hpp>
 #pragma warning(pop)
 
