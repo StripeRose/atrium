@@ -49,13 +49,13 @@ If it doesn't exist, it will attempt to build from the source-code and start aft
 
 ## Acknowledgements
 
-Atrium currently utilizes the following third-party libraries and tools.
+Atrium currently utilizes the following third-party open-source libraries and tools.
 
 - [Sharpmake](https://github.com/ubisoft/Sharpmake/) to generate VS solutions, by Ubisoft
 - [Dear ImGui](https://github.com/ocornut/imgui/) for editor and debug UI, by Omar Cornut and all contributors.
 - [DirectXTex](https://github.com/Microsoft/DirectXTex/) to handle DDS texture files, by Microsoft
 - [Tracy](https://github.com/wolfpld/tracy/) for profiling code, by Bartosz Taudul and all contributors.
 
-Additionally it also uses the following:
+Additionally it uses the following third-party projects:
 
 - [Microsoft GameInput](https://aka.ms/gameinput) as an input-device source, by Microsoft
