@@ -2,13 +2,13 @@
 
 ## About the project
 
-The intent of this project is to create a graphics library and game engine that I can use for other projects of mine and to get a better understanding in how game engines are built.
+The intent of this project is to create a graphics library and game engine that I can use for other projects of mine and to improve my understanding of how game engines are built and structured.
 
 ## Project goals
 
-* Modular and split in concrete blocks of functionality.
 * Keep it simple to use. Every part of the code should be relatively self-explanatory.
 * Allow room for expansion to other platforms. Getting it to run on a PS Vita would be really cool.
+* Modular and split in concrete blocks of functionality.
 * Performance, performance, performance.
 
 ## Getting started
@@ -16,7 +16,7 @@ The intent of this project is to create a graphics library and game engine that 
 ### Prerequisites
 
  * Windows 11
- * Visual Studio 2022
+ * Visual Studio 2022 with CMake
 
 ### Adding and setting up the repository
 
@@ -44,24 +44,18 @@ Further example projects are located in [atrium-examples](https://github.com/Str
 
 The codebase uses [Tracy](https://github.com/wolfpld/tracy) for profiling on supported platforms.
 
-The executable is located at `./tools/tracy-profiler.exe`, which you can run before or while the project is running.
+In order to run it, use the script located at `./tools/run-profiler.bat`.
+If it doesn't exist, it will attempt to build from the source-code and start after.
 
-### Building Tracy
-To build the Tracy profiler program, ensure Visual Studio 2022 has been installed with CMake tools, and run `./libraries/build_tracy_server.bat`.
+## Acknowledgements
 
-## Structure
-Rough project structure, both current and potential future data.
-* `build` — *The target build directory for everything.*
-* `code`
-    * `apis` — *Non-platform specific API implementations.*
-    * `client` — *Individual platform clients and any platform-specific code.*
-    * `core` — *Smaller common interfaces to allow the engine to use any API. Primarily to simplify porting.*
-        * `audio` — *API for interfacing with audio playback and recording devices.*
-        * `graphics` — *API for interfacing with GPUs.*
-        * `input` — *API for interfacing with keyboards, mice, controllers, joysticks and other input devices.*
-        * `platform` — *API for interfacing with platform-specific features such as windows.*
-    * `engine` — *Basics of the engine itself, such as scene and component management.*
-	* `example` — *An empty example project.*
-    * `libraries` — *External code in use by the project.*
-* `config`
-* `tools` — *Any programs or scripts to help build executables or data.*
+Atrium currently utilizes the following third-party libraries and tools.
+
+- [Sharpmake](https://github.com/ubisoft/Sharpmake/) to generate VS solutions, by Ubisoft
+- [Dear ImGui](https://github.com/ocornut/imgui/) for editor and debug UI, by Omar Cornut and all contributors.
+- [DirectXTex](https://github.com/Microsoft/DirectXTex/) to handle DDS texture files, by Microsoft
+- [Tracy](https://github.com/wolfpld/tracy/) for profiling code, by Bartosz Taudul and all contributors.
+
+Additionally it also uses the following:
+
+- [Microsoft GameInput](https://aka.ms/gameinput) as an input-device source, by Microsoft
