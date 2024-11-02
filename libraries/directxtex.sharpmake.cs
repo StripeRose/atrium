@@ -17,5 +17,7 @@ public class DirectXTex : Atrium.ExternalLibraryProject
 
         conf.SolutionFolder = "Atrium/external";
         conf.SourceFilesBuildExclude.Add("BCDirectCompute.cpp");
+
+        conf.IncludePrivatePaths.Add(Path.Combine("[project.SharpmakeCsPath]", "DirectXTex", "Common"));
     }
 }
