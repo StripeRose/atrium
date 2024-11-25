@@ -454,10 +454,15 @@ namespace Atrium::DirectX12
 			return Core::RenderTextureFormat::Default;
 	}
 
-	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
-		: RenderTexture(aDevice, aDescriptor, aColorBuffer, aDepthBuffer)
+	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, const ComPtr<ID3D12Resource>& aColorBuffer, const ComPtr<ID3D12Resource>& aDepthBuffer)
+		: RenderTexture(
+			aDevice,
+			aDescriptor,
+			aColorBuffer ? std::make_shared<GPUResource>(aColorBuffer, D3D12_RESOURCE_STATE_PRESENT) : nullptr,
+			aDepthBuffer ? std::make_shared<GPUResource>(aDepthBuffer) : nullptr
+		)
 	{
-		std::ignore = myResource->UpdateUsageState(D3D12_RESOURCE_STATE_PRESENT);
+
 	}
 
 	void SwapChain::SwapChainBackBuffer::Invalidate()

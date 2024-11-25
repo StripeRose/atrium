@@ -36,8 +36,8 @@ namespace Atrium::DirectX12
 		RenderTexture(
 			Device& aDevice,
 			const Core::RenderTextureDescriptor& aDescriptor,
-			ComPtr<ID3D12Resource> aColorBuffer,
-			ComPtr<ID3D12Resource> aDepthBuffer
+			const std::shared_ptr<GPUResource>& aColorBuffer,
+			const std::shared_ptr<GPUResource>& aDepthBuffer
 		);
 		~RenderTexture() override = default;
 

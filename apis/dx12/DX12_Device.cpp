@@ -2,6 +2,8 @@
 #include "DX12_Diagnostics.hpp"
 #include "DX12_RenderTexture.hpp"
 
+#include "D3D12MemAlloc.h"
+
 #ifdef IS_DEBUG_BUILD
 #include <dxgidebug.h>
 #include <d3d12sdklayers.h>
@@ -24,6 +26,7 @@ namespace Atrium::DirectX12
 		SetupFactory(dxgiFactoryFlags);
 		SetupAdapter();
 		SetupDevice();
+		SetupAllocator();
 		SetupInfoQueue();
 		SetupHeapManager();
 	}
@@ -37,6 +40,27 @@ namespace Atrium::DirectX12
 	{
 		ZoneScoped;
 		myDescriptorHeapManager->MarkFrameStart(aFrameIndex);
+	}
+
+	std::shared_ptr<GPUResource> Device::CreateResource(const D3D12_RESOURCE_DESC* aResourceDesc, D3D12_RESOURCE_STATES anInitialState, const D3D12_CLEAR_VALUE* aClearValue, D3D12_HEAP_TYPE aHeapType)
+	{
+		D3D12MA::ALLOCATION_DESC allocationDesc = {};
+		allocationDesc.HeapType = aHeapType;
+
+		ComPtr<D3D12MA::Allocation> allocation;
+		HRESULT creationResult = myAllocator->CreateResource(
+			&allocationDesc,
+			aResourceDesc,
+			anInitialState,
+			aClearValue,
+			allocation.ReleaseAndGetAddressOf(),
+			IID_NULL, NULL
+		);
+		
+		if (VerifyAction(creationResult, "Create resource"))
+			return std::shared_ptr<GPUResource>(new GPUResource(allocation, anInitialState));
+		else
+			return { };
 	}
 
 #if _DEBUG
@@ -188,6 +212,23 @@ namespace Atrium::DirectX12
 		myDevice->SetName(L"DX12_Device");
 
 		return true;
+	}
+
+	bool Device::SetupAllocator()
+	{
+		ZoneScoped;
+
+		D3D12MA::ALLOCATOR_DESC allocatorDesc = {};
+		allocatorDesc.pDevice = myDevice.Get();
+		allocatorDesc.pAdapter = myAdapter.Get();
+		allocatorDesc.Flags
+			= D3D12MA::ALLOCATOR_FLAG_MSAA_TEXTURES_ALWAYS_COMMITTED
+			| D3D12MA::ALLOCATOR_FLAG_DEFAULT_POOLS_NOT_ZEROED;
+
+		return VerifyAction(
+			D3D12MA::CreateAllocator(&allocatorDesc, myAllocator.ReleaseAndGetAddressOf()),
+			"Create memory allocator"
+		);
 	}
 
 	bool Device::SetupInfoQueue()

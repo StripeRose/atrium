@@ -14,3 +14,6 @@
 	path = libraries/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
+[submodule "libraries/D3D12MemoryAllocator"]
+	path = libraries/D3D12MemoryAllocator
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator.git

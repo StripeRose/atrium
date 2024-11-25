@@ -28,25 +28,7 @@ namespace Atrium::DirectX12
 		bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		bufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		D3D12_HEAP_PROPERTIES uploadHeapProperties;
-		uploadHeapProperties.Type = aHeapType;
-		uploadHeapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-		uploadHeapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-		uploadHeapProperties.CreationNodeMask = 0;
-		uploadHeapProperties.VisibleNodeMask = 0;
-
-		ComPtr<ID3D12Resource> bufferResource;
-		if (!VerifyAction(aDevice.GetDevice()->CreateCommittedResource(
-			&uploadHeapProperties,
-			D3D12_HEAP_FLAG_NONE,
-			&bufferDesc,
-			aUsageState,
-			NULL,
-			IID_PPV_ARGS(bufferResource.ReleaseAndGetAddressOf())),
-			"Create graphic buffer resource."))
-			return nullptr;
-
-		return std::make_shared<GPUResource>(bufferResource, aUsageState);
+		return aDevice.CreateResource(&bufferDesc, aUsageState, NULL, aHeapType);
 	}
 
 	VertexBuffer::VertexBuffer(Device& aDevice, std::uint32_t aVertexCount, std::uint32_t aVertexStride)

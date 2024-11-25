@@ -2,12 +2,15 @@
 
 #include "DX12_ComPtr.hpp"
 #include "DX12_DescriptorHeapManager.hpp"
+#include "DX12_GPUResource.hpp"
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
 #include <map>
 #include <mutex>
+
+namespace D3D12MA { class Allocator; }
 
 namespace Atrium::DirectX12
 {
@@ -27,6 +30,13 @@ namespace Atrium::DirectX12
 
 		void MarkFrameStart(std::uint64_t aFrameIndex);
 
+		std::shared_ptr<GPUResource> CreateResource(
+			const D3D12_RESOURCE_DESC* aResourceDesc,
+			D3D12_RESOURCE_STATES anInitialState,
+			const D3D12_CLEAR_VALUE* aClearValue,
+			D3D12_HEAP_TYPE aHeapType = D3D12_HEAP_TYPE_DEFAULT
+			);
+
 		const DeviceParameters& GetParameters() const { return myParameters; }
 
 		ComPtr<ID3D12Device> GetDevice() { return myDevice; }
@@ -40,6 +50,7 @@ namespace Atrium::DirectX12
 		bool SetupFactory(UINT someDXGIFlags);
 		bool SetupAdapter();
 		bool SetupDevice();
+		bool SetupAllocator();
 		bool SetupInfoQueue();
 		bool FindMaximumFeatureLevel();
 		bool SetupHeapManager();
@@ -48,6 +59,7 @@ namespace Atrium::DirectX12
 		ComPtr<IDXGIFactory4> myDXGIFactory;
 		ComPtr<IDXGIAdapter1> myAdapter;
 		ComPtr<ID3D12Device> myDevice;
+		ComPtr<D3D12MA::Allocator> myAllocator;
 		ComPtr<ID3D12InfoQueue> myInfoQueue;
 		std::unique_ptr<DescriptorHeapManager> myDescriptorHeapManager;
 

@@ -84,8 +84,8 @@ namespace Atrium::DirectX12
 			SwapChainBackBuffer(
 				Device& aDevice,
 				const Core::RenderTextureDescriptor& aDescriptor,
-				ComPtr<ID3D12Resource> aColorBuffer = nullptr,
-				ComPtr<ID3D12Resource> aDepthBuffer = nullptr);
+				const ComPtr<ID3D12Resource>& aColorBuffer = nullptr,
+				const ComPtr<ID3D12Resource>& aDepthBuffer = nullptr);
 
 			void Invalidate();
 		};

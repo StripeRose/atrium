@@ -54,6 +54,7 @@ Atrium currently utilizes the following third-party open-source libraries and to
 - [Sharpmake](https://github.com/ubisoft/Sharpmake/) to generate VS solutions, by Ubisoft
 - [Dear ImGui](https://github.com/ocornut/imgui/) for editor and debug UI, by Omar Cornut and all contributors.
 - [DirectXTex](https://github.com/Microsoft/DirectXTex/) to handle DDS texture files, by Microsoft
+- [D3D12MemoryAllocator](https://gpuopen.com/d3d12-memory-allocator/) to handle DirectX 12 memory pooling efficiently, by Advanced Micro Devices (AMD)
 - [Tracy](https://github.com/wolfpld/tracy/) for profiling code, by Bartosz Taudul and all contributors.
 
 Additionally it uses the following third-party projects:

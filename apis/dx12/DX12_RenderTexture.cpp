@@ -11,15 +11,12 @@ namespace Atrium::DirectX12
 		: RenderTexture(aDevice, aDescriptor, nullptr, nullptr)
 	{ }
 
-	RenderTexture::RenderTexture(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
+	RenderTexture::RenderTexture(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, const std::shared_ptr<GPUResource>& aColorBuffer, const std::shared_ptr<GPUResource>& aDepthBuffer)
 		: myDescriptor(aDescriptor)
 		, myDevicePtr(&aDevice)
+		, myResource(aColorBuffer)
+		, myDepthResource(aDepthBuffer)
 	{
-		if (aColorBuffer)
-			myResource.reset(new GPUResource(aColorBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET));
-		if (aDepthBuffer)
-			myDepthResource.reset(new GPUResource(aDepthBuffer, D3D12_RESOURCE_STATE_DEPTH_WRITE));
-
 		Debug::Assert(
 			(myDescriptor.Size_Width * myDescriptor.Size_Height * myDescriptor.Size_Depth) > 0,
 			"The render-texture has a size."
@@ -45,13 +42,6 @@ namespace Atrium::DirectX12
 
 				colorBufferDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
-				D3D12_HEAP_PROPERTIES defaultHeapProperties;
-				defaultHeapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
-				defaultHeapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-				defaultHeapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-				defaultHeapProperties.CreationNodeMask = 0;
-				defaultHeapProperties.VisibleNodeMask = 0;
-
 				D3D12_CLEAR_VALUE clearValue = {};
 				clearValue.Format = colorBufferDesc.Format;
 				clearValue.Color[0] = 0.1f;
@@ -59,18 +49,13 @@ namespace Atrium::DirectX12
 				clearValue.Color[2] = 0.1f;
 				clearValue.Color[3] = 1.f;
 
-				ComPtr<ID3D12Resource> createdRenderTarget;
-				AssertAction(aDevice.GetDevice()->CreateCommittedResource(
-					&defaultHeapProperties,
-					D3D12_HEAP_FLAG_NONE,
+				myResource = aDevice.CreateResource(
 					&colorBufferDesc,
-					myResource->GetUsageState(),
-					&clearValue,
-					IID_PPV_ARGS(createdRenderTarget.ReleaseAndGetAddressOf())
-				), "Create render texture color buffer.");
+					D3D12_RESOURCE_STATE_RENDER_TARGET,
+					&clearValue
+				);
 
-				createdRenderTarget->SetName(L"Render texture - Color");
-				myResource->SetResource(createdRenderTarget, myResource->GetUsageState());
+				myResource->SetName(L"Render texture - Color");
 			}
 
 			D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = { };
@@ -98,32 +83,19 @@ namespace Atrium::DirectX12
 
 				depthBufferDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
-				D3D12_HEAP_PROPERTIES defaultHeapProperties;
-				defaultHeapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
-				defaultHeapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-				defaultHeapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-				defaultHeapProperties.CreationNodeMask = 0;
-				defaultHeapProperties.VisibleNodeMask = 0;
-
 				D3D12_CLEAR_VALUE clearValue = {};
 				clearValue.Format = depthBufferDesc.Format;
 				clearValue.DepthStencil.Depth = 1.f; // Farthest distance.
 				clearValue.DepthStencil.Stencil = 0u;
 
 				ComPtr<ID3D12Resource> depthBufferResource;
-
-				AssertAction(aDevice.GetDevice()->CreateCommittedResource(
-					&defaultHeapProperties,
-					D3D12_HEAP_FLAG_NONE,
+				myDepthResource = aDevice.CreateResource(
 					&depthBufferDesc,
 					D3D12_RESOURCE_STATE_DEPTH_WRITE,
-					&clearValue,
-					IID_PPV_ARGS(depthBufferResource.ReleaseAndGetAddressOf())
-				), "Create render texture depth buffer.");
+					&clearValue
+				);
 
-				depthBufferResource->SetName(L"Render texture - Depth");
-
-				myDepthResource.reset(new GPUResource(depthBufferResource, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+				myDepthResource->SetName(L"Render texture - Depth");
 			}
 
 			D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};

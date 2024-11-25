@@ -190,10 +190,11 @@ namespace Atrium::DirectX12
 		defaultProperties.CreationNodeMask = 0;
 		defaultProperties.VisibleNodeMask = 0;
 
-		ComPtr<ID3D12Resource> textureResource;
-		myDevice.GetDevice()->CreateCommittedResource(&defaultProperties, D3D12_HEAP_FLAG_NONE, &textureDesc,
-			D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(textureResource.ReleaseAndGetAddressOf()));
-		myResource.reset(new GPUResource(textureResource, D3D12_RESOURCE_STATE_COPY_DEST));
+		myResource = myDevice.CreateResource(
+			&textureDesc,
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			nullptr
+		);
 
 		mySRVHandle = myDevice.GetDescriptorHeapManager().GetShaderResourceViewHeap().GetNewHeapHandle();
 
