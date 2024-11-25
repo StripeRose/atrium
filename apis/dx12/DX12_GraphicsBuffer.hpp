@@ -13,21 +13,24 @@
 namespace Atrium::DirectX12
 {
 	class Device;
-	class GraphicsBuffer : public Core::GraphicsBuffer, public GPUResource
+	class GraphicsBuffer : public Core::GraphicsBuffer
 	{
 	public:
 		GraphicsBuffer(Device& aDevice, std::uint32_t aBufferSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType);
 
+		std::shared_ptr<GPUResource> GetResource() { return myResource; }
+
 		// Implementing GraphicsBuffer
 	public:
-		void* GetNativeBufferPtr() override { return myResource.Get(); }
+		void* GetNativeBufferPtr() override { return myResource.get(); }
 		void SetName(const wchar_t* aName) override { myResource->SetName(aName); }
 
 	protected:
 		std::uint32_t myBufferSize;
+		std::shared_ptr<GPUResource> myResource;
 
 	private:
-		static ComPtr<ID3D12Resource> CreateResource(Device& aDevice, std::uint32_t anAlignedSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType);
+		static std::shared_ptr<GPUResource> CreateResource(Device& aDevice, std::uint32_t anAlignedSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType);
 	};
 
 	class VertexBuffer : public GraphicsBuffer

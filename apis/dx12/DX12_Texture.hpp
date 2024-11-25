@@ -18,7 +18,7 @@ namespace Atrium::DirectX12
 {
 	class Device;
 	class UploadContext;
-	class SimpleTexture : public Core::EditableTexture, public GPUResource, public std::enable_shared_from_this<SimpleTexture>
+	class SimpleTexture : public Core::EditableTexture
 	{
 	public:
 		SimpleTexture(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
@@ -33,6 +33,8 @@ namespace Atrium::DirectX12
 
 		Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel) const override;
 		Color GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel) const override;
+
+		std::shared_ptr<GPUResource> GetResource() { return myResource; }
 
 		void SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const Color& aColor, unsigned int aMipLevel) override;
 
@@ -70,6 +72,7 @@ namespace Atrium::DirectX12
 		std::unique_ptr<DirectX::ScratchImage> myImage;
 		DirectX::TexMetadata myMetadata;
 
+		std::shared_ptr<GPUResource> myResource;
 		DescriptorHeapHandle mySRVHandle;
 	};
 }

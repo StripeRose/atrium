@@ -11,10 +11,9 @@ namespace Atrium::DirectX12
 	{
 		myBufferSize = aBufferSize;
 		myResource = CreateResource(aDevice, myBufferSize, aUsageState, aHeapType);
-		myUsageState = aUsageState;
 	}
 
-	ComPtr<ID3D12Resource> GraphicsBuffer::CreateResource(Device& aDevice, std::uint32_t anAlignedSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType)
+	std::shared_ptr<GPUResource> GraphicsBuffer::CreateResource(Device& aDevice, std::uint32_t anAlignedSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType)
 	{
 		D3D12_RESOURCE_DESC bufferDesc;
 		bufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -47,7 +46,7 @@ namespace Atrium::DirectX12
 			"Create graphic buffer resource."))
 			return nullptr;
 
-		return bufferResource;
+		return std::make_shared<GPUResource>(bufferResource, aUsageState);
 	}
 
 	VertexBuffer::VertexBuffer(Device& aDevice, std::uint32_t aVertexCount, std::uint32_t aVertexStride)
@@ -56,21 +55,20 @@ namespace Atrium::DirectX12
 		myResource->SetName(L"Vertex buffer");
 		myBufferView.StrideInBytes = aVertexStride;
 		myBufferView.SizeInBytes = (aVertexCount * aVertexStride);
-		myBufferView.BufferLocation = GetGPUAddress();
+		myBufferView.BufferLocation = myResource->GetGPUAddress();
 	}
 
 	void VertexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
 		void* mappedBuffer;
-		if (!VerifyAction(myResource->Map(0, nullptr, &mappedBuffer), "Mapping vertex buffer to CPU."))
+		if (!VerifyAction(myResource->GetResource()->Map(0, nullptr, &mappedBuffer), "Mapping vertex buffer to CPU."))
 			return;
 
 		Debug::Assert((aDataSize + aDestinationOffset) <= myBufferSize, "Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.", myBufferSize, aDestinationOffset + aDataSize);
 
 		std::memcpy((char*)mappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
-		myResource->Unmap(0, nullptr);
+		myResource->GetResource()->Unmap(0, nullptr);
 		myBufferView.SizeInBytes = aDataSize;
-		myIsReady = true;
 	}
 
 	IndexBuffer::IndexBuffer(Device& aDevice, std::uint32_t anIndexCount)
@@ -79,21 +77,20 @@ namespace Atrium::DirectX12
 		myResource->SetName(L"Index buffer");
 		myBufferView.SizeInBytes = anIndexCount * sizeof(std::uint32_t);
 		myBufferView.Format = DXGI_FORMAT_R32_UINT;
-		myBufferView.BufferLocation = GetGPUAddress();
+		myBufferView.BufferLocation = myResource->GetGPUAddress();
 	}
 
 	void IndexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
 		void* mappedBuffer;
-		if (!VerifyAction(myResource->Map(0, nullptr, &mappedBuffer), "Mapping index buffer to CPU."))
+		if (!VerifyAction(myResource->GetResource()->Map(0, nullptr, &mappedBuffer), "Mapping index buffer to CPU."))
 			return;
 
 		Debug::Assert((aDataSize + aDestinationOffset) <= myBufferSize, "Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.", myBufferSize, aDestinationOffset + aDataSize);
 
 		std::memcpy((char*)mappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
-		myResource->Unmap(0, nullptr);
+		myResource->GetResource()->Unmap(0, nullptr);
 		myBufferView.SizeInBytes = aDataSize;
-		myIsReady = true;
 	}
 
 	ConstantBuffer::ConstantBuffer(Device& aDevice, std::uint32_t aBufferSize)
@@ -101,21 +98,21 @@ namespace Atrium::DirectX12
 	{
 		myResource->SetName(L"Constant buffer");
 		D3D12_CONSTANT_BUFFER_VIEW_DESC constantBufferViewDescriptor = { };
-		constantBufferViewDescriptor.BufferLocation = myResource->GetGPUVirtualAddress();
+		constantBufferViewDescriptor.BufferLocation = myResource->GetResource()->GetGPUVirtualAddress();
 		constantBufferViewDescriptor.SizeInBytes = myBufferSize;
 
 		myConstantBufferViewHandle = aDevice.GetDescriptorHeapManager().GetConstantBufferViewHeap().GetNewHeapHandle();
 		aDevice.GetDevice()->CreateConstantBufferView(&constantBufferViewDescriptor, myConstantBufferViewHandle.GetCPUHandle());
 
 		myMappedBuffer = nullptr;
-		myIsReady = SUCCEEDED(myResource->Map(0, nullptr, &myMappedBuffer));
+		myResource->GetResource()->Map(0, nullptr, &myMappedBuffer);
 	}
 
 	ConstantBuffer::~ConstantBuffer()
 	{
 		if (myMappedBuffer != nullptr)
 		{
-			myResource->Unmap(0, nullptr);
+			myResource->GetResource()->Unmap(0, nullptr);
 			myMappedBuffer = nullptr;
 		}
 	}
@@ -131,14 +128,14 @@ namespace Atrium::DirectX12
 	{
 		myResource->SetName(L"Upload buffer");
 		myMappedBuffer = nullptr;
-		myIsReady = SUCCEEDED(myResource->Map(0, nullptr, &myMappedBuffer));
+		myResource->GetResource()->Map(0, nullptr, &myMappedBuffer);
 	}
 
 	UploadBuffer::~UploadBuffer()
 	{
 		if (myMappedBuffer != nullptr)
 		{
-			myResource->Unmap(0, nullptr);
+			myResource->GetResource()->Unmap(0, nullptr);
 			myMappedBuffer = nullptr;
 		}
 	}

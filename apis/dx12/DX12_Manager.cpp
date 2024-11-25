@@ -120,11 +120,11 @@ namespace Atrium::DirectX12
 			ZoneScopedN("Set up used swapchains for presenting");
 			for (const auto& swapChain : myResourceManager->GetSwapChains())
 			{
-				if (swapChain->GetGPUResource().GetUsageState() == D3D12_RESOURCE_STATE_PRESENT)
+				if (swapChain->GetGPUResource()->GetUsageState() == D3D12_RESOURCE_STATE_PRESENT)
 					continue; // Swapchain hasn't been drawn to, skip it.
 
 				frameSwapChains.push_back(swapChain);
-				myFrameGraphicsContext->AddBarrier(swapChain->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
+				myFrameGraphicsContext->AddBarrier(*swapChain->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
 			}
 			myFrameGraphicsContext->FlushBarriers();
 		}

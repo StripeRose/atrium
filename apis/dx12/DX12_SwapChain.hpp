@@ -35,8 +35,8 @@ namespace Atrium::DirectX12
 		ID3D12Resource* GetColorResource() const override;
 		ID3D12Resource* GetDepthResource() const override;
 
-		GPUResource& GetGPUResource() override;
-		GPUResource& GetDepthGPUResource() override;
+		std::shared_ptr<GPUResource> GetGPUResource() override;
+		std::shared_ptr<GPUResource> GetDepthGPUResource() override;
 
 		bool IsSwapChain() const override { return true; }
 

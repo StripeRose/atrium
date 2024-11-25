@@ -151,7 +151,7 @@ namespace Atrium::DirectX12
 
 	void* SimpleTexture::GetNativeTexturePtr() const
 	{
-		return myResource.Get();
+		return myResource->GetResource().Get();
 	}
 
 	// Todo: Keep resource if it's still the right setup.
@@ -190,9 +190,10 @@ namespace Atrium::DirectX12
 		defaultProperties.CreationNodeMask = 0;
 		defaultProperties.VisibleNodeMask = 0;
 
-		myUsageState = D3D12_RESOURCE_STATE_COPY_DEST;
+		ComPtr<ID3D12Resource> textureResource;
 		myDevice.GetDevice()->CreateCommittedResource(&defaultProperties, D3D12_HEAP_FLAG_NONE, &textureDesc,
-			myUsageState, nullptr, IID_PPV_ARGS(myResource.ReleaseAndGetAddressOf()));
+			D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(textureResource.ReleaseAndGetAddressOf()));
+		myResource.reset(new GPUResource(textureResource, D3D12_RESOURCE_STATE_COPY_DEST));
 
 		mySRVHandle = myDevice.GetDescriptorHeapManager().GetShaderResourceViewHeap().GetNewHeapHandle();
 
@@ -210,7 +211,7 @@ namespace Atrium::DirectX12
 
 
 		myDevice.GetDevice()->CreateShaderResourceView(
-			myResource.Get(),
+			myResource->GetResource().Get(),
 			srvDescPtr,
 			mySRVHandle.GetCPUHandle()
 		);
@@ -219,13 +220,13 @@ namespace Atrium::DirectX12
 	void SimpleTexture::Apply_BeginImageUpload()
 	{
 		UploadContext::TextureUpload& textureUpload = myUploader.AddTextureUpload();
-		textureUpload.Resource = shared_from_this();
+		textureUpload.Resource = myResource;
 		textureUpload.SubresourceCount = static_cast<std::uint32_t>(myMetadata.mipLevels * myMetadata.arraySize);
 
 		UINT numRows[UploadContext::MaxTextureSubresourceCount];
 		std::uint64_t rowSizeInBytes[UploadContext::MaxTextureSubresourceCount];
 
-		D3D12_RESOURCE_DESC resourceDesc = myResource->GetDesc();
+		D3D12_RESOURCE_DESC resourceDesc = myResource->GetResource()->GetDesc();
 		myDevice.GetDevice()->GetCopyableFootprints(
 			&resourceDesc,
 			0,

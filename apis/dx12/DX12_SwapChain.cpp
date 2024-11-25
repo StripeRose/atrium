@@ -115,12 +115,12 @@ namespace Atrium::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthResource();
 	}
 
-	GPUResource& SwapChain::GetGPUResource()
+	std::shared_ptr<GPUResource> SwapChain::GetGPUResource()
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetGPUResource();
 	}
 
-	GPUResource& SwapChain::GetDepthGPUResource()
+	std::shared_ptr<GPUResource> SwapChain::GetDepthGPUResource()
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthGPUResource();
 	}
@@ -457,13 +457,13 @@ namespace Atrium::DirectX12
 	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
 		: RenderTexture(aDevice, aDescriptor, aColorBuffer, aDepthBuffer)
 	{
-		myUsageState = D3D12_RESOURCE_STATE_PRESENT;
+		std::ignore = myResource->UpdateUsageState(D3D12_RESOURCE_STATE_PRESENT);
 	}
 
 	void SwapChain::SwapChainBackBuffer::Invalidate()
 	{
-		myResource.Reset();
-		myDepthResource = GPUResource();
+		myResource.reset();
+		myDepthResource.reset();
 		myRSVHandle.Invalidate();
 		myDSVHandle.Invalidate();
 	}

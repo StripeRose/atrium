@@ -182,7 +182,7 @@ namespace Atrium::DirectX12
 
 			myBufferUploadHeap->SetData(currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize), static_cast<std::uint32_t>(bufferUploadHeapOffset));
 			TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Buffer upload");
-			CopyBufferRegion(*currentUpload.Resource, 0, *myBufferUploadHeap, bufferUploadHeapOffset, currentUpload.BufferSize);
+			CopyBufferRegion(*currentUpload.Resource, 0, *myBufferUploadHeap->GetResource(), bufferUploadHeapOffset, currentUpload.BufferSize);
 
 			bufferUploadHeapOffset += currentUpload.BufferSize;
 			myBufferUploadsInProgress.push_back(currentUpload.Resource);
@@ -197,7 +197,7 @@ namespace Atrium::DirectX12
 
 			myTextureUploadHeap->SetData(currentUpload.BufferData.get(), static_cast<std::uint32_t>(currentUpload.BufferSize), static_cast<std::uint32_t>(textureUploadHeapOffset));
 			TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Texture upload");
-			CopyTextureRegion(*myTextureUploadHeap, textureUploadHeapOffset, currentUpload.SubresourceLayouts, currentUpload.SubresourceCount, *currentUpload.Resource);
+			CopyTextureRegion(*myTextureUploadHeap->GetResource(), textureUploadHeapOffset, currentUpload.SubresourceLayouts, currentUpload.SubresourceCount, *currentUpload.Resource);
 
 			textureUploadHeapOffset += currentUpload.BufferSize;
 			textureUploadHeapOffset = Align<std::size_t>(textureUploadHeapOffset, 512);
@@ -214,12 +214,6 @@ namespace Atrium::DirectX12
 
 	void UploadContext::ResolveUploads()
 	{
-		for (auto& bufferUploadInProgress : myBufferUploadsInProgress)
-			bufferUploadInProgress->myIsReady = true;
-
-		for (auto& textureUploadInProgress : myTextureUploadsInProgress)
-			textureUploadInProgress->myIsReady = true;
-
 		myBufferUploadsInProgress.clear();
 		myTextureUploadsInProgress.clear();
 	}
@@ -278,7 +272,7 @@ namespace Atrium::DirectX12
 		Debug::Assert(!!aTarget, "ClearColor() requires a target.");
 
 		RenderTarget& target = static_cast<RenderTarget&>(*aTarget);
-		AddBarrier(target.GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+		AddBarrier(*target.GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
 		FlushBarriers();
 
 		D3D12_CPU_DESCRIPTOR_HANDLE handle = target.GetColorView().GetCPUHandle();
@@ -306,7 +300,7 @@ namespace Atrium::DirectX12
 		Debug::Assert(!!aTarget, "ClearDepth() requires a target.");
 
 		RenderTarget& target = static_cast<RenderTarget&>(*aTarget);
-		AddBarrier(target.GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+		AddBarrier(*target.GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
 		FlushBarriers();
 
 		D3D12_CPU_DESCRIPTOR_HANDLE handle = target.GetDepthStencilView().GetCPUHandle();
@@ -501,7 +495,7 @@ namespace Atrium::DirectX12
 		for (std::size_t i = 0; i < someTargets.size(); ++i)
 		{
 			RenderTarget* dxRenderTarget = static_cast<RenderTarget*>(someTargets.at(i).get());
-			AddBarrier(dxRenderTarget->GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+			AddBarrier(*dxRenderTarget->GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
 			colorHandles.at(i) = dxRenderTarget->GetColorView().GetCPUHandle();
 		}
 
@@ -509,7 +503,7 @@ namespace Atrium::DirectX12
 		D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle;
 		if (dxDepthTarget)
 		{
-			AddBarrier(dxDepthTarget->GetDepthGPUResource(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
+			AddBarrier(*dxDepthTarget->GetDepthGPUResource(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
 			depthStencilHandle = dxDepthTarget->GetDepthStencilView().GetCPUHandle();
 		}
 

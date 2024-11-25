@@ -19,14 +19,14 @@ namespace Atrium::DirectX12
 		virtual ID3D12Resource* GetColorResource() const = 0;
 		virtual ID3D12Resource* GetDepthResource() const = 0;
 
-		virtual GPUResource& GetGPUResource() = 0;
-		virtual GPUResource& GetDepthGPUResource() = 0;
+		virtual std::shared_ptr<GPUResource> GetGPUResource() = 0;
+		virtual std::shared_ptr<GPUResource> GetDepthGPUResource() = 0;
 
 		virtual bool IsSwapChain() const = 0;
 	};
 
 	class Device;
-	class RenderTexture : public RenderTarget, public GPUResource
+	class RenderTexture : public RenderTarget
 	{
 	public:
 		RenderTexture(
@@ -46,11 +46,11 @@ namespace Atrium::DirectX12
 		DescriptorHeapHandle GetColorView() const override { return myRSVHandle; }
 		DescriptorHeapHandle GetDepthStencilView() const override { return myDSVHandle; }
 
-		ID3D12Resource* GetColorResource() const override { return myResource.Get(); }
-		ID3D12Resource* GetDepthResource() const override { return myDepthResource.GetResource().Get(); }
+		ID3D12Resource* GetColorResource() const override { return myResource->GetResource().Get(); }
+		ID3D12Resource* GetDepthResource() const override { return myDepthResource->GetResource().Get(); }
 
-		GPUResource& GetGPUResource() override { return *this; }
-		GPUResource& GetDepthGPUResource() override { return myDepthResource; }
+		std::shared_ptr<GPUResource> GetGPUResource() override { return myResource; }
+		std::shared_ptr<GPUResource> GetDepthGPUResource() override { return myDepthResource; }
 
 		bool IsSwapChain() const override { return false; }
 
@@ -59,7 +59,7 @@ namespace Atrium::DirectX12
 		// Implementing RenderTexture
 	public:
 		const Core::RenderTextureDescriptor& GetDescriptor() const override { return myDescriptor; }
-		void* GetNativeDepthBufferPtr() const override { return myDepthResource.GetResource().Get(); }
+		void* GetNativeDepthBufferPtr() const override { return myDepthResource->GetResource().Get(); }
 
 		// Implementing Texture
 	public:
@@ -81,14 +81,15 @@ namespace Atrium::DirectX12
 		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
 		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
 
-		void* GetNativeTexturePtr() const override { return myResource.Get(); }
+		void* GetNativeTexturePtr() const override { return myResource->GetResource().Get(); }
 
 	protected:
 		Device* myDevicePtr;
 
 		Core::RenderTextureDescriptor myDescriptor;
 
-		GPUResource myDepthResource;
+		std::shared_ptr<GPUResource> myResource;
+		std::shared_ptr<GPUResource> myDepthResource;
 
 		DescriptorHeapHandle myRSVHandle;
 		DescriptorHeapHandle myDSVHandle;

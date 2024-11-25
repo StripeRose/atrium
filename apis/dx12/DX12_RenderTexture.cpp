@@ -14,10 +14,11 @@ namespace Atrium::DirectX12
 	RenderTexture::RenderTexture(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, ComPtr<ID3D12Resource> aColorBuffer, ComPtr<ID3D12Resource> aDepthBuffer)
 		: myDescriptor(aDescriptor)
 		, myDevicePtr(&aDevice)
-		, myDepthResource(aDepthBuffer, D3D12_RESOURCE_STATE_DEPTH_WRITE)
 	{
-		myResource = aColorBuffer;
-		myUsageState = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		if (aColorBuffer)
+			myResource.reset(new GPUResource(aColorBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET));
+		if (aDepthBuffer)
+			myDepthResource.reset(new GPUResource(aDepthBuffer, D3D12_RESOURCE_STATE_DEPTH_WRITE));
 
 		Debug::Assert(
 			(myDescriptor.Size_Width * myDescriptor.Size_Height * myDescriptor.Size_Depth) > 0,
@@ -58,16 +59,18 @@ namespace Atrium::DirectX12
 				clearValue.Color[2] = 0.1f;
 				clearValue.Color[3] = 1.f;
 
+				ComPtr<ID3D12Resource> createdRenderTarget;
 				AssertAction(aDevice.GetDevice()->CreateCommittedResource(
 					&defaultHeapProperties,
 					D3D12_HEAP_FLAG_NONE,
 					&colorBufferDesc,
-					myUsageState,
+					myResource->GetUsageState(),
 					&clearValue,
-					IID_PPV_ARGS(myResource.ReleaseAndGetAddressOf())
+					IID_PPV_ARGS(createdRenderTarget.ReleaseAndGetAddressOf())
 				), "Create render texture color buffer.");
 
-				myResource->SetName(L"Render texture - Color");
+				createdRenderTarget->SetName(L"Render texture - Color");
+				myResource->SetResource(createdRenderTarget, myResource->GetUsageState());
 			}
 
 			D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = { };
@@ -75,12 +78,12 @@ namespace Atrium::DirectX12
 			rtvDesc.ViewDimension = ToRTVTextureDimension(myDescriptor.Dimension);
 
 			myRSVHandle = aDevice.GetDescriptorHeapManager().GetRTVHeap().GetNewHeapHandle();
-			aDevice.GetDevice()->CreateRenderTargetView(myResource.Get(), &rtvDesc, myRSVHandle.GetCPUHandle());
+			aDevice.GetDevice()->CreateRenderTargetView(myResource->GetResource().Get(), &rtvDesc, myRSVHandle.GetCPUHandle());
 		}
 
 		if (myDescriptor.DepthStencilFormat != Core::GraphicsFormat::None)
 		{
-			if (!myDepthResource.GetResource())
+			if (!myDepthResource)
 			{
 				D3D12_RESOURCE_DESC depthBufferDesc = { };
 				depthBufferDesc.Dimension = ToD3DTextureDimension(myDescriptor.Dimension);
@@ -120,7 +123,7 @@ namespace Atrium::DirectX12
 
 				depthBufferResource->SetName(L"Render texture - Depth");
 
-				myDepthResource = GPUResource(depthBufferResource, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+				myDepthResource.reset(new GPUResource(depthBufferResource, D3D12_RESOURCE_STATE_DEPTH_WRITE));
 			}
 
 			D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
@@ -128,7 +131,7 @@ namespace Atrium::DirectX12
 			dsvDesc.ViewDimension = ToDSVTextureDimension(myDescriptor.Dimension);
 
 			myDSVHandle = aDevice.GetDescriptorHeapManager().GetDSVHeap().GetNewHeapHandle();
-			aDevice.GetDevice()->CreateDepthStencilView(myDepthResource.GetResource().Get(), &dsvDesc, myDSVHandle.GetCPUHandle());
+			aDevice.GetDevice()->CreateDepthStencilView(myDepthResource->GetResource().Get(), &dsvDesc, myDSVHandle.GetCPUHandle());
 		}
 	}
 
@@ -145,7 +148,7 @@ namespace Atrium::DirectX12
 	void RenderTexture::SetName(const wchar_t* aName)
 	{
 		myResource->SetName((std::wstring(aName) + L" - Color").c_str());
-		myDepthResource.GetResource()->SetName((std::wstring(aName) + L" - Depth").c_str());
+		myDepthResource->GetResource()->SetName((std::wstring(aName) + L" - Depth").c_str());
 	}
 
 	void RenderTexture::SetFilterMode(Core::FilterMode aFilterMode)
