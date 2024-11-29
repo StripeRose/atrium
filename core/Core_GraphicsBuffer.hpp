@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rose-common/Enum.hpp>
+
 #include <memory>
 #include <span>
 
@@ -8,14 +10,19 @@ namespace Atrium::Core
 	class GraphicsBuffer
 	{
 	public:
-		enum class Target { Constant, Index, Vertex };
+		enum class Target
+		{
+			None = 0,
+			Constant = 1 << 0,
+			Index = 1 << 1,
+			Vertex = 1 << 2
+		};
 
 	public:
 		virtual ~GraphicsBuffer() = default;
 
 		virtual std::uint32_t GetCount() const = 0;
 		virtual std::uint32_t GetStride() const = 0;
-		virtual Target GetTarget() const = 0;
 
 		virtual void* GetNativeBufferPtr() = 0;
 
@@ -29,3 +36,5 @@ namespace Atrium::Core
 		virtual void SetName(const wchar_t* aName) = 0;
 	};
 }
+
+ENUM_FLAGS(Atrium::Core::GraphicsBuffer::Target);

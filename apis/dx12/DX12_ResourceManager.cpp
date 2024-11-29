@@ -2,6 +2,7 @@
 
 #include "DX12_DDS.hpp"
 #include "DX12_Device.hpp"
+#include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Manager.hpp"
 
 namespace Atrium::DirectX12
@@ -30,17 +31,7 @@ namespace Atrium::DirectX12
 	{
 		ZoneScoped;
 
-		switch (aTarget)
-		{
-		case Core::GraphicsBuffer::Target::Vertex:
-			return std::shared_ptr<Core::GraphicsBuffer>(new VertexBuffer(myManager.GetDevice(), aCount, aStride));
-		case Core::GraphicsBuffer::Target::Index:
-			return std::shared_ptr<Core::GraphicsBuffer>(new IndexBuffer(myManager.GetDevice(), aCount));
-		case Core::GraphicsBuffer::Target::Constant:
-			return std::shared_ptr<Core::GraphicsBuffer>(new ConstantBuffer(myManager.GetDevice(), aCount * aStride));
-		default:
-			return nullptr;
-		}
+		return std::shared_ptr<Core::GraphicsBuffer>(new GraphicsBuffer(myManager.GetDevice(), aTarget, aCount, aStride));
 	}
 
 	std::shared_ptr<Core::PipelineState> ResourceManager::CreatePipelineState(const Core::PipelineStateDescription& aPipelineState)

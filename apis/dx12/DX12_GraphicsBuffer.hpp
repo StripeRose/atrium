@@ -16,93 +16,55 @@ namespace Atrium::DirectX12
 	class GraphicsBuffer : public Core::GraphicsBuffer
 	{
 	public:
-		GraphicsBuffer(Device& aDevice, std::uint32_t aBufferSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType);
+		GraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
 
 		std::shared_ptr<GPUResource> GetResource() { return myResource; }
 
-		// Implementing GraphicsBuffer
+		const DescriptorHeapHandle GetConstantViewHandle() const { return myConstantViewDescriptor; }
+		std::optional<D3D12_INDEX_BUFFER_VIEW> GetIndexView() const { return myIndexView; }
+		std::optional<D3D12_VERTEX_BUFFER_VIEW> GetVertexView() const { return myVertexView; }
+
+		// Implementing Core::GraphicsBuffer
 	public:
-		void* GetNativeBufferPtr() override { return myResource.get(); }
-		void SetName(const wchar_t* aName) override { myResource->SetName(aName); }
+		std::uint32_t GetCount() const override { return myCount; }
+		std::uint32_t GetStride() const override { return myStride; }
+
+		void* GetNativeBufferPtr() override;
+
+		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
+		void SetName(const wchar_t* aName) override;
 
 	protected:
-		std::uint32_t myBufferSize;
+		GraphicsBuffer(std::uint32_t aCount, std::uint32_t aStride);
+
+		std::uint32_t AlignSize(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
+		void CreateConstantView(Device& aDevice, std::uint32_t anAlignedSize);
+		void CreateIndexView(std::uint32_t aCount, std::uint32_t aStride);
+		void CreateResource(Device& aDevice, D3D12_RESOURCE_STATES aUsageState, std::uint32_t anAlignedSize);
+		void CreateVertexView(std::uint32_t aCount, std::uint32_t aStride);
+
+		void Map();
+		void Unmap();
+		void InternalSetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset);
+
+	private:
 		std::shared_ptr<GPUResource> myResource;
 
-	private:
-		static std::shared_ptr<GPUResource> CreateResource(Device& aDevice, std::uint32_t anAlignedSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType);
-	};
+		std::optional<D3D12_INDEX_BUFFER_VIEW> myIndexView;
+		std::optional<D3D12_VERTEX_BUFFER_VIEW> myVertexView;
+		DescriptorHeapHandle myConstantViewDescriptor;
 
-	class VertexBuffer : public GraphicsBuffer
-	{
-	public:
-		VertexBuffer(Device& aDevice, std::uint32_t aVertexCount, std::uint32_t aVertexStride);
-
-		const D3D12_VERTEX_BUFFER_VIEW& GetBufferView() const { return myBufferView; }
-
-		// Implementing GraphicsBuffer
-	public:
-		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
-
-		std::uint32_t GetCount() const override { return myBufferView.SizeInBytes / myBufferView.StrideInBytes; }
-		std::uint32_t GetStride() const override { return myBufferView.StrideInBytes; }
-		Target GetTarget() const override { return Target::Vertex; }
-
-	private:
-		D3D12_VERTEX_BUFFER_VIEW myBufferView;
-	};
-
-	class IndexBuffer : public GraphicsBuffer
-	{
-	public:
-		IndexBuffer(Device& aDevice, std::uint32_t anIndexCount);
-
-		const D3D12_INDEX_BUFFER_VIEW GetBufferView() const { return myBufferView; }
-
-		// Implementing GraphicsBuffer
-	public:
-		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
-
-		std::uint32_t GetCount() const override { return myBufferView.SizeInBytes / GetStride(); }
-		std::uint32_t GetStride() const override { return sizeof(std::uint32_t); }
-		Target GetTarget() const override { return Target::Index; }
-
-	private:
-		D3D12_INDEX_BUFFER_VIEW myBufferView;
-	};
-
-	class ConstantBuffer : public GraphicsBuffer
-	{
-	public:
-		ConstantBuffer(Device& aDevice, std::uint32_t aBufferSize);
-		~ConstantBuffer() override;
-
-		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
-		const DescriptorHeapHandle& GetViewHandle() const { return myConstantBufferViewHandle; }
-
-		std::uint32_t GetCount() const { return 1; }
-		std::uint32_t GetStride() const { return myBufferSize; }
-		Target GetTarget() const override { return Target::Constant; }
-
-	private:
 		void* myMappedBuffer;
-
-		DescriptorHeapHandle myConstantBufferViewHandle;
+		std::uint32_t myCount;
+		std::uint32_t myStride;
 	};
 
 	class UploadBuffer : public GraphicsBuffer
 	{
 	public:
 		UploadBuffer(Device& aDevice, std::uint32_t aBufferSize);
-		~UploadBuffer() override;
+		~UploadBuffer();
 
 		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
-
-		std::uint32_t GetCount() const { return 1; }
-		std::uint32_t GetStride() const { return myBufferSize; }
-		Target GetTarget() const override { return Target::Constant; }
-
-	private:
-		void* myMappedBuffer;
 	};
 }

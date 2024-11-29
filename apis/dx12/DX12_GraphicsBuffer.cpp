@@ -7,13 +7,85 @@
 
 namespace Atrium::DirectX12
 {
-	GraphicsBuffer::GraphicsBuffer(Device& aDevice, std::uint32_t aBufferSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType)
+	GraphicsBuffer::GraphicsBuffer(std::uint32_t aCount, std::uint32_t aStride)
+		: myCount(aCount)
+		, myStride(aStride)
 	{
-		myBufferSize = aBufferSize;
-		myResource = CreateResource(aDevice, myBufferSize, aUsageState, aHeapType);
+
 	}
 
-	std::shared_ptr<GPUResource> GraphicsBuffer::CreateResource(Device& aDevice, std::uint32_t anAlignedSize, D3D12_RESOURCE_STATES aUsageState, D3D12_HEAP_TYPE aHeapType)
+	GraphicsBuffer::GraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+	{
+		const std::uint32_t alignedSize = AlignSize(aTarget, aCount, aStride);
+
+		D3D12_RESOURCE_STATES usageState = D3D12_RESOURCE_STATE_GENERIC_READ;
+
+		if ((aTarget & Core::GraphicsBuffer::Target::Index) != Core::GraphicsBuffer::Target::None)
+			usageState |= D3D12_RESOURCE_STATE_INDEX_BUFFER;
+
+		CreateResource(aDevice, usageState, alignedSize);
+
+		if ((aTarget & Core::GraphicsBuffer::Target::Vertex) != Core::GraphicsBuffer::Target::None)
+			CreateVertexView(aCount, aStride);
+
+		if ((aTarget & Core::GraphicsBuffer::Target::Index) != Core::GraphicsBuffer::Target::None)
+			CreateIndexView(aCount, aStride);
+
+		if ((aTarget & Core::GraphicsBuffer::Target::Constant) != Core::GraphicsBuffer::Target::None)
+			CreateConstantView(aDevice, alignedSize);
+	}
+
+	void* GraphicsBuffer::GetNativeBufferPtr()
+	{
+		if (myResource)
+			return myResource->GetResource().Get();
+		else
+			return nullptr;
+	}
+
+	void GraphicsBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
+	{
+		Map();
+		InternalSetData(aDataPtr, aDataSize, aDestinationOffset);
+		Unmap();
+	}
+
+	void GraphicsBuffer::SetName(const wchar_t* aName)
+	{
+		if (myResource)
+			myResource->SetName(aName);
+	}
+
+	std::uint32_t GraphicsBuffer::AlignSize(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+	{
+		if ((aTarget & Core::GraphicsBuffer::Target::Constant) != Core::GraphicsBuffer::Target::None)
+			return Align<std::uint32_t>(aCount * aStride, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+		else
+			return aCount * aStride;
+	}
+
+	void GraphicsBuffer::CreateConstantView(Device& aDevice, std::uint32_t anAlignedSize)
+	{
+		D3D12_CONSTANT_BUFFER_VIEW_DESC constantBufferViewDescriptor = { };
+		constantBufferViewDescriptor.BufferLocation = myResource->GetResource()->GetGPUVirtualAddress();
+		constantBufferViewDescriptor.SizeInBytes = anAlignedSize;
+
+		myConstantViewDescriptor = aDevice.GetDescriptorHeapManager().GetConstantBufferViewHeap().GetNewHeapHandle();
+		aDevice.GetDevice()->CreateConstantBufferView(&constantBufferViewDescriptor, myConstantViewDescriptor.GetCPUHandle());
+	}
+
+	void GraphicsBuffer::CreateIndexView(std::uint32_t aCount, std::uint32_t aStride)
+	{
+		Debug::Assert(sizeof(std::uint32_t) == aStride, "Assumes indices to be uint32.");
+
+		D3D12_INDEX_BUFFER_VIEW indexView;
+		indexView.SizeInBytes = aCount * sizeof(std::uint32_t);
+		indexView.Format = DXGI_FORMAT_R32_UINT;
+		indexView.BufferLocation = myResource->GetGPUAddress();
+		myIndexView = indexView;
+	}
+
+	void GraphicsBuffer::CreateResource(Device& aDevice, D3D12_RESOURCE_STATES aUsageState, std::uint32_t anAlignedSize)
 	{
 		D3D12_RESOURCE_DESC bufferDesc;
 		bufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -28,103 +100,65 @@ namespace Atrium::DirectX12
 		bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		bufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		return aDevice.CreateResource(&bufferDesc, aUsageState, NULL, aHeapType);
+		myResource = aDevice.CreateResource(&bufferDesc, aUsageState, NULL, D3D12_HEAP_TYPE_UPLOAD);
 	}
 
-	VertexBuffer::VertexBuffer(Device& aDevice, std::uint32_t aVertexCount, std::uint32_t aVertexStride)
-		: GraphicsBuffer(aDevice, aVertexCount * aVertexStride, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD)
+	void GraphicsBuffer::CreateVertexView(std::uint32_t aCount, std::uint32_t aStride)
 	{
-		myResource->SetName(L"Vertex buffer");
-		myBufferView.StrideInBytes = aVertexStride;
-		myBufferView.SizeInBytes = (aVertexCount * aVertexStride);
-		myBufferView.BufferLocation = myResource->GetGPUAddress();
+		D3D12_VERTEX_BUFFER_VIEW vertexView;
+		vertexView.StrideInBytes = aStride;
+		vertexView.SizeInBytes = (aCount * aStride);
+		vertexView.BufferLocation = myResource->GetGPUAddress();
+		myVertexView = vertexView;
 	}
 
-	void VertexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
+	void GraphicsBuffer::Map()
 	{
-		void* mappedBuffer;
-		if (!VerifyAction(myResource->GetResource()->Map(0, nullptr, &mappedBuffer), "Mapping vertex buffer to CPU."))
-			return;
+		VerifyAction(
+			myResource->GetResource()->Map(0, nullptr, &myMappedBuffer),
+			"Mapping vertex buffer to CPU.");
+	}
 
-		Debug::Assert((aDataSize + aDestinationOffset) <= myBufferSize, "Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.", myBufferSize, aDestinationOffset + aDataSize);
-
-		std::memcpy((char*)mappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
+	void GraphicsBuffer::Unmap()
+	{
 		myResource->GetResource()->Unmap(0, nullptr);
-		myBufferView.SizeInBytes = aDataSize;
-	}
-
-	IndexBuffer::IndexBuffer(Device& aDevice, std::uint32_t anIndexCount)
-		: GraphicsBuffer(aDevice, anIndexCount * sizeof(std::uint32_t), D3D12_RESOURCE_STATE_INDEX_BUFFER, D3D12_HEAP_TYPE_UPLOAD)
-	{
-		myResource->SetName(L"Index buffer");
-		myBufferView.SizeInBytes = anIndexCount * sizeof(std::uint32_t);
-		myBufferView.Format = DXGI_FORMAT_R32_UINT;
-		myBufferView.BufferLocation = myResource->GetGPUAddress();
-	}
-
-	void IndexBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
-	{
-		void* mappedBuffer;
-		if (!VerifyAction(myResource->GetResource()->Map(0, nullptr, &mappedBuffer), "Mapping index buffer to CPU."))
-			return;
-
-		Debug::Assert((aDataSize + aDestinationOffset) <= myBufferSize, "Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.", myBufferSize, aDestinationOffset + aDataSize);
-
-		std::memcpy((char*)mappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
-		myResource->GetResource()->Unmap(0, nullptr);
-		myBufferView.SizeInBytes = aDataSize;
-	}
-
-	ConstantBuffer::ConstantBuffer(Device& aDevice, std::uint32_t aBufferSize)
-		: GraphicsBuffer(aDevice, Align<std::uint32_t>(aBufferSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD)
-	{
-		myResource->SetName(L"Constant buffer");
-		D3D12_CONSTANT_BUFFER_VIEW_DESC constantBufferViewDescriptor = { };
-		constantBufferViewDescriptor.BufferLocation = myResource->GetResource()->GetGPUVirtualAddress();
-		constantBufferViewDescriptor.SizeInBytes = myBufferSize;
-
-		myConstantBufferViewHandle = aDevice.GetDescriptorHeapManager().GetConstantBufferViewHeap().GetNewHeapHandle();
-		aDevice.GetDevice()->CreateConstantBufferView(&constantBufferViewDescriptor, myConstantBufferViewHandle.GetCPUHandle());
-
 		myMappedBuffer = nullptr;
-		myResource->GetResource()->Map(0, nullptr, &myMappedBuffer);
 	}
 
-	ConstantBuffer::~ConstantBuffer()
+	void GraphicsBuffer::InternalSetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
-		if (myMappedBuffer != nullptr)
-		{
-			myResource->GetResource()->Unmap(0, nullptr);
-			myMappedBuffer = nullptr;
-		}
-	}
+		Debug::Assert(
+			(aDataSize + aDestinationOffset) <= (myStride * myCount),
+			"Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.",
+			myStride * myCount,
+			aDestinationOffset + aDataSize);
 
-	void ConstantBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
-	{
-		Debug::Assert((aDataSize + aDestinationOffset) <= myBufferSize, "Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.", myBufferSize, aDestinationOffset + aDataSize);
 		std::memcpy((char*)myMappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
+
+		if (myIndexView)
+			myIndexView.value().SizeInBytes = aDataSize;
+
+		if (myVertexView)
+			myVertexView.value().SizeInBytes = aDataSize;
 	}
 
 	UploadBuffer::UploadBuffer(Device& aDevice, std::uint32_t aBufferSize)
-		: GraphicsBuffer(aDevice, Align<std::uint32_t>(aBufferSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_HEAP_TYPE_UPLOAD)
+		: GraphicsBuffer(1, aBufferSize)
 	{
-		myResource->SetName(L"Upload buffer");
-		myMappedBuffer = nullptr;
-		myResource->GetResource()->Map(0, nullptr, &myMappedBuffer);
+		const std::uint32_t alignedSize = AlignSize(Core::GraphicsBuffer::Target::Constant, 1, aBufferSize);
+
+		CreateResource(aDevice, D3D12_RESOURCE_STATE_GENERIC_READ, alignedSize);
+
+		Map();
 	}
 
 	UploadBuffer::~UploadBuffer()
 	{
-		if (myMappedBuffer != nullptr)
-		{
-			myResource->GetResource()->Unmap(0, nullptr);
-			myMappedBuffer = nullptr;
-		}
+		Unmap();
 	}
 
 	void UploadBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
-		Debug::Assert((aDataSize + aDestinationOffset) <= myBufferSize, "Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.", myBufferSize, aDestinationOffset + aDataSize);
-		std::memcpy((std::uint8_t*)myMappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
+		InternalSetData(aDataPtr, aDataSize, aDestinationOffset);
 	}
 }

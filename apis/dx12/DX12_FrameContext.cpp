@@ -153,8 +153,11 @@ namespace Atrium::DirectX12
 	{
 		for (unsigned int i = 0; i < DX12_FRAMES_IN_FLIGHT; ++i)
 			myFrameCommandAllocators[i]->SetName(L"Upload context command allocator");
+
 		myCommandList->SetName(L"Upload context command list");
-		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_COPY, "Queue is the correcct type.");
+
+		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_COPY, "Using copy queue.");
+
 		myBufferUploadHeap.reset(new UploadBuffer(aDevice, 10 * 1024 * 1024));
 		myTextureUploadHeap.reset(new UploadBuffer(aDevice, 40 * 1024 * 1024));
 	}
@@ -433,9 +436,19 @@ namespace Atrium::DirectX12
 
 	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot)
 	{
+		Debug::Assert(!!aVertexBuffer, "Assumes a valid buffer.");
+
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set vertex buffer");
-		const VertexBuffer& vertexBuffer = static_cast<const VertexBuffer&>(*aVertexBuffer);
-		myCommandList->IASetVertexBuffers(aSlot, 1, &vertexBuffer.GetBufferView());
+
+		if (std::optional<D3D12_VERTEX_BUFFER_VIEW> bufferView = static_cast<const GraphicsBuffer*>(aVertexBuffer.get())->GetVertexView())
+		{
+			myCommandList->IASetVertexBuffers(aSlot, 1, &bufferView.value());
+		}
+		else
+		{
+			Debug::LogError("Tried to set graphics-buffer as a vertex-buffer, but it wasn't valid for that purpose.");
+			return;
+		}
 	}
 
 	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer)
@@ -588,13 +601,16 @@ namespace Atrium::DirectX12
 
 			for (std::size_t i = 0; i < rootParameterBuffers.second.size(); ++i)
 			{
-				ConstantBuffer* constantBuffer = static_cast<ConstantBuffer*>(rootParameterBuffers.second.at(i).get());
-				Debug::Assert(constantBuffer, "Trying to apply null buffers, but no handling for that currently exists.");
+				GraphicsBuffer* graphicsBuffer = static_cast<GraphicsBuffer*>(rootParameterBuffers.second.at(i).get());
+				Debug::Assert(graphicsBuffer, "Assumes non-null buffers.");
+
+				const DescriptorHeapHandle descriptorHandle = graphicsBuffer->GetConstantViewHandle();
+				Debug::Assert(descriptorHandle.IsValid(), "Assumes buffer with a valid constant-view handle.");
 
 				myDevice.GetDevice()->CopyDescriptorsSimple(
 					1,
 					heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i)),
-					constantBuffer->GetViewHandle().GetCPUHandle(),
+					descriptorHandle.GetCPUHandle(),
 					renderPassHeap.GetHeapType()
 				);
 			}
