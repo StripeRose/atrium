@@ -17,6 +17,17 @@ namespace Atrium::DirectX12
 
 	GraphicsBuffer::GraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 	{
+		static constexpr Core::GraphicsBuffer::Target SupportedTargets
+			= Core::GraphicsBuffer::Target::Constant
+			| Core::GraphicsBuffer::Target::Index
+			| Core::GraphicsBuffer::Target::Vertex
+			;
+
+		Debug::Assert(
+			(aTarget & ~SupportedTargets) == Core::GraphicsBuffer::Target::None,
+			"Supported targets: Constant, Index, Vertex"
+		);
+
 		const std::uint32_t alignedSize = AlignSize(aTarget, aCount, aStride);
 
 		D3D12_RESOURCE_STATES usageState = D3D12_RESOURCE_STATE_GENERIC_READ;
