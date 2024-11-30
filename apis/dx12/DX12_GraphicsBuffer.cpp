@@ -10,6 +10,7 @@ namespace Atrium::DirectX12
 	GraphicsBuffer::GraphicsBuffer(std::uint32_t aCount, std::uint32_t aStride)
 		: myCount(aCount)
 		, myStride(aStride)
+		, myMappedBuffer(nullptr)
 	{
 
 	}
