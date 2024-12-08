@@ -115,7 +115,7 @@ namespace Atrium::DirectX12
 	public:
 		FrameGraphicsContext(Device& aDevice, CommandQueue& aCommandQueue);
 
-		void BeginZone(ContextZone& aZoneScope
+		void BeginProfileZone(ProfileContextZone& aZoneScope
 #ifdef TRACY_ENABLE
 			, const tracy::SourceLocationData& aLocation
 #endif

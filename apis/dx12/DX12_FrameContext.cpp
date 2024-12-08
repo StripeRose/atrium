@@ -232,7 +232,7 @@ namespace Atrium::DirectX12
 		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_DIRECT, "Queue is the correcct type.");
 	}
 
-	void FrameGraphicsContext::BeginZone(ContextZone& aZoneScope
+	void FrameGraphicsContext::BeginProfileZone(ProfileContextZone& aZoneScope
 #ifdef TRACY_ENABLE
 		, const tracy::SourceLocationData& aLocation
 #endif
@@ -241,7 +241,7 @@ namespace Atrium::DirectX12
 		std::memset(aZoneScope.Data, 0, sizeof(aZoneScope.Data));
 
 #ifdef TRACY_ENABLE
-		static_assert(sizeof(ContextZone::Data) >= sizeof(tracy::D3D12ZoneScope));
+		static_assert(sizeof(ProfileContextZone::Data) >= sizeof(tracy::D3D12ZoneScope));
 
 		std::construct_at(
 			reinterpret_cast<tracy::D3D12ZoneScope*>(&aZoneScope.Data[0]),
@@ -251,7 +251,7 @@ namespace Atrium::DirectX12
 			true
 			);
 
-		aZoneScope.Destructor = [](ContextZone& aZone) {
+		aZoneScope.Destructor = [](ProfileContextZone& aZone) {
 				tracy::D3D12ZoneScope* scope = reinterpret_cast<tracy::D3D12ZoneScope*>(&aZone.Data[0]);
 				scope->~D3D12ZoneScope();
 			};
@@ -303,7 +303,7 @@ namespace Atrium::DirectX12
 		Debug::Assert(!!aTarget, "ClearDepth() requires a target.");
 
 		RenderTarget& target = static_cast<RenderTarget&>(*aTarget);
-		AddBarrier(*target.GetGPUResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+		AddBarrier(*target.GetDepthGPUResource(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
 		FlushBarriers();
 
 		D3D12_CPU_DESCRIPTOR_HANDLE handle = target.GetDepthStencilView().GetCPUHandle();
