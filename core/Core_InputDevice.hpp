@@ -9,6 +9,9 @@
 
 namespace Atrium::Core
 {
+	struct InputEvent;
+	struct TextInputEvent;
+
 	enum class InputDeviceType : std::uint8_t
 	{
 		Unknown  = 0x00,
@@ -20,17 +23,43 @@ namespace Atrium::Core
 		Other    = 0x80
 	};
 
-	struct InputEvent;
-	struct TextInputEvent;
+	/**
+	 * @brief A basic device capable of listening to inputs.
+	 */
 	class InputDevice
 	{
 	public:
 		virtual ~InputDevice() = default;
 
+		//--------------------------------------------------
+		// * Properties
+		//--------------------------------------------------
+		#pragma region Properties
+
+		/**
+		 * @brief Slot for listening to input events from the device.
+		 */
+		RoseCommon::EventSlot<const Core::InputEvent&> OnInput;
+
+		/**
+		 * @brief Slot for listening to text input events from the device.
+		 */
+		RoseCommon::EventSlot<const Core::TextInputEvent&> OnTextInput;
+
+		#pragma endregion
+
+		//--------------------------------------------------
+		// * Methods
+		//--------------------------------------------------
+		#pragma region Methods
+
+		/**
+		 * @brief Check whether the device is connected and usable.
+		 * @return True if the device is connected and usable.
+		 */
 		virtual bool IsConnected() const = 0;
 
-		RoseCommon::EventSlot<const Core::InputEvent&> OnInput;
-		RoseCommon::EventSlot<const Core::TextInputEvent&> OnTextInput;
+		#pragma endregion
 	};
 }
 

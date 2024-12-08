@@ -134,7 +134,7 @@ namespace Atrium::Win32
 		std::uint16_t firstButtonIndex = static_cast<std::uint16_t>(switchCount * 4);
 		for (std::uint16_t i = 0; i < buttonCount; ++i)
 		{
-			Core::InputEventType eventType = Core::InputEventType::Any;
+			std::optional<Core::InputEventType> eventType;
 			if (!prevButtonStates.get()[i] && buttonStates.get()[i])
 				eventType = Core::InputEventType::Pressed;
 			else if (prevButtonStates.get()[i] && !buttonStates.get()[i])
@@ -142,7 +142,7 @@ namespace Atrium::Win32
 			else
 				continue;
 
-			OnInput.Invoke(Core::InputEvent(*this, Core::InputSourceId::Gamepad::Button(firstButtonIndex + i), eventType));
+			OnInput.Invoke(Core::InputEvent(*this, Core::InputSourceId::Gamepad::Button(firstButtonIndex + i), eventType.value()));
 		}
 
 		for (std::uint16_t i = 0; i < switchCount; ++i)

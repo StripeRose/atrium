@@ -42,12 +42,16 @@ namespace Atrium::Core
 
 		}
 
-		constexpr InputSourceId(InputDeviceType aDevice, std::uint16_t anIndex) noexcept
-			: Device(aDevice)
-			, Index(anIndex)
-		{
+		#pragma endregion
 
-		}
+		//--------------------------------------------------
+		// * Properties
+		//--------------------------------------------------
+		#pragma region Properties
+
+		InputDeviceType Device;
+
+		std::uint16_t Index;
 
 		#pragma endregion
 
@@ -64,10 +68,11 @@ namespace Atrium::Core
 
 		constexpr std::strong_ordering operator<=>(const InputSourceId& anId) const noexcept
 		{
-			std::strong_ordering order;
-			order = std::strong_order(Device, anId.Device);
+			const std::strong_ordering order = std::strong_order(Device, anId.Device);
+
 			if (order != std::strong_ordering::equal)
 				return order;
+
 			return std::strong_order(Index, anId.Index);
 		}
 
@@ -89,8 +94,13 @@ namespace Atrium::Core
 
 		#pragma endregion
 
-		InputDeviceType Device;
-		std::uint16_t Index;
+	protected:
+		constexpr InputSourceId(InputDeviceType aDevice, std::uint16_t anIndex) noexcept
+			: Device(aDevice)
+			, Index(anIndex)
+		{
+
+		}
 	};
 
 	/**
