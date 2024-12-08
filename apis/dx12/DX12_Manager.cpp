@@ -73,7 +73,7 @@ namespace Atrium::DirectX12
 		ReportUnreleasedObjects();
 	}
 
-	Core::FrameContext& DirectX12API::GetCurrentFrameContext()
+	Core::FrameGraphicsContext& DirectX12API::GetCurrentFrameContext()
 	{
 		return *myFrameGraphicsContext;
 	}

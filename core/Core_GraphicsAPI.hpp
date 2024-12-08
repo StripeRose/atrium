@@ -39,7 +39,7 @@ namespace Atrium::Core
 	public:
 		virtual ~GraphicsAPI() = default;
 
-		virtual FrameContext& GetCurrentFrameContext() = 0;
+		virtual FrameGraphicsContext& GetCurrentFrameContext() = 0;
 
 		virtual ResourceManager& GetResourceManager() = 0;
 

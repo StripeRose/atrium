@@ -29,7 +29,7 @@ namespace Atrium::DirectX12
 
 		CommandQueueManager& GetCommandQueueManager() { return *myCommandQueueManager.get(); }
 
-		Core::FrameContext& GetCurrentFrameContext() override;
+		Core::FrameGraphicsContext& GetCurrentFrameContext() override;
 
 		Device& GetDevice() { return *myDevice; }
 

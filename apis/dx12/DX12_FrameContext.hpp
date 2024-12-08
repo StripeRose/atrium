@@ -110,7 +110,7 @@ namespace Atrium::DirectX12
 		std::vector<TextureUpload> myTextureUploads;
 	};
 
-	class FrameGraphicsContext final : public FrameContext, public Core::FrameContext
+	class FrameGraphicsContext final : public FrameContext, public Core::FrameGraphicsContext
 	{
 	public:
 		FrameGraphicsContext(Device& aDevice, CommandQueue& aCommandQueue);
