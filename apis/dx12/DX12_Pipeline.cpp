@@ -295,18 +295,18 @@ namespace Atrium::DirectX12
 		return std::shared_ptr<Core::RootSignature>(new RootSignature(dxRootSignature, parameterMapping));
 	}
 
-	void RootSignatureCreator::SetVisibility(Core::ShaderVisibility aShaderVisibility)
+	void RootSignatureCreator::SetVisibility(Core::Shader::Type aShaderVisibility)
 	{
 		switch (aShaderVisibility)
 		{
 		default:
-		case Core::ShaderVisibility::All:
+		case Core::Shader::Type::All:
 			myCurrentVisibility = D3D12_SHADER_VISIBILITY_ALL;
 			break;
-		case Core::ShaderVisibility::Vertex:
+		case Core::Shader::Type::Vertex:
 			myCurrentVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 			break;
-		case Core::ShaderVisibility::Pixel:
+		case Core::Shader::Type::Pixel:
 			myCurrentVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 			break;
 		}

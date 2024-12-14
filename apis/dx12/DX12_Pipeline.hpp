@@ -195,7 +195,7 @@ namespace Atrium::DirectX12
 
 		std::shared_ptr<Core::RootSignature> Finalize() const override;
 
-		void SetVisibility(Core::ShaderVisibility aShaderVisibility) override;
+		void SetVisibility(Core::Shader::Type aShaderVisibility) override;
 
 	private:
 		static bool PopulateTable(RootParameterMapping& aParameterMapping, std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable);

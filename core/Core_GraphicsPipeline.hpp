@@ -2,6 +2,8 @@
 
 #include "Core_GraphicsEnums.hpp"
 
+#include <rose-common/Enum.hpp>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -14,8 +16,11 @@ namespace Atrium::Core
 	public:
 		enum class Type
 		{
-			Vertex,
-			Pixel
+			None = 0,
+			All = ~0,
+
+			Vertex = 1 << 0,
+			Pixel = 1 << 1
 		};
 	};
 
@@ -26,13 +31,6 @@ namespace Atrium::Core
 		PerPass,
 		PerFrame,
 		Constant
-	};
-
-	enum class ShaderVisibility
-	{
-		All,
-		Vertex,
-		Pixel,
 	};
 
 	class RootSignature
@@ -87,7 +85,7 @@ namespace Atrium::Core
 
 		virtual std::shared_ptr<RootSignature> Finalize() const = 0;
 
-		virtual void SetVisibility(ShaderVisibility aShaderVisibility) = 0;
+		virtual void SetVisibility(Shader::Type aShaderVisibility) = 0;
 	};
 
 	class PipelineStateDescription
@@ -209,3 +207,5 @@ namespace Atrium::Core
 		virtual ~PipelineState() = default;
 	};
 }
+
+ENUM_FLAGS(Atrium::Core::Shader::Type);
