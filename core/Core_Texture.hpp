@@ -1,3 +1,5 @@
+// Filter "Graphics"
+
 #pragma once
 
 #include "Core_Color.hpp"

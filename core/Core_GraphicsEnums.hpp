@@ -1,3 +1,5 @@
+// Filter "Graphics"
+
 #pragma once
 
 namespace Atrium::Core
@@ -30,9 +32,9 @@ namespace Atrium::Core
 		Trilinear
 	};
 
-	/// <summary>
-	/// Lists possible formats for graphics-buffers.
-	/// </summary>
+	/**
+	 * @brief Formats for graphics-buffers in CPU or GPU memory.
+	 */
 	enum class GraphicsFormat
 	{
 		None,
@@ -152,9 +154,9 @@ namespace Atrium::Core
 		MirrorOnce
 	};
 
-	/// <summary>
-	/// Lists formats used for textures on disk.
-	/// </summary>
+	/**
+	 * @brief Formats for textures on disk.
+	 */
 	enum class TextureFormat
 	{
 		Alpha8,
@@ -202,10 +204,11 @@ namespace Atrium::Core
 		RGBA64_SIGNE2
 	};
 
-	/// <summary>
-	/// Lists commonly used render-texture purposes.
-	/// The active Graphics API will resolve this to the appropriate color- and depth-buffer formats, unless overridden.
-	/// </summary>
+	/**
+	 * @brief Commonly used render-texture purposes.
+	 *        The active Graphics API will resolve this to the appropriate
+	 *        color- and depth-buffer formats, unless overridden.
+	 */
 	enum class RenderTextureFormat
 	{
 		Default,

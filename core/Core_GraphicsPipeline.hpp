@@ -1,3 +1,5 @@
+// Filter "Graphics"
+
 #pragma once
 
 #include "Core_GraphicsEnums.hpp"
@@ -11,6 +13,9 @@
 
 namespace Atrium::Core
 {
+	/**
+	 * @brief Shader program to be run as part of the graphics pipeline.
+	 */
 	class Shader
 	{
 	public:
@@ -24,6 +29,10 @@ namespace Atrium::Core
 		};
 	};
 
+	/**
+	 * @brief Resource update frequency helps inform the Graphics API how often a shader resource will be used,
+	 *        which may allow it to sort the resources for better performance.
+	 */
 	enum class ResourceUpdateFrequency
 	{
 		PerObject,
@@ -41,6 +50,9 @@ namespace Atrium::Core
 
 	class GraphicsAPI;
 
+	/**
+	 * @brief Builds a RootSignature object from specifications of the root signature layout.
+	 */
 	class RootSignatureBuilder
 	{
 	public:
@@ -88,6 +100,9 @@ namespace Atrium::Core
 		virtual void SetVisibility(Shader::Type aShaderVisibility) = 0;
 	};
 
+	/**
+	 * @brief Describes a state of a GPU pipeline, for use with PipelineState objects.
+	 */
 	class PipelineStateDescription
 	{
 	public:
@@ -160,11 +175,14 @@ namespace Atrium::Core
 			BlendOperation Operation = BlendOperation::Add;
 		};
 
+		/**
+		 * @brief Specification for how draw-results should be blended with each render target.
+		 */
 		struct BlendMode
 		{
 			bool AlphaToMask = false;
 			bool IndividualBlending = false;
-			Blend BlendFactors[8];
+			Blend BlendFactors[8]; // Todo: Why 8? Make a named constant?
 		};
 
 	public:
@@ -175,27 +193,10 @@ namespace Atrium::Core
 
 		std::vector<InputLayoutEntry> InputLayout;
 
-		// (IA) Input assembler
-
-		// (VS) Vertex shader
 		std::shared_ptr<Shader> VertexShader;
 
-		// (HS) Hull shader
-
-		// (TS) Tesselation
-
-		// (DS) Domain shader
-
-		// (GS) Geometry shader
-
-		// (SO) Stream output
-
-		// (RS) Rasterizer
-
-		// (PS) Pixel shader
 		std::shared_ptr<Shader> PixelShader;
 
-		// (OM) Output merger
 		std::vector<GraphicsFormat> OutputFormats;
 		std::optional<GraphicsFormat> DepthTargetFormat;
 		BlendMode BlendMode;

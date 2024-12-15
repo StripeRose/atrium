@@ -25,6 +25,9 @@ namespace Atrium::Core
 		TriangleStrip
 	};
 
+	/**
+	 * @brief Handles graphics commands and GPU data submission for a specific frame.
+	 */
 	class FrameGraphicsContext
 	{
 	public:

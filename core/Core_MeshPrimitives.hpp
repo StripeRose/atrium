@@ -1,3 +1,5 @@
+// Filter "Graphics"
+
 #pragma once
 
 #include "Core_Math.hpp"
@@ -19,6 +21,9 @@ namespace Atrium::Core
 		Quad
 	};
 
+	/**
+	 * @brief Generates and describes a mesh primitive.
+	 */
 	struct MeshPrimitive
 	{
 		struct Vertex

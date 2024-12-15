@@ -1,3 +1,5 @@
+// Filter "Graphics"
+
 #pragma once
 
 #include "Core_Texture.hpp"
@@ -22,9 +24,6 @@ namespace Atrium::Core
 
 	class RenderTexture : public Texture
 	{
-	public:
-		//static Resource<RenderTexture> Create(const RenderTextureDescriptor& aDescriptor);
-
 	public:
 		virtual const RenderTextureDescriptor& GetDescriptor() const = 0;
 
