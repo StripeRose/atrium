@@ -93,6 +93,7 @@ namespace Atrium::DirectX12
 
 	public:
 		UploadContext(Device& aDevice, CommandQueue& aCommandQueue);
+		~UploadContext();
 
 		//void AddUpload(Buffer);
 		TextureUpload& AddTextureUpload();
@@ -100,8 +101,8 @@ namespace Atrium::DirectX12
 		void ResolveUploads();
 
 	private:
-		std::unique_ptr<UploadBuffer> myBufferUploadHeap;
-		std::unique_ptr<UploadBuffer> myTextureUploadHeap;
+		std::unique_ptr<BackendGraphicsBuffer> myBufferUploadHeap;
+		std::unique_ptr<BackendGraphicsBuffer> myTextureUploadHeap;
 
 		std::vector<std::shared_ptr<GPUResource>> myBufferUploadsInProgress;
 		std::vector<std::shared_ptr<GPUResource>> myTextureUploadsInProgress;

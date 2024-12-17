@@ -7,15 +7,10 @@
 
 namespace Atrium::DirectX12
 {
-	GraphicsBuffer::GraphicsBuffer(std::uint32_t aCount, std::uint32_t aStride)
+	BackendGraphicsBuffer::BackendGraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 		: myCount(aCount)
 		, myStride(aStride)
 		, myMappedBuffer(nullptr)
-	{
-
-	}
-
-	GraphicsBuffer::GraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 	{
 		static constexpr Core::GraphicsBuffer::Target SupportedTargets
 			= Core::GraphicsBuffer::Target::Constant
@@ -28,7 +23,10 @@ namespace Atrium::DirectX12
 			"Supported targets: Constant, Index, Vertex"
 		);
 
-		const std::uint32_t alignedSize = AlignSize(aTarget, aCount, aStride);
+		const std::uint32_t alignedSize =
+			(aTarget & Core::GraphicsBuffer::Target::Constant) != Core::GraphicsBuffer::Target::None
+			? Align<std::uint32_t>(aCount * aStride, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT)
+			: aCount * aStride;
 
 		D3D12_RESOURCE_STATES usageState = D3D12_RESOURCE_STATE_GENERIC_READ;
 
@@ -47,36 +45,51 @@ namespace Atrium::DirectX12
 			CreateConstantView(aDevice, alignedSize);
 	}
 
-	void* GraphicsBuffer::GetNativeBufferPtr()
+	BackendGraphicsBuffer::~BackendGraphicsBuffer()
 	{
-		if (myResource)
-			return myResource->GetResource().Get();
-		else
-			return nullptr;
-	}
-
-	void GraphicsBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
-	{
-		Map();
-		InternalSetData(aDataPtr, aDataSize, aDestinationOffset);
 		Unmap();
 	}
 
-	void GraphicsBuffer::SetName(const wchar_t* aName)
+	void BackendGraphicsBuffer::Map()
 	{
-		if (myResource)
-			myResource->SetName(aName);
+		if (myMappedBuffer != nullptr)
+		{
+			Debug::LogWarning("Graphics buffer was already mapped. It may be unintended to call this function on a mapped buffer.");
+			return;
+		}
+
+		VerifyAction(
+			myResource->GetResource()->Map(0, nullptr, &myMappedBuffer),
+			"Mapping vertex buffer to CPU.");
 	}
 
-	std::uint32_t GraphicsBuffer::AlignSize(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+	void BackendGraphicsBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
-		if ((aTarget & Core::GraphicsBuffer::Target::Constant) != Core::GraphicsBuffer::Target::None)
-			return Align<std::uint32_t>(aCount * aStride, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-		else
-			return aCount * aStride;
+		Debug::Assert(
+			(aDataSize + aDestinationOffset) <= (myStride * myCount),
+			"Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.",
+			myStride * myCount,
+			aDestinationOffset + aDataSize);
+
+		std::memcpy((char*)myMappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
+
+		if (myIndexView)
+			myIndexView.value().SizeInBytes = aDataSize;
+
+		if (myVertexView)
+			myVertexView.value().SizeInBytes = aDataSize;
 	}
 
-	void GraphicsBuffer::CreateConstantView(Device& aDevice, std::uint32_t anAlignedSize)
+	void BackendGraphicsBuffer::Unmap()
+	{
+		if (myMappedBuffer == nullptr)
+			return;
+
+		myResource->GetResource()->Unmap(0, nullptr);
+		myMappedBuffer = nullptr;
+	}
+
+	void BackendGraphicsBuffer::CreateConstantView(Device& aDevice, std::uint32_t anAlignedSize)
 	{
 		D3D12_CONSTANT_BUFFER_VIEW_DESC constantBufferViewDescriptor = { };
 		constantBufferViewDescriptor.BufferLocation = myResource->GetResource()->GetGPUVirtualAddress();
@@ -86,7 +99,7 @@ namespace Atrium::DirectX12
 		aDevice.GetDevice()->CreateConstantBufferView(&constantBufferViewDescriptor, myConstantViewDescriptor.GetCPUHandle());
 	}
 
-	void GraphicsBuffer::CreateIndexView(std::uint32_t aCount, std::uint32_t aStride)
+	void BackendGraphicsBuffer::CreateIndexView(std::uint32_t aCount, std::uint32_t aStride)
 	{
 		Debug::Assert(sizeof(std::uint32_t) == aStride, "Assumes indices to be uint32.");
 
@@ -97,7 +110,7 @@ namespace Atrium::DirectX12
 		myIndexView = indexView;
 	}
 
-	void GraphicsBuffer::CreateResource(Device& aDevice, D3D12_RESOURCE_STATES aUsageState, std::uint32_t anAlignedSize)
+	void BackendGraphicsBuffer::CreateResource(Device& aDevice, D3D12_RESOURCE_STATES aUsageState, std::uint32_t anAlignedSize)
 	{
 		D3D12_RESOURCE_DESC bufferDesc;
 		bufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -115,7 +128,7 @@ namespace Atrium::DirectX12
 		myResource = aDevice.CreateResource(&bufferDesc, aUsageState, NULL, D3D12_HEAP_TYPE_UPLOAD);
 	}
 
-	void GraphicsBuffer::CreateVertexView(std::uint32_t aCount, std::uint32_t aStride)
+	void BackendGraphicsBuffer::CreateVertexView(std::uint32_t aCount, std::uint32_t aStride)
 	{
 		D3D12_VERTEX_BUFFER_VIEW vertexView;
 		vertexView.StrideInBytes = aStride;
@@ -124,53 +137,30 @@ namespace Atrium::DirectX12
 		myVertexView = vertexView;
 	}
 
-	void GraphicsBuffer::Map()
+	GraphicsBuffer::GraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+		: myGraphicsBuffer(aDevice, aTarget, aCount, aStride)
 	{
-		VerifyAction(
-			myResource->GetResource()->Map(0, nullptr, &myMappedBuffer),
-			"Mapping vertex buffer to CPU.");
+
 	}
 
-	void GraphicsBuffer::Unmap()
+	void* GraphicsBuffer::GetNativeBufferPtr()
 	{
-		myResource->GetResource()->Unmap(0, nullptr);
-		myMappedBuffer = nullptr;
+		if (std::shared_ptr<GPUResource> resource = myGraphicsBuffer.GetResource())
+			return resource->GetResource().Get();
+		else
+			return nullptr;
 	}
 
-	void GraphicsBuffer::InternalSetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
+	void GraphicsBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
-		Debug::Assert(
-			(aDataSize + aDestinationOffset) <= (myStride * myCount),
-			"Expects aDestinationOffset + aDataSize to not be greater than the buffer size %i, but was %i.",
-			myStride * myCount,
-			aDestinationOffset + aDataSize);
-
-		std::memcpy((char*)myMappedBuffer + aDestinationOffset, aDataPtr, aDataSize);
-
-		if (myIndexView)
-			myIndexView.value().SizeInBytes = aDataSize;
-
-		if (myVertexView)
-			myVertexView.value().SizeInBytes = aDataSize;
+		myGraphicsBuffer.Map();
+		myGraphicsBuffer.SetData(aDataPtr, aDataSize, aDestinationOffset);
+		myGraphicsBuffer.Unmap();
 	}
 
-	UploadBuffer::UploadBuffer(Device& aDevice, std::uint32_t aBufferSize)
-		: GraphicsBuffer(1, aBufferSize)
+	void GraphicsBuffer::SetName(const wchar_t* aName)
 	{
-		const std::uint32_t alignedSize = AlignSize(Core::GraphicsBuffer::Target::Constant, 1, aBufferSize);
-
-		CreateResource(aDevice, D3D12_RESOURCE_STATE_GENERIC_READ, alignedSize);
-
-		Map();
-	}
-
-	UploadBuffer::~UploadBuffer()
-	{
-		Unmap();
-	}
-
-	void UploadBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
-	{
-		InternalSetData(aDataPtr, aDataSize, aDestinationOffset);
+		if (std::shared_ptr<GPUResource> resource = myGraphicsBuffer.GetResource())
+			resource->SetName(aName);
 	}
 }

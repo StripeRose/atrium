@@ -13,39 +13,31 @@
 namespace Atrium::DirectX12
 {
 	class Device;
-	class GraphicsBuffer : public Core::GraphicsBuffer
+	class BackendGraphicsBuffer
 	{
 	public:
-		GraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
+		BackendGraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
 
-		std::shared_ptr<GPUResource> GetResource() { return myResource; }
+		~BackendGraphicsBuffer();
+
+		std::uint32_t GetCount() const { return myCount; }
+		std::uint32_t GetStride() const { return myStride; }
 
 		const DescriptorHeapHandle GetConstantViewHandle() const { return myConstantViewDescriptor; }
 		std::optional<D3D12_INDEX_BUFFER_VIEW> GetIndexView() const { return myIndexView; }
 		std::optional<D3D12_VERTEX_BUFFER_VIEW> GetVertexView() const { return myVertexView; }
 
-		// Implementing Core::GraphicsBuffer
-	public:
-		std::uint32_t GetCount() const override { return myCount; }
-		std::uint32_t GetStride() const override { return myStride; }
+		std::shared_ptr<GPUResource> GetResource() { return myResource; }
 
-		void* GetNativeBufferPtr() override;
-
-		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
-		void SetName(const wchar_t* aName) override;
+		void Map();
+		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset);
+		void Unmap();
 
 	protected:
-		GraphicsBuffer(std::uint32_t aCount, std::uint32_t aStride);
-
-		std::uint32_t AlignSize(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
 		void CreateConstantView(Device& aDevice, std::uint32_t anAlignedSize);
 		void CreateIndexView(std::uint32_t aCount, std::uint32_t aStride);
 		void CreateResource(Device& aDevice, D3D12_RESOURCE_STATES aUsageState, std::uint32_t anAlignedSize);
 		void CreateVertexView(std::uint32_t aCount, std::uint32_t aStride);
-
-		void Map();
-		void Unmap();
-		void InternalSetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset);
 
 	private:
 		std::shared_ptr<GPUResource> myResource;
@@ -59,12 +51,26 @@ namespace Atrium::DirectX12
 		std::uint32_t myStride;
 	};
 
-	class UploadBuffer : public GraphicsBuffer
+	class GraphicsBuffer : public Core::GraphicsBuffer
 	{
 	public:
-		UploadBuffer(Device& aDevice, std::uint32_t aBufferSize);
-		~UploadBuffer();
+		GraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
+
+		const DescriptorHeapHandle GetConstantViewHandle() const { return myGraphicsBuffer.GetConstantViewHandle(); }
+		std::optional<D3D12_INDEX_BUFFER_VIEW> GetIndexView() const { return myGraphicsBuffer.GetIndexView(); }
+		std::optional<D3D12_VERTEX_BUFFER_VIEW> GetVertexView() const { return myGraphicsBuffer.GetVertexView(); }
+
+		// Implementing Core::GraphicsBuffer
+	public:
+		std::uint32_t GetCount() const override { return myGraphicsBuffer.GetCount(); }
+		std::uint32_t GetStride() const override { return myGraphicsBuffer.GetStride(); }
+
+		void* GetNativeBufferPtr() override;
 
 		void SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset) override;
+		void SetName(const wchar_t* aName) override;
+
+	private:
+		BackendGraphicsBuffer myGraphicsBuffer;
 	};
 }

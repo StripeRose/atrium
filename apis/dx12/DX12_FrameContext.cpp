@@ -158,8 +158,15 @@ namespace Atrium::DirectX12
 
 		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_COPY, "Using copy queue.");
 
-		myBufferUploadHeap.reset(new UploadBuffer(aDevice, 10 * 1024 * 1024));
-		myTextureUploadHeap.reset(new UploadBuffer(aDevice, 40 * 1024 * 1024));
+		myBufferUploadHeap.reset(new BackendGraphicsBuffer(aDevice, Core::GraphicsBuffer::Target::None, 1, 10 * 1024 * 1024));
+		myTextureUploadHeap.reset(new BackendGraphicsBuffer(aDevice, Core::GraphicsBuffer::Target::None, 1, 40 * 1024 * 1024));
+		myBufferUploadHeap->Map();
+		myTextureUploadHeap->Map();
+	}
+
+	UploadContext::~UploadContext()
+	{
+		myBufferUploadHeap->Unmap();
 	}
 
 	UploadContext::TextureUpload& UploadContext::AddTextureUpload()
