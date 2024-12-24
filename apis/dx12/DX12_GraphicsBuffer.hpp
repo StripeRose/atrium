@@ -10,9 +10,13 @@
 
 #include <d3d12.h>
 
+#include <vector>
+
 namespace Atrium::DirectX12
 {
 	class Device;
+	class DirectX12API;
+
 	class BackendGraphicsBuffer
 	{
 	public:
@@ -54,16 +58,16 @@ namespace Atrium::DirectX12
 	class GraphicsBuffer : public Core::GraphicsBuffer
 	{
 	public:
-		GraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
+		GraphicsBuffer(DirectX12API& anAPI, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
 
-		const DescriptorHeapHandle GetConstantViewHandle() const { return myGraphicsBuffer.GetConstantViewHandle(); }
-		std::optional<D3D12_INDEX_BUFFER_VIEW> GetIndexView() const { return myGraphicsBuffer.GetIndexView(); }
-		std::optional<D3D12_VERTEX_BUFFER_VIEW> GetVertexView() const { return myGraphicsBuffer.GetVertexView(); }
+		const DescriptorHeapHandle GetConstantViewHandle() const { return GetBufferForRead().GetConstantViewHandle(); }
+		std::optional<D3D12_INDEX_BUFFER_VIEW> GetIndexView() const { return GetBufferForRead().GetIndexView(); }
+		std::optional<D3D12_VERTEX_BUFFER_VIEW> GetVertexView() const { return GetBufferForRead().GetVertexView(); }
 
 		// Implementing Core::GraphicsBuffer
 	public:
-		std::uint32_t GetCount() const override { return myGraphicsBuffer.GetCount(); }
-		std::uint32_t GetStride() const override { return myGraphicsBuffer.GetStride(); }
+		std::uint32_t GetCount() const override { return myCount; }
+		std::uint32_t GetStride() const override { return myStride; }
 
 		void* GetNativeBufferPtr() override;
 
@@ -71,6 +75,16 @@ namespace Atrium::DirectX12
 		void SetName(const wchar_t* aName) override;
 
 	private:
-		BackendGraphicsBuffer myGraphicsBuffer;
+		BackendGraphicsBuffer& GetBufferForRead() const;
+		BackendGraphicsBuffer& GetBufferForWrite();
+
+		DirectX12API& myAPI;
+
+		std::vector<std::shared_ptr<BackendGraphicsBuffer>> myBuffers;
+		BackendGraphicsBuffer* myLastWrittenBuffer;
+
+		Core::GraphicsBuffer::Target myTarget;
+		std::uint32_t myCount;
+		std::uint32_t myStride;
 	};
 }

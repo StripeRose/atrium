@@ -78,6 +78,11 @@ namespace Atrium::DirectX12
 		return *myFrameGraphicsContext;
 	}
 
+	std::uint_least64_t DirectX12API::GetCurrentFrameIndex() const
+	{
+		return myFrameIndex;
+	}
+
 	void DirectX12API::MarkFrameStart()
 	{
 		ZoneScoped;

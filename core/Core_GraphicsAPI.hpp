@@ -41,6 +41,12 @@ namespace Atrium::Core
 		virtual FrameGraphicsContext& GetCurrentFrameContext() = 0;
 
 		/**
+		 * @brief Get the current graphics-frame index.
+		 * @return The index as an unsigned integer at least 64 bit long.
+		 */
+		virtual std::uint_least64_t GetCurrentFrameIndex() const = 0;
+
+		/**
 		 * @brief Get the graphics resource manager.
 		 */
 		virtual ResourceManager& GetResourceManager() = 0;

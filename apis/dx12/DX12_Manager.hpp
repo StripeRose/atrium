@@ -29,13 +29,19 @@ namespace Atrium::DirectX12
 
 		CommandQueueManager& GetCommandQueueManager() { return *myCommandQueueManager.get(); }
 
-		Core::FrameGraphicsContext& GetCurrentFrameContext() override;
-
 		Device& GetDevice() { return *myDevice; }
 
-		Core::GraphicsAPI::ResourceManager& GetResourceManager() override { return *myResourceManager; }
+		std::uint_least8_t GetFrameInFlight() const { return myFrameInFlight; }
 
 		UploadContext& GetUploadContext() { return *myUploadContext; }
+
+		// Implementing Core::GraphicsAPI
+	public:
+		Core::FrameGraphicsContext& GetCurrentFrameContext() override;
+
+		std::uint_least64_t GetCurrentFrameIndex() const override;
+
+		Core::GraphicsAPI::ResourceManager& GetResourceManager() override { return *myResourceManager; }
 
 		bool SupportsMultipleWindows() const override { return true; }
 

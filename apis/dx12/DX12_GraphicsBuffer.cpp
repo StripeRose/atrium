@@ -3,6 +3,7 @@
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_GraphicsBuffer.hpp"
+#include "DX12_Manager.hpp"
 #include "DX12_MemoryAlignment.hpp"
 
 namespace Atrium::DirectX12
@@ -137,15 +138,19 @@ namespace Atrium::DirectX12
 		myVertexView = vertexView;
 	}
 
-	GraphicsBuffer::GraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
-		: myGraphicsBuffer(aDevice, aTarget, aCount, aStride)
+	GraphicsBuffer::GraphicsBuffer(DirectX12API& anAPI, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+		: myAPI(anAPI)
+		, myLastWrittenBuffer(nullptr)
+		, myTarget(aTarget)
+		, myCount(aCount)
+		, myStride(aStride)
 	{
-
+		myBuffers.resize(DirectX12API::GetFramesInFlightAmount());
 	}
 
 	void* GraphicsBuffer::GetNativeBufferPtr()
 	{
-		if (std::shared_ptr<GPUResource> resource = myGraphicsBuffer.GetResource())
+		if (std::shared_ptr<GPUResource> resource = GetBufferForRead().GetResource())
 			return resource->GetResource().Get();
 		else
 			return nullptr;
@@ -153,14 +158,40 @@ namespace Atrium::DirectX12
 
 	void GraphicsBuffer::SetData(const void* aDataPtr, std::uint32_t aDataSize, std::size_t aDestinationOffset)
 	{
-		myGraphicsBuffer.Map();
-		myGraphicsBuffer.SetData(aDataPtr, aDataSize, aDestinationOffset);
-		myGraphicsBuffer.Unmap();
+		BackendGraphicsBuffer& frameBuffer = GetBufferForWrite();
+		frameBuffer.Map();
+		frameBuffer.SetData(aDataPtr, aDataSize, aDestinationOffset);
+		frameBuffer.Unmap();
 	}
 
 	void GraphicsBuffer::SetName(const wchar_t* aName)
 	{
-		if (std::shared_ptr<GPUResource> resource = myGraphicsBuffer.GetResource())
-			resource->SetName(aName);
+		for (auto& it : myBuffers)
+		{
+			if (it)
+				it->GetResource()->SetName(aName);
+		}
+	}
+
+	BackendGraphicsBuffer& GraphicsBuffer::GetBufferForRead() const
+	{
+		if (!myLastWrittenBuffer)
+			throw std::runtime_error("Buffer was never written to; There is no buffer to read.");
+
+		return *myLastWrittenBuffer;
+	}
+
+	BackendGraphicsBuffer& GraphicsBuffer::GetBufferForWrite()
+	{
+		const std::uint_least8_t frameInFlight = myAPI.GetFrameInFlight();
+
+		std::shared_ptr<BackendGraphicsBuffer>& frameBuffer = myBuffers.at(frameInFlight);
+
+		if (frameBuffer == nullptr)
+			frameBuffer.reset(new BackendGraphicsBuffer(myAPI.GetDevice(), myTarget, myCount, myStride));
+
+		myLastWrittenBuffer = frameBuffer.get();
+
+		return *myLastWrittenBuffer;
 	}
 }

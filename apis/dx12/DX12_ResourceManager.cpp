@@ -31,7 +31,7 @@ namespace Atrium::DirectX12
 	{
 		ZoneScoped;
 
-		return std::shared_ptr<Core::GraphicsBuffer>(new GraphicsBuffer(myManager.GetDevice(), aTarget, aCount, aStride));
+		return std::shared_ptr<Core::GraphicsBuffer>(new GraphicsBuffer(myManager, aTarget, aCount, aStride));
 	}
 
 	std::shared_ptr<Core::PipelineState> ResourceManager::CreatePipelineState(const Core::PipelineStateDescription& aPipelineState)
