@@ -42,7 +42,7 @@ namespace Atrium::DirectX12
 		D3D12_COMMAND_LIST_TYPE GetCommandType() const { return myCommandType; }
 		ID3D12GraphicsCommandList* GetCommandList() { return myCommandList.Get(); }
 
-		virtual void Reset(const std::uint64_t& aFrameIndex);
+		virtual void Reset(const std::uint_least8_t& aFrameInFlight);
 		void AddBarrier(GPUResource& aResource, D3D12_RESOURCE_STATES aNewState);
 		void FlushBarriers();
 		void CopyResource(const GPUResource& aSource, GPUResource& aDestination);
@@ -122,7 +122,7 @@ namespace Atrium::DirectX12
 #endif
 		) override;
 
-		void Reset(const std::uint64_t& aFrameIndex) override;
+		void Reset(const std::uint_least8_t& aFrameInFlight) override;
 
 		void ClearColor(const std::shared_ptr<Core::RenderTexture>& aTarget, Color aClearColor) override;
 		void ClearDepth(const std::shared_ptr<Core::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) override;

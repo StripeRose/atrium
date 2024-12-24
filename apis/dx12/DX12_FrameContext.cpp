@@ -52,11 +52,14 @@ namespace Atrium::DirectX12
 		myCommandList->SetName(L"Frame context command list");
 	}
 
-	void FrameContext::Reset(const std::uint64_t& aFrameIndex)
+	void FrameContext::Reset(const std::uint_least8_t& aFrameInFlight)
 	{
-		const std::uint64_t frameInFlight = (aFrameIndex % DX12_FRAMES_IN_FLIGHT);
-		myFrameCommandAllocators[frameInFlight]->Reset();
-		myCommandList->Reset(myFrameCommandAllocators[frameInFlight].Get(), nullptr);
+		myFrameCommandAllocators[aFrameInFlight]->Reset();
+		myCommandList->Reset(myFrameCommandAllocators[aFrameInFlight].Get(), nullptr);
+
+		DescriptorHeapManager& heapManager = myDevice.GetDescriptorHeapManager();
+		myCurrentFrameHeap = &heapManager.GetFrameHeap(aFrameInFlight);
+		myCurrentFrameHeap->Reset();
 
 		if (myCommandType != D3D12_COMMAND_LIST_TYPE_COPY)
 			BindDescriptorHeaps();
@@ -136,14 +139,12 @@ namespace Atrium::DirectX12
 	void FrameContext::BindDescriptorHeaps()
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Bind descriptor heaps");
-		DescriptorHeapManager& heapManager = myDevice.GetDescriptorHeapManager();
 
-		myCurrentFrameHeap = &heapManager.GetFrameHeap();
-		myCurrentFrameHeap->Reset();
-
-		ID3D12DescriptorHeap* heapsToBind[1];
-		heapsToBind[0] = myCurrentFrameHeap->GetHeap().Get();
-		//heapsToBind[1] = heapManager.GetFrameSamplerHeap().GetHeap().Get();
+		ID3D12DescriptorHeap* heapsToBind[] =
+		{
+			myCurrentFrameHeap->GetHeap().Get()
+			//, heapManager.GetFrameSamplerHeap().GetHeap().Get()
+		};
 
 		myCommandList->SetDescriptorHeaps(1, heapsToBind);
 	}
@@ -232,11 +233,12 @@ namespace Atrium::DirectX12
 		: DirectX12::FrameContext(aDevice, aCommandQueue)
 		, myCurrentPipelineState(nullptr)
 	{
+		if (aCommandQueue.GetQueueType() != D3D12_COMMAND_LIST_TYPE_DIRECT)
+			throw std::domain_error("Graphics frame context requires a command queue with type Direct.");
+
 		for (unsigned int i = 0; i < DX12_FRAMES_IN_FLIGHT; ++i)
 			myFrameCommandAllocators[i]->SetName(L"Frame graphics command allocator");
 		myCommandList->SetName(L"Frame graphics command list");
-
-		Debug::Assert(aCommandQueue.GetQueueType() == D3D12_COMMAND_LIST_TYPE_DIRECT, "Queue is the correcct type.");
 	}
 
 	void FrameGraphicsContext::BeginProfileZone(ProfileContextZone& aZoneScope
@@ -265,9 +267,9 @@ namespace Atrium::DirectX12
 #endif
 	}
 
-	void FrameGraphicsContext::Reset(const std::uint64_t& aFrameIndex)
+	void FrameGraphicsContext::Reset(const std::uint_least8_t& aFrameInFlight)
 	{
-		DirectX12::FrameContext::Reset(aFrameIndex);
+		DirectX12::FrameContext::Reset(aFrameInFlight);
 
 		myBufferHeapHandles.clear();
 		myTextureHeapHandles.clear();
@@ -603,8 +605,7 @@ namespace Atrium::DirectX12
 				continue;
 			}
 
-			RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
-			DescriptorHeapHandle heapHandle = renderPassHeap.GetHeapHandleBlock(Atrium::Math::TruncateTo<uint32_t>(rootParameterBuffers.second.size()));
+			DescriptorHeapHandle heapHandle = myCurrentFrameHeap->GetHeapHandleBlock(Atrium::Math::TruncateTo<uint32_t>(rootParameterBuffers.second.size()));
 
 			for (std::size_t i = 0; i < rootParameterBuffers.second.size(); ++i)
 			{
@@ -618,7 +619,7 @@ namespace Atrium::DirectX12
 					1,
 					heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i)),
 					descriptorHandle.GetCPUHandle(),
-					renderPassHeap.GetHeapType()
+					myCurrentFrameHeap->GetHeapType()
 				);
 			}
 
@@ -657,8 +658,7 @@ namespace Atrium::DirectX12
 				continue;
 			}
 
-			RenderPassDescriptorHeap& renderPassHeap = myDevice.GetDescriptorHeapManager().GetFrameHeap();
-			DescriptorHeapHandle heapHandle = renderPassHeap.GetHeapHandleBlock(Atrium::Math::TruncateTo<uint32_t>(rootParameterTextures.second.size()));
+			DescriptorHeapHandle heapHandle = myCurrentFrameHeap->GetHeapHandleBlock(Atrium::Math::TruncateTo<uint32_t>(rootParameterTextures.second.size()));
 
 			for (std::size_t i = 0; i < rootParameterTextures.second.size(); ++i)
 			{
@@ -668,7 +668,7 @@ namespace Atrium::DirectX12
 						1,
 						heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i)),
 						texture->GetSRVHandle().GetCPUHandle(),
-						renderPassHeap.GetHeapType()
+						myCurrentFrameHeap->GetHeapType()
 					);
 				}
 				else

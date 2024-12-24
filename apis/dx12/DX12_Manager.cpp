@@ -96,8 +96,8 @@ namespace Atrium::DirectX12
 		myDevice->GetDescriptorHeapManager().GetFrameHeap(myFrameInFlight).Reset();
 
 		myUploadContext->ResolveUploads();
-		myUploadContext->Reset(myFrameIndex);
-		myFrameGraphicsContext->Reset(myFrameIndex);
+		myUploadContext->Reset(myFrameInFlight);
+		myFrameGraphicsContext->Reset(myFrameInFlight);
 
 		myResourceManager->MarkFrameStart();
 	}
