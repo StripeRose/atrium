@@ -11,8 +11,6 @@ namespace Atrium::DirectX12
 	public:
 		DescriptorHeapManager(ComPtr<ID3D12Device> aDevice, std::size_t aNumberOfFramesInFlight);
 
-		void MarkFrameStart(std::uint64_t aFrameIndex);
-
 		StagingDescriptorHeap& GetShaderResourceViewHeap() { return mySRVHeap; }
 		StagingDescriptorHeap& GetConstantBufferViewHeap() { return myCBVHeap; }
 		StagingDescriptorHeap& GetUnorderedAccessViewHeap() { return myUAVHeap; }
@@ -21,7 +19,7 @@ namespace Atrium::DirectX12
 		StagingDescriptorHeap& GetRTVHeap() { return myRTVHeap; }
 		StagingDescriptorHeap& GetDSVHeap() { return myDSVHeap; }
 
-		RenderPassDescriptorHeap& GetFrameHeap() { return *myFrameHeaps[myFrameInFlight]; }
+		RenderPassDescriptorHeap& GetFrameHeap(std::uint_least8_t aFrameInFlight);
 
 	private:
 		StagingDescriptorHeap mySRVHeap;
@@ -32,7 +30,5 @@ namespace Atrium::DirectX12
 		StagingDescriptorHeap myDSVHeap;
 
 		std::vector<std::unique_ptr<RenderPassDescriptorHeap>> myFrameHeaps;
-
-		std::uint_least8_t myFrameInFlight;
 	};
 }

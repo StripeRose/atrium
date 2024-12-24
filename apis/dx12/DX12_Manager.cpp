@@ -93,7 +93,7 @@ namespace Atrium::DirectX12
 			myCommandQueueManager->GetGraphicsQueue().WaitForFenceCPUBlocking(myFrameEndFences[myFrameInFlight].GraphicsQueue);
 		}
 
-		myDevice->MarkFrameStart(myFrameIndex);
+		myDevice->GetDescriptorHeapManager().GetFrameHeap(myFrameInFlight).Reset();
 
 		myUploadContext->ResolveUploads();
 		myUploadContext->Reset(myFrameIndex);

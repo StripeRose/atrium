@@ -36,12 +36,6 @@ namespace Atrium::DirectX12
 		myDescriptorHeapManager.reset();
 	}
 
-	void Device::MarkFrameStart(std::uint64_t aFrameIndex)
-	{
-		ZoneScoped;
-		myDescriptorHeapManager->MarkFrameStart(aFrameIndex);
-	}
-
 	std::shared_ptr<GPUResource> Device::CreateResource(const D3D12_RESOURCE_DESC* aResourceDesc, D3D12_RESOURCE_STATES anInitialState, const D3D12_CLEAR_VALUE* aClearValue, D3D12_HEAP_TYPE aHeapType)
 	{
 		D3D12MA::ALLOCATION_DESC allocationDesc = {};

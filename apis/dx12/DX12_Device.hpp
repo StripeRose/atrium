@@ -28,8 +28,6 @@ namespace Atrium::DirectX12
 		Device(const DeviceParameters& someParameters = { });
 		~Device();
 
-		void MarkFrameStart(std::uint64_t aFrameIndex);
-
 		std::shared_ptr<GPUResource> CreateResource(
 			const D3D12_RESOURCE_DESC* aResourceDesc,
 			D3D12_RESOURCE_STATES anInitialState,

@@ -1,5 +1,6 @@
 #include "DX12_DescriptorHeapManager.hpp"
 
+#include <stdexcept>
 #include <string>
 
 namespace Atrium::DirectX12
@@ -11,7 +12,6 @@ namespace Atrium::DirectX12
 		, mySamplerHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 128)
 		, myRTVHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 32)
 		, myDSVHeap(aDevice, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 32)
-		, myFrameInFlight(static_cast<std::uint_least8_t>(-1))
 	{
 		myFrameHeaps.resize(aNumberOfFramesInFlight);
 
@@ -29,10 +29,11 @@ namespace Atrium::DirectX12
 		myDSVHeap.GetHeap()->SetName(L"Staging descriptor heap DSV");
 	}
 
-	void DescriptorHeapManager::MarkFrameStart(std::uint64_t aFrameIndex)
+	RenderPassDescriptorHeap& DescriptorHeapManager::GetFrameHeap(std::uint_least8_t aFrameInFlight)
 	{
-		myFrameInFlight = static_cast<std::uint_least8_t>(aFrameIndex % myFrameHeaps.size());
+		if (aFrameInFlight >= myFrameHeaps.size())
+			throw std::out_of_range("Frame in flight must be within the range specified upon creation.");
 
-		GetFrameHeap().Reset();
+		return *myFrameHeaps[aFrameInFlight];
 	}
 }

@@ -62,7 +62,7 @@ namespace Atrium::DirectX12
 
 		std::vector<FrameEndFences> myFrameEndFences;
 
-		std::uint64_t myFrameIndex;
+		std::uint_least64_t myFrameIndex;
 		std::uint_least8_t myFrameInFlight;
 
 		std::unique_ptr<DirectX12::ResourceManager> myResourceManager;
