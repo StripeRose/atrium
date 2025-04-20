@@ -2,12 +2,12 @@
 
 #pragma once
 
+#include "Win32_GameInput.h"
 #include "Win32_GameInputDevice.hpp"
 
 #include "Core_InputDeviceAPI.hpp"
 #include "Core_InputEvent.hpp"
 
-#include <GameInput.h>
 #include <wrl.h>
 
 #include <map>

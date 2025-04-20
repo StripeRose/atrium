@@ -13,7 +13,10 @@ namespace Atrium::Win32
 		: myGameInputAPI(anInputAPI)
 		, myDevice(aDevice)
 	{
-		
+		if (auto reading = GetCurrentReading())
+			myLastReading = reading.value();
+		else
+			Debug::LogError("Failed to get initial reference reading for input device.");
 	}
 
 	bool GameInputDevice::IsConnected() const
@@ -23,17 +26,19 @@ namespace Atrium::Win32
 
 	void GameInputDevice::HandleDeviceEvent(GameInputDeviceStatus aCurrentStatus, GameInputDeviceStatus aPreviousStatus)
 	{
-		if ((aPreviousStatus & GameInputDeviceConnected) != 0 && (aCurrentStatus & GameInputDeviceConnected) != 0)
-		{
-			Microsoft::WRL::ComPtr<IGameInputReading> reading;
-			if (SUCCEEDED(myGameInputAPI->GetCurrentReading(~GameInputKindUnknown, myDevice.Get(), reading.GetAddressOf())))
-				myLastReading = reading;
-		}
+		if ((aPreviousStatus & GameInputDeviceConnected) == 0 && (aCurrentStatus & GameInputDeviceConnected) != 0)
+			myLastReading = GetCurrentReading().value_or(myLastReading);
 	}
 
 	void GameInputDevice::ReportInputEvents(Core::InputDeviceType someDeviceTypes)
 	{
-		if (!myLastReading)
+		if (auto reading = GetCurrentReading())
+		{
+			HandleReadingEvent(someDeviceTypes, *myLastReading.Get(), *reading.value().Get());
+			myLastReading = reading.value();
+		}
+
+		/*if (!myLastReading)
 		{
 			Microsoft::WRL::ComPtr<IGameInputReading> reading;
 			if (SUCCEEDED(myGameInputAPI->GetCurrentReading(~GameInputKindUnknown, myDevice.Get(), reading.GetAddressOf())))
@@ -59,7 +64,7 @@ namespace Atrium::Win32
 					myLastReading = nextReading;
 				}
 			}
-		}
+		}*/
 	}
 
 
@@ -265,6 +270,15 @@ namespace Atrium::Win32
 		HandleAnalogChange(aPreviousReading, aReading, &GameInputGamepadState::rightThumbstickX, Core::InputSourceId::Gamepad::RightX);
 		HandleAnalogChange(aPreviousReading, aReading, &GameInputGamepadState::rightThumbstickY, Core::InputSourceId::Gamepad::RightY);
 		HandleAnalogChange(aPreviousReading, aReading, &GameInputGamepadState::rightTrigger, Core::InputSourceId::Gamepad::RightTrigger);
+	}
+
+	std::optional<Microsoft::WRL::ComPtr<IGameInputReading>> GameInputDevice::GetCurrentReading()
+	{
+		Microsoft::WRL::ComPtr<IGameInputReading> reading;
+		if (SUCCEEDED(myGameInputAPI->GetCurrentReading(~GameInputKindUnknown, myDevice.Get(), reading.GetAddressOf())))
+			return reading;
+		else
+			return {};
 	}
 
 	std::optional<Core::InputSourceId> GameInputDevice::ToInputSource(const GameInputKeyState& aKeyState)

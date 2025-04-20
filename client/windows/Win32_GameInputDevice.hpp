@@ -2,11 +2,12 @@
 
 #pragma once
 
+#include "Win32_GameInput.h"
+
 #include "Core_InputDevice.hpp"
 #include "Core_InputEvent.hpp"
 #include "Core_InputSource.hpp"
 
-#include <GameInput.h>
 #include <wrl.h>
 
 #include <optional>
@@ -71,6 +72,8 @@ namespace Atrium::Win32
 		{
 			HandleAnalogChange(aPreviousState.*aMember, aState.*aMember, aSource);
 		}
+
+		std::optional<Microsoft::WRL::ComPtr<IGameInputReading>> GetCurrentReading();
 
 		std::optional<Core::InputSourceId> ToInputSource(const GameInputKeyState& aKeyState);
 
