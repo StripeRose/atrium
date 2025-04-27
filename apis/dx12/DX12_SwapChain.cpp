@@ -248,7 +248,7 @@ namespace Atrium::DirectX12
 		std::any surfaceHandle = myWindow->GetNativeHandle();
 		HWND windowHandle = std::any_cast<HWND>(surfaceHandle);
 
-		AssertAction(myDevice->GetFactory()->CreateSwapChainForHwnd(
+		Debug::Assert(myDevice->GetFactory()->CreateSwapChainForHwnd(
 			aDirectCommandQueue.GetCommandQueue().Get(),
 			windowHandle,
 			&swapChainDescriptor,
@@ -309,7 +309,7 @@ namespace Atrium::DirectX12
 		}
 		else
 		{
-			AssertAction(hr, "Unknown error when resizing swapchain.");
+			Debug::Assert(hr, "Unknown error when resizing swapchain.");
 		}
 
 		GetBackBuffers(newResolution);
@@ -352,7 +352,7 @@ namespace Atrium::DirectX12
 				{
 					// Get the rectangle bounds of current output.
 					DXGI_OUTPUT_DESC desc;
-					AssertAction(output->GetDesc(&desc), "Get adapter output description.");
+					Debug::Assert(output->GetDesc(&desc), "Get adapter output description.");
 					const Rectangle desktopCoordinates = Rectangle(
 						Point(desc.DesktopCoordinates.left, desc.DesktopCoordinates.top),
 						Point(desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom));
@@ -374,7 +374,7 @@ namespace Atrium::DirectX12
 				if (SUCCEEDED(bestOutput.As(&output6)))
 				{
 					DXGI_OUTPUT_DESC1 desc;
-					AssertAction(output6->GetDesc1(&desc), "Get adapter output description.");
+					Debug::Assert(output6->GetDesc1(&desc), "Get adapter output description.");
 
 					if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020)
 					{
@@ -409,7 +409,7 @@ namespace Atrium::DirectX12
 			&& SUCCEEDED(mySwapChain->CheckColorSpaceSupport(colorSpace, &colorSpaceSupport))
 			&& (colorSpaceSupport & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT))
 		{
-			AssertAction(mySwapChain->SetColorSpace1(colorSpace), "Set swapchain color space.");
+			Debug::Assert(mySwapChain->SetColorSpace1(colorSpace), "Set swapchain color space.");
 		}
 	}
 
@@ -421,7 +421,7 @@ namespace Atrium::DirectX12
 
 		for (unsigned int i = 0; i < DX12_BACKBUFFER_COUNT; ++i)
 		{
-			AssertAction(mySwapChain->GetBuffer(i, IID_PPV_ARGS(backBufferResource.ReleaseAndGetAddressOf())), "Get swapchain back buffer.");
+			Debug::Assert(mySwapChain->GetBuffer(i, IID_PPV_ARGS(backBufferResource.ReleaseAndGetAddressOf())), "Get swapchain back buffer.");
 			//backBufferResource->SetName(BasicString<wchar_t>::Format(L"Backbuffer Texture #%i", i).ToCharArray());
 
 			Core::RenderTextureDescriptor rtDesc;

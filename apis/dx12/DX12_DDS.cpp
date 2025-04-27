@@ -14,7 +14,7 @@ namespace Atrium::DirectX12
 
 		HRESULT loadResult = DirectX::LoadFromDDSFile(aPath.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, *image);
 
-		if (!VerifyAction(loadResult, "Load DDS file from disk."))
+		if (!Debug::Verify(loadResult, "Load DDS file from disk."))
 			return nullptr;
 
 		if (!image->GetMetadata().IsCubemap() && image->GetMetadata().arraySize != 1)

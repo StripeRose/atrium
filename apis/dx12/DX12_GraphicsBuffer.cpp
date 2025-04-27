@@ -59,7 +59,7 @@ namespace Atrium::DirectX12
 			return;
 		}
 
-		VerifyAction(
+		Debug::Verify(
 			myResource->GetResource()->Map(0, nullptr, &myMappedBuffer),
 			"Mapping vertex buffer to CPU.");
 	}

@@ -33,7 +33,7 @@ namespace Atrium::DirectX12
             aProfile, flags, 0, shaderBlob.ReleaseAndGetAddressOf(), errorBlob.ReleaseAndGetAddressOf()
         );
 
-        if (!VerifyAction(hr, "Compile shader from file.", errorBlob.Get()))
+        if (!Debug::Verify(SUCCEEDED(hr), "Compiling shader from file.\n%s", errorBlob ? (const char*)errorBlob->GetBufferPointer() : ""))
             return nullptr;
 
         std::shared_ptr<Shader> shader(new Shader());

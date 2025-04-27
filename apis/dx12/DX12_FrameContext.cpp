@@ -24,7 +24,7 @@ namespace Atrium::DirectX12
 
 		for (unsigned int i = 0; i < DX12_FRAMES_IN_FLIGHT; ++i)
 		{
-			AssertAction(
+			Debug::Assert(
 				aDevice.GetDevice()->CreateCommandAllocator(
 					myCommandType,
 					IID_PPV_ARGS(myFrameCommandAllocators[i].ReleaseAndGetAddressOf())
@@ -36,10 +36,10 @@ namespace Atrium::DirectX12
 		}
 
 		ComPtr<ID3D12Device4> device4;
-		AssertAction(aDevice.GetDevice().As<ID3D12Device4>(&device4), "Get ID3D12Device4.");
+		Debug::Assert(aDevice.GetDevice().As<ID3D12Device4>(&device4), "Get ID3D12Device4.");
 		
 		// Create a closed command list.
-		AssertAction(
+		Debug::Assert(
 			device4->CreateCommandList1(
 				0,
 				myCommandType,

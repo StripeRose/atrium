@@ -289,7 +289,7 @@ namespace Atrium::DirectX12
 		if (SUCCEEDED(result))
 			result = myDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(dxRootSignature.ReleaseAndGetAddressOf()));
 		
-		if (!VerifyAction(result, "Create root signature", error.Get()))
+		if (!Debug::Verify(result, "Create root signature", error.Get()))
 			return nullptr;
 
 		return std::shared_ptr<Core::RootSignature>(new RootSignature(dxRootSignature, parameterMapping));
@@ -544,7 +544,7 @@ namespace Atrium::DirectX12
 
 		// Create the raster pipeline state
 		if (
-			VerifyAction(
+			Debug::Verify(
 				aDevice.CreateGraphicsPipelineState(
 					&psoDesc,
 					IID_PPV_ARGS(

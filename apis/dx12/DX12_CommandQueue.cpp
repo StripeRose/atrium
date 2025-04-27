@@ -16,7 +16,7 @@ namespace Atrium::DirectX12
 		D3D12_COMMAND_QUEUE_DESC queueDescriptor = { };
 		queueDescriptor.Type = aQueueType;
 		queueDescriptor.NodeMask = 0;
-		AssertAction(
+		Debug::Assert(
 			aDevice->CreateCommandQueue(&queueDescriptor, IID_PPV_ARGS(myCommandQueue.ReleaseAndGetAddressOf())),
 			"Create command queue."
 		);
@@ -56,7 +56,7 @@ namespace Atrium::DirectX12
 		}
 #endif
 
-		AssertAction(
+		Debug::Assert(
 			aDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(myFence.ReleaseAndGetAddressOf())),
 			"Create command queue fence."
 		);
@@ -119,8 +119,8 @@ namespace Atrium::DirectX12
 	std::uint64_t CommandQueue::ExecuteCommandList(ComPtr<ID3D12CommandList> aCommandList)
 	{
 		ComPtr<ID3D12GraphicsCommandList> graphicsCommandList;
-		if (!VerifyAction(aCommandList.As(&graphicsCommandList), "Convert to graphics command list.") ||
-			!VerifyAction(graphicsCommandList->Close(), "Close command list."))
+		if (!Debug::Verify(aCommandList.As(&graphicsCommandList), "Convert to graphics command list.") ||
+			!Debug::Verify(graphicsCommandList->Close(), "Close command list."))
 			return 0;
 
 		myCommandQueue->ExecuteCommandLists(1, aCommandList.GetAddressOf());

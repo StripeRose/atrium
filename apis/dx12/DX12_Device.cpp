@@ -51,7 +51,7 @@ namespace Atrium::DirectX12
 			IID_NULL, NULL
 		);
 		
-		if (VerifyAction(creationResult, "Create resource"))
+		if (Debug::Verify(creationResult, "Create resource"))
 			return std::shared_ptr<GPUResource>(new GPUResource(allocation, anInitialState));
 		else
 			return { };
@@ -61,7 +61,7 @@ namespace Atrium::DirectX12
 	void Device::SetupDebug(UINT& someDXGIFlagsOut)
 	{
 		ComPtr<ID3D12Debug> debugController;
-		if (VerifyActionWithLog(D3D12GetDebugInterface(IID_PPV_ARGS(debugController.GetAddressOf())), "Enable debug layer"))
+		if (Debug::Verify(D3D12GetDebugInterface(IID_PPV_ARGS(debugController.GetAddressOf())), "Enable debug layer"))
 			debugController->EnableDebugLayer();
 
 		ComPtr<IDXGIInfoQueue> dxgiInfoQueue;
@@ -89,7 +89,7 @@ namespace Atrium::DirectX12
 	{
 		ZoneScoped;
 
-		if (!VerifyActionWithLog(CreateDXGIFactory2(someDXGIFlags, IID_PPV_ARGS(myDXGIFactory.GetAddressOf())), "Create DXGI Factory"))
+		if (!Debug::Verify(CreateDXGIFactory2(someDXGIFlags, IID_PPV_ARGS(myDXGIFactory.GetAddressOf())), "Create DXGI Factory"))
 			return false;
 
 		if (myParameters.AllowTearing)
@@ -197,7 +197,7 @@ namespace Atrium::DirectX12
 	{
 		ZoneScoped;
 
-		if (!VerifyActionWithLog(D3D12CreateDevice(
+		if (!Debug::Verify(D3D12CreateDevice(
 			myAdapter.Get(),
 			myParameters.MinimumFeatureLevel,
 			IID_PPV_ARGS(myDevice.ReleaseAndGetAddressOf())), "Create DirectX 12 device."))
@@ -219,7 +219,7 @@ namespace Atrium::DirectX12
 			= D3D12MA::ALLOCATOR_FLAG_MSAA_TEXTURES_ALWAYS_COMMITTED
 			| D3D12MA::ALLOCATOR_FLAG_DEFAULT_POOLS_NOT_ZEROED;
 
-		return VerifyAction(
+		return Debug::Verify(
 			D3D12MA::CreateAllocator(&allocatorDesc, myAllocator.ReleaseAndGetAddressOf()),
 			"Create memory allocator"
 		);
@@ -230,7 +230,7 @@ namespace Atrium::DirectX12
 		ZoneScoped;
 
 #ifndef NDEBUG
-		if (!VerifyAction(myDevice.As(&myInfoQueue), "Get info queue."))
+		if (!Debug::Verify(myDevice.As(&myInfoQueue), "Get info queue."))
 			return false;
 
 		//D3D12_MESSAGE_ID hide[] =

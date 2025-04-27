@@ -74,7 +74,7 @@ namespace Atrium::DirectX12
 		heapDescriptor.Flags = myIsReferencedByShader ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 		heapDescriptor.NodeMask = 0;
 
-		if (!VerifyAction(aDevice->CreateDescriptorHeap(
+		if (!Debug::Verify(aDevice->CreateDescriptorHeap(
 			&heapDescriptor,
 			IID_PPV_ARGS(myDescriptorHeap.ReleaseAndGetAddressOf())),
 			"Create descriptor heap."))
