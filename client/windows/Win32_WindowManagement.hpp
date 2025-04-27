@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core_WindowManagement.hpp"
+#include "Atrium_WindowManagement.hpp"
 
 #include <Windows.h>
 #include <windowsx.h>

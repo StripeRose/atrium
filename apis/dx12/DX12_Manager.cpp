@@ -1,4 +1,4 @@
-#include "Core_Diagnostics.hpp"
+#include "Atrium_Diagnostics.hpp"
 
 #include "DX12_ComPtr.hpp"
 #include "DX12_DDS.hpp"

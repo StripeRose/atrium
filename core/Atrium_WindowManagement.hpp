@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core_Math.hpp"
+#include "Atrium_Math.hpp"
 
 #include <rose-common/EventSlot.hpp>
 

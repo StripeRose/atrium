@@ -1,5 +1,5 @@
 // Filter "Editor"
-#include "Editor_FileDialog.hpp"
+#include "Atrium_FileDialog.hpp"
 
 #if _WIN32
 #include <atomic>

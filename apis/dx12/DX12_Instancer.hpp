@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core_GraphicsAPI.hpp"
+#include "Atrium_GraphicsAPI.hpp"
 
 #include <memory>
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Core_GraphicsEnums.hpp"
+#include "Atrium_GraphicsEnums.hpp"
 
 #include <rose-common/Enum.hpp>
 

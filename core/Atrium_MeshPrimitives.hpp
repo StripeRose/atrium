@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Core_Math.hpp"
+#include "Atrium_Math.hpp"
 
 #include <functional>
 #include <vector>

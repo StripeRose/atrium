@@ -2,8 +2,8 @@
 
 #include "Win32_GameInputDevice.hpp"
 
-#include "Core_Diagnostics.hpp"
-#include "Core_InputEvent.hpp"
+#include "Atrium_Diagnostics.hpp"
+#include "Atrium_InputEvent.hpp"
 
 #include <sstream>
 

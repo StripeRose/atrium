@@ -1,8 +1,8 @@
 // Filter "Editor"
 #pragma once
 
-#include <Core_Color.hpp>
-#include <Core_Math.hpp>
+#include <Atrium_Color.hpp>
+#include <Atrium_Math.hpp>
 
 #include <any>
 #include <optional>

@@ -1,6 +1,6 @@
 // Filter "Graphics"
 
-#include "Core_MeshPrimitives.hpp"
+#include "Atrium_MeshPrimitives.hpp"
 
 #include <vector>
 

@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "Core_Color.hpp"
+#include "Atrium_Color.hpp"
 
-#include "Core_GraphicsEnums.hpp"
+#include "Atrium_GraphicsEnums.hpp"
 
 namespace Atrium::Core
 {

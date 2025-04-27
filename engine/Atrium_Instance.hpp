@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Core_GraphicsAPI.hpp"
-#include "Core_InputDeviceAPI.hpp"
-#include "Core_WindowManagement.hpp"
+#include "Atrium_GraphicsAPI.hpp"
+#include "Atrium_InputDeviceAPI.hpp"
+#include "Atrium_WindowManagement.hpp"
 
 #include <memory>
 

@@ -1,5 +1,5 @@
 // Filter "Editor"
-#include "Editor_GUI.hpp"
+#include "Atrium_GUI.hpp"
 
 #if IS_IMGUI_ENABLED
 ImVec2 toVec(const Atrium::Vector2& aVector) { return ImVec2(aVector.X, aVector.Y); }

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Core_Texture.hpp"
+#include "Atrium_Texture.hpp"
 
 #include <memory>
 

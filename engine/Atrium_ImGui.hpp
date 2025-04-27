@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Core_GraphicsAPI.hpp>
-#include <Core_GraphicsEnums.hpp>
-#include <Core_InputDevice.hpp>
-#include <Core_WindowManagement.hpp>
+#include <Atrium_GraphicsAPI.hpp>
+#include <Atrium_GraphicsEnums.hpp>
+#include <Atrium_InputDevice.hpp>
+#include <Atrium_WindowManagement.hpp>
 
 #if IS_IMGUI_ENABLED
 #include <DX12_DescriptorHeap.hpp>

@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "Core_Color.hpp"
-#include "Core_FrameContext.hpp"
-#include "Core_Math.hpp"
-#include "Core_RenderTexture.hpp"
+#include "Atrium_Color.hpp"
+#include "Atrium_FrameContext.hpp"
+#include "Atrium_Math.hpp"
+#include "Atrium_RenderTexture.hpp"
 
 #include "DX12_CommandQueue.hpp"
 #include "DX12_ComPtr.hpp"

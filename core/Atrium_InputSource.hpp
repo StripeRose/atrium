@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Core_InputDevice.hpp"
+#include "Atrium_InputDevice.hpp"
 
 #include <optional>
 #include <utility>

@@ -1,8 +1,8 @@
-#include "Engine_Instance.hpp"
+#include "Atrium_Instance.hpp"
 
-#include "Engine_ImGui.hpp"
+#include "Atrium_ImGui.hpp"
 
-#include "Core_Diagnostics.hpp"
+#include "Atrium_Diagnostics.hpp"
 
 namespace Atrium
 {

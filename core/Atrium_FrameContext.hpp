@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "Core_Color.hpp"
-#include "Core_Diagnostics.hpp"
-#include "Core_GraphicsBuffer.hpp"
-#include "Core_GraphicsPipeline.hpp"
-#include "Core_Math.hpp"
-#include "Core_RenderTexture.hpp"
+#include "Atrium_Color.hpp"
+#include "Atrium_Diagnostics.hpp"
+#include "Atrium_GraphicsBuffer.hpp"
+#include "Atrium_GraphicsPipeline.hpp"
+#include "Atrium_Math.hpp"
+#include "Atrium_RenderTexture.hpp"
 
 #include <functional>
 #include <memory>
