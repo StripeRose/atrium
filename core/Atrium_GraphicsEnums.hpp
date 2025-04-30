@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace Atrium::Core
+namespace Atrium
 {
 	enum class TextureDimension
 	{

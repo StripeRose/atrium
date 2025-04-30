@@ -10,7 +10,7 @@ namespace Atrium
 	{
 	}
 
-	void EngineInstance::InitializeImGui(Window& aPrimaryWindow, std::shared_ptr<Core::RenderTexture> aTarget)
+	void EngineInstance::InitializeImGui(Window& aPrimaryWindow, std::shared_ptr<RenderTexture> aTarget)
 	{
 		Debug::Assert(!myImGuiHandler, "Only one primary ImGui window supported.");
 		myImGuiHandler.reset(new ImGuiHandler(*myGraphicsAPI, aPrimaryWindow, aTarget));

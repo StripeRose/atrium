@@ -48,20 +48,20 @@ namespace Atrium::DirectX12
 			myImage.reset();
 	}
 
-	Core::TextureDimension SimpleTexture::GetDimensions() const
+	TextureDimension SimpleTexture::GetDimensions() const
 	{
 		switch (myMetadata.dimension)
 		{
 		case TEX_DIMENSION_TEXTURE1D:
-			return Core::TextureDimension::Tex2D;
+			return TextureDimension::Tex2D;
 		case TEX_DIMENSION_TEXTURE2D:
 			return myMetadata.IsCubemap()
-				? Core::TextureDimension::Cube
-				: Core::TextureDimension::Tex2D;
+				? TextureDimension::Cube
+				: TextureDimension::Tex2D;
 		case TEX_DIMENSION_TEXTURE3D:
-			return Core::TextureDimension::Tex3D;
+			return TextureDimension::Tex3D;
 		default:
-			return Core::TextureDimension::Unknown;
+			return TextureDimension::Unknown;
 		}
 	}
 
@@ -70,13 +70,13 @@ namespace Atrium::DirectX12
 		return static_cast<unsigned int>(myMetadata.depth);
 	}
 
-	Core::FilterMode SimpleTexture::GetFilterMode() const
+	FilterMode SimpleTexture::GetFilterMode() const
 	{
 		Debug::LogWarning("Not implemented.");
-		return Core::FilterMode::Point;
+		return FilterMode::Point;
 	}
 
-	Core::TextureFormat SimpleTexture::GetFormat() const
+	TextureFormat SimpleTexture::GetFormat() const
 	{
 		return ToTextureFormat(myMetadata.format);
 	}
@@ -101,49 +101,49 @@ namespace Atrium::DirectX12
 		return static_cast<unsigned int>(myMetadata.width);
 	}
 
-	Core::TextureWrapMode SimpleTexture::GetWrapModeU() const
+	TextureWrapMode SimpleTexture::GetWrapModeU() const
 	{
 		Debug::LogWarning("Not implemented.");
-		return Core::TextureWrapMode::Repeat;
+		return TextureWrapMode::Repeat;
 	}
 
-	Core::TextureWrapMode SimpleTexture::GetWrapModeV() const
+	TextureWrapMode SimpleTexture::GetWrapModeV() const
 	{
 		Debug::LogWarning("Not implemented.");
-		return Core::TextureWrapMode::Repeat;
+		return TextureWrapMode::Repeat;
 	}
 
-	Core::TextureWrapMode SimpleTexture::GetWrapModeW() const
+	TextureWrapMode SimpleTexture::GetWrapModeW() const
 	{
 		Debug::LogWarning("Not implemented.");
-		return Core::TextureWrapMode::Repeat;
+		return TextureWrapMode::Repeat;
 	}
 
-	void SimpleTexture::SetFilterMode(Core::FilterMode aFilterMode)
+	void SimpleTexture::SetFilterMode(FilterMode aFilterMode)
 	{
 		aFilterMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void SimpleTexture::SetWrapMode(Core::TextureWrapMode aWrapMode)
+	void SimpleTexture::SetWrapMode(TextureWrapMode aWrapMode)
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void SimpleTexture::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
+	void SimpleTexture::SetWrapModeU(TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void SimpleTexture::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
+	void SimpleTexture::SetWrapModeV(TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");
 	}
 
-	void SimpleTexture::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
+	void SimpleTexture::SetWrapModeW(TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Not implemented.");

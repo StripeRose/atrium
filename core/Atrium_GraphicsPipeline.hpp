@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	/**
 	 * @brief Shader program to be run as part of the graphics pipeline.
@@ -209,4 +209,4 @@ namespace Atrium::Core
 	};
 }
 
-ENUM_FLAGS(Atrium::Core::Shader::Type);
+ENUM_FLAGS(Atrium::Shader::Type);

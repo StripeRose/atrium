@@ -11,7 +11,7 @@ namespace Atrium::DirectX12
 		: myManager(aManager)
 	{ }
 
-	std::shared_ptr<Core::RenderTexture> ResourceManager::CreateRenderTextureForWindow(Atrium::Window& aWindow)
+	std::shared_ptr<Atrium::RenderTexture> ResourceManager::CreateRenderTextureForWindow(Atrium::Window& aWindow)
 	{
 		ZoneScoped;
 
@@ -27,26 +27,26 @@ namespace Atrium::DirectX12
 		return swapChain;
 	}
 
-	std::shared_ptr<Core::GraphicsBuffer> ResourceManager::CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+	std::shared_ptr<Atrium::GraphicsBuffer> ResourceManager::CreateGraphicsBuffer(GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 	{
 		ZoneScoped;
 
-		return std::shared_ptr<Core::GraphicsBuffer>(new GraphicsBuffer(myManager, aTarget, aCount, aStride));
+		return std::shared_ptr<GraphicsBuffer>(new GraphicsBuffer(myManager, aTarget, aCount, aStride));
 	}
 
-	std::shared_ptr<Core::PipelineState> ResourceManager::CreatePipelineState(const Core::PipelineStateDescription& aPipelineState)
+	std::shared_ptr<Atrium::PipelineState> ResourceManager::CreatePipelineState(const PipelineStateDescription& aPipelineState)
 	{
 		return DirectX12::PipelineState::CreateFrom(
 			*myManager.GetDevice().GetDevice().Get(),
 			aPipelineState);
 	}
 
-	std::unique_ptr<Core::RootSignatureBuilder> ResourceManager::CreateRootSignature()
+	std::unique_ptr<RootSignatureBuilder> ResourceManager::CreateRootSignature()
 	{
-		return std::unique_ptr<Core::RootSignatureBuilder>(new RootSignatureCreator(myManager.GetDevice().GetDevice().Get()));
+		return std::unique_ptr<RootSignatureBuilder>(new RootSignatureCreator(myManager.GetDevice().GetDevice().Get()));
 	}
 
-	std::shared_ptr<Core::Shader> ResourceManager::CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint)
+	std::shared_ptr<Atrium::Shader> ResourceManager::CreateShader(const std::filesystem::path& aSource, Shader::Type aType, const char* anEntryPoint)
 	{
 		ZoneScoped;
 
@@ -63,17 +63,17 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::EditableTexture> ResourceManager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<EditableTexture> ResourceManager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, TextureFormat aTextureFormat)
 	{
 		return CreateEditableDDS(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aHeight, 1, aTextureFormat);
 	}
 
-	std::shared_ptr<Core::EditableTexture> ResourceManager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<EditableTexture> ResourceManager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat)
 	{
 		return CreateEditableDDS(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aHeight, aDepth, aTextureFormat);
 	}
 
-	std::shared_ptr<Core::EditableTexture> ResourceManager::CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<EditableTexture> ResourceManager::CreateTextureCube(unsigned int aWidth, TextureFormat aTextureFormat)
 	{
 		return CreateEditableDDS(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aWidth, aWidth, aTextureFormat);
 	}
@@ -94,7 +94,7 @@ namespace Atrium::DirectX12
 		return swapChains;
 	}
 
-	std::shared_ptr<Core::Texture> ResourceManager::LoadTexture(const std::filesystem::path& aPath)
+	std::shared_ptr<Texture> ResourceManager::LoadTexture(const std::filesystem::path& aPath)
 	{
 		const std::filesystem::path extension = aPath.extension();
 		if (extension == ".dds")

@@ -8,41 +8,41 @@
 
 namespace Atrium::DirectX12
 {
-	BackendGraphicsBuffer::BackendGraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+	BackendGraphicsBuffer::BackendGraphicsBuffer(Device& aDevice, Atrium::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 		: myCount(aCount)
 		, myStride(aStride)
 		, myMappedBuffer(nullptr)
 	{
-		static constexpr Core::GraphicsBuffer::Target SupportedTargets
-			= Core::GraphicsBuffer::Target::Constant
-			| Core::GraphicsBuffer::Target::Index
-			| Core::GraphicsBuffer::Target::Vertex
+		static constexpr Atrium::GraphicsBuffer::Target SupportedTargets
+			= Atrium::GraphicsBuffer::Target::Constant
+			| Atrium::GraphicsBuffer::Target::Index
+			| Atrium::GraphicsBuffer::Target::Vertex
 			;
 
 		Debug::Assert(
-			(aTarget & ~SupportedTargets) == Core::GraphicsBuffer::Target::None,
+			(aTarget & ~SupportedTargets) == Atrium::GraphicsBuffer::Target::None,
 			"Supported targets: Constant, Index, Vertex"
 		);
 
 		const std::uint32_t alignedSize =
-			(aTarget & Core::GraphicsBuffer::Target::Constant) != Core::GraphicsBuffer::Target::None
+			(aTarget & Atrium::GraphicsBuffer::Target::Constant) != Atrium::GraphicsBuffer::Target::None
 			? Align<std::uint32_t>(aCount * aStride, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT)
 			: aCount * aStride;
 
 		D3D12_RESOURCE_STATES usageState = D3D12_RESOURCE_STATE_GENERIC_READ;
 
-		if ((aTarget & Core::GraphicsBuffer::Target::Index) != Core::GraphicsBuffer::Target::None)
+		if ((aTarget & Atrium::GraphicsBuffer::Target::Index) != Atrium::GraphicsBuffer::Target::None)
 			usageState |= D3D12_RESOURCE_STATE_INDEX_BUFFER;
 
 		CreateResource(aDevice, usageState, alignedSize);
 
-		if ((aTarget & Core::GraphicsBuffer::Target::Vertex) != Core::GraphicsBuffer::Target::None)
+		if ((aTarget & Atrium::GraphicsBuffer::Target::Vertex) != Atrium::GraphicsBuffer::Target::None)
 			CreateVertexView(aCount, aStride);
 
-		if ((aTarget & Core::GraphicsBuffer::Target::Index) != Core::GraphicsBuffer::Target::None)
+		if ((aTarget & Atrium::GraphicsBuffer::Target::Index) != Atrium::GraphicsBuffer::Target::None)
 			CreateIndexView(aCount, aStride);
 
-		if ((aTarget & Core::GraphicsBuffer::Target::Constant) != Core::GraphicsBuffer::Target::None)
+		if ((aTarget & Atrium::GraphicsBuffer::Target::Constant) != Atrium::GraphicsBuffer::Target::None)
 			CreateConstantView(aDevice, alignedSize);
 	}
 
@@ -138,7 +138,7 @@ namespace Atrium::DirectX12
 		myVertexView = vertexView;
 	}
 
-	GraphicsBuffer::GraphicsBuffer(DirectX12API& anAPI, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+	GraphicsBuffer::GraphicsBuffer(DirectX12API& anAPI, Atrium::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 		: myAPI(anAPI)
 		, myLastWrittenBuffer(nullptr)
 		, myTarget(aTarget)

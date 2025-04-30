@@ -6,7 +6,7 @@
 
 #include "Atrium_GraphicsEnums.hpp"
 
-namespace Atrium::Core
+namespace Atrium
 {
 	class Texture
 	{

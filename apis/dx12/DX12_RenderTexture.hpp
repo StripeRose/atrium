@@ -10,7 +10,7 @@
 
 namespace Atrium::DirectX12
 {
-	class RenderTarget : public Core::RenderTexture
+	class RenderTarget : public Atrium::RenderTexture
 	{
 	public:
 		virtual DescriptorHeapHandle GetColorView() const = 0;
@@ -31,11 +31,11 @@ namespace Atrium::DirectX12
 	public:
 		RenderTexture(
 			Device& aDevice,
-			const Core::RenderTextureDescriptor& aDescriptor
+			const RenderTextureDescriptor& aDescriptor
 		);
 		RenderTexture(
 			Device& aDevice,
-			const Core::RenderTextureDescriptor& aDescriptor,
+			const RenderTextureDescriptor& aDescriptor,
 			const std::shared_ptr<GPUResource>& aColorBuffer,
 			const std::shared_ptr<GPUResource>& aDepthBuffer
 		);
@@ -58,35 +58,35 @@ namespace Atrium::DirectX12
 
 		// Implementing RenderTexture
 	public:
-		const Core::RenderTextureDescriptor& GetDescriptor() const override { return myDescriptor; }
+		const RenderTextureDescriptor& GetDescriptor() const override { return myDescriptor; }
 		void* GetNativeDepthBufferPtr() const override { return myDepthResource->GetResource().Get(); }
 
 		// Implementing Texture
 	public:
-		void SetFilterMode(Core::FilterMode aFilterMode) override;
-		Core::TextureDimension GetDimensions() const override;
+		void SetFilterMode(FilterMode aFilterMode) override;
+		TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		Core::FilterMode GetFilterMode() const override;
+		FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
 
-		Core::TextureWrapMode GetWrapModeU() const override;
-		Core::TextureWrapMode GetWrapModeV() const override;
-		Core::TextureWrapMode GetWrapModeW() const override;
+		TextureWrapMode GetWrapModeU() const override;
+		TextureWrapMode GetWrapModeV() const override;
+		TextureWrapMode GetWrapModeW() const override;
 
-		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapMode(TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(TextureWrapMode aWrapMode) const override;
 
 		void* GetNativeTexturePtr() const override { return myResource->GetResource().Get(); }
 
 	protected:
 		Device* myDevicePtr;
 
-		Core::RenderTextureDescriptor myDescriptor;
+		RenderTextureDescriptor myDescriptor;
 
 		std::shared_ptr<GPUResource> myResource;
 		std::shared_ptr<GPUResource> myDepthResource;

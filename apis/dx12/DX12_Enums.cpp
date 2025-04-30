@@ -3,8 +3,6 @@
 
 namespace Atrium::DirectX12
 {
-	using namespace Core;
-
 	DXGI_FORMAT ToDXGIFormat(const GraphicsFormat& aFormat)
 	{
 		switch (aFormat)
@@ -152,7 +150,7 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	Core::GraphicsFormat ToGraphicsFormat(const Core::TextureFormat& aFormat)
+	GraphicsFormat ToGraphicsFormat(const TextureFormat& aFormat)
 	{
 		switch (aFormat)
 		{
@@ -247,10 +245,8 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	Core::TextureFormat ToTextureFormat(const DXGI_FORMAT& aFormat)
+	TextureFormat ToTextureFormat(const DXGI_FORMAT& aFormat)
 	{
-		using namespace Core;
-
 		switch (aFormat)
 		{
 		case DXGI_FORMAT_BC1_TYPELESS:
@@ -290,7 +286,7 @@ namespace Atrium::DirectX12
 
 		default:
 			Debug::LogFatal("Unsupported format.");
-			return Core::TextureFormat(0);
+			return TextureFormat(0);
 		}
 	}
 }

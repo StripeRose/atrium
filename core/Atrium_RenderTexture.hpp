@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	struct RenderTextureDescriptor
 	{

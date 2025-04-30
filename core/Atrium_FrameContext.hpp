@@ -14,7 +14,7 @@
 #include <source_location>
 #include <vector>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	enum class PrimitiveTopology
 	{
@@ -63,7 +63,7 @@ namespace Atrium::Core
 		 * @param aTarget Target to clear the color buffer of.
 		 * @param aClearColor Color value to clear to.
 		 */
-		virtual void ClearColor(const std::shared_ptr<Core::RenderTexture>& aTarget, Color aClearColor) = 0;
+		virtual void ClearColor(const std::shared_ptr<RenderTexture>& aTarget, Color aClearColor) = 0;
 
 		/**
 		 * @brief Clear a render texture's depth and stencil to a specified value.
@@ -73,7 +73,7 @@ namespace Atrium::Core
 		 * @param aDepth Depth value to clear to.
 		 * @param aStencil Stencil value to clear to.
 		 */
-		virtual void ClearDepth(const std::shared_ptr<Core::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) = 0;
+		virtual void ClearDepth(const std::shared_ptr<RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) = 0;
 
 		/**
 		 * @brief Disable scissor test culling and utilize the full render target.
@@ -137,7 +137,7 @@ namespace Atrium::Core
 		 * 
 		 * @param aPipelineState Pipeline State Object to set.
 		 */
-		virtual void SetPipelineState(const std::shared_ptr<Core::PipelineState>& aPipelineState) = 0;
+		virtual void SetPipelineState(const std::shared_ptr<PipelineState>& aPipelineState) = 0;
 
 		/**
 		 * @brief Set a graphics buffer containing vertices as a current vertex buffer.
@@ -145,7 +145,7 @@ namespace Atrium::Core
 		 * @param aVertexBuffer Graphics buffer to use.
 		 * @param aSlot Index into the device's zero-based array of vertex buffer slots to set the graphics buffer.
 		 */
-		virtual void SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot = 0) = 0;
+		virtual void SetVertexBuffer(const std::shared_ptr<const GraphicsBuffer>& aVertexBuffer, unsigned int aSlot = 0) = 0;
 
 		/**
 		 * @brief Bind a graphics buffer into a specific slot of the root signature, for use in shaders.
@@ -154,7 +154,7 @@ namespace Atrium::Core
 		 * @param aRegisterIndex Index of the register to use.
 		 * @param aBuffer Graphics buffer to bind.
 		 */
-		virtual void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer) = 0;
+		virtual void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<GraphicsBuffer>& aBuffer) = 0;
 
 		/**
 		 * @brief Bind a texture buffer into a specific slot of the root signature, for use in shaders.
@@ -163,7 +163,7 @@ namespace Atrium::Core
 		 * @param aRegisterIndex Index of the register to use.
 		 * @param aTexture Texture buffer to bind.
 		 */
-		virtual void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture) = 0;
+		virtual void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Texture>& aTexture) = 0;
 
 		/**
 		 * @brief Select the type of primitive topology that describes the input data for the Input Assembler stage.
@@ -192,7 +192,7 @@ namespace Atrium::Core
 		 * @param someTargets List of render-targets for shader output. Can be empty if none should be bound.
 		 * @param aDepthTarget Depth stencil target to use. Can be null if none should be bound.
 		 */
-		virtual void SetRenderTargets(const std::vector<std::shared_ptr<Core::RenderTexture>>& someTargets, const std::shared_ptr<Core::RenderTexture>& aDepthTarget) = 0;
+		virtual void SetRenderTargets(const std::vector<std::shared_ptr<RenderTexture>>& someTargets, const std::shared_ptr<RenderTexture>& aDepthTarget) = 0;
 
 		/**
 		 * @brief Specify both viewport and scissor rect to cover the screen with the specified screen size.
@@ -230,7 +230,7 @@ namespace Atrium::Core
 #ifdef TRACY_ENABLE
 #define CONTEXT_ZONE(aContext, aName) \
 	static constexpr tracy::SourceLocationData TracyConcat(__tracy_source_location, TracyLine) { aName, TracyFunction, TracyFile, (uint32_t)TracyLine, 0 };  \
-	Atrium::Core::FrameGraphicsContext::ProfileContextZone TracyConcat(contextZoneScope, __LINE__); \
+	Atrium::FrameGraphicsContext::ProfileContextZone TracyConcat(contextZoneScope, __LINE__); \
 	(aContext).BeginProfileZone(TracyConcat(contextZoneScope, __LINE__), TracyConcat(__tracy_source_location, TracyLine));
 #else
 #define CONTEXT_ZONE(aContext, aName)

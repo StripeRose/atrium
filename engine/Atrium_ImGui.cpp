@@ -17,7 +17,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace Atrium
 {
-	ImGuiHandler::ImGuiHandler([[maybe_unused]] Core::GraphicsAPI& aGraphicsAPI, [[maybe_unused]] Window& aPrimaryWindow, [[maybe_unused]] std::shared_ptr<Core::RenderTexture> aTarget)
+	ImGuiHandler::ImGuiHandler([[maybe_unused]] GraphicsAPI& aGraphicsAPI, [[maybe_unused]] Window& aPrimaryWindow, [[maybe_unused]] std::shared_ptr<RenderTexture> aTarget)
 		#if IS_IMGUI_ENABLED
 		: myGraphicsAPI(aGraphicsAPI)
 		, myRenderTarget(aTarget)
@@ -155,7 +155,7 @@ namespace Atrium
 			};
 	}
 
-	void ImGuiHandler::SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Window& aWindow, Core::GraphicsFormat aTargetFormat)
+	void ImGuiHandler::SetupBackend(GraphicsAPI& aGraphicsAPI, Window& aWindow, GraphicsFormat aTargetFormat)
 	{
 		ZoneScoped;
 		ImGui_ImplWin32_Init(std::any_cast<HWND>(aWindow.GetNativeHandle()));

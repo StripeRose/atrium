@@ -18,13 +18,13 @@ namespace Atrium
 	public:
 		~EngineInstance();
 
-		Core::GraphicsAPI& GetGraphicsAPI() { return *myGraphicsAPI; }
+		GraphicsAPI& GetGraphicsAPI() { return *myGraphicsAPI; }
 
 		InputDeviceAPI& GetInputAPI() { return *myInputDeviceAPI; }
 
 		WindowManager& GetWindowManager() { return *myWindowManager; }
 
-		void InitializeImGui(Window& aPrimaryWindow, std::shared_ptr<Core::RenderTexture> aTarget);
+		void InitializeImGui(Window& aPrimaryWindow, std::shared_ptr<RenderTexture> aTarget);
 
 		void Run();
 
@@ -43,7 +43,7 @@ namespace Atrium
 		bool myIsRunning;
 		std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
-		std::unique_ptr<Core::GraphicsAPI> myGraphicsAPI;
+		std::unique_ptr<GraphicsAPI> myGraphicsAPI;
 		std::unique_ptr<InputDeviceAPI> myInputDeviceAPI;
 		std::unique_ptr<WindowManager> myWindowManager;
 	};

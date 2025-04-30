@@ -7,11 +7,11 @@
 
 namespace Atrium::DirectX12
 {
-	RenderTexture::RenderTexture(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor)
+	RenderTexture::RenderTexture(Device& aDevice, const RenderTextureDescriptor& aDescriptor)
 		: RenderTexture(aDevice, aDescriptor, nullptr, nullptr)
 	{ }
 
-	RenderTexture::RenderTexture(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, const std::shared_ptr<GPUResource>& aColorBuffer, const std::shared_ptr<GPUResource>& aDepthBuffer)
+	RenderTexture::RenderTexture(Device& aDevice, const RenderTextureDescriptor& aDescriptor, const std::shared_ptr<GPUResource>& aColorBuffer, const std::shared_ptr<GPUResource>& aDepthBuffer)
 		: myDescriptor(aDescriptor)
 		, myDevicePtr(&aDevice)
 		, myResource(aColorBuffer)
@@ -22,10 +22,10 @@ namespace Atrium::DirectX12
 			"The render-texture has a size."
 		);
 
-		if (myDescriptor.ColorGraphicsFormat == Core::GraphicsFormat::None)
+		if (myDescriptor.ColorGraphicsFormat == GraphicsFormat::None)
 			myDescriptor.ColorGraphicsFormat = ToGraphicsFormat(myDescriptor.ColorFormat);
 
-		if (myDescriptor.ColorGraphicsFormat != Core::GraphicsFormat::None)
+		if (myDescriptor.ColorGraphicsFormat != GraphicsFormat::None)
 		{
 			if (!aColorBuffer)
 			{
@@ -66,7 +66,7 @@ namespace Atrium::DirectX12
 			aDevice.GetDevice()->CreateRenderTargetView(myResource->GetResource().Get(), &rtvDesc, myRSVHandle.GetCPUHandle());
 		}
 
-		if (myDescriptor.DepthStencilFormat != Core::GraphicsFormat::None)
+		if (myDescriptor.DepthStencilFormat != GraphicsFormat::None)
 		{
 			if (!myDepthResource)
 			{
@@ -107,7 +107,7 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	Core::TextureDimension RenderTexture::GetDimensions() const
+	TextureDimension RenderTexture::GetDimensions() const
 	{
 		return myDescriptor.Dimension;
 	}
@@ -123,14 +123,14 @@ namespace Atrium::DirectX12
 		myDepthResource->GetResource()->SetName((std::wstring(aName) + L" - Depth").c_str());
 	}
 
-	void RenderTexture::SetFilterMode(Core::FilterMode aFilterMode)
+	void RenderTexture::SetFilterMode(FilterMode aFilterMode)
 	{
 		aFilterMode;
 	}
 
-	Core::FilterMode RenderTexture::GetFilterMode() const
+	FilterMode RenderTexture::GetFilterMode() const
 	{
-		return Core::FilterMode::Bilinear;
+		return FilterMode::Bilinear;
 	}
 
 	unsigned int RenderTexture::GetHeight() const
@@ -153,37 +153,37 @@ namespace Atrium::DirectX12
 		return myDescriptor.Size_Width;
 	}
 
-	Core::TextureWrapMode RenderTexture::GetWrapModeU() const
+	TextureWrapMode RenderTexture::GetWrapModeU() const
 	{
-		return Core::TextureWrapMode::Repeat;
+		return TextureWrapMode::Repeat;
 	}
 
-	Core::TextureWrapMode RenderTexture::GetWrapModeV() const
+	TextureWrapMode RenderTexture::GetWrapModeV() const
 	{
-		return Core::TextureWrapMode::Repeat;
+		return TextureWrapMode::Repeat;
 	}
 
-	Core::TextureWrapMode RenderTexture::GetWrapModeW() const
+	TextureWrapMode RenderTexture::GetWrapModeW() const
 	{
-		return Core::TextureWrapMode::Repeat;
+		return TextureWrapMode::Repeat;
 	}
 
-	void RenderTexture::SetWrapMode(Core::TextureWrapMode aWrapMode)
-	{
-		aWrapMode;
-	}
-
-	void RenderTexture::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
+	void RenderTexture::SetWrapMode(TextureWrapMode aWrapMode)
 	{
 		aWrapMode;
 	}
 
-	void RenderTexture::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
+	void RenderTexture::SetWrapModeU(TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 	}
 
-	void RenderTexture::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
+	void RenderTexture::SetWrapModeV(TextureWrapMode aWrapMode) const
+	{
+		aWrapMode;
+	}
+
+	void RenderTexture::SetWrapModeW(TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 	}

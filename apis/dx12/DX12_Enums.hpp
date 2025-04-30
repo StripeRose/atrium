@@ -7,12 +7,12 @@
 
 namespace Atrium::DirectX12
 {
-	DXGI_FORMAT ToDXGIFormat(const Core::GraphicsFormat& aFormat);
-	Core::GraphicsFormat ToGraphicsFormat(const Core::RenderTextureFormat& aRTFormat);
-	Core::GraphicsFormat ToGraphicsFormat(const Core::TextureFormat& aFormat);
-	D3D12_RESOURCE_DIMENSION ToD3DTextureDimension(const Core::TextureDimension& aDimension);
-	D3D12_RTV_DIMENSION ToRTVTextureDimension(const Core::TextureDimension& aDimension);
-	D3D12_DSV_DIMENSION ToDSVTextureDimension(const Core::TextureDimension& aDimension);
+	DXGI_FORMAT ToDXGIFormat(const GraphicsFormat& aFormat);
+	GraphicsFormat ToGraphicsFormat(const RenderTextureFormat& aRTFormat);
+	GraphicsFormat ToGraphicsFormat(const TextureFormat& aFormat);
+	D3D12_RESOURCE_DIMENSION ToD3DTextureDimension(const TextureDimension& aDimension);
+	D3D12_RTV_DIMENSION ToRTVTextureDimension(const TextureDimension& aDimension);
+	D3D12_DSV_DIMENSION ToDSVTextureDimension(const TextureDimension& aDimension);
 
-	Core::TextureFormat ToTextureFormat(const DXGI_FORMAT& aFormat);
+	TextureFormat ToTextureFormat(const DXGI_FORMAT& aFormat);
 }

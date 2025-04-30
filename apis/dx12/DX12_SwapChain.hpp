@@ -42,28 +42,28 @@ namespace Atrium::DirectX12
 
 		// Implementing RenderTexture
 	public:
-		const Core::RenderTextureDescriptor& GetDescriptor() const override;
+		const RenderTextureDescriptor& GetDescriptor() const override;
 		void* GetNativeDepthBufferPtr() const override;
 
 		// Implementing Texture
 	public:
-		void SetFilterMode(Core::FilterMode aFilterMode) override;
-		Core::TextureDimension GetDimensions() const override;
+		void SetFilterMode(FilterMode aFilterMode) override;
+		TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		Core::FilterMode GetFilterMode() const override;
+		FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
 
-		Core::TextureWrapMode GetWrapModeU() const override;
-		Core::TextureWrapMode GetWrapModeV() const override;
-		Core::TextureWrapMode GetWrapModeW() const override;
+		TextureWrapMode GetWrapModeU() const override;
+		TextureWrapMode GetWrapModeV() const override;
+		TextureWrapMode GetWrapModeW() const override;
 
-		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapMode(TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(TextureWrapMode aWrapMode) const override;
 
 		void* GetNativeTexturePtr() const override;
 
@@ -75,7 +75,7 @@ namespace Atrium::DirectX12
 
 		void OnDrawSurfaceResize(const Size& aSize);
 
-		Core::RenderTextureFormat GetRenderTextureFormat() const;
+		RenderTextureFormat GetRenderTextureFormat() const;
 
 	private:
 		class SwapChainBackBuffer : public DirectX12::RenderTexture
@@ -83,7 +83,7 @@ namespace Atrium::DirectX12
 		public:
 			SwapChainBackBuffer(
 				Device& aDevice,
-				const Core::RenderTextureDescriptor& aDescriptor,
+				const RenderTextureDescriptor& aDescriptor,
 				const ComPtr<ID3D12Resource>& aColorBuffer = nullptr,
 				const ComPtr<ID3D12Resource>& aDepthBuffer = nullptr);
 

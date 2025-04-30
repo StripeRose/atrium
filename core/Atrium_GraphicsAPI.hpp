@@ -12,10 +12,7 @@
 namespace Atrium
 {
 	class Window;
-}
 
-namespace Atrium::Core
-{
 	/**
 	 * @brief Interface for accessing and using graphics devices.
 	 */

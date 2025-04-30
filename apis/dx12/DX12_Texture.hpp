@@ -18,7 +18,7 @@ namespace Atrium::DirectX12
 {
 	class Device;
 	class UploadContext;
-	class SimpleTexture : public Core::EditableTexture
+	class SimpleTexture : public Atrium::EditableTexture
 	{
 	public:
 		SimpleTexture(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
@@ -26,7 +26,7 @@ namespace Atrium::DirectX12
 
 		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override;
 
-		Core::TextureFormat GetFormat() const override;
+		TextureFormat GetFormat() const override;
 
 		virtual DXGI_FORMAT GetDXGIFormat() const { return myImage->GetMetadata().format; }
 		const DescriptorHeapHandle& GetSRVHandle() const { return mySRVHandle; }
@@ -41,23 +41,23 @@ namespace Atrium::DirectX12
 		// Implements Texture
 	public:
 
-		Core::TextureDimension GetDimensions() const override;
+		TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		Core::FilterMode GetFilterMode() const override;
+		FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
 
-		Core::TextureWrapMode GetWrapModeU() const override;
-		Core::TextureWrapMode GetWrapModeV() const override;
-		Core::TextureWrapMode GetWrapModeW() const override;
+		TextureWrapMode GetWrapModeU() const override;
+		TextureWrapMode GetWrapModeV() const override;
+		TextureWrapMode GetWrapModeW() const override;
 
-		void SetFilterMode(Core::FilterMode aFilterMode) override;
-		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
+		void SetFilterMode(FilterMode aFilterMode) override;
+		void SetWrapMode(TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(TextureWrapMode aWrapMode) const override;
 
 		void* GetNativeTexturePtr() const override;
 

@@ -14,7 +14,7 @@ namespace Atrium
 	class ImGuiHandler
 	{
 	public:
-		ImGuiHandler(Core::GraphicsAPI& aGraphicsAPI, Window& aPrimaryWindow, std::shared_ptr<Core::RenderTexture> aTarget);
+		ImGuiHandler(GraphicsAPI& aGraphicsAPI, Window& aPrimaryWindow, std::shared_ptr<RenderTexture> aTarget);
 		~ImGuiHandler();
 
 		InputDeviceType GetAllowedInputs() const;
@@ -25,13 +25,13 @@ namespace Atrium
 #if IS_IMGUI_ENABLED
 	private:
 		void InitForWindow(Window& aWindow);
-		void SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Window& aWindow, Core::GraphicsFormat aTargetFormat);
+		void SetupBackend(GraphicsAPI& aGraphicsAPI, Window& aWindow, GraphicsFormat aTargetFormat);
 		void Cleanup();
 
 		void StyleColorsNord();
 
-		Core::GraphicsAPI& myGraphicsAPI;
-		std::shared_ptr<Core::RenderTexture> myRenderTarget;
+		GraphicsAPI& myGraphicsAPI;
+		std::shared_ptr<RenderTexture> myRenderTarget;
 		Window* myWindow;
 
 		std::unique_ptr<DirectX12::RenderPassDescriptorHeap> myCBV_SRVHeap;
