@@ -89,16 +89,16 @@ namespace Atrium
 		#endif
 	}
 
-	Core::InputDeviceType ImGuiHandler::GetAllowedInputs() const
+	InputDeviceType ImGuiHandler::GetAllowedInputs() const
 	{
-		Core::InputDeviceType deviceTypes = ~Core::InputDeviceType::Unknown;
+		InputDeviceType deviceTypes = ~InputDeviceType::Unknown;
 
 		#if IS_IMGUI_ENABLED
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.WantCaptureKeyboard)
-			deviceTypes &= ~Core::InputDeviceType::Keyboard;
+			deviceTypes &= ~InputDeviceType::Keyboard;
 		if (io.WantCaptureMouse)
-			deviceTypes &= ~Core::InputDeviceType::Mouse;
+			deviceTypes &= ~InputDeviceType::Mouse;
 		#endif
 
 		return deviceTypes;

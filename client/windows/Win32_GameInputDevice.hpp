@@ -15,7 +15,7 @@
 
 namespace Atrium::Win32
 {
-	class GameInputDevice final : public Core::InputDevice
+	class GameInputDevice final : public Atrium::InputDevice
 	{
 	public:
 		GameInputDevice(IGameInput* anInputAPI, IGameInputDevice* aDevice);
@@ -24,7 +24,7 @@ namespace Atrium::Win32
 
 		void HandleDeviceEvent(GameInputDeviceStatus aCurrentStatus, GameInputDeviceStatus aPreviousStatus);
 
-		void ReportInputEvents(Core::InputDeviceType someDeviceTypes);
+		void ReportInputEvents(Atrium::InputDeviceType someDeviceTypes);
 
 	private:
 		struct ControllerReadingReference
@@ -34,7 +34,7 @@ namespace Atrium::Win32
 			std::span<GameInputSwitchPosition> Switches;
 		};
 
-		void HandleReadingEvent(Core::InputDeviceType someDeviceTypes, IGameInputReading& aPreviousReading, IGameInputReading& aReading);
+		void HandleReadingEvent(Atrium::InputDeviceType someDeviceTypes, IGameInputReading& aPreviousReading, IGameInputReading& aReading);
 
 		void HandleControllerReading(IGameInputReading& aPreviousReading, IGameInputReading& aReading);
 		void HandleKeyboardReading(IGameInputReading& aPreviousReading, IGameInputReading& aReading);
@@ -44,38 +44,38 @@ namespace Atrium::Win32
 
 		void HandleGamepadReading(GameInputGamepadState& aPreviousReading, GameInputGamepadState& aReading);
 
-		void HandleDigitalChange(const auto& aPreviousState, const auto& aState, auto aMask, Core::InputSourceId aSource)
+		void HandleDigitalChange(const auto& aPreviousState, const auto& aState, auto aMask, Atrium::InputSourceId aSource)
 		{
 			const bool prevState = (aPreviousState & aMask) == aMask;
 			const bool state = (aState & aMask) == aMask;
 
 			if (!prevState && state)
-				OnInput.Invoke(Core::InputEvent(*this, aSource, Core::InputEventType::Pressed));
+				OnInput.Invoke(Atrium::InputEvent(*this, aSource, Atrium::InputEventType::Pressed));
 			else if (prevState && !state)
-				OnInput.Invoke(Core::InputEvent(*this, aSource, Core::InputEventType::Released));
+				OnInput.Invoke(Atrium::InputEvent(*this, aSource, Atrium::InputEventType::Released));
 		}
 
-		void HandleDigitalChange(const auto& aPreviousState, const auto& aState, const auto& aMember, auto aMask, Core::InputSourceId aSource)
+		void HandleDigitalChange(const auto& aPreviousState, const auto& aState, const auto& aMember, auto aMask, Atrium::InputSourceId aSource)
 		{
 			HandleDigitalChange(aPreviousState.*aMember, aState.*aMember, aMask, aSource);
 		}
 
-		void HandleAnalogChange(const auto& aPreviousState, const auto& aState, Core::InputSourceId aSource)
+		void HandleAnalogChange(const auto& aPreviousState, const auto& aState, Atrium::InputSourceId aSource)
 		{
 			const auto currentValue = aState;
 			const auto delta = (currentValue - aPreviousState);
 			if (delta != 0)
-				OnInput.Invoke(Core::InputEvent(*this, aSource, static_cast<float>(currentValue), static_cast<float>(delta)));
+				OnInput.Invoke(Atrium::InputEvent(*this, aSource, static_cast<float>(currentValue), static_cast<float>(delta)));
 		}
 
-		void HandleAnalogChange(const auto& aPreviousState, const auto& aState, const auto& aMember, Core::InputSourceId aSource)
+		void HandleAnalogChange(const auto& aPreviousState, const auto& aState, const auto& aMember, Atrium::InputSourceId aSource)
 		{
 			HandleAnalogChange(aPreviousState.*aMember, aState.*aMember, aSource);
 		}
 
 		std::optional<Microsoft::WRL::ComPtr<IGameInputReading>> GetCurrentReading();
 
-		std::optional<Core::InputSourceId> ToInputSource(const GameInputKeyState& aKeyState);
+		std::optional<Atrium::InputSourceId> ToInputSource(const GameInputKeyState& aKeyState);
 
 		Microsoft::WRL::ComPtr<IGameInputDevice> myDevice;
 		Microsoft::WRL::ComPtr<IGameInput> myGameInputAPI;

@@ -9,7 +9,7 @@
 #include <span>
 #include <string>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	class InputDevice;
 

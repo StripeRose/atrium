@@ -20,7 +20,7 @@ namespace Atrium
 
 		Core::GraphicsAPI& GetGraphicsAPI() { return *myGraphicsAPI; }
 
-		Core::InputDeviceAPI& GetInputAPI() { return *myInputDeviceAPI; }
+		InputDeviceAPI& GetInputAPI() { return *myInputDeviceAPI; }
 
 		WindowManager& GetWindowManager() { return *myWindowManager; }
 
@@ -44,7 +44,7 @@ namespace Atrium
 		std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
 		std::unique_ptr<Core::GraphicsAPI> myGraphicsAPI;
-		std::unique_ptr<Core::InputDeviceAPI> myInputDeviceAPI;
+		std::unique_ptr<InputDeviceAPI> myInputDeviceAPI;
 		std::unique_ptr<WindowManager> myWindowManager;
 	};
 }

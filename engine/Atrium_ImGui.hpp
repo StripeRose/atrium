@@ -17,7 +17,7 @@ namespace Atrium
 		ImGuiHandler(Core::GraphicsAPI& aGraphicsAPI, Window& aPrimaryWindow, std::shared_ptr<Core::RenderTexture> aTarget);
 		~ImGuiHandler();
 
-		Core::InputDeviceType GetAllowedInputs() const;
+		InputDeviceType GetAllowedInputs() const;
 
 		void MarkFrameStart();
 		void MarkFrameEnd();

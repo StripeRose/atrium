@@ -8,7 +8,7 @@
 
 #include <span>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	struct InputEvent;
 	struct TextInputEvent;
@@ -31,12 +31,12 @@ namespace Atrium::Core
 		/**
 		 * @brief Slot for listening to input events from any device.
 		 */
-		RoseCommon::EventSlot<const Core::InputEvent&> OnInput;
+		RoseCommon::EventSlot<const InputEvent&> OnInput;
 
 		/**
 		 * @brief Slot for listening to text input events from any device.
 		 */
-		RoseCommon::EventSlot<const Core::TextInputEvent&> OnTextInput;
+		RoseCommon::EventSlot<const TextInputEvent&> OnTextInput;
 
 		#pragma endregion
 
