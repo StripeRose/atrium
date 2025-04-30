@@ -82,7 +82,7 @@ namespace Atrium::Win32
 		::SetWindowTextW(myWindowHandle, aTitleText);
 	}
 
-	Window::Window(const Core::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass)
+	Window::Window(const Atrium::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass)
 		: myWindowHandle(NULL)
 		, myHasRequestedClose(false)
 	{
@@ -252,18 +252,18 @@ namespace Atrium::Win32
 		CleanupWindowClasses();
 	}
 
-	std::shared_ptr<Core::Window> WindowManager::NewWindow(const CreationParameters& someParameters)
+	std::shared_ptr<Atrium::Window> WindowManager::NewWindow(const CreationParameters& someParameters)
 	{
 		auto newWindow = std::shared_ptr<Win32::Window>(new Win32::Window(someParameters, myWindowClasses[0]));
 		myWindows.push_back(newWindow);
 		return newWindow;
 	}
 
-	std::vector<std::shared_ptr<Core::Window>> WindowManager::GetWindows() const
+	std::vector<std::shared_ptr<Atrium::Window>> WindowManager::GetWindows() const
 	{
-		std::vector<std::shared_ptr<Core::Window>> windows;
+		std::vector<std::shared_ptr<Atrium::Window>> windows;
 		for (const auto& window : myWindows)
-			windows.push_back(std::static_pointer_cast<Core::Window>(window));
+			windows.push_back(std::static_pointer_cast<Atrium::Window>(window));
 		return windows;
 	}
 

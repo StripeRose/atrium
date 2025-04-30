@@ -22,9 +22,9 @@ namespace Atrium
 
 		Core::InputDeviceAPI& GetInputAPI() { return *myInputDeviceAPI; }
 
-		Core::WindowManager& GetWindowManager() { return *myWindowManager; }
+		WindowManager& GetWindowManager() { return *myWindowManager; }
 
-		void InitializeImGui(Core::Window& aPrimaryWindow, std::shared_ptr<Core::RenderTexture> aTarget);
+		void InitializeImGui(Window& aPrimaryWindow, std::shared_ptr<Core::RenderTexture> aTarget);
 
 		void Run();
 
@@ -45,6 +45,6 @@ namespace Atrium
 
 		std::unique_ptr<Core::GraphicsAPI> myGraphicsAPI;
 		std::unique_ptr<Core::InputDeviceAPI> myInputDeviceAPI;
-		std::unique_ptr<Core::WindowManager> myWindowManager;
+		std::unique_ptr<WindowManager> myWindowManager;
 	};
 }

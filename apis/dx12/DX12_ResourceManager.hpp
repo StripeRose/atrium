@@ -17,7 +17,7 @@ namespace Atrium::DirectX12
 	public:
 		ResourceManager(DirectX12API& aManager);
 
-		std::shared_ptr<Core::RenderTexture> CreateRenderTextureForWindow(Core::Window& aWindow) override;
+		std::shared_ptr<Core::RenderTexture> CreateRenderTextureForWindow(Atrium::Window& aWindow) override;
 
 		std::shared_ptr<Core::GraphicsBuffer> CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) override;
 
@@ -33,7 +33,7 @@ namespace Atrium::DirectX12
 
 		std::shared_ptr<Core::EditableTexture> CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat) override;
 
-		std::shared_ptr<SwapChain> GetSwapChain(Core::Window& aWindow);
+		std::shared_ptr<SwapChain> GetSwapChain(Atrium::Window& aWindow);
 
 		std::vector<std::shared_ptr<SwapChain>> GetSwapChains();
 
@@ -45,6 +45,6 @@ namespace Atrium::DirectX12
 		DirectX12API& myManager;
 
 		std::mutex mySwapChainMutex;
-		std::map<Core::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
+		std::map<Atrium::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
 	};
 }

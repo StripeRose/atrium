@@ -11,7 +11,7 @@ namespace Atrium::DirectX12
 		: myManager(aManager)
 	{ }
 
-	std::shared_ptr<Core::RenderTexture> ResourceManager::CreateRenderTextureForWindow(Core::Window& aWindow)
+	std::shared_ptr<Core::RenderTexture> ResourceManager::CreateRenderTextureForWindow(Atrium::Window& aWindow)
 	{
 		ZoneScoped;
 
@@ -20,7 +20,7 @@ namespace Atrium::DirectX12
 		swapChain.reset(new SwapChain(myManager.GetDevice(), myManager.GetCommandQueueManager().GetGraphicsQueue(), aWindow));
 		swapChain->SetName(aWindow.GetTitle().c_str());
 
-		aWindow.Closed.Connect(this, [&](Core::Window& aWindow) {
+		aWindow.Closed.Connect(this, [&](Atrium::Window& aWindow) {
 			myDrawSurfaceSwapChain.erase(&aWindow);
 			});
 
@@ -78,7 +78,7 @@ namespace Atrium::DirectX12
 		return CreateEditableDDS(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aWidth, aWidth, aTextureFormat);
 	}
 
-	std::shared_ptr<SwapChain> ResourceManager::GetSwapChain(Core::Window& aWindow)
+	std::shared_ptr<SwapChain> ResourceManager::GetSwapChain(Atrium::Window& aWindow)
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
 		auto it = myDrawSurfaceSwapChain.find(&aWindow);

@@ -14,7 +14,7 @@ namespace Atrium::DirectX12
 	class SwapChain : public RenderTarget
 	{
 	public:
-		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Window& aWindow);
+		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Window& aWindow);
 		~SwapChain();
 
 		void Invalidate();
@@ -93,7 +93,7 @@ namespace Atrium::DirectX12
 	private:
 		Device* myDevice;
 		ComPtr<IDXGISwapChain3> mySwapChain;
-		Core::Window* myWindow;
+		Atrium::Window* myWindow;
 
 		std::vector<std::shared_ptr<SwapChainBackBuffer>> myBackBuffers;
 		std::optional<Size> myDesiredResolution;

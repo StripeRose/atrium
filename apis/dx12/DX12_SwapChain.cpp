@@ -13,7 +13,7 @@
 
 namespace Atrium::DirectX12
 {
-	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Core::Window& aWindow)
+	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Window& aWindow)
 		: myDevice(&aDevice)
 		, myWindow(&aWindow)
 	{
@@ -23,7 +23,7 @@ namespace Atrium::DirectX12
 		Size windowSize = aWindow.GetSize();
 		GetBackBuffers(windowSize);
 
-		aWindow.SizeChanged.Connect(this, [&](Core::Window& aWindow) {
+		aWindow.SizeChanged.Connect(this, [&](Atrium::Window& aWindow) {
 			OnDrawSurfaceResize(aWindow.GetSize());
 			});
 	}

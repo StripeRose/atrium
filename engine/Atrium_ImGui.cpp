@@ -17,8 +17,8 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace Atrium
 {
-	ImGuiHandler::ImGuiHandler([[maybe_unused]] Core::GraphicsAPI& aGraphicsAPI, [[maybe_unused]] Core::Window& aPrimaryWindow, [[maybe_unused]] std::shared_ptr<Core::RenderTexture> aTarget)
-#if IS_IMGUI_ENABLED
+	ImGuiHandler::ImGuiHandler([[maybe_unused]] Core::GraphicsAPI& aGraphicsAPI, [[maybe_unused]] Window& aPrimaryWindow, [[maybe_unused]] std::shared_ptr<Core::RenderTexture> aTarget)
+		#if IS_IMGUI_ENABLED
 		: myGraphicsAPI(aGraphicsAPI)
 		, myRenderTarget(aTarget)
 		, myWindow(nullptr)
@@ -77,36 +77,36 @@ namespace Atrium
 		InitForWindow(aPrimaryWindow);
 		SetupBackend(aGraphicsAPI, aPrimaryWindow, aTarget->GetDescriptor().ColorGraphicsFormat);
 	}
-#else
-	{ }
-#endif
+	#else
+	{}
+	#endif
 
 	ImGuiHandler::~ImGuiHandler()
 	{
-#if IS_IMGUI_ENABLED
+		#if IS_IMGUI_ENABLED
 		Cleanup();
 		ImGui::DestroyContext();
-#endif
+		#endif
 	}
 
 	Core::InputDeviceType ImGuiHandler::GetAllowedInputs() const
 	{
 		Core::InputDeviceType deviceTypes = ~Core::InputDeviceType::Unknown;
 
-#if IS_IMGUI_ENABLED
+		#if IS_IMGUI_ENABLED
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.WantCaptureKeyboard)
 			deviceTypes &= ~Core::InputDeviceType::Keyboard;
 		if (io.WantCaptureMouse)
 			deviceTypes &= ~Core::InputDeviceType::Mouse;
-#endif
+		#endif
 
 		return deviceTypes;
 	}
 
 	void ImGuiHandler::MarkFrameStart()
 	{
-#if IS_IMGUI_ENABLED
+		#if IS_IMGUI_ENABLED
 		if (!myRenderTarget)
 			return;
 
@@ -114,12 +114,12 @@ namespace Atrium
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-#endif
+		#endif
 	}
 
 	void ImGuiHandler::MarkFrameEnd()
 	{
-#if IS_IMGUI_ENABLED
+		#if IS_IMGUI_ENABLED
 		if (!myRenderTarget)
 			return;
 
@@ -135,15 +135,15 @@ namespace Atrium
 		commandList->SetDescriptorHeaps(1, myCBV_SRVHeap->GetHeap().GetAddressOf());
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
-#endif
+		#endif
 	}
 
-#if IS_IMGUI_ENABLED
-	void ImGuiHandler::InitForWindow(Core::Window& aWindow)
+	#if IS_IMGUI_ENABLED
+	void ImGuiHandler::InitForWindow(Window& aWindow)
 	{
 		ZoneScoped;
 		myWindow = &aWindow;
-		aWindow.Closed.Connect(this, [this](Core::Window&) { Cleanup(); });
+		aWindow.Closed.Connect(this, [this](Window&) { Cleanup(); });
 
 		Win32::Window& win32Window = static_cast<Win32::Window&>(aWindow);
 		win32Window.AdditionalWndProc = [](Win32::Window::AdditionalWndProcData& data) {
@@ -155,7 +155,7 @@ namespace Atrium
 			};
 	}
 
-	void ImGuiHandler::SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, Core::GraphicsFormat aTargetFormat)
+	void ImGuiHandler::SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Window& aWindow, Core::GraphicsFormat aTargetFormat)
 	{
 		ZoneScoped;
 		ImGui_ImplWin32_Init(std::any_cast<HWND>(aWindow.GetNativeHandle()));
