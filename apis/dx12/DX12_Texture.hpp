@@ -18,29 +18,55 @@ namespace Atrium::DirectX12
 {
 	class Device;
 	class UploadContext;
-	class SimpleTexture : public Atrium::EditableTexture
+
+	class DDSImage
 	{
 	public:
-		SimpleTexture(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
-		SimpleTexture(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage);
+		DDSImage(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
+		DDSImage(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage);
 
+		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable);
+
+		const DirectX::TexMetadata& GetMetadata() const { return myMetadata; }
+		const DirectX::ScratchImage* GetImage() const { return myImage.get(); }
+		std::shared_ptr<GPUResource> GetResource() const { return myResource; }
+		const DescriptorHeapHandle& GetSRVHandle() const { return mySRVHandle; }
+
+	private:
+		void Apply_SetupResource();
+		void Apply_BeginImageUpload();
+
+		Device& myDevice;
+		UploadContext& myUploader;
+
+		std::unique_ptr<DirectX::ScratchImage> myImage;
+		DirectX::TexMetadata myMetadata;
+
+		std::shared_ptr<GPUResource> myResource;
+		DescriptorHeapHandle mySRVHandle;
+	};
+
+	class Texture2D : public Atrium::Texture2D
+	{
+	public:
+		Texture2D(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
+		Texture2D(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage);
+
+		DDSImage& GetImage() { return myTexture; }
+
+		// Implements Texture2D
+	public:
 		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override;
 
 		TextureFormat GetFormat() const override;
 
-		virtual DXGI_FORMAT GetDXGIFormat() const { return myImage->GetMetadata().format; }
-		const DescriptorHeapHandle& GetSRVHandle() const { return mySRVHandle; }
+		Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
+		Color GetPixelBilinear(float aU, float aV, unsigned int aMipLevel = 0) const override;
 
-		Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel) const override;
-		Color GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel) const override;
-
-		std::shared_ptr<GPUResource> GetResource() { return myResource; }
-
-		void SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const Color& aColor, unsigned int aMipLevel) override;
+		void SetPixel(unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel = 0) override;
 
 		// Implements Texture
 	public:
-
 		TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
 		FilterMode GetFilterMode() const override;
@@ -62,17 +88,95 @@ namespace Atrium::DirectX12
 		void* GetNativeTexturePtr() const override;
 
 	private:
-		void Apply_SetupResource();
-		void Apply_BeginImageUpload();
+		DDSImage myTexture;
+	};
+
+	class Texture3D : public Atrium::Texture3D
+	{
+	public:
+		Texture3D(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
+		Texture3D(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage);
+
+		DDSImage& GetImage() { return myTexture; }
+
+		// Implements Texture3D
+	public:
+		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override;
+
+		TextureFormat GetFormat() const override;
+
+		Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel = 0) const override;
+		Color GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel = 0) const override;
+
+		void SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const Color& aColor, unsigned int aMipLevel = 0) override;
+
+		// Implements Texture
+	public:
+		TextureDimension GetDimensions() const override;
+		unsigned int GetDepth() const override;
+		FilterMode GetFilterMode() const override;
+		unsigned int GetHeight() const override;
+		bool IsReadable() const override;
+		unsigned int GetMipmapCount() const override;
+		unsigned int GetWidth() const override;
+
+		TextureWrapMode GetWrapModeU() const override;
+		TextureWrapMode GetWrapModeV() const override;
+		TextureWrapMode GetWrapModeW() const override;
+
+		void SetFilterMode(FilterMode aFilterMode) override;
+		void SetWrapMode(TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(TextureWrapMode aWrapMode) const override;
+
+		void* GetNativeTexturePtr() const override;
 
 	private:
-		Device& myDevice;
-		UploadContext& myUploader;
+		DDSImage myTexture;
+	};
 
-		std::unique_ptr<DirectX::ScratchImage> myImage;
-		DirectX::TexMetadata myMetadata;
+	class TextureCube : public Atrium::TextureCube
+	{
+	public:
+		TextureCube(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
+		TextureCube(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage);
 
-		std::shared_ptr<GPUResource> myResource;
-		DescriptorHeapHandle mySRVHandle;
+		DDSImage& GetImage() { return myTexture; }
+
+		// Implements TextureCube
+	public:
+		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override;
+
+		TextureFormat GetFormat() const override;
+
+		Color GetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
+
+		void SetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel = 0) override;
+
+		// Implements Texture
+	public:
+		TextureDimension GetDimensions() const override;
+		unsigned int GetDepth() const override;
+		FilterMode GetFilterMode() const override;
+		unsigned int GetHeight() const override;
+		bool IsReadable() const override;
+		unsigned int GetMipmapCount() const override;
+		unsigned int GetWidth() const override;
+
+		TextureWrapMode GetWrapModeU() const override;
+		TextureWrapMode GetWrapModeV() const override;
+		TextureWrapMode GetWrapModeW() const override;
+
+		void SetFilterMode(FilterMode aFilterMode) override;
+		void SetWrapMode(TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(TextureWrapMode aWrapMode) const override;
+
+		void* GetNativeTexturePtr() const override;
+
+	private:
+		DDSImage myTexture;
 	};
 }

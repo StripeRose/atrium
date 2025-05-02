@@ -4,6 +4,16 @@
 
 namespace Atrium
 {
+	enum class TextureCubeFace
+	{
+		PositiveX,
+		NegativeX,
+		PositiveY,
+		NegativeY,
+		PositiveZ,
+		NegativeZ,
+	};
+
 	enum class TextureDimension
 	{
 		// Uninitialized or unknown
@@ -16,9 +26,9 @@ namespace Atrium
 		Tex2D,
 		// 3D texture (Texture3D)
 		Tex3D,
-		// Cubemap texture (CubemapTexture)
+		// Cubemap texture (TextureCube)
 		Cube,
-		// Cubemap array texture (CubemapArray)
+		// Cubemap array texture (TextureCubeArray)
 		CubeArray
 	};
 

@@ -1,7 +1,6 @@
 #include "Atrium_Diagnostics.hpp"
 
 #include "DX12_ComPtr.hpp"
-#include "DX12_DDS.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
 #include "DX12_GraphicsBuffer.hpp"

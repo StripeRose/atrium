@@ -1,9 +1,9 @@
 #include "DX12_ResourceManager.hpp"
 
-#include "DX12_DDS.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Manager.hpp"
+#include "DX12_Texture.hpp"
 
 namespace Atrium::DirectX12
 {
@@ -63,19 +63,52 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	std::shared_ptr<EditableTexture> ResourceManager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, TextureFormat aTextureFormat)
+	std::shared_ptr<Atrium::Texture2D> ResourceManager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, TextureFormat aTextureFormat)
 	{
-		return CreateEditableDDS(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aHeight, 1, aTextureFormat);
+		DirectX::TexMetadata metadata;
+		metadata.arraySize = 1;
+		metadata.depth = 1;
+		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
+		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
+		metadata.height = aHeight;
+		metadata.mipLevels = 0;
+		metadata.miscFlags = 0;
+		metadata.miscFlags2 = 0;
+		metadata.width = aWidth;
+
+		return std::make_shared<DirectX12::Texture2D>(myManager.GetDevice(), myManager.GetUploadContext(), metadata);
 	}
 
-	std::shared_ptr<EditableTexture> ResourceManager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat)
+	std::shared_ptr<Atrium::Texture3D> ResourceManager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat)
 	{
-		return CreateEditableDDS(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aHeight, aDepth, aTextureFormat);
+		DirectX::TexMetadata metadata;
+		metadata.arraySize = 1;
+		metadata.depth = aDepth;
+		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
+		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
+		metadata.height = aHeight;
+		metadata.mipLevels = 0;
+		metadata.miscFlags = 0;
+		metadata.miscFlags2 = 0;
+		metadata.width = aWidth;
+
+		return std::make_shared<DirectX12::Texture3D>(myManager.GetDevice(), myManager.GetUploadContext(), metadata);
 	}
 
-	std::shared_ptr<EditableTexture> ResourceManager::CreateTextureCube(unsigned int aWidth, TextureFormat aTextureFormat)
+	std::shared_ptr<Atrium::TextureCube> ResourceManager::CreateTextureCube(unsigned int aWidth, TextureFormat aTextureFormat)
 	{
-		return CreateEditableDDS(myManager.GetDevice(), myManager.GetUploadContext(), aWidth, aWidth, aWidth, aTextureFormat);
+		DirectX::TexMetadata metadata;
+		metadata.arraySize = 1;
+		metadata.depth = 6;
+		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
+		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
+		metadata.height = aWidth;
+		metadata.mipLevels = 0;
+		metadata.miscFlags = DirectX::TEX_MISC_TEXTURECUBE;
+		metadata.miscFlags2 = 0;
+		metadata.width = aWidth;
+
+		return std::make_shared<DirectX12::TextureCube>(myManager.GetDevice(), myManager.GetUploadContext(), metadata);
 	}
 
 	std::shared_ptr<SwapChain> ResourceManager::GetSwapChain(Atrium::Window& aWindow)
@@ -96,11 +129,58 @@ namespace Atrium::DirectX12
 
 	std::shared_ptr<Texture> ResourceManager::LoadTexture(const std::filesystem::path& aPath)
 	{
+		ZoneScoped;
+
 		const std::filesystem::path extension = aPath.extension();
 		if (extension == ".dds")
-			return LoadDDSFromFile(myManager.GetDevice(), myManager.GetUploadContext(), aPath);
-		else
-			return nullptr;
+		{
+			std::unique_ptr<DirectX::ScratchImage> image = std::make_unique<DirectX::ScratchImage>();
+
+			HRESULT loadResult = DirectX::LoadFromDDSFile(aPath.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, *image);
+
+			if (!Debug::Verify(loadResult, "Load DDS file from disk."))
+				return nullptr;
+
+			if (image->GetMetadata().arraySize != 1 && !image->GetMetadata().IsCubemap())
+			{
+				Debug::LogError("No support for DDS array textures.");
+				return nullptr;
+			}
+
+			switch (image->GetMetadata().dimension)
+			{
+				case DirectX::TEX_DIMENSION_TEXTURE1D:
+				case DirectX::TEX_DIMENSION_TEXTURE2D:
+				{
+					if (image->GetMetadata().IsCubemap())
+					{
+						std::shared_ptr texture = std::make_shared<DirectX12::TextureCube>(myManager.GetDevice(), myManager.GetUploadContext(), std::move(image));
+						texture->Apply(true, false);
+						texture->GetImage().GetResource()->SetName(aPath.filename().c_str());
+
+						return texture;
+					}
+					else
+					{
+						std::shared_ptr texture = std::make_shared<DirectX12::Texture2D>(myManager.GetDevice(), myManager.GetUploadContext(), std::move(image));
+						texture->Apply(true, false);
+						texture->GetImage().GetResource()->SetName(aPath.filename().c_str());
+
+						return texture;
+					}
+				}
+				case DirectX::TEX_DIMENSION_TEXTURE3D:
+				{
+					std::shared_ptr texture = std::make_shared<DirectX12::Texture3D>(myManager.GetDevice(), myManager.GetUploadContext(), std::move(image));
+					texture->Apply(true, false);
+					texture->GetImage().GetResource()->SetName(aPath.filename().c_str());
+
+					return texture;
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
 	void ResourceManager::MarkFrameStart()

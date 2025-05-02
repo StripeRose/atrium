@@ -46,11 +46,26 @@ namespace Atrium
 		*/
 	};
 
-	// Todo: Needs a better name.
-	class EditableTexture : public Texture
+	class Texture2D : public Texture
 	{
 	public:
-		virtual ~EditableTexture() = default;
+		virtual ~Texture2D() = default;
+
+		void Apply() { Apply(true, false); }
+		virtual void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) = 0;
+
+		virtual TextureFormat GetFormat() const = 0;
+
+		virtual Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const = 0;
+		virtual Color GetPixelBilinear(float aU, float aV, unsigned int aMipLevel = 0) const = 0;
+
+		virtual void SetPixel(unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel = 0) = 0;
+	};
+
+	class Texture3D : public Texture
+	{
+	public:
+		virtual ~Texture3D() = default;
 
 		void Apply() { Apply(true, false); }
 		virtual void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) = 0;
@@ -61,5 +76,20 @@ namespace Atrium
 		virtual Color GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel = 0) const = 0;
 
 		virtual void SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const Color& aColor, unsigned int aMipLevel = 0) = 0;
+	};
+
+	class TextureCube : public Texture
+	{
+	public:
+		virtual ~TextureCube() = default;
+
+		void Apply() { Apply(true, false); }
+		virtual void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) = 0;
+
+		virtual TextureFormat GetFormat() const = 0;
+
+		virtual Color GetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const = 0;
+
+		virtual void SetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel = 0) = 0;
 	};
 }

@@ -126,7 +126,7 @@ namespace Atrium
 		 * @param aTextureFormat Texture format of the texture.
 		 * @return The created texture.
 		 */
-		virtual std::shared_ptr<EditableTexture> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, TextureFormat aTextureFormat) = 0;
+		virtual std::shared_ptr<Texture2D> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, TextureFormat aTextureFormat) = 0;
 
 		/**
 		 * @brief Create a CPU-editable, three-dimensional texture.
@@ -137,7 +137,7 @@ namespace Atrium
 		 * @param aTextureFormat Texture format of the texture.
 		 * @return The created texture.
 		 */
-		virtual std::shared_ptr<EditableTexture> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat) = 0;
+		virtual std::shared_ptr<Texture3D> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat) = 0;
 
 		/**
 		 * @brief Create a CPU-editable, two-dimensional texture cube where each cube face is the same size.
@@ -146,7 +146,7 @@ namespace Atrium
 		 * @param aTextureFormat Texture format of all cube faces.
 		 * @return The created texture.
 		 */
-		virtual std::shared_ptr<EditableTexture> CreateTextureCube(unsigned int aWidth, TextureFormat aTextureFormat) = 0;
+		virtual std::shared_ptr<TextureCube> CreateTextureCube(unsigned int aWidth, TextureFormat aTextureFormat) = 0;
 
 		/**
 		 * @brief Load a texture from a file-system path.
