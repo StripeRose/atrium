@@ -28,10 +28,15 @@ namespace Atrium
 
 			myGraphicsAPI->MarkFrameStart();
 
-			if (myImGuiHandler)
-				myImGuiHandler->MarkFrameStart();
+			InputDeviceType allowedInputDevices = ~InputDeviceType::Unknown;
 
-			myInputDeviceAPI->ReportInputEvents(myImGuiHandler->GetAllowedInputs());
+			if (myImGuiHandler)
+			{
+				myImGuiHandler->MarkFrameStart();
+				allowedInputDevices = myImGuiHandler->GetAllowedInputs();
+			}
+
+			myInputDeviceAPI->ReportInputEvents(allowedInputDevices);
 
 			OnLoop.Invoke();
 
