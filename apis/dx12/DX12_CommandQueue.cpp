@@ -69,6 +69,13 @@ namespace Atrium::DirectX12
 		Debug::Assert(myFenceEventHandle != INVALID_HANDLE_VALUE, "Event handle is valid.");
 	}
 
+	CommandQueue::~CommandQueue()
+	{
+		#ifdef TRACY_ENABLE
+		TracyD3D12Destroy(myProfilingContext);
+		#endif
+	}
+
 	std::uint64_t CommandQueue::InsertSignal()
 	{
 		std::lock_guard lock(myFenceMutex);

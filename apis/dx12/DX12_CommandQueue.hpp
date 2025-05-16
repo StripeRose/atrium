@@ -16,6 +16,7 @@ namespace Atrium::DirectX12
 	{
 	public:
 		CommandQueue(ComPtr<ID3D12Device> aDevice, D3D12_COMMAND_LIST_TYPE aQueueType = D3D12_COMMAND_LIST_TYPE_DIRECT);
+		~CommandQueue();
 
 		std::uint64_t InsertSignal();
 
