@@ -1,3 +1,3 @@
 @echo off
 
-call "%~dp0atrium/tools/generate_sharpmake.bat" "%~dp0sharpmake.cs"
+call "%~dp0../atrium/tools/generate_sharpmake.bat" "%~dp0sharpmake.cs"
