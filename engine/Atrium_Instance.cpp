@@ -50,6 +50,8 @@ namespace Atrium
 		}
 
 		myImGuiHandler.reset();
+		myAudioAPI.reset();
+
 		OnExit.Invoke();
 	}
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Atrium_AudioAPI.hpp"
 #include "Atrium_GraphicsAPI.hpp"
 #include "Atrium_InputDeviceAPI.hpp"
 #include "Atrium_WindowManagement.hpp"
@@ -17,6 +18,8 @@ namespace Atrium
 
 	public:
 		~EngineInstance();
+
+		AudioAPI& GetAudioAPI() { return *myAudioAPI; }
 
 		GraphicsAPI& GetGraphicsAPI() { return *myGraphicsAPI; }
 
@@ -43,6 +46,7 @@ namespace Atrium
 		bool myIsRunning;
 		std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
+		std::unique_ptr<AudioAPI> myAudioAPI;
 		std::unique_ptr<GraphicsAPI> myGraphicsAPI;
 		std::unique_ptr<InputDeviceAPI> myInputDeviceAPI;
 		std::unique_ptr<WindowManager> myWindowManager;
