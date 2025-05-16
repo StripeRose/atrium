@@ -1,21 +1,21 @@
 
-#include <Engine_Instance.hpp>
+#include <Atrium_Instance.hpp>
 
 #include <Windows.h>
 
 std::unique_ptr<Atrium::EngineInstance> ourEngineInstance;
 
-std::shared_ptr<Atrium::Core::RenderTexture> ourWindowTarget;
+std::shared_ptr<Atrium::RenderTexture> ourWindowTarget;
 
 void HandleStart()
 {
-	Atrium::Core::WindowManager::CreationParameters windowParameters;
+	Atrium::WindowManager::CreationParameters windowParameters;
 	windowParameters.Title = "Test window";
 	windowParameters.Size = { 640, 480 };
 
-	std::shared_ptr<Atrium::Core::Window> window = ourEngineInstance->GetWindowManager().NewWindow(windowParameters);
+	std::shared_ptr<Atrium::Window> window = ourEngineInstance->GetWindowManager().NewWindow(windowParameters);
 	ourWindowTarget = ourEngineInstance->GetGraphicsAPI().GetResourceManager().CreateRenderTextureForWindow(*window);
-	window->Closed.Connect(nullptr, [](Atrium::Core::Window&) { ourWindowTarget.reset(); });
+	window->Closed.Connect(nullptr, [](Atrium::Window&) { ourWindowTarget.reset(); });
 }
 
 void HandleLoop()
@@ -26,7 +26,7 @@ void HandleLoop()
 		return;
 	}
 
-	Atrium::Core::FrameContext& frameContext = ourEngineInstance->GetGraphicsAPI().GetCurrentFrameContext();
+	Atrium::FrameGraphicsContext& frameContext = ourEngineInstance->GetGraphicsAPI().GetCurrentFrameContext();
 	if (ourWindowTarget)
 	{
 		frameContext.ClearColor(ourWindowTarget, Atrium::Color::Predefined::CornflowerBlue);
