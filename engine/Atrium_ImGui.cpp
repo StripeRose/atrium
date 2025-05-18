@@ -17,7 +17,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace Atrium
 {
-	ImGuiHandler::ImGuiHandler([[maybe_unused]] GraphicsAPI& aGraphicsAPI, [[maybe_unused]] Window& aPrimaryWindow, [[maybe_unused]] std::shared_ptr<RenderTexture> aTarget)
+	ImGuiHandler::ImGuiHandler([[maybe_unused]] Core::GraphicsAPI& aGraphicsAPI, [[maybe_unused]] Core::Window& aPrimaryWindow, [[maybe_unused]] std::shared_ptr<Core::RenderTexture> aTarget)
 		#if IS_IMGUI_ENABLED
 		: myGraphicsAPI(aGraphicsAPI)
 		, myRenderTarget(aTarget)
@@ -89,16 +89,16 @@ namespace Atrium
 		#endif
 	}
 
-	InputDeviceType ImGuiHandler::GetAllowedInputs() const
+	Core::InputDeviceType ImGuiHandler::GetAllowedInputs() const
 	{
-		InputDeviceType deviceTypes = ~InputDeviceType::Unknown;
+		Core::InputDeviceType deviceTypes = ~Core::InputDeviceType::Unknown;
 
 		#if IS_IMGUI_ENABLED
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.WantCaptureKeyboard)
-			deviceTypes &= ~InputDeviceType::Keyboard;
+			deviceTypes &= ~Core::InputDeviceType::Keyboard;
 		if (io.WantCaptureMouse)
-			deviceTypes &= ~InputDeviceType::Mouse;
+			deviceTypes &= ~Core::InputDeviceType::Mouse;
 		#endif
 
 		return deviceTypes;
@@ -139,11 +139,11 @@ namespace Atrium
 	}
 
 	#if IS_IMGUI_ENABLED
-	void ImGuiHandler::InitForWindow(Window& aWindow)
+	void ImGuiHandler::InitForWindow(Core::Window& aWindow)
 	{
 		ZoneScoped;
 		myWindow = &aWindow;
-		aWindow.Closed.Connect(this, [this](Window&) { Cleanup(); });
+		aWindow.Closed.Connect(this, [this](Core::Window&) { Cleanup(); });
 
 		Win32::Window& win32Window = static_cast<Win32::Window&>(aWindow);
 		win32Window.AdditionalWndProc = [](Win32::Window::AdditionalWndProcData& data) {
@@ -155,7 +155,7 @@ namespace Atrium
 			};
 	}
 
-	void ImGuiHandler::SetupBackend(GraphicsAPI& aGraphicsAPI, Window& aWindow, GraphicsFormat aTargetFormat)
+	void ImGuiHandler::SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, Core::GraphicsFormat aTargetFormat)
 	{
 		ZoneScoped;
 		ImGui_ImplWin32_Init(std::any_cast<HWND>(aWindow.GetNativeHandle()));
