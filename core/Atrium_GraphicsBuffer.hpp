@@ -7,7 +7,7 @@
 #include <memory>
 #include <span>
 
-namespace Atrium
+namespace Atrium::Core
 {
 	/**
 	 * @brief A section of memory on the graphics card usable by shader programs.
@@ -97,4 +97,4 @@ namespace Atrium
 	};
 }
 
-ENUM_FLAGS(Atrium::GraphicsBuffer::Target);
+ENUM_FLAGS(Atrium::Core::GraphicsBuffer::Target);

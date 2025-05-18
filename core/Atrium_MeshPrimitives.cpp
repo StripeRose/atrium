@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace Atrium
+namespace Atrium::Core
 {
 	namespace MakeMeshPrimitives
 	{

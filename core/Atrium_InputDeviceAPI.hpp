@@ -8,7 +8,7 @@
 
 #include <span>
 
-namespace Atrium
+namespace Atrium::Core
 {
 	struct InputEvent;
 	struct TextInputEvent;

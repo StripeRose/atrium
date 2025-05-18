@@ -18,10 +18,10 @@ namespace Atrium::Win32
 	class GameInputHandler
 	{
 	public:
-		GameInputHandler(Atrium::InputDeviceAPI& anInputDeviceAPI);
+		GameInputHandler(Atrium::Core::InputDeviceAPI& anInputDeviceAPI);
 		~GameInputHandler();
 
-		void ReportInputEvents(Atrium::InputDeviceType someDeviceTypes);
+		void ReportInputEvents(Atrium::Core::InputDeviceType someDeviceTypes);
 
 	private:
 		static void HandleDeviceEvent(
@@ -40,6 +40,6 @@ namespace Atrium::Win32
 
 		std::map<Microsoft::WRL::ComPtr<IGameInputDevice>, std::unique_ptr<GameInputDevice>> myDevices;
 
-		Atrium::InputDeviceAPI& myInputDeviceAPI;
+		Atrium::Core::InputDeviceAPI& myInputDeviceAPI;
 	};
 }

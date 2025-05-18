@@ -8,7 +8,7 @@
 namespace Atrium::Win32
 {
 	class WindowManager;
-	class Window final : public Atrium::Window
+	class Window final : public Atrium::Core::Window
 	{
 		friend WindowManager;
 	public:
@@ -45,7 +45,7 @@ namespace Atrium::Win32
 		std::function<void(AdditionalWndProcData&)> AdditionalWndProc;
 
 	private:
-		Window(const Atrium::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass);
+		Window(const Atrium::Core::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass);
 
 		LRESULT HandleWindowMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -61,15 +61,15 @@ namespace Atrium::Win32
 		bool myHasRequestedClose;
 	};
 
-	class WindowManager final : public Atrium::WindowManager
+	class WindowManager final : public Atrium::Core::WindowManager
 	{
 	public:
 		WindowManager();
 		~WindowManager();
 
-		std::shared_ptr<Atrium::Window> NewWindow(const CreationParameters& someParameters) override;
+		std::shared_ptr<Atrium::Core::Window> NewWindow(const CreationParameters& someParameters) override;
 
-		std::vector<std::shared_ptr<Atrium::Window>> GetWindows() const override;
+		std::vector<std::shared_ptr<Atrium::Core::Window>> GetWindows() const override;
 
 		void Update() override;
 

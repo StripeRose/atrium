@@ -111,7 +111,7 @@ namespace Atrium::DirectX12
 		std::vector<TextureUpload> myTextureUploads;
 	};
 
-	class FrameGraphicsContext final : public FrameContext, public Atrium::FrameGraphicsContext
+	class FrameGraphicsContext final : public FrameContext, public Core::FrameGraphicsContext
 	{
 	public:
 		FrameGraphicsContext(Device& aDevice, CommandQueue& aCommandQueue);
@@ -124,8 +124,8 @@ namespace Atrium::DirectX12
 
 		void Reset(const std::uint_least8_t& aFrameInFlight) override;
 
-		void ClearColor(const std::shared_ptr<Atrium::RenderTexture>& aTarget, Color aClearColor) override;
-		void ClearDepth(const std::shared_ptr<Atrium::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) override;
+		void ClearColor(const std::shared_ptr<Core::RenderTexture>& aTarget, Color aClearColor) override;
+		void ClearDepth(const std::shared_ptr<Core::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) override;
 
 		void DisableScissorRect() override;
 
@@ -140,14 +140,14 @@ namespace Atrium::DirectX12
 		void DrawIndexedInstanced(std::uint32_t anIndexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation, std::uint32_t aStartInstanceLocation) override;
 
 		void SetBlendFactor(Color aBlendFactor) override;
-		void SetPipelineState(const std::shared_ptr<Atrium::PipelineState>& aPipelineState) override;
-		void SetVertexBuffer(const std::shared_ptr<const Atrium::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot) override;
-		void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Atrium::GraphicsBuffer>& aBuffer) override;
-		void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Texture>& aTexture) override;
-		void SetPrimitiveTopology(PrimitiveTopology aTopology) override;
+		void SetPipelineState(const std::shared_ptr<Core::PipelineState>& aPipelineState) override;
+		void SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot) override;
+		void SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer) override;
+		void SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture) override;
+		void SetPrimitiveTopology(Core::PrimitiveTopology aTopology) override;
 		void SetScissorRect(const Rectangle& aRectangle) override;
 		void SetStencilRef(std::uint32_t aStencilRef) override;
-		void SetRenderTargets(const std::vector<std::shared_ptr<Atrium::RenderTexture>>& someTargets, const std::shared_ptr<Atrium::RenderTexture>& aDepthTarget) override;
+		void SetRenderTargets(const std::vector<std::shared_ptr<Core::RenderTexture>>& someTargets, const std::shared_ptr<Core::RenderTexture>& aDepthTarget) override;
 		void SetViewportAndScissorRect(const Size& aScreenSize) override;
 		void SetViewport(const RectangleF& aRectangle) override;
 
@@ -159,10 +159,10 @@ namespace Atrium::DirectX12
 
 		PipelineState* myCurrentPipelineState;
 
-		std::map<std::vector<std::shared_ptr<Atrium::GraphicsBuffer>>, DescriptorHeapHandle> myBufferHeapHandles;
-		std::map<std::vector<std::shared_ptr<Atrium::Texture>>, DescriptorHeapHandle> myTextureHeapHandles;
+		std::map<std::vector<std::shared_ptr<Core::GraphicsBuffer>>, DescriptorHeapHandle> myBufferHeapHandles;
+		std::map<std::vector<std::shared_ptr<Core::Texture>>, DescriptorHeapHandle> myTextureHeapHandles;
 
-		std::map<std::uint32_t, std::vector<std::shared_ptr<Atrium::GraphicsBuffer>>> myPendingBufferResources;
-		std::map<std::uint32_t, std::vector<std::shared_ptr<Atrium::Texture>>> myPendingTextureResources;
+		std::map<std::uint32_t, std::vector<std::shared_ptr<Core::GraphicsBuffer>>> myPendingBufferResources;
+		std::map<std::uint32_t, std::vector<std::shared_ptr<Core::Texture>>> myPendingTextureResources;
 	};
 }

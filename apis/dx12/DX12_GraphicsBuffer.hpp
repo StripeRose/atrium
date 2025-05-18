@@ -20,7 +20,7 @@ namespace Atrium::DirectX12
 	class BackendGraphicsBuffer
 	{
 	public:
-		BackendGraphicsBuffer(Device& aDevice, Atrium::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
+		BackendGraphicsBuffer(Device& aDevice, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
 
 		~BackendGraphicsBuffer();
 
@@ -55,10 +55,10 @@ namespace Atrium::DirectX12
 		std::uint32_t myStride;
 	};
 
-	class GraphicsBuffer : public Atrium::GraphicsBuffer
+	class GraphicsBuffer : public Core::GraphicsBuffer
 	{
 	public:
-		GraphicsBuffer(DirectX12API& anAPI, Atrium::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
+		GraphicsBuffer(DirectX12API& anAPI, Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride);
 
 		const DescriptorHeapHandle GetConstantViewHandle() const { return GetBufferForRead().GetConstantViewHandle(); }
 		std::optional<D3D12_INDEX_BUFFER_VIEW> GetIndexView() const { return GetBufferForRead().GetIndexView(); }
@@ -83,7 +83,7 @@ namespace Atrium::DirectX12
 		std::vector<std::shared_ptr<BackendGraphicsBuffer>> myBuffers;
 		BackendGraphicsBuffer* myLastWrittenBuffer;
 
-		Atrium::GraphicsBuffer::Target myTarget;
+		Core::GraphicsBuffer::Target myTarget;
 		std::uint32_t myCount;
 		std::uint32_t myStride;
 	};

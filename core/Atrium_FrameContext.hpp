@@ -14,7 +14,7 @@
 #include <source_location>
 #include <vector>
 
-namespace Atrium
+namespace Atrium::Core
 {
 	enum class PrimitiveTopology
 	{

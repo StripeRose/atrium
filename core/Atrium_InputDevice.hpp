@@ -7,7 +7,7 @@
 
 #include <span>
 
-namespace Atrium
+namespace Atrium::Core
 {
 	struct InputEvent;
 	struct TextInputEvent;
@@ -63,4 +63,4 @@ namespace Atrium
 	};
 }
 
-ENUM_FLAGS(Atrium::InputDeviceType);
+ENUM_FLAGS(Atrium::Core::InputDeviceType);

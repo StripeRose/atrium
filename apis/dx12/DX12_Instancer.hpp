@@ -6,5 +6,5 @@
 
 namespace Atrium::DirectX12
 {
-	std::unique_ptr<Atrium::GraphicsAPI> CreateDX12Manager();
+	std::unique_ptr<Atrium::Core::GraphicsAPI> CreateDX12Manager();
 }

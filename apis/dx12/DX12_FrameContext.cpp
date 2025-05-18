@@ -15,9 +15,9 @@ namespace Atrium::DirectX12
 		, myCommandType(aCommandQueue.GetQueueType())
 		, myCurrentFrameHeap(nullptr)
 		, myResourceBarrierQueue()
-#ifdef TRACY_ENABLE
+		#ifdef TRACY_ENABLE
 		, myProfilingContext(aCommandQueue.GetProfilingContext())
-#endif
+		#endif
 	{
 		ZoneScoped;
 		myFrameCommandAllocators.resize(DX12_FRAMES_IN_FLIGHT);
@@ -37,7 +37,7 @@ namespace Atrium::DirectX12
 
 		ComPtr<ID3D12Device4> device4;
 		Debug::Assert(aDevice.GetDevice().As<ID3D12Device4>(&device4), "Get ID3D12Device4.");
-		
+
 		// Create a closed command list.
 		Debug::Assert(
 			device4->CreateCommandList1(
@@ -242,14 +242,14 @@ namespace Atrium::DirectX12
 	}
 
 	void FrameGraphicsContext::BeginProfileZone(ProfileContextZone& aZoneScope
-#ifdef TRACY_ENABLE
+		#ifdef TRACY_ENABLE
 		, const tracy::SourceLocationData& aLocation
-#endif
+		#endif
 	)
 	{
 		std::memset(aZoneScope.Data, 0, sizeof(aZoneScope.Data));
 
-#ifdef TRACY_ENABLE
+		#ifdef TRACY_ENABLE
 		static_assert(sizeof(ProfileContextZone::Data) >= sizeof(tracy::D3D12ZoneScope));
 
 		std::construct_at(
@@ -258,13 +258,13 @@ namespace Atrium::DirectX12
 			myCommandList.Get(),
 			&aLocation,
 			true
-			);
+		);
 
 		aZoneScope.Destructor = [](ProfileContextZone& aZone) {
-				tracy::D3D12ZoneScope* scope = reinterpret_cast<tracy::D3D12ZoneScope*>(&aZone.Data[0]);
-				scope->~D3D12ZoneScope();
+			tracy::D3D12ZoneScope* scope = reinterpret_cast<tracy::D3D12ZoneScope*>(&aZone.Data[0]);
+			scope->~D3D12ZoneScope();
 			};
-#endif
+		#endif
 	}
 
 	void FrameGraphicsContext::Reset(const std::uint_least8_t& aFrameInFlight)
@@ -278,7 +278,7 @@ namespace Atrium::DirectX12
 		myPendingTextureResources.clear();
 	}
 
-	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Atrium::RenderTexture>& aTarget, Color aClearColor)
+	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Core::RenderTexture>& aTarget, Color aClearColor)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Clear color");
 		Debug::Assert(!!aTarget, "ClearColor() requires a target.");
@@ -306,7 +306,7 @@ namespace Atrium::DirectX12
 		);
 	}
 
-	void FrameGraphicsContext::ClearDepth(const std::shared_ptr<Atrium::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil)
+	void FrameGraphicsContext::ClearDepth(const std::shared_ptr<Core::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Clear depth");
 		Debug::Assert(!!aTarget, "ClearDepth() requires a target.");
@@ -405,7 +405,7 @@ namespace Atrium::DirectX12
 		myCommandList->RSSetScissorRects(1, &rect);
 	}
 
-	void FrameGraphicsContext::SetPrimitiveTopology(PrimitiveTopology aTopology)
+	void FrameGraphicsContext::SetPrimitiveTopology(Core::PrimitiveTopology aTopology)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set primitive topology");
 
@@ -413,27 +413,27 @@ namespace Atrium::DirectX12
 
 		switch (aTopology)
 		{
-		case PrimitiveTopology::PointList:
-			topology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
-			break;
-		case PrimitiveTopology::LineList:
-			topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
-			break;
-		case PrimitiveTopology::LineStrip:
-			topology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
-			break;
-		case PrimitiveTopology::TriangleList:
-			topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-			break;
-		case PrimitiveTopology::TriangleStrip:
-			topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-			break;
+			case Core::PrimitiveTopology::PointList:
+				topology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+				break;
+			case Core::PrimitiveTopology::LineList:
+				topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+				break;
+			case Core::PrimitiveTopology::LineStrip:
+				topology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+				break;
+			case Core::PrimitiveTopology::TriangleList:
+				topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+				break;
+			case Core::PrimitiveTopology::TriangleStrip:
+				topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+				break;
 		}
 
 		myCommandList->IASetPrimitiveTopology(topology);
 	}
 
-	void FrameGraphicsContext::SetPipelineState(const std::shared_ptr<Atrium::PipelineState>& aPipelineState)
+	void FrameGraphicsContext::SetPipelineState(const std::shared_ptr<Core::PipelineState>& aPipelineState)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline state");
 		Debug::Assert(!!aPipelineState, "SetPipelineState() requires pipeline state to be non-null.");
@@ -443,7 +443,7 @@ namespace Atrium::DirectX12
 		myCommandList->SetGraphicsRootSignature(myCurrentPipelineState->GetRootSignature()->GetRootSignatureObject().Get());
 	}
 
-	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Atrium::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot)
+	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot)
 	{
 		Debug::Assert(!!aVertexBuffer, "Assumes a valid buffer.");
 
@@ -460,7 +460,7 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	void FrameGraphicsContext::SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Atrium::GraphicsBuffer>& aBuffer)
+	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer)
 	{
 		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
@@ -477,11 +477,11 @@ namespace Atrium::DirectX12
 		if (!myPendingBufferResources.contains(parameterInfo.value().RootParameterIndex))
 			myPendingBufferResources[parameterInfo.value().RootParameterIndex].resize(parameterInfo.value().Count);
 
-		std::vector<std::shared_ptr<Atrium::GraphicsBuffer>>& parameterBuffers = myPendingBufferResources.at(parameterInfo.value().RootParameterIndex);
+		std::vector<std::shared_ptr<Core::GraphicsBuffer>>& parameterBuffers = myPendingBufferResources.at(parameterInfo.value().RootParameterIndex);
 		parameterBuffers[parameterInfo.value().RegisterOffset] = aBuffer;
 	}
 
-	void FrameGraphicsContext::SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Texture>& aTexture)
+	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture)
 	{
 		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
@@ -498,7 +498,7 @@ namespace Atrium::DirectX12
 		if (!myPendingTextureResources.contains(parameterInfo.value().RootParameterIndex))
 			myPendingTextureResources[parameterInfo.value().RootParameterIndex].resize(parameterInfo.value().Count);
 
-		std::vector<std::shared_ptr<Texture>>& parameterBuffers = myPendingTextureResources.at(parameterInfo.value().RootParameterIndex);
+		std::vector<std::shared_ptr<Core::Texture>>& parameterBuffers = myPendingTextureResources.at(parameterInfo.value().RootParameterIndex);
 		parameterBuffers[parameterInfo.value().RegisterOffset] = aTexture;
 	}
 
@@ -508,11 +508,11 @@ namespace Atrium::DirectX12
 		myCommandList->OMSetStencilRef(aStencilRef);
 	}
 
-	void FrameGraphicsContext::SetRenderTargets(const std::vector<std::shared_ptr<Atrium::RenderTexture>>& someTargets, const std::shared_ptr<Atrium::RenderTexture>& aDepthTarget)
+	void FrameGraphicsContext::SetRenderTargets(const std::vector<std::shared_ptr<Core::RenderTexture>>& someTargets, const std::shared_ptr<Core::RenderTexture>& aDepthTarget)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set render targets");
 		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> colorHandles;
-		colorHandles.fill(D3D12_CPU_DESCRIPTOR_HANDLE { 0 });
+		colorHandles.fill(D3D12_CPU_DESCRIPTOR_HANDLE{ 0 });
 
 		for (std::size_t i = 0; i < someTargets.size(); ++i)
 		{
@@ -590,7 +590,7 @@ namespace Atrium::DirectX12
 
 					for (std::size_t i = 0; i < aHeapHandlePair.first.size(); ++i)
 					{
-						const std::shared_ptr<Atrium::GraphicsBuffer>& bufferA = rootParameterBuffers.second.at(i);
+						const std::shared_ptr<Core::GraphicsBuffer>& bufferA = rootParameterBuffers.second.at(i);
 						if (bufferA != nullptr && bufferA != aHeapHandlePair.first.at(i))
 							return false;
 					}
@@ -643,7 +643,7 @@ namespace Atrium::DirectX12
 
 					for (std::size_t i = 0; i < aHeapHandlePair.first.size(); ++i)
 					{
-						const std::shared_ptr<Texture>& texture = rootParameterTextures.second.at(i);
+						const std::shared_ptr<Core::Texture>& texture = rootParameterTextures.second.at(i);
 						if (texture != nullptr && texture != aHeapHandlePair.first.at(i))
 							return false;
 					}
@@ -662,11 +662,11 @@ namespace Atrium::DirectX12
 
 			for (std::size_t i = 0; i < rootParameterTextures.second.size(); ++i)
 			{
-				if (Texture* texture = rootParameterTextures.second.at(i).get())
+				if (Core::Texture* texture = rootParameterTextures.second.at(i).get())
 				{
 					switch (texture->GetDimensions())
 					{
-						case TextureDimension::Tex2D:
+						case Core::TextureDimension::Tex2D:
 							myDevice.GetDevice()->CopyDescriptorsSimple(
 								1,
 								heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i)),
@@ -675,7 +675,7 @@ namespace Atrium::DirectX12
 							);
 							break;
 
-						case TextureDimension::Tex3D:
+						case Core::TextureDimension::Tex3D:
 							myDevice.GetDevice()->CopyDescriptorsSimple(
 								1,
 								heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i)),

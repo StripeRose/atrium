@@ -7,7 +7,7 @@
 #include <optional>
 #include <utility>
 
-namespace Atrium
+namespace Atrium::Core
 {
 	/**
 	 * @brief Short-hand ID for referring to a specific input source on any device of the given type.

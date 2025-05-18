@@ -8,7 +8,7 @@
 
 namespace Atrium::Win32
 {
-	GameInputHandler::GameInputHandler(Atrium::InputDeviceAPI& anInputDeviceAPI)
+	GameInputHandler::GameInputHandler(Atrium::Core::InputDeviceAPI& anInputDeviceAPI)
 		: myInputDeviceAPI(anInputDeviceAPI)
 		, myDeviceCallbackToken(0)
 	{
@@ -36,10 +36,10 @@ namespace Atrium::Win32
 
 	GameInputHandler::~GameInputHandler()
 	{
-		
+		Debug::Assert(myGameInputAPI->UnregisterCallback(myDeviceCallbackToken), "Did not successfully stop callback");
 	}
 
-	void GameInputHandler::ReportInputEvents(Atrium::InputDeviceType someDeviceTypes)
+	void GameInputHandler::ReportInputEvents(Atrium::Core::InputDeviceType someDeviceTypes)
 	{
 		for (const auto& it : myDevices)
 			it.second->ReportInputEvents(someDeviceTypes);
@@ -65,8 +65,8 @@ namespace Atrium::Win32
 			});
 
 		GameInputDevice* newDevice = myDevices.at(aDevice).get();
-		newDevice->OnInput.Connect(this, [&](const Atrium::InputEvent& anEvent) { myInputDeviceAPI.OnInput.Invoke(anEvent); });
-		newDevice->OnTextInput.Connect(this, [&](const Atrium::TextInputEvent& anEvent) { myInputDeviceAPI.OnTextInput.Invoke(anEvent); });
+		newDevice->OnInput.Connect(this, [&](const Atrium::Core::InputEvent& anEvent) { myInputDeviceAPI.OnInput.Invoke(anEvent); });
+		newDevice->OnTextInput.Connect(this, [&](const Atrium::Core::TextInputEvent& anEvent) { myInputDeviceAPI.OnTextInput.Invoke(anEvent); });
 
 		return *newDevice;
 	}

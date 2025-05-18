@@ -18,7 +18,7 @@ namespace Atrium::DirectX12
 	class Device;
 	class RootSignature;
 
-	class DirectX12API final : public Atrium::GraphicsAPI
+	class DirectX12API final : public Atrium::Core::GraphicsAPI
 	{
 	public:
 		static std::size_t GetFramesInFlightAmount();
@@ -37,11 +37,11 @@ namespace Atrium::DirectX12
 
 		// Implementing Atrium::GraphicsAPI
 	public:
-		Atrium::FrameGraphicsContext& GetCurrentFrameContext() override;
+		Core::FrameGraphicsContext& GetCurrentFrameContext() override;
 
 		std::uint_least64_t GetCurrentFrameIndex() const override;
 
-		Atrium::GraphicsAPI::ResourceManager& GetResourceManager() override { return *myResourceManager; }
+		Core::GraphicsAPI::ResourceManager& GetResourceManager() override { return *myResourceManager; }
 
 		bool SupportsMultipleWindows() const override { return true; }
 

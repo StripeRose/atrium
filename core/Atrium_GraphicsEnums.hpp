@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace Atrium
+namespace Atrium::Core
 {
 	enum class TextureCubeFace
 	{

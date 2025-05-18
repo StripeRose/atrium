@@ -18,7 +18,7 @@
 
 namespace Atrium::DirectX12
 {
-	std::unique_ptr<Atrium::GraphicsAPI> CreateDX12Manager()
+	std::unique_ptr<Core::GraphicsAPI> CreateDX12Manager()
 	{
 		return std::make_unique<DirectX12API>();
 	}
@@ -72,7 +72,7 @@ namespace Atrium::DirectX12
 		ReportUnreleasedObjects();
 	}
 
-	Atrium::FrameGraphicsContext& DirectX12API::GetCurrentFrameContext()
+	Core::FrameGraphicsContext& DirectX12API::GetCurrentFrameContext()
 	{
 		return *myFrameGraphicsContext;
 	}

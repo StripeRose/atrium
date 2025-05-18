@@ -13,7 +13,7 @@
 
 namespace Atrium::DirectX12
 {
-	class Shader : public Atrium::Shader
+	class Shader : public Core::Shader
 	{
 	public:
 		static std::shared_ptr<Shader> CreateFromSource(const std::filesystem::path& aFilePath, const char* anEntryPoint, const char* aProfile);

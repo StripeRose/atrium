@@ -186,9 +186,9 @@ namespace Atrium::DirectX12
 		myTexture.Apply(anUpdateMipmaps, aMakeNoLongerReadable);
 	}
 
-	TextureDimension Texture2D::GetDimensions() const
+	Core::TextureDimension Texture2D::GetDimensions() const
 	{
-		return TextureDimension::Tex2D;
+		return Core::TextureDimension::Tex2D;
 	}
 
 	unsigned int Texture2D::GetDepth() const
@@ -196,13 +196,13 @@ namespace Atrium::DirectX12
 		return static_cast<unsigned int>(myTexture.GetMetadata().depth);
 	}
 
-	FilterMode Texture2D::GetFilterMode() const
+	Core::FilterMode Texture2D::GetFilterMode() const
 	{
 		Debug::LogWarning("Texture2D::GetFilterMode() is not implemented. Defaulting to FilterMode::Point.");
-		return FilterMode::Point;
+		return Core::FilterMode::Point;
 	}
 
-	TextureFormat Texture2D::GetFormat() const
+	Core::TextureFormat Texture2D::GetFormat() const
 	{
 		return ToTextureFormat(myTexture.GetMetadata().format);
 	}
@@ -227,49 +227,49 @@ namespace Atrium::DirectX12
 		return static_cast<unsigned int>(myTexture.GetMetadata().width);
 	}
 
-	TextureWrapMode Texture2D::GetWrapModeU() const
+	Core::TextureWrapMode Texture2D::GetWrapModeU() const
 	{
 		Debug::LogWarning("Texture2D::GetWrapModeU() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	TextureWrapMode Texture2D::GetWrapModeV() const
+	Core::TextureWrapMode Texture2D::GetWrapModeV() const
 	{
 		Debug::LogWarning("Texture2D::GetWrapModeV() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	TextureWrapMode Texture2D::GetWrapModeW() const
+	Core::TextureWrapMode Texture2D::GetWrapModeW() const
 	{
 		Debug::LogWarning("Texture2D::GetWrapModeW() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	void Texture2D::SetFilterMode(FilterMode aFilterMode)
+	void Texture2D::SetFilterMode(Core::FilterMode aFilterMode)
 	{
 		aFilterMode;
 		Debug::LogError("Texture2D::SetFilterMode() is not implemented. Call ignored.");
 	}
 
-	void Texture2D::SetWrapMode(TextureWrapMode aWrapMode)
+	void Texture2D::SetWrapMode(Core::TextureWrapMode aWrapMode)
 	{
 		aWrapMode;
 		Debug::LogError("Texture2D::SetWrapMode() is not implemented. Call ignored.");
 	}
 
-	void Texture2D::SetWrapModeU(TextureWrapMode aWrapMode) const
+	void Texture2D::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Texture2D::SetWrapModeU() is not implemented. Call ignored.");
 	}
 
-	void Texture2D::SetWrapModeV(TextureWrapMode aWrapMode) const
+	void Texture2D::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Texture2D::SetWrapModeV() is not implemented. Call ignored.");
 	}
 
-	void Texture2D::SetWrapModeW(TextureWrapMode aWrapMode) const
+	void Texture2D::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Texture2D::SetWrapModeW() is not implemented. Call ignored.");
@@ -318,9 +318,9 @@ namespace Atrium::DirectX12
 		myTexture.Apply(anUpdateMipmaps, aMakeNoLongerReadable);
 	}
 
-	TextureDimension Texture3D::GetDimensions() const
+	Core::TextureDimension Texture3D::GetDimensions() const
 	{
-		return TextureDimension::Tex2D;
+		return Core::TextureDimension::Tex2D;
 	}
 
 	unsigned int Texture3D::GetDepth() const
@@ -328,13 +328,13 @@ namespace Atrium::DirectX12
 		return static_cast<unsigned int>(myTexture.GetMetadata().depth);
 	}
 
-	FilterMode Texture3D::GetFilterMode() const
+	Core::FilterMode Texture3D::GetFilterMode() const
 	{
 		Debug::LogWarning("Texture3D::GetFilterMode() is not implemented. Defaulting to FilterMode::Point.");
-		return FilterMode::Point;
+		return Core::FilterMode::Point;
 	}
 
-	TextureFormat Texture3D::GetFormat() const
+	Core::TextureFormat Texture3D::GetFormat() const
 	{
 		return ToTextureFormat(myTexture.GetMetadata().format);
 	}
@@ -359,49 +359,49 @@ namespace Atrium::DirectX12
 		return static_cast<unsigned int>(myTexture.GetMetadata().width);
 	}
 
-	TextureWrapMode Texture3D::GetWrapModeU() const
+	Core::TextureWrapMode Texture3D::GetWrapModeU() const
 	{
 		Debug::LogWarning("Texture3D::GetWrapModeU() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	TextureWrapMode Texture3D::GetWrapModeV() const
+	Core::TextureWrapMode Texture3D::GetWrapModeV() const
 	{
 		Debug::LogWarning("Texture3D::GetWrapModeV() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	TextureWrapMode Texture3D::GetWrapModeW() const
+	Core::TextureWrapMode Texture3D::GetWrapModeW() const
 	{
 		Debug::LogWarning("Texture3D::GetWrapModeW() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	void Texture3D::SetFilterMode(FilterMode aFilterMode)
+	void Texture3D::SetFilterMode(Core::FilterMode aFilterMode)
 	{
 		aFilterMode;
 		Debug::LogError("Texture3D::SetFilterMode() is not implemented. Call ignored.");
 	}
 
-	void Texture3D::SetWrapMode(TextureWrapMode aWrapMode)
+	void Texture3D::SetWrapMode(Core::TextureWrapMode aWrapMode)
 	{
 		aWrapMode;
 		Debug::LogError("Texture3D::SetWrapMode() is not implemented. Call ignored.");
 	}
 
-	void Texture3D::SetWrapModeU(TextureWrapMode aWrapMode) const
+	void Texture3D::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Texture3D::SetWrapModeU() is not implemented. Call ignored.");
 	}
 
-	void Texture3D::SetWrapModeV(TextureWrapMode aWrapMode) const
+	void Texture3D::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Texture3D::SetWrapModeV() is not implemented. Call ignored.");
 	}
 
-	void Texture3D::SetWrapModeW(TextureWrapMode aWrapMode) const
+	void Texture3D::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("Texture3D::SetWrapModeW() is not implemented. Call ignored.");
@@ -450,9 +450,9 @@ namespace Atrium::DirectX12
 		myTexture.Apply(anUpdateMipmaps, aMakeNoLongerReadable);
 	}
 
-	TextureDimension TextureCube::GetDimensions() const
+	Core::TextureDimension TextureCube::GetDimensions() const
 	{
-		return TextureDimension::Cube;
+		return Core::TextureDimension::Cube;
 	}
 
 	unsigned int TextureCube::GetDepth() const
@@ -460,13 +460,13 @@ namespace Atrium::DirectX12
 		return static_cast<unsigned int>(myTexture.GetMetadata().depth);
 	}
 
-	FilterMode TextureCube::GetFilterMode() const
+	Core::FilterMode TextureCube::GetFilterMode() const
 	{
 		Debug::LogWarning("TextureCube::GetFilterMode() is not implemented. Defaulting to FilterMode::Point.");
-		return FilterMode::Point;
+		return Core::FilterMode::Point;
 	}
 
-	TextureFormat TextureCube::GetFormat() const
+	Core::TextureFormat TextureCube::GetFormat() const
 	{
 		return ToTextureFormat(myTexture.GetMetadata().format);
 	}
@@ -491,49 +491,49 @@ namespace Atrium::DirectX12
 		return static_cast<unsigned int>(myTexture.GetMetadata().width);
 	}
 
-	TextureWrapMode TextureCube::GetWrapModeU() const
+	Core::TextureWrapMode TextureCube::GetWrapModeU() const
 	{
 		Debug::LogWarning("TextureCube::GetWrapModeU() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	TextureWrapMode TextureCube::GetWrapModeV() const
+	Core::TextureWrapMode TextureCube::GetWrapModeV() const
 	{
 		Debug::LogWarning("TextureCube::GetWrapModeV() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	TextureWrapMode TextureCube::GetWrapModeW() const
+	Core::TextureWrapMode TextureCube::GetWrapModeW() const
 	{
 		Debug::LogWarning("TextureCube::GetWrapModeW() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return TextureWrapMode::Repeat;
+		return Core::TextureWrapMode::Repeat;
 	}
 
-	void TextureCube::SetFilterMode(FilterMode aFilterMode)
+	void TextureCube::SetFilterMode(Core::FilterMode aFilterMode)
 	{
 		aFilterMode;
 		Debug::LogError("TextureCube::SetFilterMode() is not implemented. Call ignored.");
 	}
 
-	void TextureCube::SetWrapMode(TextureWrapMode aWrapMode)
+	void TextureCube::SetWrapMode(Core::TextureWrapMode aWrapMode)
 	{
 		aWrapMode;
 		Debug::LogError("TextureCube::SetWrapMode() is not implemented. Call ignored.");
 	}
 
-	void TextureCube::SetWrapModeU(TextureWrapMode aWrapMode) const
+	void TextureCube::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("TextureCube::SetWrapModeU() is not implemented. Call ignored.");
 	}
 
-	void TextureCube::SetWrapModeV(TextureWrapMode aWrapMode) const
+	void TextureCube::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("TextureCube::SetWrapModeV() is not implemented. Call ignored.");
 	}
 
-	void TextureCube::SetWrapModeW(TextureWrapMode aWrapMode) const
+	void TextureCube::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
 	{
 		aWrapMode;
 		Debug::LogError("TextureCube::SetWrapModeW() is not implemented. Call ignored.");
@@ -544,13 +544,13 @@ namespace Atrium::DirectX12
 		return myTexture.GetResource()->GetResource().Get();
 	}
 
-	Color TextureCube::GetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
+	Color TextureCube::GetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
 	{
 		aFace; anX; aY; aMipLevel;
 		return Color::Predefined::Black;
 	}
 
-	void TextureCube::SetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel)
+	void TextureCube::SetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel)
 	{
 		aFace; anX; aY; aColor; aMipLevel;
 	}

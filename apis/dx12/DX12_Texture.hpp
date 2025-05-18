@@ -46,7 +46,7 @@ namespace Atrium::DirectX12
 		DescriptorHeapHandle mySRVHandle;
 	};
 
-	class Texture2D : public Atrium::Texture2D
+	class Texture2D : public Core::Texture2D
 	{
 	public:
 		Texture2D(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
@@ -58,7 +58,7 @@ namespace Atrium::DirectX12
 	public:
 		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override;
 
-		TextureFormat GetFormat() const override;
+		Core::TextureFormat GetFormat() const override;
 
 		Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
 		Color GetPixelBilinear(float aU, float aV, unsigned int aMipLevel = 0) const override;
@@ -67,23 +67,23 @@ namespace Atrium::DirectX12
 
 		// Implements Texture
 	public:
-		TextureDimension GetDimensions() const override;
+		Core::TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		FilterMode GetFilterMode() const override;
+		Core::FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
 
-		TextureWrapMode GetWrapModeU() const override;
-		TextureWrapMode GetWrapModeV() const override;
-		TextureWrapMode GetWrapModeW() const override;
+		Core::TextureWrapMode GetWrapModeU() const override;
+		Core::TextureWrapMode GetWrapModeV() const override;
+		Core::TextureWrapMode GetWrapModeW() const override;
 
-		void SetFilterMode(FilterMode aFilterMode) override;
-		void SetWrapMode(TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(TextureWrapMode aWrapMode) const override;
+		void SetFilterMode(Core::FilterMode aFilterMode) override;
+		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
 
 		void* GetNativeTexturePtr() const override;
 
@@ -91,7 +91,7 @@ namespace Atrium::DirectX12
 		DDSImage myTexture;
 	};
 
-	class Texture3D : public Atrium::Texture3D
+	class Texture3D : public Core::Texture3D
 	{
 	public:
 		Texture3D(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
@@ -103,7 +103,7 @@ namespace Atrium::DirectX12
 	public:
 		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override;
 
-		TextureFormat GetFormat() const override;
+		Core::TextureFormat GetFormat() const override;
 
 		Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel = 0) const override;
 		Color GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel = 0) const override;
@@ -112,23 +112,23 @@ namespace Atrium::DirectX12
 
 		// Implements Texture
 	public:
-		TextureDimension GetDimensions() const override;
+		Core::TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		FilterMode GetFilterMode() const override;
+		Core::FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
 
-		TextureWrapMode GetWrapModeU() const override;
-		TextureWrapMode GetWrapModeV() const override;
-		TextureWrapMode GetWrapModeW() const override;
+		Core::TextureWrapMode GetWrapModeU() const override;
+		Core::TextureWrapMode GetWrapModeV() const override;
+		Core::TextureWrapMode GetWrapModeW() const override;
 
-		void SetFilterMode(FilterMode aFilterMode) override;
-		void SetWrapMode(TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(TextureWrapMode aWrapMode) const override;
+		void SetFilterMode(Core::FilterMode aFilterMode) override;
+		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
 
 		void* GetNativeTexturePtr() const override;
 
@@ -136,7 +136,7 @@ namespace Atrium::DirectX12
 		DDSImage myTexture;
 	};
 
-	class TextureCube : public Atrium::TextureCube
+	class TextureCube : public Core::TextureCube
 	{
 	public:
 		TextureCube(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
@@ -148,31 +148,31 @@ namespace Atrium::DirectX12
 	public:
 		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override;
 
-		TextureFormat GetFormat() const override;
+		Core::TextureFormat GetFormat() const override;
 
-		Color GetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
+		Color GetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
 
-		void SetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel = 0) override;
+		void SetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel = 0) override;
 
 		// Implements Texture
 	public:
-		TextureDimension GetDimensions() const override;
+		Core::TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		FilterMode GetFilterMode() const override;
+		Core::FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
 
-		TextureWrapMode GetWrapModeU() const override;
-		TextureWrapMode GetWrapModeV() const override;
-		TextureWrapMode GetWrapModeW() const override;
+		Core::TextureWrapMode GetWrapModeU() const override;
+		Core::TextureWrapMode GetWrapModeV() const override;
+		Core::TextureWrapMode GetWrapModeW() const override;
 
-		void SetFilterMode(FilterMode aFilterMode) override;
-		void SetWrapMode(TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(TextureWrapMode aWrapMode) const override;
+		void SetFilterMode(Core::FilterMode aFilterMode) override;
+		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
 
 		void* GetNativeTexturePtr() const override;
 

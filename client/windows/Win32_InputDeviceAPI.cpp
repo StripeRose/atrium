@@ -11,12 +11,12 @@ namespace Atrium::Win32
 		myGameInputHandler.reset(new GameInputHandler(*this));
 	}
 
-	std::span<std::reference_wrapper<Atrium::InputDevice>> InputDeviceAPI::ListDevices() const
+	std::span<std::reference_wrapper<Atrium::Core::InputDevice>> InputDeviceAPI::ListDevices() const
 	{
-		return std::span<std::reference_wrapper<Atrium::InputDevice>>();
+		return std::span<std::reference_wrapper<Atrium::Core::InputDevice>>();
 	}
 
-	void InputDeviceAPI::ReportInputEvents(Atrium::InputDeviceType someDeviceTypes)
+	void InputDeviceAPI::ReportInputEvents(Atrium::Core::InputDeviceType someDeviceTypes)
 	{
 		myGameInputHandler->ReportInputEvents(someDeviceTypes);
 	}

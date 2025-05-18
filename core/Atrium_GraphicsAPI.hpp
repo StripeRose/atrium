@@ -9,7 +9,7 @@
 
 #include <filesystem>
 
-namespace Atrium
+namespace Atrium::Core
 {
 	class Window;
 

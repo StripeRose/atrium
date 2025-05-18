@@ -13,7 +13,7 @@
 
 namespace Atrium::DirectX12
 {
-	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Window& aWindow)
+	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Core::Window& aWindow)
 		: myDevice(&aDevice)
 		, myWindow(&aWindow)
 	{
@@ -23,7 +23,7 @@ namespace Atrium::DirectX12
 		Size windowSize = aWindow.GetSize();
 		GetBackBuffers(windowSize);
 
-		aWindow.SizeChanged.Connect(this, [&](Atrium::Window& aWindow) {
+		aWindow.SizeChanged.Connect(this, [&](Atrium::Core::Window& aWindow) {
 			OnDrawSurfaceResize(aWindow.GetSize());
 			});
 	}
@@ -125,7 +125,7 @@ namespace Atrium::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthGPUResource();
 	}
 
-	const RenderTextureDescriptor& SwapChain::GetDescriptor() const
+	const Core::RenderTextureDescriptor& SwapChain::GetDescriptor() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDescriptor();
 	}
@@ -138,13 +138,13 @@ namespace Atrium::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetNativeDepthBufferPtr();
 	}
 
-	void SwapChain::SetFilterMode(FilterMode aFilterMode)
+	void SwapChain::SetFilterMode(Core::FilterMode aFilterMode)
 	{
 		for (auto& backBuffer : myBackBuffers)
 			backBuffer->SetFilterMode(aFilterMode);
 	}
 
-	TextureDimension SwapChain::GetDimensions() const
+	Core::TextureDimension SwapChain::GetDimensions() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDimensions();
 	}
@@ -154,7 +154,7 @@ namespace Atrium::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepth();
 	}
 
-	FilterMode SwapChain::GetFilterMode() const
+	Core::FilterMode SwapChain::GetFilterMode() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetFilterMode();
 	}
@@ -179,40 +179,40 @@ namespace Atrium::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetWidth();
 	}
 
-	TextureWrapMode SwapChain::GetWrapModeU() const
+	Core::TextureWrapMode SwapChain::GetWrapModeU() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeU();
 	}
 
-	TextureWrapMode SwapChain::GetWrapModeV() const
+	Core::TextureWrapMode SwapChain::GetWrapModeV() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeV();
 	}
 
-	TextureWrapMode SwapChain::GetWrapModeW() const
+	Core::TextureWrapMode SwapChain::GetWrapModeW() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeW();
 	}
 
-	void SwapChain::SetWrapMode(TextureWrapMode aWrapMode)
+	void SwapChain::SetWrapMode(Core::TextureWrapMode aWrapMode)
 	{
 		for (auto& backBuffer : myBackBuffers)
 			backBuffer->SetWrapMode(aWrapMode);
 	}
 
-	void SwapChain::SetWrapModeU(TextureWrapMode aWrapMode) const
+	void SwapChain::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
 	{
 		for (auto& backBuffer : myBackBuffers)
 			backBuffer->SetWrapModeU(aWrapMode);
 	}
 
-	void SwapChain::SetWrapModeV(TextureWrapMode aWrapMode) const
+	void SwapChain::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
 	{
 		for (auto& backBuffer : myBackBuffers)
 			backBuffer->SetWrapModeV(aWrapMode);
 	}
 
-	void SwapChain::SetWrapModeW(TextureWrapMode aWrapMode) const
+	void SwapChain::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
 	{
 		for (auto& backBuffer : myBackBuffers)
 			backBuffer->SetWrapModeW(aWrapMode);
@@ -424,11 +424,11 @@ namespace Atrium::DirectX12
 			Debug::Assert(mySwapChain->GetBuffer(i, IID_PPV_ARGS(backBufferResource.ReleaseAndGetAddressOf())), "Get swapchain back buffer.");
 			//backBufferResource->SetName(BasicString<wchar_t>::Format(L"Backbuffer Texture #%i", i).ToCharArray());
 
-			RenderTextureDescriptor rtDesc;
+			Core::RenderTextureDescriptor rtDesc;
 			rtDesc.ColorFormat = GetRenderTextureFormat();
 			rtDesc.ColorGraphicsFormat = ToGraphicsFormat(rtDesc.ColorFormat);
-			rtDesc.DepthStencilFormat = GraphicsFormat::D32_SFloat;
-			rtDesc.Dimension = TextureDimension::Tex2D;
+			rtDesc.DepthStencilFormat = Core::GraphicsFormat::D32_SFloat;
+			rtDesc.Dimension = Core::TextureDimension::Tex2D;
 			rtDesc.IsSRGB = false;
 			rtDesc.Size_Width = aSize.Width;
 			rtDesc.Size_Height = aSize.Height;
@@ -446,15 +446,15 @@ namespace Atrium::DirectX12
 		myDesiredResolution = aSize;
 	}
 
-	RenderTextureFormat SwapChain::GetRenderTextureFormat() const
+	Core::RenderTextureFormat SwapChain::GetRenderTextureFormat() const
 	{
 		if (myDevice->GetParameters().EnableHDR)
-			return RenderTextureFormat::DefaultHDR;
+			return Core::RenderTextureFormat::DefaultHDR;
 		else
-			return RenderTextureFormat::Default;
+			return Core::RenderTextureFormat::Default;
 	}
 
-	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const RenderTextureDescriptor& aDescriptor, const ComPtr<ID3D12Resource>& aColorBuffer, const ComPtr<ID3D12Resource>& aDepthBuffer)
+	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, const ComPtr<ID3D12Resource>& aColorBuffer, const ComPtr<ID3D12Resource>& aDepthBuffer)
 		: RenderTexture(
 			aDevice,
 			aDescriptor,

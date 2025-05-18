@@ -7,7 +7,7 @@
 
 namespace Atrium::DirectX12
 {
-	void RootParameterMapping::Table::AddMapping(ResourceUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex, unsigned int aCount)
+	void RootParameterMapping::Table::AddMapping(Core::ResourceUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex, unsigned int aCount)
 	{
 		Parameter& p = myRanges.emplace_back();
 		p.myUpdateFrequency = anUpdateFrequency;
@@ -16,7 +16,7 @@ namespace Atrium::DirectX12
 		p.myCount = aCount;
 	}
 
-	void RootParameterMapping::AddMapping(ResourceUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex)
+	void RootParameterMapping::AddMapping(Core::ResourceUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex)
 	{
 		Parameter& p = mySingleParameters.emplace_back(Parameter(), GetNextParameterIndex()).first;
 		p.myUpdateFrequency = anUpdateFrequency;
@@ -33,7 +33,7 @@ namespace Atrium::DirectX12
 		return table;
 	}
 
-	std::optional<RootParameterMapping::ParameterInfo> RootParameterMapping::GetParameterInfo(ResourceUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex) const
+	std::optional<RootParameterMapping::ParameterInfo> RootParameterMapping::GetParameterInfo(Core::ResourceUpdateFrequency anUpdateFrequency, RegisterType aRegisterType, unsigned int aRegisterIndex) const
 	{
 		for (const auto& param : mySingleParameters)
 		{
@@ -86,40 +86,40 @@ namespace Atrium::DirectX12
 		myDescriptor.MaxAnisotropy = 16;
 	}
 
-	RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::Address(TextureWrapMode aMode)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::Address(Core::TextureWrapMode aMode)
 	{
 		return AddressU(aMode).AddressV(aMode).AddressW(aMode);
 	}
 
-	RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressU(TextureWrapMode aMode)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressU(Core::TextureWrapMode aMode)
 	{
 		myDescriptor.AddressU = WrapMode(aMode);
 		return *this;
 	}
 
-	RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressV(TextureWrapMode aMode)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressV(Core::TextureWrapMode aMode)
 	{
 		myDescriptor.AddressV = WrapMode(aMode);
 		return *this;
 	}
 
-	RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressW(TextureWrapMode aMode)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressW(Core::TextureWrapMode aMode)
 	{
 		myDescriptor.AddressW = WrapMode(aMode);
 		return *this;
 	}
 
-	RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::Filter(FilterMode aFilter)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::Filter(Core::FilterMode aFilter)
 	{
 		switch (aFilter)
 		{
-		case FilterMode::Point:
+		case Core::FilterMode::Point:
 			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
 			break;
-		case FilterMode::Bilinear:
+		case Core::FilterMode::Bilinear:
 			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 			break;
-		case FilterMode::Trilinear:
+		case Core::FilterMode::Trilinear:
 			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 			break;
 		}
@@ -127,36 +127,36 @@ namespace Atrium::DirectX12
 		return *this;
 	}
 
-	RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::LevelOfDetail(std::pair<float, float> aLodRange)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::LevelOfDetail(std::pair<float, float> aLodRange)
 	{
 		myDescriptor.MinLOD = aLodRange.first;
 		myDescriptor.MaxLOD = aLodRange.second;
 		return *this;
 	}
 
-	RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::MaxAnisotropy(unsigned int aMax)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::MaxAnisotropy(unsigned int aMax)
 	{
 		myDescriptor.MaxAnisotropy = aMax;
 		return *this;
 	}
 
-	D3D12_TEXTURE_ADDRESS_MODE RootSignatureCreator::Sampler::WrapMode(TextureWrapMode aMode) const
+	D3D12_TEXTURE_ADDRESS_MODE RootSignatureCreator::Sampler::WrapMode(Core::TextureWrapMode aMode) const
 	{
 		switch (aMode)
 		{
-		case TextureWrapMode::Clamp:
+		case Core::TextureWrapMode::Clamp:
 			return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		case TextureWrapMode::Mirror:
+		case Core::TextureWrapMode::Mirror:
 			return D3D12_TEXTURE_ADDRESS_MODE_MIRROR;
-		case TextureWrapMode::MirrorOnce:
+		case Core::TextureWrapMode::MirrorOnce:
 			return D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE;
-		case TextureWrapMode::Repeat:
+		case Core::TextureWrapMode::Repeat:
 		default:
 			return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 		}
 	}
 
-	std::shared_ptr<Atrium::RootSignature> RootSignatureCreator::Finalize() const
+	std::shared_ptr<Core::RootSignature> RootSignatureCreator::Finalize() const
 	{
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = { };
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
@@ -316,42 +316,42 @@ namespace Atrium::DirectX12
 		: myDevice(aDevice)
 	{ }
 
-	void RootSignatureCreator::AddCBV(unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency)
+	void RootSignatureCreator::AddCBV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
 	{
 		AddParameter(Parameter::Type::CBV, aRegister, anUpdateFrequency);
 	}
 
-	void RootSignatureCreator::AddConstant(unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency)
+	void RootSignatureCreator::AddConstant(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
 	{
 		AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency);
 	}
 
-	void RootSignatureCreator::AddConstants(unsigned int aCount, unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency)
+	void RootSignatureCreator::AddConstants(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
 	{
 		AddParameter(Parameter::Type::Constant, aRegister, anUpdateFrequency).myCount = aCount;
 	}
 
-	RootSignatureBuilder::DescriptorTable& RootSignatureCreator::AddTable()
+	Core::RootSignatureBuilder::DescriptorTable& RootSignatureCreator::AddTable()
 	{
 		return AddParameter<DescriptorTable>();
 	}
 
-	RootSignatureBuilder::Sampler& RootSignatureCreator::AddSampler(unsigned int aRegister)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::AddSampler(unsigned int aRegister)
 	{
 		D3D12_STATIC_SAMPLER_DESC& descriptor = myStaticSamplers.emplace_back();
 		descriptor.ShaderVisibility = myCurrentVisibility;
 		descriptor.ShaderRegister = aRegister;
-		descriptor.RegisterSpace = static_cast<unsigned int>(ResourceUpdateFrequency::Constant);
+		descriptor.RegisterSpace = static_cast<unsigned int>(Core::ResourceUpdateFrequency::Constant);
 
 		return mySamplerCreators.emplace_back(descriptor);
 	}
 
-	void RootSignatureCreator::AddSRV(unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency)
+	void RootSignatureCreator::AddSRV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
 	{
 		AddParameter(Parameter::Type::SRV, aRegister, anUpdateFrequency);
 	}
 
-	void RootSignatureCreator::AddUAV(unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency)
+	void RootSignatureCreator::AddUAV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
 	{
 		AddParameter(Parameter::Type::UAV, aRegister, anUpdateFrequency);
 	}
@@ -431,7 +431,7 @@ namespace Atrium::DirectX12
 		return true;
 	}
 
-	std::shared_ptr<PipelineState> PipelineState::CreateFrom(ID3D12Device& aDevice, const PipelineStateDescription& aPipelineStateDescription)
+	std::shared_ptr<PipelineState> PipelineState::CreateFrom(ID3D12Device& aDevice, const Core::PipelineStateDescription& aPipelineStateDescription)
 	{
 		if (!aPipelineStateDescription.IsValid())
 		{
@@ -491,7 +491,7 @@ namespace Atrium::DirectX12
 		blendDesc.IndependentBlendEnable = aPipelineStateDescription.BlendMode.IndividualBlending ? TRUE : FALSE;
 		for (UINT i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
 		{
-			const PipelineStateDescription::Blend& blend = aPipelineStateDescription.BlendMode.BlendFactors[i];
+			const Core::PipelineStateDescription::Blend& blend = aPipelineStateDescription.BlendMode.BlendFactors[i];
 
 			blendDesc.RenderTarget[i] = D3D12_RENDER_TARGET_BLEND_DESC {
 				blend.Enabled ? TRUE : FALSE,
@@ -561,48 +561,48 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	D3D12_BLEND PipelineState::ToDXBlend(PipelineStateDescription::BlendFactor aFactor)
+	D3D12_BLEND PipelineState::ToDXBlend(Core::PipelineStateDescription::BlendFactor aFactor)
 	{
 		switch (aFactor)
 		{
-		default:
-		case PipelineStateDescription::BlendFactor::Zero:
-			return D3D12_BLEND_ZERO;
-		case PipelineStateDescription::BlendFactor::One:
-			return D3D12_BLEND_ONE;
-		case PipelineStateDescription::BlendFactor::SourceColor:
-			return D3D12_BLEND_SRC_COLOR;
-		case PipelineStateDescription::BlendFactor::SourceAlpha:
-			return D3D12_BLEND_SRC_ALPHA;
-		case PipelineStateDescription::BlendFactor::DestinationColor:
-			return D3D12_BLEND_DEST_COLOR;
-		case PipelineStateDescription::BlendFactor::DestinationAlpha:
-			return D3D12_BLEND_DEST_ALPHA;
-		case PipelineStateDescription::BlendFactor::OneMinusSourceColor:
-			return D3D12_BLEND_INV_SRC_COLOR;
-		case PipelineStateDescription::BlendFactor::OneMinusSourceAlpha:
-			return D3D12_BLEND_INV_SRC_ALPHA;
-		case PipelineStateDescription::BlendFactor::OneMinusDestinationColor:
-			return D3D12_BLEND_INV_DEST_COLOR;
-		case PipelineStateDescription::BlendFactor::OneMinusDestinationAlpha:
-			return D3D12_BLEND_INV_DEST_ALPHA;
+			default:
+			case Core::PipelineStateDescription::BlendFactor::Zero:
+				return D3D12_BLEND_ZERO;
+			case Core::PipelineStateDescription::BlendFactor::One:
+				return D3D12_BLEND_ONE;
+			case Core::PipelineStateDescription::BlendFactor::SourceColor:
+				return D3D12_BLEND_SRC_COLOR;
+			case Core::PipelineStateDescription::BlendFactor::SourceAlpha:
+				return D3D12_BLEND_SRC_ALPHA;
+			case Core::PipelineStateDescription::BlendFactor::DestinationColor:
+				return D3D12_BLEND_DEST_COLOR;
+			case Core::PipelineStateDescription::BlendFactor::DestinationAlpha:
+				return D3D12_BLEND_DEST_ALPHA;
+			case Core::PipelineStateDescription::BlendFactor::OneMinusSourceColor:
+				return D3D12_BLEND_INV_SRC_COLOR;
+			case Core::PipelineStateDescription::BlendFactor::OneMinusSourceAlpha:
+				return D3D12_BLEND_INV_SRC_ALPHA;
+			case Core::PipelineStateDescription::BlendFactor::OneMinusDestinationColor:
+				return D3D12_BLEND_INV_DEST_COLOR;
+			case Core::PipelineStateDescription::BlendFactor::OneMinusDestinationAlpha:
+				return D3D12_BLEND_INV_DEST_ALPHA;
 		}
 	}
 
-	D3D12_BLEND_OP PipelineState::ToDXBlend(PipelineStateDescription::BlendOperation anOperation)
+	D3D12_BLEND_OP PipelineState::ToDXBlend(Core::PipelineStateDescription::BlendOperation anOperation)
 	{
 		switch (anOperation)
 		{
-		default:
-		case PipelineStateDescription::BlendOperation::Add:
-			return D3D12_BLEND_OP_ADD;
-		case PipelineStateDescription::BlendOperation::Subtract:
-			return D3D12_BLEND_OP_SUBTRACT;
-		case PipelineStateDescription::BlendOperation::ReverseSubtract:
-			return D3D12_BLEND_OP_REV_SUBTRACT;
-		case PipelineStateDescription::BlendOperation::Max:
-			return D3D12_BLEND_OP_MAX;
-		case PipelineStateDescription::BlendOperation::Min:
+			default:
+			case Core::PipelineStateDescription::BlendOperation::Add:
+				return D3D12_BLEND_OP_ADD;
+			case Core::PipelineStateDescription::BlendOperation::Subtract:
+				return D3D12_BLEND_OP_SUBTRACT;
+			case Core::PipelineStateDescription::BlendOperation::ReverseSubtract:
+				return D3D12_BLEND_OP_REV_SUBTRACT;
+			case Core::PipelineStateDescription::BlendOperation::Max:
+				return D3D12_BLEND_OP_MAX;
+			case Core::PipelineStateDescription::BlendOperation::Min:
 			return D3D12_BLEND_OP_MIN;
 		}
 	}

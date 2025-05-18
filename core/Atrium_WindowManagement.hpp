@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace Atrium
+namespace Atrium::Core
 {
 	class Window
 	{

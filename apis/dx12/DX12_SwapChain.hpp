@@ -14,7 +14,7 @@ namespace Atrium::DirectX12
 	class SwapChain : public RenderTarget
 	{
 	public:
-		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Window& aWindow);
+		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Core::Window& aWindow);
 		~SwapChain();
 
 		void Invalidate();
@@ -42,28 +42,28 @@ namespace Atrium::DirectX12
 
 		// Implementing RenderTexture
 	public:
-		const RenderTextureDescriptor& GetDescriptor() const override;
+		const Core::RenderTextureDescriptor& GetDescriptor() const override;
 		void* GetNativeDepthBufferPtr() const override;
 
 		// Implementing Texture
 	public:
-		void SetFilterMode(FilterMode aFilterMode) override;
-		TextureDimension GetDimensions() const override;
+		void SetFilterMode(Core::FilterMode aFilterMode) override;
+		Core::TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		FilterMode GetFilterMode() const override;
+		Core::FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
 
-		TextureWrapMode GetWrapModeU() const override;
-		TextureWrapMode GetWrapModeV() const override;
-		TextureWrapMode GetWrapModeW() const override;
+		Core::TextureWrapMode GetWrapModeU() const override;
+		Core::TextureWrapMode GetWrapModeV() const override;
+		Core::TextureWrapMode GetWrapModeW() const override;
 
-		void SetWrapMode(TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(TextureWrapMode aWrapMode) const override;
+		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
+		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
+		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
 
 		void* GetNativeTexturePtr() const override;
 
@@ -75,7 +75,7 @@ namespace Atrium::DirectX12
 
 		void OnDrawSurfaceResize(const Size& aSize);
 
-		RenderTextureFormat GetRenderTextureFormat() const;
+		Core::RenderTextureFormat GetRenderTextureFormat() const;
 
 	private:
 		class SwapChainBackBuffer : public DirectX12::RenderTexture
@@ -83,7 +83,7 @@ namespace Atrium::DirectX12
 		public:
 			SwapChainBackBuffer(
 				Device& aDevice,
-				const RenderTextureDescriptor& aDescriptor,
+				const Core::RenderTextureDescriptor& aDescriptor,
 				const ComPtr<ID3D12Resource>& aColorBuffer = nullptr,
 				const ComPtr<ID3D12Resource>& aDepthBuffer = nullptr);
 
@@ -93,7 +93,7 @@ namespace Atrium::DirectX12
 	private:
 		Device* myDevice;
 		ComPtr<IDXGISwapChain3> mySwapChain;
-		Atrium::Window* myWindow;
+		Atrium::Core::Window* myWindow;
 
 		std::vector<std::shared_ptr<SwapChainBackBuffer>> myBackBuffers;
 		std::optional<Size> myDesiredResolution;
