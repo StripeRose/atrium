@@ -11,6 +11,7 @@ namespace Atrium
 	AtriumApplication::AtriumApplication()
 		: myIsRunning(false)
 		, myHasShutdownBeenRequested(false)
+		, myLastExitCode(EXIT_SUCCESS)
 	{
 		CreateAPIHandlers();
 		AssertAPIHandlersExist();
@@ -29,20 +30,28 @@ namespace Atrium
 	void AtriumApplication::Exit()
 	{
 		myHasShutdownBeenRequested = true;
+		myLastExitCode = EXIT_SUCCESS;
 	}
 
-	bool AtriumApplication::Run()
+	void AtriumApplication::Exit(int anExitCode)
+	{
+		myHasShutdownBeenRequested = true;
+		myLastExitCode = anExitCode;
+	}
+
+	int AtriumApplication::Run()
 	{
 		if (!HandleStartup())
-			return false;
+			return EXIT_FAILURE;
 
 		myIsRunning = true;
+		myLastExitCode = EXIT_SUCCESS;
 
 		RunMainLoop();
 
 		HandleShutdown();
 
-		return true;
+		return myLastExitCode;
 	}
 
 	void AtriumApplication::HandleCloseRequest(bool&)

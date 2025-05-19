@@ -37,9 +37,16 @@ namespace Atrium
 		void Exit();
 
 		/**
-		 * @brief Start up the engine to run the application.
+		 * @brief Request the application to exit when possible.
+		 * @param anExitCode An exit code to use when returning from Run().
 		 */
-		bool Run();
+		void Exit(int anExitCode);
+
+		/**
+		 * @brief Start up the engine to run the application.
+		 * @return The final exit code of the application.
+		 */
+		int Run();
 
 		#pragma endregion
 
@@ -79,5 +86,6 @@ namespace Atrium
 
 		bool myIsRunning;
 		bool myHasShutdownBeenRequested;
+		int myLastExitCode;
 	};
 }
