@@ -28,7 +28,7 @@ namespace Atrium
 
 	void AtriumApplication::Exit()
 	{
-		myIsRunning = false;
+		myHasShutdownBeenRequested = true;
 	}
 
 	bool AtriumApplication::Run()
