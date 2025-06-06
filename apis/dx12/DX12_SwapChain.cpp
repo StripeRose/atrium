@@ -22,6 +22,7 @@ namespace Atrium::DirectX12
 		GetBackBuffers(windowSize);
 
 		aWindow.OnSizeChanged.Connect(this, [&]() { OnDrawSurfaceResize(aWindow.GetSize()); });
+		aWindow.OnClosed.Connect(this, [&]() { myWindow = nullptr; });
 	}
 
 	SwapChain::~SwapChain()
