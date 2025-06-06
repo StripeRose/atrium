@@ -155,7 +155,7 @@ namespace Atrium
 			};
 	}
 
-	void ImGuiHandler::SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, Core::GraphicsFormat aTargetFormat)
+	void ImGuiHandler::SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, GraphicsFormat aTargetFormat)
 	{
 		ZoneScoped;
 		ImGui_ImplWin32_Init(std::any_cast<HWND>(aWindow.GetNativeHandle()));

@@ -21,7 +21,7 @@ namespace Atrium
 
 		const RenderTextureDescriptor GetDescriptor() const;
 
-		Core::TextureDimension GetDimensions() const;
+		TextureDimension GetDimensions() const;
 		unsigned int GetDepth() const;
 		unsigned int GetHeight() const;
 		bool IsReadable() const;

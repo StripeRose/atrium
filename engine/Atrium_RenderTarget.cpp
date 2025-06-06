@@ -24,7 +24,7 @@ namespace Atrium
 		return myTarget->GetDescriptor();
 	}
 
-	Core::TextureDimension RenderTarget::GetDimensions() const
+	TextureDimension RenderTarget::GetDimensions() const
 	{
 		return myTarget->GetDimensions();
 	}

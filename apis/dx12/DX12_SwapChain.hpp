@@ -47,7 +47,7 @@ namespace Atrium::DirectX12
 
 		// Implementing Texture
 	public:
-		Core::TextureDimension GetDimensions() const override;
+		TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
@@ -64,7 +64,7 @@ namespace Atrium::DirectX12
 
 		void OnDrawSurfaceResize(const SizeT<int>& aSize);
 
-		Core::RenderTextureFormat GetRenderTextureFormat() const;
+		RenderTextureFormat GetRenderTextureFormat() const;
 
 	private:
 		class SwapChainBackBuffer : public DirectX12::RenderTexture

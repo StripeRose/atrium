@@ -180,20 +180,20 @@ namespace Atrium::DirectX12
 		myImage.Apply(anUpdateMipmaps, aMakeNoLongerReadable);
 	}
 
-	Core::TextureDimension Texture::GetDimensions() const
+	TextureDimension Texture::GetDimensions() const
 	{
 		switch (myImage.GetMetadata().dimension)
 		{
 			case TEX_DIMENSION_TEXTURE1D:
 			case TEX_DIMENSION_TEXTURE2D:
 				if ((myImage.GetMetadata().miscFlags & DirectX::TEX_MISC_TEXTURECUBE) != 0)
-					return myImage.GetMetadata().arraySize ? Core::TextureDimension::CubeArray : Core::TextureDimension::Cube;
+					return myImage.GetMetadata().arraySize ? TextureDimension::CubeArray : TextureDimension::Cube;
 				else
-					return Core::TextureDimension::Tex2D;
+					return TextureDimension::Tex2D;
 			case TEX_DIMENSION_TEXTURE3D:
-				return Core::TextureDimension::Tex3D;
+				return TextureDimension::Tex3D;
 			default:
-				return Core::TextureDimension::Unknown;
+				return TextureDimension::Unknown;
 		}
 	}
 

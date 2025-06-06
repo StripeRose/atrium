@@ -22,10 +22,10 @@ namespace Atrium::DirectX12
 			"The render-texture has a size."
 		);
 
-		if (myDescriptor.ColorGraphicsFormat == Core::GraphicsFormat::None)
+		if (myDescriptor.ColorGraphicsFormat == GraphicsFormat::None)
 			myDescriptor.ColorGraphicsFormat = ToGraphicsFormat(myDescriptor.ColorFormat);
 
-		if (myDescriptor.ColorGraphicsFormat != Core::GraphicsFormat::None)
+		if (myDescriptor.ColorGraphicsFormat != GraphicsFormat::None)
 		{
 			if (!aColorBuffer)
 			{
@@ -66,7 +66,7 @@ namespace Atrium::DirectX12
 			aDevice.GetDevice()->CreateRenderTargetView(myResource->GetResource().Get(), &rtvDesc, myRSVHandle.GetCPUHandle());
 		}
 
-		if (myDescriptor.DepthStencilFormat != Core::GraphicsFormat::None)
+		if (myDescriptor.DepthStencilFormat != GraphicsFormat::None)
 		{
 			if (!myDepthResource)
 			{
@@ -107,7 +107,7 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	Core::TextureDimension RenderTexture::GetDimensions() const
+	TextureDimension RenderTexture::GetDimensions() const
 	{
 		return myDescriptor.Dimension;
 	}

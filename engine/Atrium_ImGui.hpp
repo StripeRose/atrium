@@ -25,7 +25,7 @@ namespace Atrium
 #if IS_IMGUI_ENABLED
 	private:
 		void InitForWindow(Core::Window& aWindow);
-		void SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, Core::GraphicsFormat aTargetFormat);
+		void SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, GraphicsFormat aTargetFormat);
 		void Cleanup();
 
 		void StyleColorsNord();

@@ -58,7 +58,7 @@ namespace Atrium::DirectX12
 
 		// Implements Core::Texture
 	public:
-		Core::TextureDimension GetDimensions() const override;
+		TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;

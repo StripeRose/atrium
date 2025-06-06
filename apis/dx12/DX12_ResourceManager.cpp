@@ -64,7 +64,7 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::Texture> ResourceManager::CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, Core::TextureFormat aTextureFormat, std::optional<Core::TextureDimension> aDimension)
+	std::shared_ptr<Core::Texture> ResourceManager::CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension)
 	{
 		DirectX::TexMetadata metadata;
 		metadata.arraySize = anArrayCount;
@@ -80,34 +80,34 @@ namespace Atrium::DirectX12
 		if (!aDimension)
 		{
 			if (aDepth > 1)
-				aDimension = Core::TextureDimension::Tex3D;
+				aDimension = TextureDimension::Tex3D;
 			else
-				aDimension = Core::TextureDimension::Tex2D;
+				aDimension = TextureDimension::Tex2D;
 		}
 
 		switch (aDimension.value())
 		{
-			case Core::TextureDimension::Cube:
+			case TextureDimension::Cube:
 				if (anArrayCount > 1)
 					Debug::LogWarning("Texture dimension explicitly set to Cube but array count was greater than 1. Implicitly changed to CubeArray instead, but may be unintentional.");
 
 				[[fallthrough]];
 
-			case Core::TextureDimension::CubeArray:
+			case TextureDimension::CubeArray:
 				// Ignoring aDepth and forcing 6 sides.
 				metadata.depth = 6;
 				metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
 				metadata.miscFlags = DirectX::TEX_MISC_TEXTURECUBE;
 				break;
 
-			case Core::TextureDimension::Tex2D:
+			case TextureDimension::Tex2D:
 				// Forces 1 in depth for 2D textures.
 				metadata.depth = 1;
 				// To Atrium always 2D, but if height or width is 1 it's 1D to DirectX.
 				metadata.dimension = aWidth > 1 && aHeight > 1 ? DirectX::TEX_DIMENSION_TEXTURE2D : DirectX::TEX_DIMENSION_TEXTURE1D;
 				break;
 
-			case Core::TextureDimension::Tex3D:
+			case TextureDimension::Tex3D:
 				metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE3D;
 				break;
 

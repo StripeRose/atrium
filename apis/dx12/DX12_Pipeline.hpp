@@ -161,12 +161,12 @@ namespace Atrium::DirectX12
 		public:
 			Sampler(D3D12_STATIC_SAMPLER_DESC& aDescriptor);
 
-			RootSignatureBuilder::Sampler& Address(Core::TextureWrapMode aMode) override;
-			RootSignatureBuilder::Sampler& AddressU(Core::TextureWrapMode aMode) override;
-			RootSignatureBuilder::Sampler& AddressV(Core::TextureWrapMode aMode) override;
-			RootSignatureBuilder::Sampler& AddressW(Core::TextureWrapMode aMode) override;
+			RootSignatureBuilder::Sampler& Address(TextureWrapMode aMode) override;
+			RootSignatureBuilder::Sampler& AddressU(TextureWrapMode aMode) override;
+			RootSignatureBuilder::Sampler& AddressV(TextureWrapMode aMode) override;
+			RootSignatureBuilder::Sampler& AddressW(TextureWrapMode aMode) override;
 
-			RootSignatureBuilder::Sampler& Filter(Core::FilterMode aFilter) override;
+			RootSignatureBuilder::Sampler& Filter(FilterMode aFilter) override;
 
 			RootSignatureBuilder::Sampler& LevelOfDetail(float aLodLevel) override { return LevelOfDetail({ aLodLevel, aLodLevel }); }
 			RootSignatureBuilder::Sampler& LevelOfDetail(std::pair<float, float> aLodRange) override;
@@ -174,7 +174,7 @@ namespace Atrium::DirectX12
 			RootSignatureBuilder::Sampler& MaxAnisotropy(unsigned int aMax) override;
 
 		private:
-			D3D12_TEXTURE_ADDRESS_MODE WrapMode(Core::TextureWrapMode aMode) const;
+			D3D12_TEXTURE_ADDRESS_MODE WrapMode(TextureWrapMode aMode) const;
 
 			D3D12_STATIC_SAMPLER_DESC& myDescriptor;
 		};

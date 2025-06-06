@@ -134,7 +134,7 @@ namespace Atrium::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetNativeDepthBufferPtr();
 	}
 
-	Core::TextureDimension SwapChain::GetDimensions() const
+	TextureDimension SwapChain::GetDimensions() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDimensions();
 	}
@@ -373,8 +373,8 @@ namespace Atrium::DirectX12
 			Core::RenderTextureDescriptor rtDesc;
 			rtDesc.ColorFormat = GetRenderTextureFormat();
 			rtDesc.ColorGraphicsFormat = ToGraphicsFormat(rtDesc.ColorFormat);
-			rtDesc.DepthStencilFormat = Core::GraphicsFormat::D32_SFloat;
-			rtDesc.Dimension = Core::TextureDimension::Tex2D;
+			rtDesc.DepthStencilFormat = GraphicsFormat::D32_SFloat;
+			rtDesc.Dimension = TextureDimension::Tex2D;
 			rtDesc.IsSRGB = false;
 			rtDesc.Size_Width = aSize.Width;
 			rtDesc.Size_Height = aSize.Height;
@@ -392,12 +392,12 @@ namespace Atrium::DirectX12
 		myDesiredResolution = aSize;
 	}
 
-	Core::RenderTextureFormat SwapChain::GetRenderTextureFormat() const
+	RenderTextureFormat SwapChain::GetRenderTextureFormat() const
 	{
 		if (myDevice->GetParameters().EnableHDR)
-			return Core::RenderTextureFormat::DefaultHDR;
+			return RenderTextureFormat::DefaultHDR;
 		else
-			return Core::RenderTextureFormat::Default;
+			return RenderTextureFormat::Default;
 	}
 
 	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, const ComPtr<ID3D12Resource>& aColorBuffer, const ComPtr<ID3D12Resource>& aDepthBuffer)

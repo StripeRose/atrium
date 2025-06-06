@@ -27,7 +27,7 @@ namespace Atrium::DirectX12
 
 		std::shared_ptr<Core::Shader> CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint) override;
 
-		std::shared_ptr<Core::Texture> CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, Core::TextureFormat aTextureFormat, std::optional<Core::TextureDimension> aDimension) override;
+		std::shared_ptr<Core::Texture> CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension) override;
 
 		std::shared_ptr<SwapChain> GetSwapChain(Core::Window& aWindow);
 

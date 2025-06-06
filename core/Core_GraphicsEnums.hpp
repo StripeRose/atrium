@@ -2,7 +2,9 @@
 
 #pragma once
 
-namespace Atrium::Core
+// Defined in Core but used by the entire engine as-is, so lacks the ::Core namespace.
+
+namespace Atrium
 {
 	enum class TextureCubeFace
 	{

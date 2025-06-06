@@ -86,40 +86,40 @@ namespace Atrium::DirectX12
 		myDescriptor.MaxAnisotropy = 16;
 	}
 
-	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::Address(Core::TextureWrapMode aMode)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::Address(TextureWrapMode aMode)
 	{
 		return AddressU(aMode).AddressV(aMode).AddressW(aMode);
 	}
 
-	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressU(Core::TextureWrapMode aMode)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressU(TextureWrapMode aMode)
 	{
 		myDescriptor.AddressU = WrapMode(aMode);
 		return *this;
 	}
 
-	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressV(Core::TextureWrapMode aMode)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressV(TextureWrapMode aMode)
 	{
 		myDescriptor.AddressV = WrapMode(aMode);
 		return *this;
 	}
 
-	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressW(Core::TextureWrapMode aMode)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::AddressW(TextureWrapMode aMode)
 	{
 		myDescriptor.AddressW = WrapMode(aMode);
 		return *this;
 	}
 
-	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::Filter(Core::FilterMode aFilter)
+	Core::RootSignatureBuilder::Sampler& RootSignatureCreator::Sampler::Filter(FilterMode aFilter)
 	{
 		switch (aFilter)
 		{
-		case Core::FilterMode::Point:
+		case FilterMode::Point:
 			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
 			break;
-		case Core::FilterMode::Bilinear:
+		case FilterMode::Bilinear:
 			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 			break;
-		case Core::FilterMode::Trilinear:
+		case FilterMode::Trilinear:
 			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 			break;
 		}
@@ -140,17 +140,17 @@ namespace Atrium::DirectX12
 		return *this;
 	}
 
-	D3D12_TEXTURE_ADDRESS_MODE RootSignatureCreator::Sampler::WrapMode(Core::TextureWrapMode aMode) const
+	D3D12_TEXTURE_ADDRESS_MODE RootSignatureCreator::Sampler::WrapMode(TextureWrapMode aMode) const
 	{
 		switch (aMode)
 		{
-		case Core::TextureWrapMode::Clamp:
+		case TextureWrapMode::Clamp:
 			return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		case Core::TextureWrapMode::Mirror:
+		case TextureWrapMode::Mirror:
 			return D3D12_TEXTURE_ADDRESS_MODE_MIRROR;
-		case Core::TextureWrapMode::MirrorOnce:
+		case TextureWrapMode::MirrorOnce:
 			return D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE;
-		case Core::TextureWrapMode::Repeat:
+		case TextureWrapMode::Repeat:
 		default:
 			return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 		}
