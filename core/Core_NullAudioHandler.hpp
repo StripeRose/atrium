@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Atrium_AudioAPI.hpp"
+#include "Core_AudioAPI.hpp"
 
 namespace Atrium::Core
 {

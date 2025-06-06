@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Atrium_Texture.hpp"
+#include "Core_Texture.hpp"
 
 #include "DX12_ComPtr.hpp"
 #include "DX12_DescriptorHeap.hpp"

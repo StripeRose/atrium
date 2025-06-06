@@ -5,9 +5,9 @@
 #include "DX12_ComPtr.hpp"
 #include "DX12_Shader.hpp"
 
-#include "Atrium_FrameContext.hpp"
-#include "Atrium_GraphicsPipeline.hpp"
-#include "Atrium_RenderTexture.hpp"
+#include "Core_FrameContext.hpp"
+#include "Core_GraphicsPipeline.hpp"
+#include "Core_RenderTexture.hpp"
 
 #include <d3d12.h>
 

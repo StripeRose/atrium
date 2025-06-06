@@ -2,10 +2,10 @@
 
 #include "Atrium_Diagnostics.hpp"
 
-#include "Atrium_NullAudioHandler.hpp"
-#include "Atrium_NullGraphicsHandler.hpp"
-#include "Atrium_NullInputHandler.hpp"
-#include "Atrium_NullWindowHandler.hpp"
+#include "Core_NullAudioHandler.hpp"
+#include "Core_NullGraphicsHandler.hpp"
+#include "Core_NullInputHandler.hpp"
+#include "Core_NullWindowHandler.hpp"
 
 #if _WIN32
 #include "DX12_Instancer.hpp"

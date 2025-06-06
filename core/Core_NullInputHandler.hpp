@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Atrium_InputDeviceAPI.hpp"
+#include "Core_InputDeviceAPI.hpp"
 
 namespace Atrium::Core
 {

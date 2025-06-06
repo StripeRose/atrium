@@ -6,7 +6,7 @@
 #include "DX12_ResourceManager.hpp"
 #include "DX12_SwapChain.hpp"
 
-#include "Atrium_GraphicsAPI.hpp"
+#include "Core_GraphicsAPI.hpp"
 #include "Core_WindowManagement.hpp"
 
 #include <d3d12.h>

@@ -4,7 +4,7 @@
 
 #include "Atrium_Color.hpp"
 
-#include "Atrium_GraphicsEnums.hpp"
+#include "Core_GraphicsEnums.hpp"
 
 namespace Atrium::Core
 {

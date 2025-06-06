@@ -6,7 +6,7 @@
 #include "DX12_DescriptorHeap.hpp"
 #include "DX12_GPUResource.hpp"
 
-#include "Atrium_RenderTexture.hpp"
+#include "Core_RenderTexture.hpp"
 
 namespace Atrium::DirectX12
 {

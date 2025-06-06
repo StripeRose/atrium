@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Atrium_GraphicsAPI.hpp>
-#include <Atrium_GraphicsEnums.hpp>
-#include <Atrium_InputDevice.hpp>
+#include <Core_GraphicsAPI.hpp>
+#include <Core_GraphicsEnums.hpp>
+#include <Core_InputDevice.hpp>
 #include <Core_WindowManagement.hpp>
 
 #if IS_IMGUI_ENABLED

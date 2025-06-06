@@ -1,6 +1,6 @@
 // Filter "Graphics"
 
-#include "Atrium_NullGraphicsHandler.hpp"
+#include "Core_NullGraphicsHandler.hpp"
 
 namespace Atrium::Core
 {

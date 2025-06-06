@@ -5,8 +5,8 @@
 #include "Win32_GameInput.h"
 #include "Win32_GameInputDevice.hpp"
 
-#include "Atrium_InputDeviceAPI.hpp"
-#include "Atrium_InputEvent.hpp"
+#include "Core_InputDeviceAPI.hpp"
+#include "Core_InputEvent.hpp"
 
 #include <wrl.h>
 

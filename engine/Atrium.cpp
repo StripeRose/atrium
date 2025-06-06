@@ -1,9 +1,9 @@
 #include "Atrium.hpp"
 
-#include "Atrium_AudioAPI.hpp"
+#include "Core_AudioAPI.hpp"
 #include "Atrium_Diagnostics.hpp"
-#include "Atrium_GraphicsAPI.hpp"
-#include "Atrium_InputDeviceAPI.hpp"
+#include "Core_GraphicsAPI.hpp"
+#include "Core_InputDeviceAPI.hpp"
 #include "Core_WindowManagement.hpp"
 
 namespace Atrium

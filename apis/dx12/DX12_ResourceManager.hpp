@@ -3,7 +3,7 @@
 #include "DX12_Pipeline.hpp"
 #include "DX12_SwapChain.hpp"
 
-#include "Atrium_GraphicsAPI.hpp"
+#include "Core_GraphicsAPI.hpp"
 
 #include <map>
 #include <memory>

@@ -4,9 +4,9 @@
 
 #include "Win32_GameInput.h"
 
-#include "Atrium_InputDevice.hpp"
-#include "Atrium_InputEvent.hpp"
-#include "Atrium_InputSource.hpp"
+#include "Core_InputDevice.hpp"
+#include "Core_InputEvent.hpp"
+#include "Core_InputSource.hpp"
 
 #include <wrl.h>
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Atrium_InputDevice.hpp"
+#include "Core_InputDevice.hpp"
 
 #include <rose-common/EventSlot.hpp>
 

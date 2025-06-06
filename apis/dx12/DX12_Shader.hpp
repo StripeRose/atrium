@@ -4,7 +4,7 @@
 
 #include "DX12_ComPtr.hpp"
 
-#include "Atrium_GraphicsPipeline.hpp"
+#include "Core_GraphicsPipeline.hpp"
 
 #include <d3d12.h>
 

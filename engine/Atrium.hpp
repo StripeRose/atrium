@@ -14,7 +14,6 @@ namespace Atrium
 		class WindowManager;
 	}
 
-
 	class AtriumApplication
 	{
 	public:

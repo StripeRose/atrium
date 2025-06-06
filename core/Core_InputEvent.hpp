@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Atrium_Diagnostics.hpp"
-#include "Atrium_InputSource.hpp"
+#include "Core_InputSource.hpp"
 
 #include <bitset>
 #include <span>
