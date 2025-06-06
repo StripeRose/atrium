@@ -31,12 +31,12 @@ namespace Atrium::Core
 		/**
 		 * @brief Slot for listening to input events from any device.
 		 */
-		RoseCommon::EventSlot<const InputEvent&> OnInput;
+		EventSlot<const InputEvent&> OnInput;
 
 		/**
 		 * @brief Slot for listening to text input events from any device.
 		 */
-		RoseCommon::EventSlot<const TextInputEvent&> OnTextInput;
+		EventSlot<const TextInputEvent&> OnTextInput;
 
 		#pragma endregion
 

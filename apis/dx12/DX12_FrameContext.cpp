@@ -605,7 +605,7 @@ namespace Atrium::DirectX12
 				continue;
 			}
 
-			DescriptorHeapHandle heapHandle = myCurrentFrameHeap->GetHeapHandleBlock(Atrium::Math::TruncateTo<uint32_t>(rootParameterBuffers.second.size()));
+			DescriptorHeapHandle heapHandle = myCurrentFrameHeap->GetHeapHandleBlock(Atrium::TruncateTo<uint32_t>(rootParameterBuffers.second.size()));
 
 			for (std::size_t i = 0; i < rootParameterBuffers.second.size(); ++i)
 			{
@@ -617,7 +617,7 @@ namespace Atrium::DirectX12
 
 				myDevice.GetDevice()->CopyDescriptorsSimple(
 					1,
-					heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i)),
+					heapHandle.GetCPUHandle(Atrium::TruncateTo<unsigned int>(i)),
 					descriptorHandle.GetCPUHandle(),
 					myCurrentFrameHeap->GetHeapType()
 				);
@@ -658,7 +658,7 @@ namespace Atrium::DirectX12
 				continue;
 			}
 
-			DescriptorHeapHandle heapHandle = myCurrentFrameHeap->GetHeapHandleBlock(Atrium::Math::TruncateTo<uint32_t>(rootParameterTextures.second.size()));
+			DescriptorHeapHandle heapHandle = myCurrentFrameHeap->GetHeapHandleBlock(Atrium::TruncateTo<uint32_t>(rootParameterTextures.second.size()));
 
 			for (std::size_t i = 0; i < rootParameterTextures.second.size(); ++i)
 			{
@@ -669,7 +669,7 @@ namespace Atrium::DirectX12
 						case Core::TextureDimension::Tex2D:
 							myDevice.GetDevice()->CopyDescriptorsSimple(
 								1,
-								heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i)),
+								heapHandle.GetCPUHandle(Atrium::TruncateTo<unsigned int>(i)),
 								static_cast<Texture2D*>(texture)->GetImage().GetSRVHandle().GetCPUHandle(),
 								myCurrentFrameHeap->GetHeapType()
 							);
@@ -678,7 +678,7 @@ namespace Atrium::DirectX12
 						case Core::TextureDimension::Tex3D:
 							myDevice.GetDevice()->CopyDescriptorsSimple(
 								1,
-								heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i)),
+								heapHandle.GetCPUHandle(Atrium::TruncateTo<unsigned int>(i)),
 								static_cast<Texture3D*>(texture)->GetImage().GetSRVHandle().GetCPUHandle(),
 								myCurrentFrameHeap->GetHeapType()
 							);
@@ -699,7 +699,7 @@ namespace Atrium::DirectX12
 					myDevice.GetDevice()->CreateShaderResourceView(
 						nullptr,
 						&nullDesc,
-						heapHandle.GetCPUHandle(Atrium::Math::TruncateTo<unsigned int>(i))
+						heapHandle.GetCPUHandle(Atrium::TruncateTo<unsigned int>(i))
 					);
 				}
 			}

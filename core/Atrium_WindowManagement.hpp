@@ -18,12 +18,12 @@ namespace Atrium::Core
 		virtual ~Window() = default;
 
 	public:
-		RoseCommon::EventSlot<Window&> Closed;
-		RoseCommon::EventSlot<Window&, bool&> Closing;
-		RoseCommon::EventSlot<Window&> GotFocus;
-		RoseCommon::EventSlot<Window&> LostFocus;
-		RoseCommon::EventSlot<Window&> Moved;
-		RoseCommon::EventSlot<Window&> SizeChanged;
+		EventSlot<Window&> Closed;
+		EventSlot<Window&, bool&> Closing;
+		EventSlot<Window&> GotFocus;
+		EventSlot<Window&> LostFocus;
+		EventSlot<Window&> Moved;
+		EventSlot<Window&> SizeChanged;
 
 	public:
 		/// <summary>

@@ -8,8 +8,6 @@ namespace Atrium::Core
 {
 	namespace MakeMeshPrimitives
 	{
-		using namespace Atrium::Math;
-
 		MeshPrimitive::Vertex LerpVertex(const MeshPrimitive::Vertex& aVertex, const MeshPrimitive::Vertex& anOtherVertex, const float anAmount)
 		{
 			MeshPrimitive::Vertex vertex;
@@ -231,7 +229,7 @@ namespace Atrium::Core
 				static constexpr std::size_t numSegments = 24;
 				for (std::size_t i = 0; i < numSegments; i++)
 				{
-					const float theta = Math::TwoPi * static_cast<float>(i) / static_cast<float>(numSegments);
+					const float theta = Atrium::TwoPi * static_cast<float>(i) / static_cast<float>(numSegments);
 
 					const float x = cosf(theta);
 					const float y = sinf(theta);
@@ -269,7 +267,7 @@ namespace Atrium::Core
 
 		void PopulateIcosphere(MeshPrimitive& aPrimitive)
 		{
-			constexpr float t = (1.0f + Math::Squareroot<float>(5.0f)) / 2.0f;
+			constexpr float t = (1.0f + Atrium::Squareroot<float>(5.0f)) / 2.0f;
 
 			{
 				MeshPrimitive::Vertex* v = nullptr;

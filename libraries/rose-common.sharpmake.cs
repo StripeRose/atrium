@@ -17,5 +17,11 @@ public class RoseCommon : Atrium.ExternalLibraryProject
         base.ConfigureAll(conf, target);
 
         conf.SolutionFolder = "Atrium/external";
+
+        conf.Defines.Add("ROSECOMMON_NAMESPACE=Atrium");
+        conf.Defines.Add("ROSECOMMON_MATH_NAMESPACE=Atrium");
+
+        conf.ExportDefines.Add("ROSECOMMON_NAMESPACE=Atrium");
+        conf.ExportDefines.Add("ROSECOMMON_MATH_NAMESPACE=Atrium");
     }
 }

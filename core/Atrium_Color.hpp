@@ -4,6 +4,6 @@
 
 namespace Atrium
 {
-	using Color = RoseCommon::Color<float>;
-	using Color32 = RoseCommon::Color<std::uint8_t>;
+	using Color = ColorT<float>;
+	using Color32 = ColorT<std::uint8_t>;
 }

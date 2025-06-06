@@ -2,11 +2,6 @@
 
 #include <rose-common/Debug.hpp>
 
-namespace Atrium
-{
-	using Debug = RoseCommon::Debug;
-}
-
 #pragma warning(push)
 #pragma warning(disable: 26495 4100 4714 6201)
 #include <tracy/Tracy.hpp>

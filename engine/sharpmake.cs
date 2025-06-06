@@ -26,6 +26,8 @@ namespace Atrium
             base.ConfigureAll(conf, target);
             conf.SolutionFolder = "Atrium";
 
+            conf.AddPublicDependency<RoseCommon>(target);
+
             conf.AddPublicDependency<Atrium.Core>(target);
 
             if (target.Optimization != Sharpmake.Optimization.Retail || Atrium.Configuration.ImGuiInRetail)
