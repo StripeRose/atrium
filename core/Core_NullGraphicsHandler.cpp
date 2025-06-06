@@ -14,7 +14,7 @@ namespace Atrium::Core
 		) override {
 		}
 
-		void ClearColor(const std::shared_ptr<RenderTexture>&, Color) override {}
+		void ClearColor(const std::shared_ptr<RenderTexture>&, ColorT<float>) override {}
 		void ClearDepth(const std::shared_ptr<RenderTexture>&, float, std::uint8_t) override {}
 
 		void DisableScissorRect() override {}
@@ -29,17 +29,17 @@ namespace Atrium::Core
 		void DrawInstanced(std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t) override {}
 		void DrawIndexedInstanced(std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t) override {}
 
-		void SetBlendFactor(Color) override {}
+		void SetBlendFactor(ColorT<float>) override {}
 		void SetPipelineState(const std::shared_ptr<PipelineState>&) override {}
 		void SetVertexBuffer(const std::shared_ptr<const GraphicsBuffer>&, unsigned int) override {}
 		void SetPipelineResource(ResourceUpdateFrequency, std::uint32_t, const std::shared_ptr<GraphicsBuffer>&) override {}
 		void SetPipelineResource(ResourceUpdateFrequency, std::uint32_t, const std::shared_ptr<Texture>&) override {}
 		void SetPrimitiveTopology(PrimitiveTopology) override {}
-		void SetScissorRect(const Rectangle&) override {}
+		void SetScissorRect(const RectangleT<int>&) override {}
 		void SetStencilRef(std::uint32_t) override {}
 		void SetRenderTargets(const std::vector<std::shared_ptr<RenderTexture>>&, const std::shared_ptr<RenderTexture>&) override {}
-		void SetViewportAndScissorRect(const Size&) override {}
-		void SetViewport(const RectangleF&) override {}
+		void SetViewportAndScissorRect(const SizeT<int>&) override {}
+		void SetViewport(const RectangleT<float>&) override {}
 	};
 
 	class NullResourceManager final : public GraphicsAPI::ResourceManager

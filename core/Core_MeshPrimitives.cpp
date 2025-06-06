@@ -11,19 +11,19 @@ namespace Atrium::Core
 		MeshPrimitive::Vertex LerpVertex(const MeshPrimitive::Vertex& aVertex, const MeshPrimitive::Vertex& anOtherVertex, const float anAmount)
 		{
 			MeshPrimitive::Vertex vertex;
-			vertex.Position = Vector3::Lerp(aVertex.Position, anOtherVertex.Position, anAmount);
-			vertex.Normal = Vector3::Slerp(aVertex.Normal, anOtherVertex.Normal, anAmount);
-			vertex.UV = Vector2::Lerp(aVertex.UV, anOtherVertex.UV, anAmount);
+			vertex.Position = Vector3T<float>::Lerp(aVertex.Position, anOtherVertex.Position, anAmount);
+			vertex.Normal = Vector3T<float>::Slerp(aVertex.Normal, anOtherVertex.Normal, anAmount);
+			vertex.UV = Vector2T<float>::Lerp(aVertex.UV, anOtherVertex.UV, anAmount);
 
-			vertex.Binormal = Vector3::Slerp(aVertex.Binormal, anOtherVertex.Binormal, anAmount);
-			vertex.Tangent = Vector3::Slerp(aVertex.Tangent, anOtherVertex.Tangent, anAmount);
+			vertex.Binormal = Vector3T<float>::Slerp(aVertex.Binormal, anOtherVertex.Binormal, anAmount);
+			vertex.Tangent = Vector3T<float>::Slerp(aVertex.Tangent, anOtherVertex.Tangent, anAmount);
 
 			return vertex;
 		}
 
 		struct GeneratedTriangle
 		{
-			GeneratedTriangle(Vector3 aPosA, Vector3 aPosB, Vector3 aPosC, Vector2 aUVA, Vector2 aUVB, Vector2 aUVC)
+			GeneratedTriangle(Vector3T<float> aPosA, Vector3T<float> aPosB, Vector3T<float> aPosC, Vector2T<float> aUVA, Vector2T<float> aUVB, Vector2T<float> aUVC)
 			{
 				Position[0] = aPosA;
 				Position[1] = aPosB;
@@ -32,8 +32,8 @@ namespace Atrium::Core
 				UV[1] = aUVB;
 				UV[2] = aUVC;
 			}
-			Vector3 Position[3];
-			Vector2 UV[3];
+			Vector3T<float> Position[3];
+			Vector2T<float> UV[3];
 		};
 
 		void PopulateQuad(MeshPrimitive& aPrimitive);
@@ -73,13 +73,13 @@ namespace Atrium::Core
 				MeshPrimitive::Vertex& v2 = aPrimitive.Vertices[tri.V2];
 				MeshPrimitive::Vertex& v3 = aPrimitive.Vertices[tri.V3];
 
-				const Vector3 A = Vector3(v1.Position.X, v1.Position.Y, v1.Position.Z);
-				const Vector3 B = Vector3(v2.Position.X, v2.Position.Y, v2.Position.Z);
-				const Vector3 C = Vector3(v3.Position.X, v3.Position.Y, v3.Position.Z);
+				const Vector3T<float> A = Vector3T<float>(v1.Position.X, v1.Position.Y, v1.Position.Z);
+				const Vector3T<float> B = Vector3T<float>(v2.Position.X, v2.Position.Y, v2.Position.Z);
+				const Vector3T<float> C = Vector3T<float>(v3.Position.X, v3.Position.Y, v3.Position.Z);
 
 				v1.Tangent = (B - A).Normalized();
 				v1.Binormal = (C - A).Normalized();
-				v1.Normal = Vector3::Cross(v1.Tangent, v1.Binormal);
+				v1.Normal = Vector3T<float>::Cross(v1.Tangent, v1.Binormal);
 
 				v3.Tangent = v2.Tangent = v1.Tangent;
 				v3.Binormal = v2.Binormal = v1.Binormal;
@@ -91,9 +91,9 @@ namespace Atrium::Core
 		{
 			for (MeshPrimitive::Vertex& vert : aPrimitive.Vertices)
 			{
-				vert.Normal = Vector3::Zero();
-				vert.Binormal = Vector3::Zero();
-				vert.Tangent = Vector3::Zero();
+				vert.Normal = Vector3T<float>::Zero();
+				vert.Binormal = Vector3T<float>::Zero();
+				vert.Tangent = Vector3T<float>::Zero();
 			}
 
 			for (const MeshPrimitive::Triangle& tri : aPrimitive.Triangles)
@@ -102,14 +102,14 @@ namespace Atrium::Core
 				MeshPrimitive::Vertex& v2 = aPrimitive.Vertices[tri.V2];
 				MeshPrimitive::Vertex& v3 = aPrimitive.Vertices[tri.V3];
 
-				const Vector3 A = Vector3(v1.Position.X, v1.Position.Y, v1.Position.Z);
-				const Vector3 B = Vector3(v2.Position.X, v2.Position.Y, v2.Position.Z);
-				const Vector3 C = Vector3(v3.Position.X, v3.Position.Y, v3.Position.Z);
+				const Vector3T<float> A = Vector3T<float>(v1.Position.X, v1.Position.Y, v1.Position.Z);
+				const Vector3T<float> B = Vector3T<float>(v2.Position.X, v2.Position.Y, v2.Position.Z);
+				const Vector3T<float> C = Vector3T<float>(v3.Position.X, v3.Position.Y, v3.Position.Z);
 
 				v1.Tangent = (B - A).Normalized();
 				v1.Binormal = (C - A).Normalized();
 
-				const Vector3 vertexNormal = Vector3::Cross(v1.Tangent, v1.Binormal);
+				const Vector3T<float> vertexNormal = Vector3T<float>::Cross(v1.Tangent, v1.Binormal);
 				v1.Normal += vertexNormal;
 				v2.Normal += vertexNormal;
 				v3.Normal += vertexNormal;

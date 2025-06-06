@@ -71,9 +71,9 @@ namespace Atrium::DirectX12
 		void CreateRenderTextureForWindow(CommandQueue& aDirectCommandQueue);
 		void DoBufferResizing();
 		void UpdateColorSpace();
-		void GetBackBuffers(const Size& aSize);
+		void GetBackBuffers(const SizeT<int>& aSize);
 
-		void OnDrawSurfaceResize(const Size& aSize);
+		void OnDrawSurfaceResize(const SizeT<int>& aSize);
 
 		Core::RenderTextureFormat GetRenderTextureFormat() const;
 
@@ -96,6 +96,6 @@ namespace Atrium::DirectX12
 		Atrium::Core::Window* myWindow;
 
 		std::vector<std::shared_ptr<SwapChainBackBuffer>> myBackBuffers;
-		std::optional<Size> myDesiredResolution;
+		std::optional<SizeT<int>> myDesiredResolution;
 	};
 }

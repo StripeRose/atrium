@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Atrium_Math.hpp"
+#include <rose-common/math/Vector.hpp>
 
 #include <functional>
 #include <vector>
@@ -28,11 +28,11 @@ namespace Atrium::Core
 	{
 		struct Vertex
 		{
-			Vector3 Position;
-			Vector3 Normal;
-			Vector3 Binormal;
-			Vector3 Tangent;
-			Vector2 UV;
+			Vector3T<float> Position;
+			Vector3T<float> Normal;
+			Vector3T<float> Binormal;
+			Vector3T<float> Tangent;
+			Vector2T<float> UV;
 		};
 
 		struct Triangle

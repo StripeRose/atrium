@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Atrium_Color.hpp"
+#include <rose-common/Color.hpp>
 
 #include "Core_GraphicsEnums.hpp"
 
@@ -56,10 +56,10 @@ namespace Atrium::Core
 
 		virtual TextureFormat GetFormat() const = 0;
 
-		virtual Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const = 0;
-		virtual Color GetPixelBilinear(float aU, float aV, unsigned int aMipLevel = 0) const = 0;
+		virtual ColorT<float> GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const = 0;
+		virtual ColorT<float> GetPixelBilinear(float aU, float aV, unsigned int aMipLevel = 0) const = 0;
 
-		virtual void SetPixel(unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel = 0) = 0;
+		virtual void SetPixel(unsigned int anX, unsigned int aY, const ColorT<float>& aColor, unsigned int aMipLevel = 0) = 0;
 	};
 
 	class Texture3D : public Texture
@@ -72,10 +72,10 @@ namespace Atrium::Core
 
 		virtual TextureFormat GetFormat() const = 0;
 
-		virtual Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel = 0) const = 0;
-		virtual Color GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel = 0) const = 0;
+		virtual ColorT<float> GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel = 0) const = 0;
+		virtual ColorT<float> GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel = 0) const = 0;
 
-		virtual void SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const Color& aColor, unsigned int aMipLevel = 0) = 0;
+		virtual void SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const ColorT<float>& aColor, unsigned int aMipLevel = 0) = 0;
 	};
 
 	class TextureCube : public Texture
@@ -88,8 +88,8 @@ namespace Atrium::Core
 
 		virtual TextureFormat GetFormat() const = 0;
 
-		virtual Color GetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const = 0;
+		virtual ColorT<float> GetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const = 0;
 
-		virtual void SetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel = 0) = 0;
+		virtual void SetPixel(TextureCubeFace aFace, unsigned int anX, unsigned int aY, const ColorT<float>& aColor, unsigned int aMipLevel = 0) = 0;
 	};
 }

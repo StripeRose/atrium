@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "Atrium_Color.hpp"
 #include "Core_Diagnostics.hpp"
 #include "Core_GraphicsBuffer.hpp"
 #include "Core_GraphicsPipeline.hpp"
-#include "Atrium_Math.hpp"
 #include "Core_RenderTexture.hpp"
+
+#include <rose-common/Color.hpp>
+#include <rose-common/math/Geometry.hpp>
 
 #include <functional>
 #include <memory>
@@ -63,7 +64,7 @@ namespace Atrium::Core
 		 * @param aTarget Target to clear the color buffer of.
 		 * @param aClearColor Color value to clear to.
 		 */
-		virtual void ClearColor(const std::shared_ptr<RenderTexture>& aTarget, Color aClearColor) = 0;
+		virtual void ClearColor(const std::shared_ptr<RenderTexture>& aTarget, ColorT<float> aClearColor) = 0;
 
 		/**
 		 * @brief Clear a render texture's depth and stencil to a specified value.
@@ -130,7 +131,7 @@ namespace Atrium::Core
 		 * 
 		 * @refactor Should this be a Color, or some other structure?
 		 */
-		virtual void SetBlendFactor(Color aBlendFactor) = 0;
+		virtual void SetBlendFactor(ColorT<float> aBlendFactor) = 0;
 
 		/**
 		 * @brief Set the active Pipeline State Object, including its root signature.
@@ -177,7 +178,7 @@ namespace Atrium::Core
 		 * 
 		 * @param aRectangle Sub-section rectangle in pixels.
 		 */
-		virtual void SetScissorRect(const Rectangle& aRectangle) = 0;
+		virtual void SetScissorRect(const RectangleT<int>& aRectangle) = 0;
 
 		/**
 		 * @brief Set the reference value for depth stencil tests.
@@ -200,14 +201,14 @@ namespace Atrium::Core
 		 * @refactor Doesn't do much different than calling SetScissorRect() and SetViewport().
 		 *           Could be removed to simplify.
 		 */
-		virtual void SetViewportAndScissorRect(const Size& aScreenSize) = 0;
+		virtual void SetViewportAndScissorRect(const SizeT<int>& aScreenSize) = 0;
 
 		/**
 		 * @brief Specify a sub-section of the render target that should be used for drawing.
 		 * 
 		 * @param aRectangle Sub-section of the render-target, where (0,0) is the center.
 		 */
-		virtual void SetViewport(const RectangleF& aRectangle) = 0;
+		virtual void SetViewport(const RectangleT<float>& aRectangle) = 0;
 
 		#pragma endregion
 	};

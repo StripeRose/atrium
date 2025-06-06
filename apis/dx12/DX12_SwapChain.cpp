@@ -1,7 +1,5 @@
 // Filter "Resources"
 
-#include "Atrium_Math.hpp"
-
 #include "DX12_CommandQueue.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Diagnostics.hpp"
@@ -20,7 +18,7 @@ namespace Atrium::DirectX12
 		CreateRenderTextureForWindow(aDirectCommandQueue);
 		UpdateColorSpace();
 
-		Size windowSize = aWindow.GetSize();
+		SizeT<int> windowSize = aWindow.GetSize();
 		GetBackBuffers(windowSize);
 
 		aWindow.OnSizeChanged.Connect(this, [&]() { OnDrawSurfaceResize(aWindow.GetSize()); });
@@ -224,7 +222,7 @@ namespace Atrium::DirectX12
 	void SwapChain::CreateRenderTextureForWindow(CommandQueue& aDirectCommandQueue)
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDescriptor = {};
-		const Size windowSize = myWindow->GetSize();
+		const SizeT<int> windowSize = myWindow->GetSize();
 		swapChainDescriptor.Width = windowSize.Width;
 		swapChainDescriptor.Height = windowSize.Height;
 		swapChainDescriptor.Format = ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat()));
@@ -266,7 +264,7 @@ namespace Atrium::DirectX12
 		if (!myDesiredResolution.has_value())
 			return;
 
-		const Size newResolution = myDesiredResolution.value();
+		const SizeT<int> newResolution = myDesiredResolution.value();
 		myDesiredResolution.reset();
 
 		if ((newResolution.Width * newResolution.Height) == 0)
@@ -330,9 +328,9 @@ namespace Atrium::DirectX12
 				return;
 			}
 
-			const Rectangle windowRect = Rectangle(
-				Point(windowBounds.left, windowBounds.top),
-				Point(windowBounds.right, windowBounds.bottom)
+			const RectangleT<int> windowRect = RectangleT<int>(
+				PointT<int>(windowBounds.left, windowBounds.top),
+				PointT<int>(windowBounds.right, windowBounds.bottom)
 			);
 
 			ComPtr<IDXGIOutput> bestOutput;
@@ -351,9 +349,9 @@ namespace Atrium::DirectX12
 					// Get the rectangle bounds of current output.
 					DXGI_OUTPUT_DESC desc;
 					Debug::Assert(output->GetDesc(&desc), "Get adapter output description.");
-					const Rectangle desktopCoordinates = Rectangle(
-						Point(desc.DesktopCoordinates.left, desc.DesktopCoordinates.top),
-						Point(desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom));
+					const RectangleT<int> desktopCoordinates = RectangleT<int>(
+						PointT<int>(desc.DesktopCoordinates.left, desc.DesktopCoordinates.top),
+						PointT<int>(desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom));
 
 					// Compute the intersection
 					auto intersection = desktopCoordinates.Intersection(windowRect);
@@ -411,7 +409,7 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	void SwapChain::GetBackBuffers(const Size& aSize)
+	void SwapChain::GetBackBuffers(const SizeT<int>& aSize)
 	{
 		myBackBuffers.clear();
 
@@ -436,7 +434,7 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	void SwapChain::OnDrawSurfaceResize(const Size& aSize)
+	void SwapChain::OnDrawSurfaceResize(const SizeT<int>& aSize)
 	{
 		if (aSize.Width <= 0 || aSize.Height <= 0)
 			return;

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Atrium_Math.hpp"
-
 #include <rose-common/EventSlot.hpp>
+#include <rose-common/math/Geometry.hpp>
 
 #include <any>
 #include <memory>
@@ -37,16 +36,16 @@ namespace Atrium::Core
 		/// <returns>An std::any containing the native handle.</returns>
 		virtual std::any GetNativeHandle() const = 0;
 
-		virtual Point GetPosition() const = 0;
-		virtual Size GetSize() const = 0;
+		virtual PointT<int> GetPosition() const = 0;
+		virtual SizeT<int> GetSize() const = 0;
 		virtual std::wstring GetTitle() const = 0;
 
 		virtual void Hide() = 0;
 
 		virtual bool IsFocused() const = 0;
 
-		virtual void SetPosition(const Point& aPoint) = 0;
-		virtual void SetSize(const Size& aSize) = 0;
+		virtual void SetPosition(const PointT<int>& aPoint) = 0;
+		virtual void SetSize(const SizeT<int>& aSize) = 0;
 		virtual void SetTitle(const char* aTitleText) = 0;
 		virtual void SetTitle(const wchar_t* aTitleText) = 0;
 		virtual void Show() = 0;

@@ -60,10 +60,10 @@ namespace Atrium::DirectX12
 
 		Core::TextureFormat GetFormat() const override;
 
-		Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
-		Color GetPixelBilinear(float aU, float aV, unsigned int aMipLevel = 0) const override;
+		ColorT<float> GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
+		ColorT<float> GetPixelBilinear(float aU, float aV, unsigned int aMipLevel = 0) const override;
 
-		void SetPixel(unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel = 0) override;
+		void SetPixel(unsigned int anX, unsigned int aY, const ColorT<float>& aColor, unsigned int aMipLevel = 0) override;
 
 		// Implements Texture
 	public:
@@ -105,10 +105,10 @@ namespace Atrium::DirectX12
 
 		Core::TextureFormat GetFormat() const override;
 
-		Color GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel = 0) const override;
-		Color GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel = 0) const override;
+		ColorT<float> GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel = 0) const override;
+		ColorT<float> GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel = 0) const override;
 
-		void SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const Color& aColor, unsigned int aMipLevel = 0) override;
+		void SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const ColorT<float>& aColor, unsigned int aMipLevel = 0) override;
 
 		// Implements Texture
 	public:
@@ -150,9 +150,9 @@ namespace Atrium::DirectX12
 
 		Core::TextureFormat GetFormat() const override;
 
-		Color GetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
+		ColorT<float> GetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
 
-		void SetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel = 0) override;
+		void SetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, const ColorT<float>& aColor, unsigned int aMipLevel = 0) override;
 
 		// Implements Texture
 	public:

@@ -278,7 +278,7 @@ namespace Atrium::DirectX12
 		myPendingTextureResources.clear();
 	}
 
-	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Core::RenderTexture>& aTarget, Color aClearColor)
+	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Core::RenderTexture>& aTarget, ColorT<float> aClearColor)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Clear color");
 		Debug::Assert(!!aTarget, "ClearColor() requires a target.");
@@ -385,14 +385,14 @@ namespace Atrium::DirectX12
 		myCommandList->DrawIndexedInstanced(anIndexCountPerInstance, anInstanceCount, aStartIndexLocation, aBaseVertexLocation, aStartInstanceLocation);
 	}
 
-	void FrameGraphicsContext::SetBlendFactor(Color aBlendFactor)
+	void FrameGraphicsContext::SetBlendFactor(ColorT<float> aBlendFactor)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set blend factor");
 		float color[4] = { aBlendFactor.R, aBlendFactor.G, aBlendFactor.B, aBlendFactor.A };
 		myCommandList->OMSetBlendFactor(color);
 	}
 
-	void FrameGraphicsContext::SetScissorRect(const Rectangle& aRectangle)
+	void FrameGraphicsContext::SetScissorRect(const RectangleT<int>& aRectangle)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set scissor rect");
 
@@ -538,7 +538,7 @@ namespace Atrium::DirectX12
 			dxDepthTarget ? &depthStencilHandle : nullptr);
 	}
 
-	void FrameGraphicsContext::SetViewportAndScissorRect(const Size& aScreenSize)
+	void FrameGraphicsContext::SetViewportAndScissorRect(const SizeT<int>& aScreenSize)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set viewport and scissor rect");
 		D3D12_VIEWPORT viewport;
@@ -559,10 +559,10 @@ namespace Atrium::DirectX12
 		myCommandList->RSSetScissorRects(1, &scissor);
 	}
 
-	void FrameGraphicsContext::SetViewport(const RectangleF& aRectangle)
+	void FrameGraphicsContext::SetViewport(const RectangleT<float>& aRectangle)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set viewport");
-		const PointF topLeft = aRectangle.TopLeft();
+		const PointT<float> topLeft = aRectangle.TopLeft();
 
 		D3D12_VIEWPORT viewport;
 		viewport.TopLeftX = topLeft.X;

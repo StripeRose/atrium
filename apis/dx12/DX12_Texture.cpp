@@ -280,19 +280,19 @@ namespace Atrium::DirectX12
 		return myTexture.GetResource()->GetResource().Get();
 	}
 
-	Color Texture2D::GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
+	ColorT<float> Texture2D::GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
 	{
 		anX; aY; aMipLevel;
-		return Color::Predefined::Black;
+		return ColorT<float>::Predefined::Black;
 	}
 
-	Color Texture2D::GetPixelBilinear(float aU, float aV, unsigned int aMipLevel) const
+	ColorT<float> Texture2D::GetPixelBilinear(float aU, float aV, unsigned int aMipLevel) const
 	{
 		aU; aV; aMipLevel;
-		return Color::Predefined::Black;
+		return ColorT<float>::Predefined::Black;
 	}
 
-	void Texture2D::SetPixel(unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel)
+	void Texture2D::SetPixel(unsigned int anX, unsigned int aY, const ColorT<float>& aColor, unsigned int aMipLevel)
 	{
 		anX; aY; aColor; aMipLevel;
 	}
@@ -412,19 +412,19 @@ namespace Atrium::DirectX12
 		return myTexture.GetResource()->GetResource().Get();
 	}
 
-	Color Texture3D::GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel) const
+	ColorT<float> Texture3D::GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel) const
 	{
 		anX; aY; aZ; aMipLevel;
-		return Color::Predefined::Black;
+		return ColorT<float>::Predefined::Black;
 	}
 
-	Color Texture3D::GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel) const
+	ColorT<float> Texture3D::GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel) const
 	{
 		aU; aV; aW; aMipLevel;
-		return Color::Predefined::Black;
+		return ColorT<float>::Predefined::Black;
 	}
 
-	void Texture3D::SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const Color& aColor, unsigned int aMipLevel)
+	void Texture3D::SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const ColorT<float>& aColor, unsigned int aMipLevel)
 	{
 		anX; aY; aZ; aColor; aMipLevel;
 	}
@@ -544,13 +544,13 @@ namespace Atrium::DirectX12
 		return myTexture.GetResource()->GetResource().Get();
 	}
 
-	Color TextureCube::GetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
+	ColorT<float> TextureCube::GetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
 	{
 		aFace; anX; aY; aMipLevel;
-		return Color::Predefined::Black;
+		return ColorT<float>::Predefined::Black;
 	}
 
-	void TextureCube::SetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, const Color& aColor, unsigned int aMipLevel)
+	void TextureCube::SetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, const ColorT<float>& aColor, unsigned int aMipLevel)
 	{
 		aFace; anX; aY; aColor; aMipLevel;
 	}

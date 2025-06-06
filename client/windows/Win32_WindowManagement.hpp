@@ -31,8 +31,8 @@ namespace Atrium::Win32
 		
 		std::any GetNativeHandle() const override;
 
-		Point GetPosition() const override;
-		Size GetSize() const override;
+		PointT<int> GetPosition() const override;
+		SizeT<int> GetSize() const override;
 		std::wstring GetTitle() const override;
 
 		void Hide() override;
@@ -41,8 +41,8 @@ namespace Atrium::Win32
 
 		void Show() override;
 
-		void SetPosition(const Point& aPoint) override;
-		void SetSize(const Size& aSize) override;
+		void SetPosition(const PointT<int>& aPoint) override;
+		void SetSize(const SizeT<int>& aSize) override;
 		void SetTitle(const char* aTitleText) override;
 		void SetTitle(const wchar_t* aTitleText) override;
 
