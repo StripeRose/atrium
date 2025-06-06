@@ -119,34 +119,22 @@ namespace Atrium::Core
 		virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& aShaderSource, Shader::Type aShaderType, const char* anEntryPoint) = 0;
 
 		/**
-		 * @brief Create a CPU-editable, two-dimensional texture.
-		 * 
-		 * @param aWidth Width of the texture.
-		 * @param aHeight Height of the texture.
-		 * @param aTextureFormat Texture format of the texture.
-		 * @return The created texture.
-		 */
-		virtual std::shared_ptr<Texture2D> CreateTexture2D(unsigned int aWidth, unsigned int aHeight, TextureFormat aTextureFormat) = 0;
-
-		/**
-		 * @brief Create a CPU-editable, three-dimensional texture.
+		 * @brief Create a CPU-editable texture.
 		 * 
 		 * @param aWidth Width of the texture.
 		 * @param aHeight Height of the texture.
 		 * @param aDepth Depth of the texture.
 		 * @param aTextureFormat Texture format of the texture.
+		 * @param aDimension The texture dimension. Deduced from size dimensions if omitted.
+		 * @param anArrayCount An amount of textures in the array. Defaults to 1.
 		 * @return The created texture.
 		 */
-		virtual std::shared_ptr<Texture3D> CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat) = 0;
+		std::shared_ptr<Core::Texture> CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension)
+		{
+			return CreateTexture(aWidth, aHeight, aDepth, 1, aTextureFormat, aDimension);
+		}
 
-		/**
-		 * @brief Create a CPU-editable, two-dimensional texture cube where each cube face is the same size.
-		 * 
-		 * @param aWidth Width and height of all cube faces.
-		 * @param aTextureFormat Texture format of all cube faces.
-		 * @return The created texture.
-		 */
-		virtual std::shared_ptr<TextureCube> CreateTextureCube(unsigned int aWidth, TextureFormat aTextureFormat) = 0;
+		virtual std::shared_ptr<Core::Texture> CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension) = 0;
 
 		/**
 		 * @brief Load a texture from a file-system path.

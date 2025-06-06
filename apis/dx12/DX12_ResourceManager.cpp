@@ -64,28 +64,11 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::Texture2D> ResourceManager::CreateTexture2D(unsigned int aWidth, unsigned int aHeight, Core::TextureFormat aTextureFormat)
+	std::shared_ptr<Core::Texture> ResourceManager::CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, Core::TextureFormat aTextureFormat, std::optional<Core::TextureDimension> aDimension)
 	{
 		DirectX::TexMetadata metadata;
-		metadata.arraySize = 1;
-		metadata.depth = 1;
-		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
-		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
-		metadata.height = aHeight;
-		metadata.mipLevels = 0;
-		metadata.miscFlags = 0;
-		metadata.miscFlags2 = 0;
-		metadata.width = aWidth;
-
-		return std::make_shared<DirectX12::Texture2D>(myManager.GetDevice(), myManager.GetUploadContext(), metadata);
-	}
-
-	std::shared_ptr<Core::Texture3D> ResourceManager::CreateTexture3D(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, Core::TextureFormat aTextureFormat)
-	{
-		DirectX::TexMetadata metadata;
-		metadata.arraySize = 1;
+		metadata.arraySize = anArrayCount;
 		metadata.depth = aDepth;
-		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
 		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
 		metadata.height = aHeight;
 		metadata.mipLevels = 0;
@@ -93,23 +76,46 @@ namespace Atrium::DirectX12
 		metadata.miscFlags2 = 0;
 		metadata.width = aWidth;
 
-		return std::make_shared<DirectX12::Texture3D>(myManager.GetDevice(), myManager.GetUploadContext(), metadata);
-	}
+		// Fallback to simple deduction of dimension based on size.
+		if (!aDimension)
+		{
+			if (aDepth > 1)
+				aDimension = Core::TextureDimension::Tex3D;
+			else
+				aDimension = Core::TextureDimension::Tex2D;
+		}
 
-	std::shared_ptr<Core::TextureCube> ResourceManager::CreateTextureCube(unsigned int aWidth, Core::TextureFormat aTextureFormat)
-	{
-		DirectX::TexMetadata metadata;
-		metadata.arraySize = 1;
-		metadata.depth = 6;
-		metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
-		metadata.format = ToDXGIFormat(ToGraphicsFormat(aTextureFormat));
-		metadata.height = aWidth;
-		metadata.mipLevels = 0;
-		metadata.miscFlags = DirectX::TEX_MISC_TEXTURECUBE;
-		metadata.miscFlags2 = 0;
-		metadata.width = aWidth;
+		switch (aDimension.value())
+		{
+			case Core::TextureDimension::Cube:
+				if (anArrayCount > 1)
+					Debug::LogWarning("Texture dimension explicitly set to Cube but array count was greater than 1. Implicitly changed to CubeArray instead, but may be unintentional.");
 
-		return std::make_shared<DirectX12::TextureCube>(myManager.GetDevice(), myManager.GetUploadContext(), metadata);
+				[[fallthrough]];
+
+			case Core::TextureDimension::CubeArray:
+				// Ignoring aDepth and forcing 6 sides.
+				metadata.depth = 6;
+				metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE2D;
+				metadata.miscFlags = DirectX::TEX_MISC_TEXTURECUBE;
+				break;
+
+			case Core::TextureDimension::Tex2D:
+				// Forces 1 in depth for 2D textures.
+				metadata.depth = 1;
+				// To Atrium always 2D, but if height or width is 1 it's 1D to DirectX.
+				metadata.dimension = aWidth > 1 && aHeight > 1 ? DirectX::TEX_DIMENSION_TEXTURE2D : DirectX::TEX_DIMENSION_TEXTURE1D;
+				break;
+
+			case Core::TextureDimension::Tex3D:
+				metadata.dimension = DirectX::TEX_DIMENSION_TEXTURE3D;
+				break;
+
+			default:
+				throw std::logic_error("Tried to create a texture with an invalid dimension.");
+		}
+
+		return std::make_shared<DirectX12::Texture>(myManager.GetDevice(), myManager.GetUploadContext(), metadata);
 	}
 
 	std::shared_ptr<SwapChain> ResourceManager::GetSwapChain(Core::Window& aWindow)
@@ -142,43 +148,11 @@ namespace Atrium::DirectX12
 			if (!Debug::Verify(loadResult, "Load DDS file from disk."))
 				return nullptr;
 
-			if (image->GetMetadata().arraySize != 1 && !image->GetMetadata().IsCubemap())
-			{
-				Debug::LogError("No support for DDS array textures.");
-				return nullptr;
-			}
+			std::shared_ptr texture = std::make_shared<DirectX12::Texture>(myManager.GetDevice(), myManager.GetUploadContext(), std::move(image));
+			texture->Apply(true, false);
+			texture->GetImage().GetResource()->SetName(aPath.filename().c_str());
 
-			switch (image->GetMetadata().dimension)
-			{
-				case DirectX::TEX_DIMENSION_TEXTURE1D:
-				case DirectX::TEX_DIMENSION_TEXTURE2D:
-				{
-					if (image->GetMetadata().IsCubemap())
-					{
-						std::shared_ptr texture = std::make_shared<DirectX12::TextureCube>(myManager.GetDevice(), myManager.GetUploadContext(), std::move(image));
-						texture->Apply(true, false);
-						texture->GetImage().GetResource()->SetName(aPath.filename().c_str());
-
-						return texture;
-					}
-					else
-					{
-						std::shared_ptr texture = std::make_shared<DirectX12::Texture2D>(myManager.GetDevice(), myManager.GetUploadContext(), std::move(image));
-						texture->Apply(true, false);
-						texture->GetImage().GetResource()->SetName(aPath.filename().c_str());
-
-						return texture;
-					}
-				}
-				case DirectX::TEX_DIMENSION_TEXTURE3D:
-				{
-					std::shared_ptr texture = std::make_shared<DirectX12::Texture3D>(myManager.GetDevice(), myManager.GetUploadContext(), std::move(image));
-					texture->Apply(true, false);
-					texture->GetImage().GetResource()->SetName(aPath.filename().c_str());
-
-					return texture;
-				}
-			}
+			return texture;
 		}
 
 		return nullptr;

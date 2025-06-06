@@ -664,26 +664,12 @@ namespace Atrium::DirectX12
 			{
 				if (Core::Texture* texture = rootParameterTextures.second.at(i).get())
 				{
-					switch (texture->GetDimensions())
-					{
-						case Core::TextureDimension::Tex2D:
-							myDevice.GetDevice()->CopyDescriptorsSimple(
-								1,
-								heapHandle.GetCPUHandle(Atrium::TruncateTo<unsigned int>(i)),
-								static_cast<Texture2D*>(texture)->GetImage().GetSRVHandle().GetCPUHandle(),
-								myCurrentFrameHeap->GetHeapType()
-							);
-							break;
-
-						case Core::TextureDimension::Tex3D:
-							myDevice.GetDevice()->CopyDescriptorsSimple(
-								1,
-								heapHandle.GetCPUHandle(Atrium::TruncateTo<unsigned int>(i)),
-								static_cast<Texture3D*>(texture)->GetImage().GetSRVHandle().GetCPUHandle(),
-								myCurrentFrameHeap->GetHeapType()
-							);
-							break;
-					}
+					myDevice.GetDevice()->CopyDescriptorsSimple(
+						1,
+						heapHandle.GetCPUHandle(Atrium::TruncateTo<unsigned int>(i)),
+						static_cast<Texture*>(texture)->GetImage().GetSRVHandle().GetCPUHandle(),
+						myCurrentFrameHeap->GetHeapType()
+					);
 				}
 				else
 				{

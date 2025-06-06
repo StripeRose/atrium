@@ -123,16 +123,6 @@ namespace Atrium::DirectX12
 		myDepthResource->GetResource()->SetName((std::wstring(aName) + L" - Depth").c_str());
 	}
 
-	void RenderTexture::SetFilterMode(Core::FilterMode aFilterMode)
-	{
-		aFilterMode;
-	}
-
-	Core::FilterMode RenderTexture::GetFilterMode() const
-	{
-		return Core::FilterMode::Bilinear;
-	}
-
 	unsigned int RenderTexture::GetHeight() const
 	{
 		return myDescriptor.Size_Height;
@@ -151,40 +141,5 @@ namespace Atrium::DirectX12
 	unsigned int RenderTexture::GetWidth() const
 	{
 		return myDescriptor.Size_Width;
-	}
-
-	Core::TextureWrapMode RenderTexture::GetWrapModeU() const
-	{
-		return Core::TextureWrapMode::Repeat;
-	}
-
-	Core::TextureWrapMode RenderTexture::GetWrapModeV() const
-	{
-		return Core::TextureWrapMode::Repeat;
-	}
-
-	Core::TextureWrapMode RenderTexture::GetWrapModeW() const
-	{
-		return Core::TextureWrapMode::Repeat;
-	}
-
-	void RenderTexture::SetWrapMode(Core::TextureWrapMode aWrapMode)
-	{
-		aWrapMode;
-	}
-
-	void RenderTexture::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
-	{
-		aWrapMode;
-	}
-
-	void RenderTexture::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
-	{
-		aWrapMode;
-	}
-
-	void RenderTexture::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
-	{
-		aWrapMode;
 	}
 }

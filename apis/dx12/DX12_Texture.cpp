@@ -63,15 +63,15 @@ namespace Atrium::DirectX12
 
 		switch (myMetadata.dimension)
 		{
-		case TEX_DIMENSION_TEXTURE1D:
-			textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE1D;
-			break;
-		case TEX_DIMENSION_TEXTURE2D:
-			textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-			break;
-		case TEX_DIMENSION_TEXTURE3D:
-			textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
-			break;
+			case TEX_DIMENSION_TEXTURE1D:
+				textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+				break;
+			case TEX_DIMENSION_TEXTURE2D:
+				textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				break;
+			case TEX_DIMENSION_TEXTURE3D:
+				textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+				break;
 		}
 
 		textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
@@ -163,395 +163,67 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	Texture2D::Texture2D(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata)
-		: myTexture(aDevice, anUploader, aMetadata)
+	Texture::Texture(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata)
+		: myImage(aDevice, anUploader, aMetadata)
 	{
-		Debug::Assert(
-			myTexture.GetMetadata().dimension == TEX_DIMENSION_TEXTURE1D ||
-			myTexture.GetMetadata().dimension == TEX_DIMENSION_TEXTURE2D
-			, "Texture2D only support 1D or 2D DDS data.");
-	}
-
-	Texture2D::Texture2D(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage)
-		: myTexture(aDevice, anUploader, std::forward<std::unique_ptr<DirectX::ScratchImage>>(anImage))
-	{
-		Debug::Assert(
-			myTexture.GetMetadata().dimension == TEX_DIMENSION_TEXTURE1D ||
-			myTexture.GetMetadata().dimension == TEX_DIMENSION_TEXTURE2D
-			, "Texture2D only support 1D or 2D DDS data.");
-	}
-
-	void Texture2D::Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable)
-	{
-		myTexture.Apply(anUpdateMipmaps, aMakeNoLongerReadable);
-	}
-
-	Core::TextureDimension Texture2D::GetDimensions() const
-	{
-		return Core::TextureDimension::Tex2D;
-	}
-
-	unsigned int Texture2D::GetDepth() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().depth);
-	}
-
-	Core::FilterMode Texture2D::GetFilterMode() const
-	{
-		Debug::LogWarning("Texture2D::GetFilterMode() is not implemented. Defaulting to FilterMode::Point.");
-		return Core::FilterMode::Point;
-	}
-
-	Core::TextureFormat Texture2D::GetFormat() const
-	{
-		return ToTextureFormat(myTexture.GetMetadata().format);
-	}
-
-	unsigned int Texture2D::GetHeight() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().height);
-	}
-
-	bool Texture2D::IsReadable() const
-	{
-		return myTexture.GetImage() != nullptr;
-	}
-
-	unsigned int Texture2D::GetMipmapCount() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().mipLevels);
-	}
-
-	unsigned int Texture2D::GetWidth() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().width);
-	}
-
-	Core::TextureWrapMode Texture2D::GetWrapModeU() const
-	{
-		Debug::LogWarning("Texture2D::GetWrapModeU() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return Core::TextureWrapMode::Repeat;
-	}
-
-	Core::TextureWrapMode Texture2D::GetWrapModeV() const
-	{
-		Debug::LogWarning("Texture2D::GetWrapModeV() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return Core::TextureWrapMode::Repeat;
-	}
-
-	Core::TextureWrapMode Texture2D::GetWrapModeW() const
-	{
-		Debug::LogWarning("Texture2D::GetWrapModeW() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return Core::TextureWrapMode::Repeat;
-	}
-
-	void Texture2D::SetFilterMode(Core::FilterMode aFilterMode)
-	{
-		aFilterMode;
-		Debug::LogError("Texture2D::SetFilterMode() is not implemented. Call ignored.");
-	}
-
-	void Texture2D::SetWrapMode(Core::TextureWrapMode aWrapMode)
-	{
-		aWrapMode;
-		Debug::LogError("Texture2D::SetWrapMode() is not implemented. Call ignored.");
-	}
-
-	void Texture2D::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
-	{
-		aWrapMode;
-		Debug::LogError("Texture2D::SetWrapModeU() is not implemented. Call ignored.");
-	}
-
-	void Texture2D::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
-	{
-		aWrapMode;
-		Debug::LogError("Texture2D::SetWrapModeV() is not implemented. Call ignored.");
-	}
-
-	void Texture2D::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
-	{
-		aWrapMode;
-		Debug::LogError("Texture2D::SetWrapModeW() is not implemented. Call ignored.");
-	}
-
-	void* Texture2D::GetNativeTexturePtr() const
-	{
-		return myTexture.GetResource()->GetResource().Get();
-	}
-
-	ColorT<float> Texture2D::GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
-	{
-		anX; aY; aMipLevel;
-		return ColorT<float>::Predefined::Black;
-	}
-
-	ColorT<float> Texture2D::GetPixelBilinear(float aU, float aV, unsigned int aMipLevel) const
-	{
-		aU; aV; aMipLevel;
-		return ColorT<float>::Predefined::Black;
-	}
-
-	void Texture2D::SetPixel(unsigned int anX, unsigned int aY, const ColorT<float>& aColor, unsigned int aMipLevel)
-	{
-		anX; aY; aColor; aMipLevel;
-	}
-
-	Texture3D::Texture3D(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata)
-		: myTexture(aDevice, anUploader, aMetadata)
-	{
-		Debug::Assert(
-			myTexture.GetMetadata().dimension == TEX_DIMENSION_TEXTURE3D
-			, "Texture3D only support 3D DDS data.");
-	}
-
-	Texture3D::Texture3D(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage)
-		: myTexture(aDevice, anUploader, std::forward<std::unique_ptr<DirectX::ScratchImage>>(anImage))
-	{
-		Debug::Assert(
-			myTexture.GetMetadata().dimension == TEX_DIMENSION_TEXTURE3D
-			, "Texture3D only support 3D DDS data.");
-	}
-
-	void Texture3D::Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable)
-	{
-		myTexture.Apply(anUpdateMipmaps, aMakeNoLongerReadable);
-	}
-
-	Core::TextureDimension Texture3D::GetDimensions() const
-	{
-		return Core::TextureDimension::Tex2D;
-	}
-
-	unsigned int Texture3D::GetDepth() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().depth);
-	}
-
-	Core::FilterMode Texture3D::GetFilterMode() const
-	{
-		Debug::LogWarning("Texture3D::GetFilterMode() is not implemented. Defaulting to FilterMode::Point.");
-		return Core::FilterMode::Point;
-	}
-
-	Core::TextureFormat Texture3D::GetFormat() const
-	{
-		return ToTextureFormat(myTexture.GetMetadata().format);
-	}
-
-	unsigned int Texture3D::GetHeight() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().height);
-	}
-
-	bool Texture3D::IsReadable() const
-	{
-		return myTexture.GetImage() != nullptr;
-	}
-
-	unsigned int Texture3D::GetMipmapCount() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().mipLevels);
-	}
-
-	unsigned int Texture3D::GetWidth() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().width);
-	}
-
-	Core::TextureWrapMode Texture3D::GetWrapModeU() const
-	{
-		Debug::LogWarning("Texture3D::GetWrapModeU() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return Core::TextureWrapMode::Repeat;
-	}
-
-	Core::TextureWrapMode Texture3D::GetWrapModeV() const
-	{
-		Debug::LogWarning("Texture3D::GetWrapModeV() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return Core::TextureWrapMode::Repeat;
-	}
-
-	Core::TextureWrapMode Texture3D::GetWrapModeW() const
-	{
-		Debug::LogWarning("Texture3D::GetWrapModeW() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return Core::TextureWrapMode::Repeat;
-	}
-
-	void Texture3D::SetFilterMode(Core::FilterMode aFilterMode)
-	{
-		aFilterMode;
-		Debug::LogError("Texture3D::SetFilterMode() is not implemented. Call ignored.");
-	}
-
-	void Texture3D::SetWrapMode(Core::TextureWrapMode aWrapMode)
-	{
-		aWrapMode;
-		Debug::LogError("Texture3D::SetWrapMode() is not implemented. Call ignored.");
-	}
-
-	void Texture3D::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
-	{
-		aWrapMode;
-		Debug::LogError("Texture3D::SetWrapModeU() is not implemented. Call ignored.");
-	}
-
-	void Texture3D::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
-	{
-		aWrapMode;
-		Debug::LogError("Texture3D::SetWrapModeV() is not implemented. Call ignored.");
-	}
-
-	void Texture3D::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
-	{
-		aWrapMode;
-		Debug::LogError("Texture3D::SetWrapModeW() is not implemented. Call ignored.");
-	}
-
-	void* Texture3D::GetNativeTexturePtr() const
-	{
-		return myTexture.GetResource()->GetResource().Get();
-	}
-
-	ColorT<float> Texture3D::GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel) const
-	{
-		anX; aY; aZ; aMipLevel;
-		return ColorT<float>::Predefined::Black;
-	}
-
-	ColorT<float> Texture3D::GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel) const
-	{
-		aU; aV; aW; aMipLevel;
-		return ColorT<float>::Predefined::Black;
-	}
-
-	void Texture3D::SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const ColorT<float>& aColor, unsigned int aMipLevel)
-	{
-		anX; aY; aZ; aColor; aMipLevel;
-	}
-
-	TextureCube::TextureCube(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata)
-		: myTexture(aDevice, anUploader, aMetadata)
-	{
-		Debug::Assert(
-			myTexture.GetMetadata().IsCubemap()
-			, "TextureCube only support Cubemap DDS data.");
-	}
-
-	TextureCube::TextureCube(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage)
-		: myTexture(aDevice, anUploader, std::forward<std::unique_ptr<DirectX::ScratchImage>>(anImage))
-	{
-		Debug::Assert(
-			myTexture.GetMetadata().IsCubemap()
-			, "TextureCube only support Cubemap DDS data.");
-	}
-
-	void TextureCube::Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable)
-	{
-		myTexture.Apply(anUpdateMipmaps, aMakeNoLongerReadable);
-	}
-
-	Core::TextureDimension TextureCube::GetDimensions() const
-	{
-		return Core::TextureDimension::Cube;
-	}
-
-	unsigned int TextureCube::GetDepth() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().depth);
-	}
-
-	Core::FilterMode TextureCube::GetFilterMode() const
-	{
-		Debug::LogWarning("TextureCube::GetFilterMode() is not implemented. Defaulting to FilterMode::Point.");
-		return Core::FilterMode::Point;
-	}
-
-	Core::TextureFormat TextureCube::GetFormat() const
-	{
-		return ToTextureFormat(myTexture.GetMetadata().format);
-	}
-
-	unsigned int TextureCube::GetHeight() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().height);
-	}
-
-	bool TextureCube::IsReadable() const
-	{
-		return myTexture.GetImage() != nullptr;
-	}
-
-	unsigned int TextureCube::GetMipmapCount() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().mipLevels);
-	}
 
-	unsigned int TextureCube::GetWidth() const
-	{
-		return static_cast<unsigned int>(myTexture.GetMetadata().width);
-	}
-
-	Core::TextureWrapMode TextureCube::GetWrapModeU() const
-	{
-		Debug::LogWarning("TextureCube::GetWrapModeU() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return Core::TextureWrapMode::Repeat;
 	}
 
-	Core::TextureWrapMode TextureCube::GetWrapModeV() const
+	Texture::Texture(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage)
+		: myImage(aDevice, anUploader, std::forward<std::unique_ptr<DirectX::ScratchImage>>(anImage))
 	{
-		Debug::LogWarning("TextureCube::GetWrapModeV() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return Core::TextureWrapMode::Repeat;
-	}
 
-	Core::TextureWrapMode TextureCube::GetWrapModeW() const
-	{
-		Debug::LogWarning("TextureCube::GetWrapModeW() is not implemented. Defaulting to TextureWrapMode::Repeat.");
-		return Core::TextureWrapMode::Repeat;
 	}
 
-	void TextureCube::SetFilterMode(Core::FilterMode aFilterMode)
+	void Texture::Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable)
 	{
-		aFilterMode;
-		Debug::LogError("TextureCube::SetFilterMode() is not implemented. Call ignored.");
+		myImage.Apply(anUpdateMipmaps, aMakeNoLongerReadable);
 	}
 
-	void TextureCube::SetWrapMode(Core::TextureWrapMode aWrapMode)
+	Core::TextureDimension Texture::GetDimensions() const
 	{
-		aWrapMode;
-		Debug::LogError("TextureCube::SetWrapMode() is not implemented. Call ignored.");
+		switch (myImage.GetMetadata().dimension)
+		{
+			case TEX_DIMENSION_TEXTURE1D:
+			case TEX_DIMENSION_TEXTURE2D:
+				if ((myImage.GetMetadata().miscFlags & DirectX::TEX_MISC_TEXTURECUBE) != 0)
+					return myImage.GetMetadata().arraySize ? Core::TextureDimension::CubeArray : Core::TextureDimension::Cube;
+				else
+					return Core::TextureDimension::Tex2D;
+			case TEX_DIMENSION_TEXTURE3D:
+				return Core::TextureDimension::Tex3D;
+			default:
+				return Core::TextureDimension::Unknown;
+		}
 	}
 
-	void TextureCube::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
+	unsigned int Texture::GetDepth() const
 	{
-		aWrapMode;
-		Debug::LogError("TextureCube::SetWrapModeU() is not implemented. Call ignored.");
+		return static_cast<unsigned int>(myImage.GetMetadata().depth);
 	}
 
-	void TextureCube::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
+	unsigned int Texture::GetHeight() const
 	{
-		aWrapMode;
-		Debug::LogError("TextureCube::SetWrapModeV() is not implemented. Call ignored.");
+		return static_cast<unsigned int>(myImage.GetMetadata().height);
 	}
 
-	void TextureCube::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
+	bool Texture::IsReadable() const
 	{
-		aWrapMode;
-		Debug::LogError("TextureCube::SetWrapModeW() is not implemented. Call ignored.");
+		return myImage.GetImage() != nullptr;
 	}
 
-	void* TextureCube::GetNativeTexturePtr() const
+	unsigned int Texture::GetMipmapCount() const
 	{
-		return myTexture.GetResource()->GetResource().Get();
+		return static_cast<unsigned int>(myImage.GetMetadata().mipLevels);
 	}
 
-	ColorT<float> TextureCube::GetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel) const
+	unsigned int Texture::GetWidth() const
 	{
-		aFace; anX; aY; aMipLevel;
-		return ColorT<float>::Predefined::Black;
+		return static_cast<unsigned int>(myImage.GetMetadata().width);
 	}
 
-	void TextureCube::SetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, const ColorT<float>& aColor, unsigned int aMipLevel)
+	void* Texture::GetNativeTexturePtr() const
 	{
-		aFace; anX; aY; aColor; aMipLevel;
+		return myImage.GetResource()->GetResource().Get();
 	}
 }

@@ -49,9 +49,7 @@ namespace Atrium::Core
 		std::shared_ptr<PipelineState> CreatePipelineState(const PipelineStateDescription&) { return nullptr; }
 		std::unique_ptr<RootSignatureBuilder> CreateRootSignature() { return nullptr; }
 		std::shared_ptr<Shader> CreateShader(const std::filesystem::path&, Shader::Type, const char*) { return nullptr; }
-		std::shared_ptr<Texture2D> CreateTexture2D(unsigned int, unsigned int, TextureFormat) { return nullptr; }
-		std::shared_ptr<Texture3D> CreateTexture3D(unsigned int, unsigned int, unsigned int, TextureFormat) { return nullptr; }
-		std::shared_ptr<TextureCube> CreateTextureCube(unsigned int, TextureFormat) { return nullptr; }
+		std::shared_ptr<Texture> CreateTexture(unsigned int, unsigned int, unsigned int, unsigned int, TextureFormat, std::optional<TextureDimension>) { return nullptr; }
 		std::shared_ptr<Texture> LoadTexture(const std::filesystem::path&) { return nullptr; }
 	};
 

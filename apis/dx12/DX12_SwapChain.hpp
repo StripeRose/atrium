@@ -47,23 +47,12 @@ namespace Atrium::DirectX12
 
 		// Implementing Texture
 	public:
-		void SetFilterMode(Core::FilterMode aFilterMode) override;
 		Core::TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		Core::FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
-
-		Core::TextureWrapMode GetWrapModeU() const override;
-		Core::TextureWrapMode GetWrapModeV() const override;
-		Core::TextureWrapMode GetWrapModeW() const override;
-
-		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
 
 		void* GetNativeTexturePtr() const override;
 

@@ -134,12 +134,6 @@ namespace Atrium::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetNativeDepthBufferPtr();
 	}
 
-	void SwapChain::SetFilterMode(Core::FilterMode aFilterMode)
-	{
-		for (auto& backBuffer : myBackBuffers)
-			backBuffer->SetFilterMode(aFilterMode);
-	}
-
 	Core::TextureDimension SwapChain::GetDimensions() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDimensions();
@@ -148,11 +142,6 @@ namespace Atrium::DirectX12
 	unsigned int SwapChain::GetDepth() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepth();
-	}
-
-	Core::FilterMode SwapChain::GetFilterMode() const
-	{
-		return myBackBuffers.at(GetCurrentBufferIndex())->GetFilterMode();
 	}
 
 	unsigned int SwapChain::GetHeight() const
@@ -173,45 +162,6 @@ namespace Atrium::DirectX12
 	unsigned int SwapChain::GetWidth() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetWidth();
-	}
-
-	Core::TextureWrapMode SwapChain::GetWrapModeU() const
-	{
-		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeU();
-	}
-
-	Core::TextureWrapMode SwapChain::GetWrapModeV() const
-	{
-		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeV();
-	}
-
-	Core::TextureWrapMode SwapChain::GetWrapModeW() const
-	{
-		return myBackBuffers.at(GetCurrentBufferIndex())->GetWrapModeW();
-	}
-
-	void SwapChain::SetWrapMode(Core::TextureWrapMode aWrapMode)
-	{
-		for (auto& backBuffer : myBackBuffers)
-			backBuffer->SetWrapMode(aWrapMode);
-	}
-
-	void SwapChain::SetWrapModeU(Core::TextureWrapMode aWrapMode) const
-	{
-		for (auto& backBuffer : myBackBuffers)
-			backBuffer->SetWrapModeU(aWrapMode);
-	}
-
-	void SwapChain::SetWrapModeV(Core::TextureWrapMode aWrapMode) const
-	{
-		for (auto& backBuffer : myBackBuffers)
-			backBuffer->SetWrapModeV(aWrapMode);
-	}
-
-	void SwapChain::SetWrapModeW(Core::TextureWrapMode aWrapMode) const
-	{
-		for (auto& backBuffer : myBackBuffers)
-			backBuffer->SetWrapModeW(aWrapMode);
 	}
 
 	void* SwapChain::GetNativeTexturePtr() const

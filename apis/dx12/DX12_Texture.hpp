@@ -46,137 +46,27 @@ namespace Atrium::DirectX12
 		DescriptorHeapHandle mySRVHandle;
 	};
 
-	class Texture2D : public Core::Texture2D
+	class Texture : public Core::Texture
 	{
 	public:
-		Texture2D(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
-		Texture2D(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage);
+		Texture(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
+		Texture(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage);
 
-		DDSImage& GetImage() { return myTexture; }
+		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable);
 
-		// Implements Texture2D
-	public:
-		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override;
+		DDSImage& GetImage() { return myImage; }
 
-		Core::TextureFormat GetFormat() const override;
-
-		ColorT<float> GetPixel(unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
-		ColorT<float> GetPixelBilinear(float aU, float aV, unsigned int aMipLevel = 0) const override;
-
-		void SetPixel(unsigned int anX, unsigned int aY, const ColorT<float>& aColor, unsigned int aMipLevel = 0) override;
-
-		// Implements Texture
+		// Implements Core::Texture
 	public:
 		Core::TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;
-		Core::FilterMode GetFilterMode() const override;
 		unsigned int GetHeight() const override;
 		bool IsReadable() const override;
 		unsigned int GetMipmapCount() const override;
 		unsigned int GetWidth() const override;
-
-		Core::TextureWrapMode GetWrapModeU() const override;
-		Core::TextureWrapMode GetWrapModeV() const override;
-		Core::TextureWrapMode GetWrapModeW() const override;
-
-		void SetFilterMode(Core::FilterMode aFilterMode) override;
-		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
-
 		void* GetNativeTexturePtr() const override;
 
 	private:
-		DDSImage myTexture;
-	};
-
-	class Texture3D : public Core::Texture3D
-	{
-	public:
-		Texture3D(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
-		Texture3D(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage);
-
-		DDSImage& GetImage() { return myTexture; }
-
-		// Implements Texture3D
-	public:
-		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override;
-
-		Core::TextureFormat GetFormat() const override;
-
-		ColorT<float> GetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, unsigned int aMipLevel = 0) const override;
-		ColorT<float> GetPixelBilinear(float aU, float aV, float aW, unsigned int aMipLevel = 0) const override;
-
-		void SetPixel(unsigned int anX, unsigned int aY, unsigned int aZ, const ColorT<float>& aColor, unsigned int aMipLevel = 0) override;
-
-		// Implements Texture
-	public:
-		Core::TextureDimension GetDimensions() const override;
-		unsigned int GetDepth() const override;
-		Core::FilterMode GetFilterMode() const override;
-		unsigned int GetHeight() const override;
-		bool IsReadable() const override;
-		unsigned int GetMipmapCount() const override;
-		unsigned int GetWidth() const override;
-
-		Core::TextureWrapMode GetWrapModeU() const override;
-		Core::TextureWrapMode GetWrapModeV() const override;
-		Core::TextureWrapMode GetWrapModeW() const override;
-
-		void SetFilterMode(Core::FilterMode aFilterMode) override;
-		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
-
-		void* GetNativeTexturePtr() const override;
-
-	private:
-		DDSImage myTexture;
-	};
-
-	class TextureCube : public Core::TextureCube
-	{
-	public:
-		TextureCube(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
-		TextureCube(Device& aDevice, UploadContext& anUploader, std::unique_ptr<DirectX::ScratchImage>&& anImage);
-
-		DDSImage& GetImage() { return myTexture; }
-
-		// Implements TextureCube
-	public:
-		void Apply(bool anUpdateMipmaps, bool aMakeNoLongerReadable) override;
-
-		Core::TextureFormat GetFormat() const override;
-
-		ColorT<float> GetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, unsigned int aMipLevel = 0) const override;
-
-		void SetPixel(Core::TextureCubeFace aFace, unsigned int anX, unsigned int aY, const ColorT<float>& aColor, unsigned int aMipLevel = 0) override;
-
-		// Implements Texture
-	public:
-		Core::TextureDimension GetDimensions() const override;
-		unsigned int GetDepth() const override;
-		Core::FilterMode GetFilterMode() const override;
-		unsigned int GetHeight() const override;
-		bool IsReadable() const override;
-		unsigned int GetMipmapCount() const override;
-		unsigned int GetWidth() const override;
-
-		Core::TextureWrapMode GetWrapModeU() const override;
-		Core::TextureWrapMode GetWrapModeV() const override;
-		Core::TextureWrapMode GetWrapModeW() const override;
-
-		void SetFilterMode(Core::FilterMode aFilterMode) override;
-		void SetWrapMode(Core::TextureWrapMode aWrapMode) override;
-		void SetWrapModeU(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeV(Core::TextureWrapMode aWrapMode) const override;
-		void SetWrapModeW(Core::TextureWrapMode aWrapMode) const override;
-
-		void* GetNativeTexturePtr() const override;
-
-	private:
-		DDSImage myTexture;
+		DDSImage myImage;
 	};
 }
