@@ -3,7 +3,7 @@
 #include <Atrium_GraphicsAPI.hpp>
 #include <Atrium_GraphicsEnums.hpp>
 #include <Atrium_InputDevice.hpp>
-#include <Atrium_WindowManagement.hpp>
+#include <Core_WindowManagement.hpp>
 
 #if IS_IMGUI_ENABLED
 #include <DX12_DescriptorHeap.hpp>

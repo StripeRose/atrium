@@ -9,7 +9,8 @@ namespace Atrium::DirectX12
 {
 	ResourceManager::ResourceManager(DirectX12API& aManager)
 		: myManager(aManager)
-	{ }
+	{
+	}
 
 	std::shared_ptr<Core::RenderTexture> ResourceManager::CreateRenderTextureForWindow(Core::Window& aWindow)
 	{
@@ -20,7 +21,7 @@ namespace Atrium::DirectX12
 		swapChain.reset(new SwapChain(myManager.GetDevice(), myManager.GetCommandQueueManager().GetGraphicsQueue(), aWindow));
 		swapChain->SetName(aWindow.GetTitle().c_str());
 
-		aWindow.Closed.Connect(this, [&](Atrium::Core::Window& aWindow) {
+		aWindow.OnClosed.Connect(this, [&]() {
 			myDrawSurfaceSwapChain.erase(&aWindow);
 			});
 
@@ -52,14 +53,14 @@ namespace Atrium::DirectX12
 
 		switch (aType)
 		{
-		case Shader::Type::Vertex:
-			return Shader::CreateFromSource(aSource, anEntryPoint, "vs_5_1");
+			case Shader::Type::Vertex:
+				return Shader::CreateFromSource(aSource, anEntryPoint, "vs_5_1");
 
-		case Shader::Type::Pixel:
-			return Shader::CreateFromSource(aSource, anEntryPoint, "ps_5_1");
+			case Shader::Type::Pixel:
+				return Shader::CreateFromSource(aSource, anEntryPoint, "ps_5_1");
 
-		default:
-			return nullptr;
+			default:
+				return nullptr;
 		}
 	}
 

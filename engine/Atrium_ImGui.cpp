@@ -143,7 +143,7 @@ namespace Atrium
 	{
 		ZoneScoped;
 		myWindow = &aWindow;
-		aWindow.Closed.Connect(this, [this](Core::Window&) { Cleanup(); });
+		aWindow.OnClosed.Connect(this, [&]() { Cleanup(); });
 
 		Win32::Window& win32Window = static_cast<Win32::Window&>(aWindow);
 		win32Window.AdditionalWndProc = [](Win32::Window::AdditionalWndProcData& data) {
@@ -191,7 +191,7 @@ namespace Atrium
 
 		ZoneScoped;
 		Win32::Window* win32Window = static_cast<Win32::Window*>(myWindow);
-		win32Window->Closed.Disconnect(this);
+		win32Window->OnClosed.Disconnect(this);
 		win32Window->AdditionalWndProc = nullptr;
 		ImGui_ImplWin32_Shutdown();
 		ImGui_ImplDX12_Shutdown();

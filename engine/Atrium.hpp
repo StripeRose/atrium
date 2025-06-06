@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Atrium_WindowManagement.hpp"
+
 #include <memory>
 
 namespace Atrium

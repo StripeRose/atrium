@@ -1,15 +1,13 @@
 #pragma once
 
-#include "Atrium_WindowManagement.hpp"
+#include "Core_WindowManagement.hpp"
 
 namespace Atrium::Core
 {
 	class NullWindowManager final : public WindowManager
 	{
 	public:
-		std::shared_ptr<Window> NewWindow(const CreationParameters&) { return nullptr; }
-
-		std::vector<std::shared_ptr<Window>> GetWindows() const { return {}; }
+		std::unique_ptr<Window> NewWindow() { return nullptr; }
 
 		void Update() {}
 

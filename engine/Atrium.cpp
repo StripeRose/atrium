@@ -4,10 +4,15 @@
 #include "Atrium_Diagnostics.hpp"
 #include "Atrium_GraphicsAPI.hpp"
 #include "Atrium_InputDeviceAPI.hpp"
-#include "Atrium_WindowManagement.hpp"
+#include "Core_WindowManagement.hpp"
 
 namespace Atrium
 {
+	Core::AudioAPI* ourAudioHandler(nullptr);
+	Core::GraphicsAPI* ourGraphicsHandler(nullptr);
+	Core::InputDeviceAPI* ourInputHandler(nullptr);
+	Core::WindowManager* ourWindowHandler(nullptr);
+
 	AtriumApplication::AtriumApplication()
 		: myIsRunning(false)
 		, myHasShutdownBeenRequested(false)
@@ -65,9 +70,15 @@ namespace Atrium
 		// Core systems have been set up and are usable.
 		// Prepare all sub-systems for use.
 
-		// Todo: Assert there is no other application instance created on the thread previously.
+		Debug::Assert(
+			!ourAudioHandler && !ourGraphicsHandler && !ourInputHandler && !ourWindowHandler,
+			"Handler instances expected to be empty upon startup. Are other Atrium applications running on the same thread?"
+		);
 
-		// Todo: Prepare sub-system.
+		ourAudioHandler = myAudioAPI.get();
+		ourGraphicsHandler = myGraphicsAPI.get();
+		ourInputHandler = myInputDeviceAPI.get();
+		ourWindowHandler = myWindowManager.get();
 	}
 
 	void AtriumApplication::RunMainLoop()

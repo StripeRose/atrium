@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Atrium_WindowManagement.hpp"
+#include "Core_WindowManagement.hpp"
 
 #include <Windows.h>
 #include <windowsx.h>
@@ -35,7 +35,11 @@ namespace Atrium::Win32
 		Size GetSize() const override;
 		std::wstring GetTitle() const override;
 
+		void Hide() override;
+
 		bool IsFocused() const override;
+
+		void Show() override;
 
 		void SetPosition(const Point& aPoint) override;
 		void SetSize(const Size& aSize) override;
@@ -45,7 +49,7 @@ namespace Atrium::Win32
 		std::function<void(AdditionalWndProcData&)> AdditionalWndProc;
 
 	private:
-		Window(const Atrium::Core::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass);
+		Window(const WNDCLASSEX& aWindowClass);
 
 		LRESULT HandleWindowMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -67,9 +71,7 @@ namespace Atrium::Win32
 		WindowManager();
 		~WindowManager();
 
-		std::shared_ptr<Atrium::Core::Window> NewWindow(const CreationParameters& someParameters) override;
-
-		std::vector<std::shared_ptr<Atrium::Core::Window>> GetWindows() const override;
+		std::unique_ptr<Atrium::Core::Window> NewWindow() override;
 
 		void Update() override;
 
@@ -82,7 +84,7 @@ namespace Atrium::Win32
 
 		void ProcessWindowMessages();
 
-		std::vector<std::shared_ptr<Win32::Window>> myWindows;
+		std::vector<Win32::Window*> myWindows;
 		std::vector<WNDCLASSEX> myWindowClasses;
 	};
 }

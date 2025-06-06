@@ -15,7 +15,7 @@ namespace Atrium::Win32
 	void Window::Close()
 	{
 		myHasRequestedClose = true;
-		Closing.Invoke(*this, myHasRequestedClose);
+		OnClosing(myHasRequestedClose);
 	}
 
 	std::any Window::GetNativeHandle() const
@@ -47,9 +47,19 @@ namespace Atrium::Win32
 		return title;
 	}
 
+	void Window::Hide()
+	{
+		::ShowWindow(myWindowHandle, SW_HIDE);
+	}
+
 	bool Window::IsFocused() const
 	{
 		return myWindowHandle == ::GetActiveWindow();
+	}
+
+	void Window::Show()
+	{
+		::ShowWindow(myWindowHandle, SW_SHOW);
 	}
 
 	void Window::SetPosition(const Point& aPoint)
@@ -82,7 +92,7 @@ namespace Atrium::Win32
 		::SetWindowTextW(myWindowHandle, aTitleText);
 	}
 
-	Window::Window(const Atrium::Core::WindowManager::CreationParameters& someParameters, const WNDCLASSEX& aWindowClass)
+	Window::Window(const WNDCLASSEX& aWindowClass)
 		: myWindowHandle(NULL)
 		, myHasRequestedClose(false)
 	{
@@ -97,59 +107,19 @@ namespace Atrium::Win32
 			std::placeholders::_4
 		);
 
-		LONG windowX = 100;
-		LONG windowY = 100;
-		LONG windowWidth = 640;
-		LONG windowHeight = 480;
-
-		if (someParameters.Position.has_value())
-		{
-			windowX = someParameters.Position.value().first;
-			windowY = someParameters.Position.value().second;
-		}
-
-		if (someParameters.Size.has_value())
-		{
-			windowWidth = someParameters.Size.value().first;
-			windowHeight = someParameters.Size.value().second;
-		}
-
-		{
-			RECT windowRectangle(windowX, windowY, windowX + windowWidth, windowY + windowHeight);
-			::AdjustWindowRect(&windowRectangle, WS_OVERLAPPEDWINDOW, FALSE);
-			windowX = windowRectangle.left;
-			windowY = windowRectangle.top;
-			windowWidth = windowRectangle.right - windowRectangle.left;
-			windowHeight = windowRectangle.bottom - windowRectangle.top;
-		}
-
-		if (!someParameters.Position.has_value())
-		{
-			windowX = CW_USEDEFAULT;
-			windowY = CW_USEDEFAULT;
-		}
-
-		if (!someParameters.Size.has_value())
-		{
-			windowWidth = CW_USEDEFAULT;
-			windowHeight = CW_USEDEFAULT;
-		}
-
 		myWindowHandle = ::CreateWindow(
 			aWindowClass.lpszClassName,
-			someParameters.Title.c_str(),
+			nullptr,
 			WS_OVERLAPPEDWINDOW,
-			windowX,
-			windowY,
-			windowWidth,
-			windowHeight,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
 			nullptr,
 			nullptr,
 			aWindowClass.hInstance,
 			&myWndProcCallback
 		);
-
-		::ShowWindow(myWindowHandle, SW_SHOW);
 	}
 
 	LRESULT Window::HandleWindowMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -179,19 +149,16 @@ namespace Atrium::Win32
 		switch (msg)
 		{
 			case WM_SIZE:
-				SizeChanged.Invoke(*this);
+				OnSizeChanged();
 				break;
 
 			case WM_MOVE:
-				Moved.Invoke(*this);
+				OnMoved();
 				break;
 
 			case WM_KILLFOCUS:
-				LostFocus.Invoke(*this);
-				break;
-
 			case WM_SETFOCUS:
-				GotFocus.Invoke(*this);
+				OnFocusChanged(msg == WM_SETFOCUS);
 				break;
 
 			case WM_SYSCOMMAND:
@@ -236,7 +203,7 @@ namespace Atrium::Win32
 		if (myWindowHandle == NULL)
 			return;
 
-		Closed.Invoke(*this);
+		OnClosed();
 		::DestroyWindow(myWindowHandle);
 		myWindowHandle = NULL;
 	}
@@ -252,19 +219,11 @@ namespace Atrium::Win32
 		CleanupWindowClasses();
 	}
 
-	std::shared_ptr<Atrium::Core::Window> WindowManager::NewWindow(const CreationParameters& someParameters)
+	std::unique_ptr<Atrium::Core::Window> WindowManager::NewWindow()
 	{
-		auto newWindow = std::shared_ptr<Win32::Window>(new Win32::Window(someParameters, myWindowClasses[0]));
-		myWindows.push_back(newWindow);
+		auto newWindow = std::unique_ptr<Win32::Window>(new Win32::Window(myWindowClasses[0]));
+		myWindows.push_back(newWindow.get());
 		return newWindow;
-	}
-
-	std::vector<std::shared_ptr<Atrium::Core::Window>> WindowManager::GetWindows() const
-	{
-		std::vector<std::shared_ptr<Atrium::Core::Window>> windows;
-		for (const auto& window : myWindows)
-			windows.push_back(std::static_pointer_cast<Atrium::Core::Window>(window));
-		return windows;
 	}
 
 	void WindowManager::Update()
@@ -275,12 +234,12 @@ namespace Atrium::Win32
 		for (std::size_t i = 0; i < myWindows.size(); ++i)
 		{
 			const std::size_t reverseIndex = (myWindows.size() - i) - 1;
-			Window* window = static_cast<Window*>(myWindows[reverseIndex].get());
+			Window* window = static_cast<Window*>(myWindows[reverseIndex]);
 			if (window->myHasRequestedClose)
 			{
 				window->myHasRequestedClose = false;
 				auto currentWindowIterator = myWindows.begin() + reverseIndex;
-				currentWindowIterator->get()->DestroyWindow();
+				(*currentWindowIterator)->DestroyWindow();
 				myWindows.erase(currentWindowIterator);
 			}
 		}
