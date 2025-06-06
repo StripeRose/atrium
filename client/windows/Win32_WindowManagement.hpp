@@ -71,7 +71,7 @@ namespace Atrium::Win32
 		WindowManager();
 		~WindowManager();
 
-		std::unique_ptr<Atrium::Core::Window> NewWindow() override;
+		std::shared_ptr<Atrium::Core::Window> NewWindow() override;
 
 		void Update() override;
 
@@ -84,7 +84,7 @@ namespace Atrium::Win32
 
 		void ProcessWindowMessages();
 
-		std::vector<Win32::Window*> myWindows;
+		std::vector<std::shared_ptr<Win32::Window>> myWindows;
 		std::vector<WNDCLASSEX> myWindowClasses;
 	};
 }

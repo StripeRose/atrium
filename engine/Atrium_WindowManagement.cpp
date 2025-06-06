@@ -18,7 +18,11 @@ namespace Atrium
 	{
 		if (myWindow = GetWindowManager().NewWindow())
 		{
-			myWindow->OnClosed.Connect(this, [&]() { OnClosed(*this); });
+			myWindow->OnClosed.Connect(this,
+				[&]() {
+					OnClosed(*this);
+					myWindow.reset();
+				});
 			myWindow->OnClosing.Connect(this, [&](bool& anIsClosing) { OnClosing(*this, anIsClosing); });
 			myWindow->OnFocusChanged.Connect(this, [&](bool hasFocus) { OnFocusChanged(*this, hasFocus); });
 			myWindow->OnMoved.Connect(this, [&]() { OnMoved(*this); });

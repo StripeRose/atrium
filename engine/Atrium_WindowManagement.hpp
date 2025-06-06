@@ -27,7 +27,7 @@ namespace Atrium
 		EventSlot<Window&> OnSizeChanged;
 
 		/// <summary>
-		/// Requests the window to close.
+		/// Requests the window to close and resources to be freed.
 		/// Can be cancelled by the OnClosing event.
 		/// </summary>
 		void Close();

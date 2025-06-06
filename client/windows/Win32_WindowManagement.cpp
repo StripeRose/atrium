@@ -219,10 +219,10 @@ namespace Atrium::Win32
 		CleanupWindowClasses();
 	}
 
-	std::unique_ptr<Atrium::Core::Window> WindowManager::NewWindow()
+	std::shared_ptr<Atrium::Core::Window> WindowManager::NewWindow()
 	{
-		auto newWindow = std::unique_ptr<Win32::Window>(new Win32::Window(myWindowClasses[0]));
-		myWindows.push_back(newWindow.get());
+		std::shared_ptr<Win32::Window> newWindow(new Win32::Window(myWindowClasses[0]));
+		myWindows.push_back(newWindow);
 		return newWindow;
 	}
 
@@ -234,7 +234,7 @@ namespace Atrium::Win32
 		for (std::size_t i = 0; i < myWindows.size(); ++i)
 		{
 			const std::size_t reverseIndex = (myWindows.size() - i) - 1;
-			Window* window = static_cast<Window*>(myWindows[reverseIndex]);
+			Window* window = myWindows[reverseIndex].get();
 			if (window->myHasRequestedClose)
 			{
 				window->myHasRequestedClose = false;

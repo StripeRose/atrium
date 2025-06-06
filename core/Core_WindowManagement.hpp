@@ -57,7 +57,7 @@ namespace Atrium::Core
 	public:
 		virtual ~WindowManager() = default;
 
-		virtual std::unique_ptr<Window> NewWindow() = 0;
+		virtual std::shared_ptr<Window> NewWindow() = 0;
 
 		virtual void Update() = 0;
 

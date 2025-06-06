@@ -7,7 +7,7 @@ namespace Atrium::Core
 	class NullWindowManager final : public WindowManager
 	{
 	public:
-		std::unique_ptr<Window> NewWindow() { return nullptr; }
+		std::shared_ptr<Window> NewWindow() { return nullptr; }
 
 		void Update() {}
 
