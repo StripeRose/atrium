@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Atrium_Color.hpp"
-#include "Atrium_Diagnostics.hpp"
+#include "Core_Diagnostics.hpp"
 #include "Core_GraphicsBuffer.hpp"
 #include "Core_GraphicsPipeline.hpp"
 #include "Atrium_Math.hpp"

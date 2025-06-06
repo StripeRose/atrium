@@ -2,7 +2,7 @@
 
 #include "Win32_GameInputHandler.hpp"
 
-#include "Atrium_Diagnostics.hpp"
+#include "Core_Diagnostics.hpp"
 
 #include <sstream>
 

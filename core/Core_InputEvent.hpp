@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Atrium_Diagnostics.hpp"
+#include "Core_Diagnostics.hpp"
 #include "Core_InputSource.hpp"
 
 #include <bitset>

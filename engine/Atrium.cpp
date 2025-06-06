@@ -1,7 +1,7 @@
 #include "Atrium.hpp"
 
 #include "Core_AudioAPI.hpp"
-#include "Atrium_Diagnostics.hpp"
+#include "Core_Diagnostics.hpp"
 #include "Core_GraphicsAPI.hpp"
 #include "Core_InputDeviceAPI.hpp"
 #include "Core_WindowManagement.hpp"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Atrium_Diagnostics.hpp"
+#include "Core_Diagnostics.hpp"
 
 #ifdef TRACY_ENABLE
 #pragma warning(push)

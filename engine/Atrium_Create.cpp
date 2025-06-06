@@ -1,6 +1,6 @@
 #include "Atrium.hpp"
 
-#include "Atrium_Diagnostics.hpp"
+#include "Core_Diagnostics.hpp"
 
 #include "Core_NullAudioHandler.hpp"
 #include "Core_NullGraphicsHandler.hpp"
