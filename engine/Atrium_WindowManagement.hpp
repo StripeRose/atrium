@@ -17,6 +17,8 @@ namespace Atrium
 	 */
 	class Window
 	{
+		friend class RenderTarget; // For accessing the Core::Window.
+
 	public:
 		Window();
 
