@@ -1,3 +1,5 @@
+// Filter "Graphics"
+
 #include "Atrium_WindowManagement.hpp"
 
 #include <Core_WindowManagement.hpp>

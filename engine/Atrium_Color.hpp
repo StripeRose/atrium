@@ -1,3 +1,5 @@
+// Filter "Graphics"
+
 #pragma once
 
 #include <rose-common/Color.hpp>

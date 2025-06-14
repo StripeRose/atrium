@@ -1,3 +1,5 @@
+// Filter "Graphics"
+
 #include "Atrium_RenderTarget.hpp"
 
 #include "Core_GraphicsAPI.hpp"
