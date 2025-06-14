@@ -16,11 +16,7 @@ namespace Atrium
 	{
 		friend class Graphics;
 	public:
-		/**
-		 * @brief Create a render-target for a specific window.
-		 * @param aWindow A window the target will be drawn to.
-		 */
-		RenderTarget(const Window& aWindow);
+		RenderTarget() = delete; // Todo: Implement actual constructor.
 
 		const RenderTextureDescriptor GetDescriptor() const;
 

@@ -4,6 +4,8 @@
 
 #include "Atrium_Math.hpp"
 
+#include "Core_RenderTexture.hpp"
+
 #include <rose-common/EventSlot.hpp>
 
 #include <any>
@@ -19,7 +21,7 @@ namespace Atrium
 	 */
 	class Window
 	{
-		friend class RenderTarget; // For accessing the Core::Window.
+		friend class Graphics;
 
 	public:
 		Window();
@@ -61,5 +63,6 @@ namespace Atrium
 
 	private:
 		std::shared_ptr<Core::Window> myWindow;
+		std::shared_ptr<Core::RenderTexture> myRenderTarget;
 	};
 }

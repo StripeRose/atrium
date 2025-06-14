@@ -1,6 +1,7 @@
 // Filter "Graphics"
 
 #include "Atrium_RenderTarget.hpp"
+#include "Atrium_WindowManagement.hpp"
 
 namespace Atrium
 {
@@ -15,6 +16,7 @@ namespace Atrium
 		 * @param aClearColor Color value to clear to.
 		 */
 		static void ClearColor(const RenderTarget& aTarget, ColorT<float> aClearColor);
+		static void ClearColor(const Window& aTarget, ColorT<float> aClearColor);
 
 		/**
 		 * @brief Clear a render texture's depth and stencil to a specified value.
@@ -25,5 +27,6 @@ namespace Atrium
 		 * @param aStencil Stencil value to clear to.
 		 */
 		static void ClearDepth(const RenderTarget& aTarget, float aDepth, std::uint8_t aStencil);
+		static void ClearDepth(const Window& aTarget, float aDepth, std::uint8_t aStencil);
 	};
 }

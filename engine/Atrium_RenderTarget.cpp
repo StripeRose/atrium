@@ -16,11 +16,6 @@ namespace Atrium
 		}
 	}
 
-	RenderTarget::RenderTarget(const Window& aWindow)
-	{
-		myTarget = GetGraphicsHandler().GetResourceManager().CreateRenderTextureForWindow(*aWindow.myWindow.get());
-	}
-
 	const RenderTextureDescriptor RenderTarget::GetDescriptor() const
 	{
 		return myTarget->GetDescriptor();

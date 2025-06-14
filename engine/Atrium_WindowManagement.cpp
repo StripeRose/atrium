@@ -2,10 +2,12 @@
 
 #include "Atrium_WindowManagement.hpp"
 
+#include <Core_GraphicsAPI.hpp>
 #include <Core_WindowManagement.hpp>
 
 namespace Atrium
 {
+	extern Core::GraphicsAPI* ourGraphicsHandler;
 	extern Core::WindowManager* ourWindowHandler;
 
 	namespace
@@ -14,22 +16,30 @@ namespace Atrium
 		{
 			return *ourWindowHandler;
 		}
+
+		Core::GraphicsAPI& GetGraphicsHandler()
+		{
+			return *ourGraphicsHandler;
+		}
 	}
 
 	Window::Window()
 	{
-		if (myWindow = GetWindowManager().NewWindow())
-		{
-			myWindow->OnClosed.Connect(this,
-				[&]() {
-					OnClosed(*this);
-					myWindow.reset();
-				});
-			myWindow->OnClosing.Connect(this, [&](bool& anIsClosing) { OnClosing(*this, anIsClosing); });
-			myWindow->OnFocusChanged.Connect(this, [&](bool hasFocus) { OnFocusChanged(*this, hasFocus); });
-			myWindow->OnMoved.Connect(this, [&]() { OnMoved(*this); });
-			myWindow->OnSizeChanged.Connect(this, [&]() { OnSizeChanged(*this); });
-		}
+		myWindow = GetWindowManager().NewWindow();
+		if (!myWindow)
+			return;
+
+		myWindow->OnClosed.Connect(this,
+			[&]() {
+				OnClosed(*this);
+				myWindow.reset();
+			});
+		myWindow->OnClosing.Connect(this, [&](bool& anIsClosing) { OnClosing(*this, anIsClosing); });
+		myWindow->OnFocusChanged.Connect(this, [&](bool hasFocus) { OnFocusChanged(*this, hasFocus); });
+		myWindow->OnMoved.Connect(this, [&]() { OnMoved(*this); });
+		myWindow->OnSizeChanged.Connect(this, [&]() { OnSizeChanged(*this); });
+
+		myRenderTarget = GetGraphicsHandler().GetResourceManager().CreateRenderTextureForWindow(*myWindow.get());
 	}
 
 	void Window::Close()
