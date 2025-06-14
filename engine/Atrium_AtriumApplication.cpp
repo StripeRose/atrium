@@ -115,7 +115,10 @@ namespace Atrium
 		// Game has exited and cleaned up its data, and is expected to not use the sub-systems any more.
 		// Time to clean them up before the run finally ends.
 
-		// Todo: Clean up the sub-systems.
+		ourAudioHandler = nullptr;
+		ourGraphicsHandler = nullptr;
+		ourInputHandler = nullptr;
+		ourWindowHandler = nullptr;
 	}
 }
 
