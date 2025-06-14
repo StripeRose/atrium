@@ -158,6 +158,15 @@ namespace Atrium
 		Sample
 	};
 
+	enum class PrimitiveTopology
+	{
+		PointList,
+		LineList,
+		LineStrip,
+		TriangleList,
+		TriangleStrip
+	};
+
 	enum class TextureWrapMode
 	{
 		Repeat,

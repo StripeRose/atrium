@@ -405,7 +405,7 @@ namespace Atrium::DirectX12
 		myCommandList->RSSetScissorRects(1, &rect);
 	}
 
-	void FrameGraphicsContext::SetPrimitiveTopology(Core::PrimitiveTopology aTopology)
+	void FrameGraphicsContext::SetPrimitiveTopology(PrimitiveTopology aTopology)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set primitive topology");
 
@@ -413,19 +413,19 @@ namespace Atrium::DirectX12
 
 		switch (aTopology)
 		{
-			case Core::PrimitiveTopology::PointList:
+			case PrimitiveTopology::PointList:
 				topology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
 				break;
-			case Core::PrimitiveTopology::LineList:
+			case PrimitiveTopology::LineList:
 				topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 				break;
-			case Core::PrimitiveTopology::LineStrip:
+			case PrimitiveTopology::LineStrip:
 				topology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
 				break;
-			case Core::PrimitiveTopology::TriangleList:
+			case PrimitiveTopology::TriangleList:
 				topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 				break;
-			case Core::PrimitiveTopology::TriangleStrip:
+			case PrimitiveTopology::TriangleStrip:
 				topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 				break;
 		}

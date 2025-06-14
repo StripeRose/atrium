@@ -4,6 +4,7 @@
 
 #include "Core_Diagnostics.hpp"
 #include "Core_GraphicsBuffer.hpp"
+#include "Core_GraphicsEnums.hpp"
 #include "Core_GraphicsPipeline.hpp"
 #include "Core_RenderTexture.hpp"
 
@@ -17,15 +18,6 @@
 
 namespace Atrium::Core
 {
-	enum class PrimitiveTopology
-	{
-		PointList,
-		LineList,
-		LineStrip,
-		TriangleList,
-		TriangleStrip
-	};
-
 	/**
 	 * @brief Handles graphics commands and GPU data submission for a specific frame.
 	 */
