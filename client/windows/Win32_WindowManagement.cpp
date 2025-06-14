@@ -274,7 +274,7 @@ namespace Atrium::Win32
 		wndClass.hInstance = GetModuleHandle(nullptr);
 		wndClass.hIcon = nullptr;
 		wndClass.hCursor = nullptr;
-		wndClass.hbrBackground = (HBRUSH)(COLOR_BACKGROUND + 1);
+		wndClass.hbrBackground = (HBRUSH)(COLOR_WINDOW);
 		wndClass.lpszMenuName = nullptr;
 		wndClass.lpszClassName = "FirebladeWin32";
 		wndClass.hIconSm = nullptr;
