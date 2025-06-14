@@ -14,6 +14,7 @@ namespace Atrium
 
 	class RenderTarget
 	{
+		friend class Graphics;
 	public:
 		/**
 		 * @brief Create a render-target for a specific window.
