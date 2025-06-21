@@ -48,7 +48,7 @@ namespace Atrium::DirectX12
 
 		myCommandQueueManager.reset(new CommandQueueManager(myDevice->GetDevice()));
 
-		myFrameGraphicsContext.reset(new FrameGraphicsContext(*myDevice, myCommandQueueManager->GetGraphicsQueue()));
+		myPresentPrepareContext.reset(new FrameGraphicsContext(*myDevice, myCommandQueueManager->GetGraphicsQueue()));
 		myUploadContext.reset(new UploadContext(*myDevice, myCommandQueueManager->GetCopyQueue()));
 
 		myResourceManager.reset(new DirectX12::ResourceManager(*this));
@@ -63,7 +63,8 @@ namespace Atrium::DirectX12
 		myResourceManager.reset();
 
 		myUploadContext.reset();
-		myFrameGraphicsContext.reset();
+		myPresentPrepareContext.reset();
+		myFrameGraphicsContexts.clear();
 
 		myCommandQueueManager.reset();
 
@@ -72,9 +73,11 @@ namespace Atrium::DirectX12
 		ReportUnreleasedObjects();
 	}
 
-	Core::FrameGraphicsContext& DirectX12API::GetCurrentFrameContext()
+	std::shared_ptr<Core::FrameGraphicsContext> DirectX12API::CreateFrameGraphicsContext()
 	{
-		return *myFrameGraphicsContext;
+		return myFrameGraphicsContexts.emplace_back(
+			new FrameGraphicsContext(*myDevice, myCommandQueueManager->GetGraphicsQueue())
+		);
 	}
 
 	std::uint_least64_t DirectX12API::GetCurrentFrameIndex() const
@@ -101,7 +104,9 @@ namespace Atrium::DirectX12
 
 		myUploadContext->ResolveUploads();
 		myUploadContext->Reset(myFrameInFlight);
-		myFrameGraphicsContext->Reset(myFrameInFlight);
+		for (auto& contextIterator : myFrameGraphicsContexts)
+			contextIterator->Reset(myFrameInFlight);
+		myPresentPrepareContext->Reset(myFrameInFlight);
 
 		myResourceManager->MarkFrameStart();
 	}
@@ -113,9 +118,19 @@ namespace Atrium::DirectX12
 		{
 			ZoneScopedN("Process uploads");
 			myUploadContext->ProcessUploads();
-			myFrameEndFences[myFrameInFlight].CopyQueue = myCommandQueueManager->GetCopyQueue().ExecuteCommandList(
-				myUploadContext->GetCommandList()
-			);
+			myFrameEndFences[myFrameInFlight].CopyQueue = myCommandQueueManager->GetCopyQueue().ExecuteCommandList(myUploadContext->GetCommandList());
+		}
+
+		// Submit the frame's work.
+		{
+			ZoneScopedN("Submit graphic commands");
+
+			std::vector<ComPtr<ID3D12CommandList>> commandLists;
+			commandLists.reserve(myFrameGraphicsContexts.size());
+			for (const auto& context : myFrameGraphicsContexts)
+				commandLists.emplace_back(context->GetCommandList());
+
+			myFrameEndFences[myFrameInFlight].GraphicsQueue = myCommandQueueManager->GetGraphicsQueue().ExecuteCommandLists(commandLists);
 		}
 
 		// Record used swapchains and make them ready to present.
@@ -128,18 +143,12 @@ namespace Atrium::DirectX12
 					continue; // Swapchain hasn't been drawn to, skip it.
 
 				frameSwapChains.push_back(swapChain);
-				myFrameGraphicsContext->AddBarrier(*swapChain->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
+				myPresentPrepareContext->AddBarrier(*swapChain->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
 			}
-			myFrameGraphicsContext->FlushBarriers();
-		}
+			
+			myPresentPrepareContext->FlushBarriers();
 
-		// Submit the frame's work.
-		{
-			ZoneScopedN("Submit graphic commands");
-			CommandQueue& graphicsQueue = myCommandQueueManager->GetGraphicsQueue();
-			myFrameEndFences[myFrameInFlight].GraphicsQueue = graphicsQueue.ExecuteCommandList(
-				myFrameGraphicsContext->GetCommandList()
-			);
+			myFrameEndFences[myFrameInFlight].GraphicsQueue = myCommandQueueManager->GetGraphicsQueue().ExecuteCommandList(myPresentPrepareContext->GetCommandList());
 		}
 
 		{
@@ -160,13 +169,13 @@ namespace Atrium::DirectX12
 
 	void DirectX12API::ReportUnreleasedObjects()
 	{
-#if _DEBUG
+		#if _DEBUG
 		ComPtr<IDXGIDebug1> debugInterface;
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(debugInterface.GetAddressOf()))))
 		{
 			//debugInterface->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
 			debugInterface->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
 		}
-#endif
+		#endif
 	}
 }

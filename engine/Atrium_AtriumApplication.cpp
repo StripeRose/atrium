@@ -13,6 +13,8 @@ namespace Atrium
 	Core::InputDeviceAPI* ourInputHandler(nullptr);
 	Core::WindowManager* ourWindowHandler(nullptr);
 
+	Core::FrameGraphicsContext* ourFrameGraphicsContext(nullptr);
+
 	AtriumApplication::AtriumApplication()
 		: myIsRunning(false)
 		, myHasShutdownBeenRequested(false)
@@ -79,6 +81,9 @@ namespace Atrium
 		ourGraphicsHandler = myGraphicsAPI.get();
 		ourInputHandler = myInputDeviceAPI.get();
 		ourWindowHandler = myWindowManager.get();
+
+		myFrameGraphics = myGraphicsAPI->CreateFrameGraphicsContext();
+		ourFrameGraphicsContext = myFrameGraphics.get();
 	}
 
 	void AtriumApplication::RunMainLoop()
@@ -114,6 +119,9 @@ namespace Atrium
 	{
 		// Game has exited and cleaned up its data, and is expected to not use the sub-systems any more.
 		// Time to clean them up before the run finally ends.
+
+		ourFrameGraphicsContext = nullptr;
+		myFrameGraphics.reset();
 
 		ourAudioHandler = nullptr;
 		ourGraphicsHandler = nullptr;

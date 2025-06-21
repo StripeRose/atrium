@@ -58,10 +58,9 @@ namespace Atrium::Core
 	{
 	}
 
-	FrameGraphicsContext& NullGraphicsHandler::GetCurrentFrameContext()
+	std::shared_ptr<Core::FrameGraphicsContext> NullGraphicsHandler::CreateFrameGraphicsContext()
 	{
-		static NullFrameGraphicsContext nullContext;
-		return nullContext;
+		return nullptr;
 	}
 
 	std::uint_least64_t NullGraphicsHandler::GetCurrentFrameIndex() const

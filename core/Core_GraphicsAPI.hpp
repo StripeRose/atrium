@@ -36,9 +36,11 @@ namespace Atrium::Core
 		#pragma region Methods
 
 		/**
-		 * @brief Get the current graphics-frame context to record graphics-commands to.
+		 * @brief Create a new frame graphics-context to record graphics-commands to.
+		 *        Any commands added will be automatically submitted when the frame ends.
+		 * @return A pointer to the created context.
 		 */
-		virtual FrameGraphicsContext& GetCurrentFrameContext() = 0;
+		virtual std::shared_ptr<FrameGraphicsContext> CreateFrameGraphicsContext() = 0;
 
 		/**
 		 * @brief Get the current graphics-frame index.

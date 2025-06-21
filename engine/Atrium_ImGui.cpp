@@ -119,6 +119,7 @@ namespace Atrium
 
 	void ImGuiHandler::MarkFrameEnd()
 	{
+		/*
 		#if IS_IMGUI_ENABLED
 		if (!myRenderTarget)
 			return;
@@ -136,6 +137,7 @@ namespace Atrium
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
 		#endif
+		*/
 	}
 
 	#if IS_IMGUI_ENABLED

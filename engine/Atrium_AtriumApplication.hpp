@@ -9,6 +9,7 @@ namespace Atrium
 	namespace Core
 	{
 		class AudioAPI;
+		class FrameGraphicsContext;
 		class GraphicsAPI;
 		class InputDeviceAPI;
 		class WindowManager;
@@ -84,6 +85,8 @@ namespace Atrium
 		std::unique_ptr<Core::GraphicsAPI> myGraphicsAPI;
 		std::unique_ptr<Core::InputDeviceAPI> myInputDeviceAPI;
 		std::unique_ptr<Core::WindowManager> myWindowManager;
+
+		std::shared_ptr<Core::FrameGraphicsContext> myFrameGraphics;
 
 		bool myIsRunning;
 		bool myHasShutdownBeenRequested;

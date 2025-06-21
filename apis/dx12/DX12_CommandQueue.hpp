@@ -8,6 +8,7 @@
 #include <d3d12.h>
 
 #include <mutex>
+#include <span>
 
 namespace Atrium::DirectX12
 {
@@ -41,6 +42,7 @@ namespace Atrium::DirectX12
 		ComPtr<ID3D12Fence> GetFence() { return myFence; }
 
 		std::uint64_t ExecuteCommandList(ComPtr<ID3D12CommandList> aCommandList);
+		std::uint64_t ExecuteCommandLists(std::span<ComPtr<ID3D12CommandList>> someCommandLists);
 
 	private:
 		ComPtr<ID3D12CommandQueue> myCommandQueue;

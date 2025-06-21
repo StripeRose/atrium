@@ -37,7 +37,7 @@ namespace Atrium::DirectX12
 
 		// Implementing Atrium::GraphicsAPI
 	public:
-		Core::FrameGraphicsContext& GetCurrentFrameContext() override;
+		std::shared_ptr<Core::FrameGraphicsContext> CreateFrameGraphicsContext() override;
 
 		std::uint_least64_t GetCurrentFrameIndex() const override;
 
@@ -56,7 +56,8 @@ namespace Atrium::DirectX12
 
 		std::unique_ptr<CommandQueueManager> myCommandQueueManager;
 
-		std::unique_ptr<FrameGraphicsContext> myFrameGraphicsContext;
+		std::unique_ptr<FrameGraphicsContext> myPresentPrepareContext;
+		std::vector<std::shared_ptr<FrameGraphicsContext>> myFrameGraphicsContexts;
 		std::unique_ptr<UploadContext> myUploadContext;
 
 		struct FrameEndFences

@@ -11,7 +11,7 @@ namespace Atrium::Core
 	public:
 		NullGraphicsHandler();
 
-		FrameGraphicsContext& GetCurrentFrameContext() override;
+		std::shared_ptr<Core::FrameGraphicsContext> CreateFrameGraphicsContext() override;
 		std::uint_least64_t GetCurrentFrameIndex() const override;
 		ResourceManager& GetResourceManager() override;
 		void MarkFrameStart() override;

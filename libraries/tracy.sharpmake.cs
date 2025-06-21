@@ -20,6 +20,9 @@ public class Tracy : Atrium.ExternalLibraryProject
         
         conf.SolutionFolder = "Atrium/external";
 
+		conf.Options.Add(Sharpmake.Options.Vc.General.TreatWarningsAsErrors.Disable);
+        conf.Options.Add(Sharpmake.Options.Vc.General.WarningLevel.Level0);
+
         if (target.Optimization != Sharpmake.Optimization.Retail)
         {
             conf.Defines.Add("TRACY_ENABLE");

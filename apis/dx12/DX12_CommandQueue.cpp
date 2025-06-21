@@ -3,6 +3,10 @@
 #include "DX12_CommandQueue.hpp"
 #include "DX12_Diagnostics.hpp"
 
+#include <rose-common/math/Common.hpp>
+
+#include <vector>
+
 namespace Atrium::DirectX12
 {
 	CommandQueue::CommandQueue(ComPtr<ID3D12Device> aDevice, D3D12_COMMAND_LIST_TYPE aQueueType)
@@ -131,6 +135,26 @@ namespace Atrium::DirectX12
 			return 0;
 
 		myCommandQueue->ExecuteCommandLists(1, aCommandList.GetAddressOf());
+
+		return InsertSignal();
+	}
+
+	std::uint64_t CommandQueue::ExecuteCommandLists(std::span<ComPtr<ID3D12CommandList>> someCommandLists)
+	{
+		std::vector<ID3D12CommandList*> graphicsCommandLists;
+		graphicsCommandLists.reserve(someCommandLists.size());
+
+		for (auto& commandList : someCommandLists)
+		{
+			ComPtr<ID3D12GraphicsCommandList> graphicsCommandList;
+			if (!Debug::Verify(commandList.As(&graphicsCommandList), "Convert to graphics command list.") ||
+				!Debug::Verify(graphicsCommandList->Close(), "Close command list."))
+				continue;
+
+			graphicsCommandLists.push_back(graphicsCommandList.Get());
+		}
+
+		myCommandQueue->ExecuteCommandLists(static_cast<UINT>(graphicsCommandLists.size()), &graphicsCommandLists.front());
 
 		return InsertSignal();
 	}
