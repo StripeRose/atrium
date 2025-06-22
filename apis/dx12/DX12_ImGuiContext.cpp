@@ -5,7 +5,9 @@
 
 #include <Core_Diagnostics.hpp>
 
+#if IS_IMGUI_ENABLED
 #include <backends/imgui_impl_dx12.h>
+#endif
 
 namespace Atrium::DirectX12
 {
@@ -13,7 +15,8 @@ namespace Atrium::DirectX12
 		: myGraphicsContext(aGraphicsContext)
 		, myRenderTarget(aRenderTarget)
 	{
-		DirectX12::DirectX12API& dxAPI = static_cast<DirectX12::DirectX12API&>(aGraphicsAPI);
+		[[maybe_unused]] DirectX12::DirectX12API& dxAPI = static_cast<DirectX12::DirectX12API&>(aGraphicsAPI);
+		#if IS_IMGUI_ENABLED
 		DirectX12::ComPtr<ID3D12Device> dxDevice = dxAPI.GetDevice().GetDevice();
 
 		myCBV_SRVHeap.reset(
@@ -35,25 +38,32 @@ namespace Atrium::DirectX12
 			myCBV_SRVHeap->GetHeapCPUStart(),
 			myCBV_SRVHeap->GetHeapGPUStart()
 		);
+		#endif
 	}
 
 	ImGuiContext::~ImGuiContext()
 	{
+		#if IS_IMGUI_ENABLED
 		ImGui_ImplDX12_Shutdown();
+		#endif
 	}
 
 	void ImGuiContext::MarkFrameStart()
 	{
+		#if IS_IMGUI_ENABLED
 		ImGui_ImplDX12_NewFrame();
+		#endif
 	}
 
 	void ImGuiContext::MarkFrameEnd()
 	{
+		#if IS_IMGUI_ENABLED
 		myGraphicsContext.SetRenderTargets({ myRenderTarget }, nullptr);
 
 		ID3D12GraphicsCommandList* commandList = myGraphicsContext.GetCommandList();
 		commandList->SetDescriptorHeaps(1, myCBV_SRVHeap->GetHeap().GetAddressOf());
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
+		#endif
 	}
 }

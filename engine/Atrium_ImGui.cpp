@@ -28,11 +28,14 @@ namespace Atrium
 		}
 	}
 
-	ImGuiHandler::ImGuiHandler(const Window& aWindow, std::function<void()> anImGuiRenderCallback)
+	ImGuiHandler::ImGuiHandler([[maybe_unused]] const Window& aWindow, [[maybe_unused]] std::function<void()> anImGuiRenderCallback)
+		#if IS_IMGUI_ENABLED
 		: myImGuiContext(nullptr)
 		, myImGuiRenderCallback(anImGuiRenderCallback)
+		#endif
 	{
 		ZoneScoped;
+		#if IS_IMGUI_ENABLED
 		IMGUI_CHECKVERSION();
 
 		myImGuiContext = ImGui::CreateContext();
@@ -88,13 +91,16 @@ namespace Atrium
 		myImGuiContexts = Core::ImGuiContext::Composite(std::move(
 			backendContexts
 		));
+		#endif
 	}
 
 	ImGuiHandler::~ImGuiHandler()
 	{
+		#if IS_IMGUI_ENABLED
 		myImGuiContexts.reset();
 		ImGui::DestroyContext(myImGuiContext);
 		myImGuiContext = nullptr;
+		#endif
 	}
 
 	Core::InputDeviceType ImGuiHandler::GetAllowedInputs() const
@@ -116,6 +122,7 @@ namespace Atrium
 	{
 		ZoneScoped;
 
+		#if IS_IMGUI_ENABLED
 		myImGuiContexts->MarkFrameStart();
 		ImGui::NewFrame();
 
@@ -124,8 +131,10 @@ namespace Atrium
 		ImGui::Render();
 		ImGui::UpdatePlatformWindows();
 		myImGuiContexts->MarkFrameEnd();
+		#endif
 	}
 
+	#if IS_IMGUI_ENABLED
 	void ImGuiHandler::StyleColorsNord()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -230,4 +239,5 @@ namespace Atrium
 		colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 		colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
+	#endif
 }

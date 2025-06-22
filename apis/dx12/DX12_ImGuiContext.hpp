@@ -24,10 +24,8 @@ namespace Atrium::DirectX12
 		void MarkFrameEnd() override;
 
 	private:
-		#if IS_IMGUI_ENABLED
 		FrameGraphicsContext& myGraphicsContext;
 		std::shared_ptr<Core::RenderTexture> myRenderTarget;
 		std::unique_ptr<RenderPassDescriptorHeap> myCBV_SRVHeap;
-		#endif
 	};
 }
