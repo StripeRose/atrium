@@ -1,0 +1,59 @@
+// Filter "ImGui"
+#include "DX12_ImGuiContext.hpp"
+#include "DX12_Device.hpp"
+#include "DX12_Manager.hpp"
+
+#include <Core_Diagnostics.hpp>
+
+#include <backends/imgui_impl_dx12.h>
+
+namespace Atrium::DirectX12
+{
+	ImGuiContext::ImGuiContext(DirectX12API& aGraphicsAPI, FrameGraphicsContext& aGraphicsContext, const std::shared_ptr<Core::RenderTexture>& aRenderTarget)
+		: myGraphicsContext(aGraphicsContext)
+		, myRenderTarget(aRenderTarget)
+	{
+		DirectX12::DirectX12API& dxAPI = static_cast<DirectX12::DirectX12API&>(aGraphicsAPI);
+		DirectX12::ComPtr<ID3D12Device> dxDevice = dxAPI.GetDevice().GetDevice();
+
+		myCBV_SRVHeap.reset(
+			new DirectX12::RenderPassDescriptorHeap(
+				dxDevice,
+				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+				1
+			)
+		);
+
+		// Imgui internally uses num_frames_in_flight for amount of back-buffers, which should be
+		// one above the amount of actual frames in flight, so increasing the number by 1 to keep it working even with only 1 frame in flight.
+		// Additionally, depending on the swapchain swap-effect, they may require a minimum of 2 or crash on init.
+
+		ImGui_ImplDX12_Init(
+			dxDevice.Get(), static_cast<int>(dxAPI.GetFramesInFlightAmount() + 1),
+			DirectX12::ToDXGIFormat(aRenderTarget->GetDescriptor().ColorGraphicsFormat),
+			myCBV_SRVHeap->GetHeap().Get(),
+			myCBV_SRVHeap->GetHeapCPUStart(),
+			myCBV_SRVHeap->GetHeapGPUStart()
+		);
+	}
+
+	ImGuiContext::~ImGuiContext()
+	{
+		ImGui_ImplDX12_Shutdown();
+	}
+
+	void ImGuiContext::MarkFrameStart()
+	{
+		ImGui_ImplDX12_NewFrame();
+	}
+
+	void ImGuiContext::MarkFrameEnd()
+	{
+		myGraphicsContext.SetRenderTargets({ myRenderTarget }, nullptr);
+
+		ID3D12GraphicsCommandList* commandList = myGraphicsContext.GetCommandList();
+		commandList->SetDescriptorHeaps(1, myCBV_SRVHeap->GetHeap().GetAddressOf());
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
+	}
+}

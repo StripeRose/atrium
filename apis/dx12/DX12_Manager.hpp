@@ -39,6 +39,8 @@ namespace Atrium::DirectX12
 	public:
 		std::shared_ptr<Core::FrameGraphicsContext> CreateFrameGraphicsContext() override;
 
+		std::unique_ptr<Core::ImGuiContext> CreateImGuiContext(const std::shared_ptr<Core::RenderTexture>& aRenderTarget) override;
+
 		std::uint_least64_t GetCurrentFrameIndex() const override;
 
 		Core::GraphicsAPI::ResourceManager& GetResourceManager() override { return *myResourceManager; }

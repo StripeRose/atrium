@@ -1,37 +1,45 @@
+// Filter "Editor"
+
 #include "Atrium_ImGui.hpp"
+#include "Atrium_WindowManagement.hpp"
+
+#include <Core_GraphicsAPI.hpp>
+#include <Core_WindowManagement.hpp>
 
 #if IS_IMGUI_ENABLED
 #include <imgui.h>
-
-#include <DX12_Device.hpp>
-#include <DX12_Enums.hpp>
-#include <DX12_Manager.hpp>
-#include <backends/imgui_impl_dx12.h>
-
-#include <windef.h>
-#include <backends/imgui_impl_win32.h>
-#include <Win32_WindowManagement.hpp>
-
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
 
 namespace Atrium
 {
-	ImGuiHandler::ImGuiHandler([[maybe_unused]] Core::GraphicsAPI& aGraphicsAPI, [[maybe_unused]] Core::Window& aPrimaryWindow, [[maybe_unused]] std::shared_ptr<Core::RenderTexture> aTarget)
-		#if IS_IMGUI_ENABLED
-		: myGraphicsAPI(aGraphicsAPI)
-		, myRenderTarget(aTarget)
-		, myWindow(nullptr)
+	extern Core::GraphicsAPI* ourGraphicsHandler;
+	extern Core::WindowManager* ourWindowHandler;
+
+	namespace
+	{
+		Core::WindowManager& GetWindowManager()
+		{
+			return *ourWindowHandler;
+		}
+
+		Core::GraphicsAPI& GetGraphicsHandler()
+		{
+			return *ourGraphicsHandler;
+		}
+	}
+
+	ImGuiHandler::ImGuiHandler(const Window& aWindow, std::function<void()> anImGuiRenderCallback)
+		: myImGuiContext(nullptr)
+		, myImGuiRenderCallback(anImGuiRenderCallback)
 	{
 		ZoneScoped;
 		IMGUI_CHECKVERSION();
 
-		ImGui::CreateContext();
+		myImGuiContext = ImGui::CreateContext();
 
 		ImGuiIO& io = ImGui::GetIO();
-
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
 		// Viewport configuration
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -74,19 +82,19 @@ namespace Atrium
 		//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 		//IM_ASSERT(font != NULL);
 
-		InitForWindow(aPrimaryWindow);
-		SetupBackend(aGraphicsAPI, aPrimaryWindow, aTarget->GetDescriptor().ColorGraphicsFormat);
+		std::vector<std::unique_ptr<Core::ImGuiContext>> backendContexts;
+		backendContexts.push_back(GetWindowManager().CreateImGuiContext(aWindow.myWindow));
+		backendContexts.push_back(GetGraphicsHandler().CreateImGuiContext(aWindow.myRenderTarget));
+		myImGuiContexts = Core::ImGuiContext::Composite(std::move(
+			backendContexts
+		));
 	}
-	#else
-	{}
-	#endif
 
 	ImGuiHandler::~ImGuiHandler()
 	{
-		#if IS_IMGUI_ENABLED
-		Cleanup();
-		ImGui::DestroyContext();
-		#endif
+		myImGuiContexts.reset();
+		ImGui::DestroyContext(myImGuiContext);
+		myImGuiContext = nullptr;
 	}
 
 	Core::InputDeviceType ImGuiHandler::GetAllowedInputs() const
@@ -104,102 +112,18 @@ namespace Atrium
 		return deviceTypes;
 	}
 
-	void ImGuiHandler::MarkFrameStart()
+	void ImGuiHandler::Render()
 	{
-		#if IS_IMGUI_ENABLED
-		if (!myRenderTarget)
-			return;
-
 		ZoneScoped;
-		ImGui_ImplDX12_NewFrame();
-		ImGui_ImplWin32_NewFrame();
+
+		myImGuiContexts->MarkFrameStart();
 		ImGui::NewFrame();
-		#endif
-	}
 
-	void ImGuiHandler::MarkFrameEnd()
-	{
-		/*
-		#if IS_IMGUI_ENABLED
-		if (!myRenderTarget)
-			return;
+		myImGuiRenderCallback();
 
-		ZoneScoped;
 		ImGui::Render();
 		ImGui::UpdatePlatformWindows();
-
-		DirectX12::FrameGraphicsContext& frameContext = static_cast<DirectX12::FrameGraphicsContext&>(myGraphicsAPI.GetCurrentFrameContext());
-
-		frameContext.SetRenderTargets({ myRenderTarget }, nullptr);
-
-		ID3D12GraphicsCommandList* commandList = frameContext.GetCommandList();
-		commandList->SetDescriptorHeaps(1, myCBV_SRVHeap->GetHeap().GetAddressOf());
-		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
-		ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList);
-		#endif
-		*/
-	}
-
-	#if IS_IMGUI_ENABLED
-	void ImGuiHandler::InitForWindow(Core::Window& aWindow)
-	{
-		ZoneScoped;
-		myWindow = &aWindow;
-		aWindow.OnClosed.Connect(this, [&]() { Cleanup(); });
-
-		Win32::Window& win32Window = static_cast<Win32::Window&>(aWindow);
-		win32Window.AdditionalWndProc = [](Win32::Window::AdditionalWndProcData& data) {
-			LPARAM result = ImGui_ImplWin32_WndProcHandler(data.WindowHandle, data.Message, data.WParam, data.LParam);
-			ImGuiIO& io = ImGui::GetIO();
-			data.BlockKeyboard = io.WantCaptureKeyboard;
-			data.BlockMouse = io.WantCaptureMouse;
-			data.BlockAllMessages = (result == TRUE);
-			};
-	}
-
-	void ImGuiHandler::SetupBackend(Core::GraphicsAPI& aGraphicsAPI, Core::Window& aWindow, GraphicsFormat aTargetFormat)
-	{
-		ZoneScoped;
-		ImGui_ImplWin32_Init(std::any_cast<HWND>(aWindow.GetNativeHandle()));
-
-		DirectX12::DirectX12API& dxAPI = static_cast<DirectX12::DirectX12API&>(aGraphicsAPI);
-		DirectX12::ComPtr<ID3D12Device> dxDevice = dxAPI.GetDevice().GetDevice();
-
-		myCBV_SRVHeap.reset(
-			new DirectX12::RenderPassDescriptorHeap(
-				dxDevice,
-				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-				1
-			)
-		);
-
-		// Imgui internally uses num_frames_in_flight for amount of back-buffers, which should be
-		// one above the amount of actual frames in flight, so increasing the number by 1 to keep it working even with only 1 frame in flight.
-		// Additionally, depending on the swapchain swap-effect, they may require a minimum of 2 or crash on init.
-
-		ImGui_ImplDX12_Init(
-			dxDevice.Get(), static_cast<int>(dxAPI.GetFramesInFlightAmount() + 1),
-			DirectX12::ToDXGIFormat(aTargetFormat),
-			myCBV_SRVHeap->GetHeap().Get(),
-			myCBV_SRVHeap->GetHeapCPUStart(),
-			myCBV_SRVHeap->GetHeapGPUStart()
-		);
-	}
-
-	void ImGuiHandler::Cleanup()
-	{
-		if (!myWindow)
-			return;
-
-		ZoneScoped;
-		Win32::Window* win32Window = static_cast<Win32::Window*>(myWindow);
-		win32Window->OnClosed.Disconnect(this);
-		win32Window->AdditionalWndProc = nullptr;
-		ImGui_ImplWin32_Shutdown();
-		ImGui_ImplDX12_Shutdown();
-
-		myRenderTarget.reset();
-		myWindow = nullptr;
+		myImGuiContexts->MarkFrameEnd();
 	}
 
 	void ImGuiHandler::StyleColorsNord()
@@ -306,5 +230,4 @@ namespace Atrium
 		colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 		colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 	}
-#endif
 }

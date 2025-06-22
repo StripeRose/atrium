@@ -9,6 +9,7 @@
 #include <rose-common/EventSlot.hpp>
 
 #include <any>
+#include <functional>
 #include <memory>
 
 namespace Atrium
@@ -21,6 +22,7 @@ namespace Atrium
 	 */
 	class Window
 	{
+		friend class ImGuiHandler;
 		friend class Graphics;
 
 	public:

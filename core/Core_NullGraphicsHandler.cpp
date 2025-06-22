@@ -63,6 +63,11 @@ namespace Atrium::Core
 		return nullptr;
 	}
 
+	std::unique_ptr<ImGuiContext> NullGraphicsHandler::CreateImGuiContext(const std::shared_ptr<Core::RenderTexture>&)
+	{
+		return nullptr;
+	}
+
 	std::uint_least64_t NullGraphicsHandler::GetCurrentFrameIndex() const
 	{
 		return myFrameCounter;
