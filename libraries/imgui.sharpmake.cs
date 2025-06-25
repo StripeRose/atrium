@@ -19,6 +19,9 @@ public class DearImGui : Atrium.ExternalLibraryProject
         conf.SolutionFolder = "Atrium/external";
 
         conf.Defines.Add("IMGUI_DEFINE_MATH_OPERATORS");
+        conf.Defines.Add("IMGUI_DISABLE_OBSOLETE_FUNCTIONS");
+        conf.ExportDefines.Add("IMGUI_DISABLE_OBSOLETE_FUNCTIONS");
+
         conf.ExportDefines.Add("IS_IMGUI_ENABLED=1");
 
         conf.IncludePrivatePaths.Add(Path.Combine("[project.SharpmakeCsPath]", "imgui"));
@@ -48,6 +51,7 @@ public class DearImGui : Atrium.ExternalLibraryProject
         conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*osx.*");
         conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*sdl2.*");
         conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*sdl3.*");
+        conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*sdlgpu3.*");
         conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*sdlrenderer.*");
         conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*vulkan.*");
         conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*wgpu.*");

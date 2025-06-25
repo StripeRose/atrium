@@ -228,9 +228,9 @@ namespace Atrium
 		colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
 		colors[ImGuiCol_Tab] = ImVec4(0.37f, 0.51f, 0.67f, 1.00f);
 		colors[ImGuiCol_TabHovered] = ImVec4(0.51f, 0.63f, 0.76f, 1.00f);
-		colors[ImGuiCol_TabActive] = ImVec4(0.51f, 0.63f, 0.76f, 1.00f);
-		colors[ImGuiCol_TabUnfocused] = ImVec4(0.37f, 0.51f, 0.67f, 1.00f);
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.51f, 0.63f, 0.76f, 1.00f);
+		colors[ImGuiCol_TabSelected] = ImVec4(0.51f, 0.63f, 0.76f, 1.00f);
+		colors[ImGuiCol_TabDimmed] = ImVec4(0.37f, 0.51f, 0.67f, 1.00f);
+		colors[ImGuiCol_TabDimmedSelected] = ImVec4(0.51f, 0.63f, 0.76f, 1.00f);
 		colors[ImGuiCol_DockingPreview] = ImVec4(0.37f, 0.51f, 0.67f, 1.00f);
 		colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
 		colors[ImGuiCol_PlotLines] = ImVec4(0.51f, 0.63f, 0.76f, 1.00f);
@@ -244,7 +244,7 @@ namespace Atrium
 		colors[ImGuiCol_TableRowBgAlt] = ImVec4(0.23f, 0.26f, 0.32f, 0.50f);
 		colors[ImGuiCol_TextSelectedBg] = ImVec4(0.51f, 0.63f, 0.76f, 0.64f);
 		colors[ImGuiCol_DragDropTarget] = ImVec4(0.37f, 0.51f, 0.67f, 1.00f);
-		colors[ImGuiCol_NavHighlight] = ImVec4(0.37f, 0.51f, 0.67f, 1.00f);
+		colors[ImGuiCol_NavCursor] = ImVec4(0.37f, 0.51f, 0.67f, 1.00f);
 		colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
 		colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 		colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);

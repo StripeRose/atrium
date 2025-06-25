@@ -27,5 +27,6 @@ namespace Atrium::DirectX12
 		FrameGraphicsContext& myGraphicsContext;
 		std::shared_ptr<Core::RenderTexture> myRenderTarget;
 		std::unique_ptr<RenderPassDescriptorHeap> myCBV_SRVHeap;
+		std::map<std::uint64_t, DescriptorHeapHandle> myCBV_SRVHeapHandles;
 	};
 }
