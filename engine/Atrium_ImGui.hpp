@@ -13,7 +13,7 @@ namespace Atrium
 	class ImGuiHandler
 	{
 	public:
-		ImGuiHandler(const Window& aWindow, std::function<void()> anImGuiRenderCallback);
+		ImGuiHandler(Window& aWindow, std::function<void()> anImGuiRenderCallback);
 		~ImGuiHandler();
 
 		Core::InputDeviceType GetAllowedInputs() const;
@@ -28,6 +28,7 @@ namespace Atrium
 		ImGuiContext* myImGuiContext;
 
 		std::function<void()> myImGuiRenderCallback;
+		bool myHasWindow;
 		#endif
 	};
 }

@@ -28,13 +28,17 @@ namespace Atrium
 		}
 	}
 
-	ImGuiHandler::ImGuiHandler([[maybe_unused]] const Window& aWindow, [[maybe_unused]] std::function<void()> anImGuiRenderCallback)
+	ImGuiHandler::ImGuiHandler([[maybe_unused]] Window& aWindow, [[maybe_unused]] std::function<void()> anImGuiRenderCallback)
+		: myHasWindow(true)
 		#if IS_IMGUI_ENABLED
-		: myImGuiContext(nullptr)
+		, myImGuiContext(nullptr)
 		, myImGuiRenderCallback(anImGuiRenderCallback)
 		#endif
 	{
 		ZoneScoped;
+
+		aWindow.OnClosed.Connect(this, [&](const Window&) { myHasWindow = false; });
+
 		#if IS_IMGUI_ENABLED
 		IMGUI_CHECKVERSION();
 
@@ -107,13 +111,16 @@ namespace Atrium
 	{
 		Core::InputDeviceType deviceTypes = ~Core::InputDeviceType::Unknown;
 
-		#if IS_IMGUI_ENABLED
-		ImGuiIO& io = ImGui::GetIO();
-		if (io.WantCaptureKeyboard)
-			deviceTypes &= ~Core::InputDeviceType::Keyboard;
-		if (io.WantCaptureMouse)
-			deviceTypes &= ~Core::InputDeviceType::Mouse;
-		#endif
+		if (myHasWindow)
+		{
+			#if IS_IMGUI_ENABLED
+			ImGuiIO& io = ImGui::GetIO();
+			if (io.WantCaptureKeyboard)
+				deviceTypes &= ~Core::InputDeviceType::Keyboard;
+			if (io.WantCaptureMouse)
+				deviceTypes &= ~Core::InputDeviceType::Mouse;
+			#endif
+		}
 
 		return deviceTypes;
 	}
@@ -121,6 +128,9 @@ namespace Atrium
 	void ImGuiHandler::Render()
 	{
 		ZoneScoped;
+
+		if (!myHasWindow)
+			return;
 
 		#if IS_IMGUI_ENABLED
 		myImGuiContexts->MarkFrameStart();
