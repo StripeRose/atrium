@@ -106,6 +106,28 @@ namespace Atrium
 			myWindow->SetTitle(aTitleText);
 	}
 
+	void Window::SetWindowState(WindowState aWindowState)
+	{
+		if (myWindow)
+		{
+			Core::Window::WindowState state = Core::Window::WindowState::Normal;
+			switch (aWindowState)
+			{
+				case WindowState::Normal:
+					state = Core::Window::WindowState::Normal;
+					break;
+				case WindowState::Minimized:
+					state = Core::Window::WindowState::Minimized;
+					break;
+				case WindowState::Maximized:
+					state = Core::Window::WindowState::Maximized;
+					break;
+			}
+
+			myWindow->SetWindowState(state);
+		}
+	}
+
 	void Window::Show()
 	{
 		if (myWindow)

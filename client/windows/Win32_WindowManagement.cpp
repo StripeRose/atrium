@@ -58,11 +58,6 @@ namespace Atrium::Win32
 		return myWindowHandle == ::GetActiveWindow();
 	}
 
-	void Window::Show()
-	{
-		::ShowWindow(myWindowHandle, SW_SHOW);
-	}
-
 	void Window::SetPosition(const PointT<int>& aPoint)
 	{
 		RECT rect(aPoint.X, aPoint.Y, 0, 0);
@@ -93,9 +88,60 @@ namespace Atrium::Win32
 		::SetWindowTextW(myWindowHandle, aTitleText);
 	}
 
-	Window::Window(const WNDCLASSEX& aWindowClass)
+	void Window::SetWindowState(WindowState aWindowState)
+	{
+		if (::IsWindowVisible(myWindowHandle))
+		{
+			int sysCommand = 0;
+			switch (aWindowState)
+			{
+				case WindowState::Normal:
+					sysCommand = SC_RESTORE;
+					break;
+				case WindowState::Minimized:
+					sysCommand = SC_MINIMIZE;
+					break;
+				case WindowState::Maximized:
+					sysCommand = SC_MAXIMIZE;
+					break;
+			}
+
+			::PostMessage(myWindowHandle, WM_SYSCOMMAND, sysCommand, 0);
+		}
+		else
+		{
+			// Since we don't post the message, we won't set this in WndProc.
+			// Set it here to inform Show() when it runs.
+			myWindowState = aWindowState;
+		}
+	}
+
+	void Window::Show()
+	{
+		if (::IsWindowVisible(myWindowHandle))
+			return;
+
+		switch (myWindowState)
+		{
+			case WindowState::Normal:
+				::ShowWindow(myWindowHandle, myShowNormalCommand);
+				break;
+			case WindowState::Minimized:
+				::ShowWindow(myWindowHandle, SW_SHOWMINIMIZED);
+				break;
+			case WindowState::Maximized:
+				::ShowWindow(myWindowHandle, SW_SHOWMAXIMIZED);
+				break;
+		}
+
+		myShowNormalCommand = SW_SHOW;
+	}
+
+	Window::Window(const WNDCLASSEX& aWindowClass, bool isFirstWindow)
 		: myWindowHandle(NULL)
 		, myHasRequestedClose(false)
+		, myWindowState(WindowState::Normal)
+		, myShowNormalCommand(isFirstWindow ? SW_SHOWDEFAULT : SW_SHOWNORMAL)
 	{
 		ZoneScoped;
 		myDefaultCursor = ::LoadCursor(NULL, IDC_ARROW);
@@ -163,9 +209,35 @@ namespace Atrium::Win32
 				break;
 
 			case WM_SYSCOMMAND:
-				if ((wParam & 0xfff0) == SC_KEYMENU)
-					return 0;
+			{
+				const int sc = wParam & 0xfff0;
+				switch (sc)
+				{
+					case SC_KEYMENU:
+						return 0;
+						
+					case SC_MINIMIZE:
+						myWindowState = WindowState::Minimized;
+						break;
+					case SC_MAXIMIZE:
+						myWindowState = WindowState::Maximized;
+						break;
+					case SC_RESTORE:
+					{
+						::WINDOWPLACEMENT wp;
+						::ZeroMemory(&wp, sizeof(wp));
+						::GetWindowPlacement(myWindowHandle, &wp);
+						if (wp.showCmd == SW_SHOWMINIMIZED && (wp.flags & WPF_RESTORETOMAXIMIZED) != 0)
+							myWindowState = WindowState::Maximized;
+						else
+							myWindowState = WindowState::Normal;
+						
+						break;
+					}
+				}
+
 				break;
+			}
 
 			case WM_CLOSE:
 				Close();
@@ -210,6 +282,7 @@ namespace Atrium::Win32
 	}
 
 	WindowManager::WindowManager()
+		: myHasCreatedTheFirstWindow(false)
 	{
 		RegisterWindowClasses();
 	}
@@ -229,7 +302,8 @@ namespace Atrium::Win32
 
 	std::shared_ptr<Atrium::Core::Window> WindowManager::NewWindow()
 	{
-		std::shared_ptr<Win32::Window> newWindow(new Win32::Window(myWindowClasses[0]));
+		std::shared_ptr<Win32::Window> newWindow(new Win32::Window(myWindowClasses[0], !myHasCreatedTheFirstWindow));
+		myHasCreatedTheFirstWindow = true;
 		myWindows.push_back(newWindow);
 		return newWindow;
 	}

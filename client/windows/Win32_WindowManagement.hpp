@@ -39,17 +39,17 @@ namespace Atrium::Win32
 
 		bool IsFocused() const override;
 
-		void Show() override;
-
 		void SetPosition(const PointT<int>& aPoint) override;
 		void SetSize(const SizeT<int>& aSize) override;
 		void SetTitle(const char* aTitleText) override;
 		void SetTitle(const wchar_t* aTitleText) override;
+		void SetWindowState(WindowState aWindowState) override;
+		void Show() override;
 
 		std::function<void(AdditionalWndProcData&)> AdditionalWndProc;
 
 	private:
-		Window(const WNDCLASSEX& aWindowClass);
+		Window(const WNDCLASSEX& aWindowClass, bool isFirstWindow);
 
 		LRESULT HandleWindowMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -63,6 +63,9 @@ namespace Atrium::Win32
 		std::function<LRESULT(HWND, UINT, WPARAM, LPARAM)> myWndProcCallback;
 
 		bool myHasRequestedClose;
+		WindowState myWindowState;
+
+		int myShowNormalCommand;
 	};
 
 	class WindowManager final : public Atrium::Core::WindowManager
@@ -88,5 +91,6 @@ namespace Atrium::Win32
 
 		std::vector<std::shared_ptr<Win32::Window>> myWindows;
 		std::vector<WNDCLASSEX> myWindowClasses;
+		bool myHasCreatedTheFirstWindow;
 	};
 }

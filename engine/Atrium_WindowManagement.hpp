@@ -28,6 +28,13 @@ namespace Atrium
 	public:
 		Window();
 
+		enum WindowState
+		{
+			Normal,
+			Minimized,
+			Maximized
+		};
+
 		EventSlot<Window&> OnClosed;
 		EventSlot<Window&, bool&> OnClosing;
 		EventSlot<Window&, bool> OnFocusChanged;
@@ -58,6 +65,7 @@ namespace Atrium
 		void SetSize(const Size& aSize);
 		void SetTitle(const char* aTitleText);
 		void SetTitle(const wchar_t* aTitleText);
+		void SetWindowState(WindowState aWindowState);
 
 		void Show();
 
