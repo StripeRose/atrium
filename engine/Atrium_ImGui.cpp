@@ -56,7 +56,7 @@ namespace Atrium
 		// Docking configuration
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigDockingWithShift = false;
-		io.ConfigDockingTransparentPayload = true;
+		io.ConfigDockingTransparentPayload = false;
 
 		io.FontAllowUserScaling = true;
 
