@@ -1,0 +1,15 @@
+Imperative mood summary, max 50 letters, no period
+
+# Wrap manually body at 72 characters                   Last column -> #
+Message body. Explain what the change is solving and why this solution
+was chosen, not how it is done.
+#
+# Relevant issue ticket IDs, comma separated
+# Resolves: <tickets>
+# See also: <tickets>
+#
+# Reviewed-by: Name <user@users.noreply.github.com>
+# Approved-by: Name <user@users.noreply.github.com>
+# Merged-by: Name <user@users.noreply.github.com>
+#
+# Co-authored-by: Name <user@users.noreply.github.com>
