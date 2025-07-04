@@ -2,6 +2,8 @@
 #include "Atrium_GUI.hpp"
 
 #if IS_IMGUI_ENABLED
+#include <imgui_internal.h>
+
 ImVec2 toVec(const Atrium::Vector2& aVector) { return ImVec2(aVector.X, aVector.Y); }
 Atrium::Vector2 fromVec(const ImVec2& aVector) { return Atrium::Vector2(aVector.x, aVector.y); }
 
@@ -92,5 +94,51 @@ bool ImGui::ColorPicker3(const char* label, Atrium::Color32& color, ImGuiColorEd
 		return false;
 	color.A = 0xFF;
 	return true;
+}
+
+void ImGui::Label(std::string_view text, LabelFlags flags)
+{
+	// Sourced from:
+	// https://github.com/ocornut/imgui/issues/3469
+	// 
+	// For more advanced purposes, use ImGui tables instead.
+	// https://github.com/ocornut/imgui/issues/3740
+
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	const ImVec2 lineStart = ImGui::GetCursorScreenPos();
+	const ImGuiStyle& style = ImGui::GetStyle();
+	float fullWidth = ImGui::GetContentRegionAvail().x;
+	float itemWidth = ImGui::CalcItemWidth() + style.ItemSpacing.x;
+	ImVec2 textSize = ImGui::CalcTextSize(&text.front(), &text.back());
+	ImRect textRect;
+	textRect.Min = ImGui::GetCursorScreenPos();
+	if (flags == LabelFlags_Right)
+		textRect.Min.x = textRect.Min.x + itemWidth;
+	textRect.Max = textRect.Min;
+	textRect.Max.x += fullWidth - itemWidth;
+	textRect.Max.y += textSize.y;
+
+	ImGui::SetCursorScreenPos(textRect.Min);
+
+	ImGui::AlignTextToFramePadding();
+	// Adjust text rect manually because we render it directly into a drawlist instead of using public functions.
+	textRect.Min.y += window->DC.CurrLineTextBaseOffset;
+	textRect.Max.y += window->DC.CurrLineTextBaseOffset;
+
+	ItemSize(textRect);
+	if (ItemAdd(textRect, window->GetID(text.data(), text.data() + text.size())))
+	{
+		RenderTextEllipsis(ImGui::GetWindowDrawList(), textRect.Min, textRect.Max, textRect.Max.x, text.data(), text.data() + text.size(), &textSize);
+
+		if (textRect.GetWidth() < textSize.x && ImGui::IsItemHovered())
+			ImGui::SetTooltip("%.*s", (int)text.size(), text.data());
+	}
+	if (flags == LabelFlags_Left)
+	{
+		ImGui::SetCursorScreenPos({ textRect.Max.x, textRect.Max.y - (textSize.y + window->DC.CurrLineTextBaseOffset)});
+		ImGui::SameLine();
+	}
+	else if (flags == LabelFlags_Right)
+		ImGui::SetCursorScreenPos(lineStart);
 }
 #endif

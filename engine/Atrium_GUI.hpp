@@ -23,5 +23,12 @@ namespace ImGui
 	bool ColorEdit3(const char* label, Atrium::Color32& color, ImGuiColorEditFlags flags);
 	bool ColorPicker3(const char* label, Atrium::Color& color, ImGuiColorEditFlags flags, const Atrium::Color* referenceCol = nullptr);
 	bool ColorPicker3(const char* label, Atrium::Color32& color, ImGuiColorEditFlags flags, const Atrium::Color32* referenceCol = nullptr);
+
+	enum LabelFlags
+	{
+		LabelFlags_Left = 0,
+		LabelFlags_Right = 1
+	};
+	void Label(std::string_view text, LabelFlags flags = LabelFlags_Left);
 }
 #endif
