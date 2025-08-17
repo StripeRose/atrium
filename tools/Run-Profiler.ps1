@@ -1,0 +1,1 @@
+& "$PSScriptRoot/../libraries/Run-Tracy-Server.ps1"
