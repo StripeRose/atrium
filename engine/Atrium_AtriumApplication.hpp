@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Atrium_WindowManagement.hpp"
-
 #include <memory>
 
 namespace Atrium
@@ -45,6 +43,32 @@ namespace Atrium
 		void Exit(int anExitCode);
 
 		/**
+		 * @brief Get the currently running application instance, if any.
+		 * @return A pointer to the application, or nullptr if none are running.
+		 */
+		[[nodiscard]] static AtriumApplication* GetRunningInstance();
+
+		/**
+		 * @brief Get the currently active audio handler.
+		 */
+		[[nodiscard]] Core::AudioAPI& GetAudioHandler() { return *myAudioAPI; }
+
+		/**
+		 * @brief Get the currently active graphics handler.
+		 */
+		[[nodiscard]] Core::GraphicsAPI& GetGraphicsHandler() { return *myGraphicsAPI; }
+
+		/**
+		 * @brief Get the currently active input handler.
+		 */
+		[[nodiscard]] Core::InputDeviceAPI& GetInputHandler() { return *myInputDeviceAPI; }
+
+		/**
+		 * @brief Get the currently active window handler.
+		 */
+		[[nodiscard]] Core::WindowManager& GetWindowHandler() { return *myWindowManager; }
+
+		/**
 		 * @brief Start up the engine to run the application.
 		 * @return The final exit code of the application.
 		 */
@@ -60,7 +84,7 @@ namespace Atrium
 		virtual void HandleCloseRequest(bool& aShouldExit);
 
 		// Called once per frame.
-		virtual void HandleFrameLogic() = 0;
+		virtual void HandleFrameLogic(Core::FrameGraphicsContext& aFrameContext) = 0;
 
 		// Called when the last loop has ended and before the engine is cleaned up.
 		virtual void HandleShutdown() = 0;

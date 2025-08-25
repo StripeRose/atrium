@@ -9,11 +9,16 @@ struct ImGuiContext;
 
 namespace Atrium
 {
-	class Window;
+	namespace Core
+	{
+		class RenderTexture;
+		class Window;
+	}
+
 	class ImGuiHandler
 	{
 	public:
-		ImGuiHandler(Window& aWindow, std::function<void()> anImGuiRenderCallback);
+		ImGuiHandler(const std::shared_ptr<Core::Window>& aWindow, const std::shared_ptr<Core::RenderTexture>& aRenderTarget, std::function<void()> anImGuiRenderCallback);
 		~ImGuiHandler();
 
 		Core::InputDeviceType GetAllowedInputs() const;

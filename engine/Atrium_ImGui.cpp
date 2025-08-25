@@ -1,7 +1,7 @@
 // Filter "Editor"
 
+#include "Atrium_AtriumApplication.hpp"
 #include "Atrium_ImGui.hpp"
-#include "Atrium_WindowManagement.hpp"
 
 #include <Core_GraphicsAPI.hpp>
 #include <Core_WindowManagement.hpp>
@@ -12,23 +12,7 @@
 
 namespace Atrium
 {
-	extern Core::GraphicsAPI* ourGraphicsHandler;
-	extern Core::WindowManager* ourWindowHandler;
-
-	namespace
-	{
-		Core::WindowManager& GetWindowManager()
-		{
-			return *ourWindowHandler;
-		}
-
-		Core::GraphicsAPI& GetGraphicsHandler()
-		{
-			return *ourGraphicsHandler;
-		}
-	}
-
-	ImGuiHandler::ImGuiHandler([[maybe_unused]] Window& aWindow, [[maybe_unused]] std::function<void()> anImGuiRenderCallback)
+	ImGuiHandler::ImGuiHandler([[maybe_unused]] const std::shared_ptr<Core::Window>& aWindow, const std::shared_ptr<Core::RenderTexture>& aRenderTarget, [[maybe_unused]] std::function<void()> anImGuiRenderCallback)
 		: myHasWindow(true)
 		#if IS_IMGUI_ENABLED
 		, myImGuiContext(nullptr)
@@ -37,7 +21,7 @@ namespace Atrium
 	{
 		ZoneScoped;
 
-		aWindow.OnClosed.Connect(this, [&](const Window&) { myHasWindow = false; });
+		aWindow->OnClosed.Connect(this, [&]() { myHasWindow = false; });
 
 		#if IS_IMGUI_ENABLED
 		IMGUI_CHECKVERSION();
@@ -89,9 +73,11 @@ namespace Atrium
 		//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 		//IM_ASSERT(font != NULL);
 
+		AtriumApplication* runningApplication = AtriumApplication::GetRunningInstance();
+
 		std::vector<std::unique_ptr<Core::ImGuiContext>> backendContexts;
-		backendContexts.push_back(GetWindowManager().CreateImGuiContext(aWindow.myWindow));
-		backendContexts.push_back(GetGraphicsHandler().CreateImGuiContext(aWindow.myRenderTarget));
+		backendContexts.push_back(runningApplication->GetWindowHandler().CreateImGuiContext(aWindow));
+		backendContexts.push_back(runningApplication->GetGraphicsHandler().CreateImGuiContext(aRenderTarget));
 		myImGuiContexts = Core::ImGuiContext::Composite(std::move(
 			backendContexts
 		));

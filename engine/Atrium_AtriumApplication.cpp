@@ -8,12 +8,10 @@
 
 namespace Atrium
 {
-	Core::AudioAPI* ourAudioHandler(nullptr);
-	Core::GraphicsAPI* ourGraphicsHandler(nullptr);
-	Core::InputDeviceAPI* ourInputHandler(nullptr);
-	Core::WindowManager* ourWindowHandler(nullptr);
-
-	Core::FrameGraphicsContext* ourFrameGraphicsContext(nullptr);
+	namespace
+	{
+		AtriumApplication* ourRunningApplication(nullptr);
+	}
 
 	AtriumApplication::AtriumApplication()
 		: myIsRunning(false)
@@ -46,6 +44,11 @@ namespace Atrium
 		myLastExitCode = anExitCode;
 	}
 
+	AtriumApplication* AtriumApplication::GetRunningInstance()
+	{
+		return ourRunningApplication;
+	}
+
 	int AtriumApplication::Run()
 	{
 		if (!HandleStartup())
@@ -73,17 +76,13 @@ namespace Atrium
 		// Prepare all sub-systems for use.
 
 		Debug::Assert(
-			!ourAudioHandler && !ourGraphicsHandler && !ourInputHandler && !ourWindowHandler,
-			"Handler instances expected to be empty upon startup. Are other Atrium applications running on the same thread?"
+			!ourRunningApplication,
+			"A single process only has one AtriumApplication instance running at one time."
 		);
 
-		ourAudioHandler = myAudioAPI.get();
-		ourGraphicsHandler = myGraphicsAPI.get();
-		ourInputHandler = myInputDeviceAPI.get();
-		ourWindowHandler = myWindowManager.get();
+		ourRunningApplication = this;
 
 		myFrameGraphics = myGraphicsAPI->CreateFrameGraphicsContext();
-		ourFrameGraphicsContext = myFrameGraphics.get();
 	}
 
 	void AtriumApplication::RunMainLoop()
@@ -110,7 +109,7 @@ namespace Atrium
 
 		myGraphicsAPI->MarkFrameStart();
 
-		HandleFrameLogic();
+		HandleFrameLogic(*myFrameGraphics);
 
 		myGraphicsAPI->MarkFrameEnd();
 	}
@@ -120,12 +119,8 @@ namespace Atrium
 		// Game has exited and cleaned up its data, and is expected to not use the sub-systems any more.
 		// Time to clean them up before the run finally ends.
 
-		ourFrameGraphicsContext = nullptr;
 		myFrameGraphics.reset();
 
-		ourAudioHandler = nullptr;
-		ourGraphicsHandler = nullptr;
-		ourInputHandler = nullptr;
-		ourWindowHandler = nullptr;
+		ourRunningApplication = nullptr;
 	}
 }

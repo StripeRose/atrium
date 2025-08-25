@@ -1,4 +1,4 @@
-#include "Atrium.hpp"
+#include "Atrium_AtriumApplication.hpp"
 
 #include "Core_Diagnostics.hpp"
 
