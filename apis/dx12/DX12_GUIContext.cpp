@@ -1,5 +1,5 @@
-// Filter "ImGui"
-#include "DX12_ImGuiContext.hpp"
+// Filter "GUI"
+#include "DX12_GUIContext.hpp"
 #include "DX12_Device.hpp"
 #include "DX12_Manager.hpp"
 
@@ -11,7 +11,7 @@
 
 namespace Atrium::DirectX12
 {
-	ImGuiContext::ImGuiContext(DirectX12API& aGraphicsAPI, FrameGraphicsContext& aGraphicsContext, const std::shared_ptr<Core::RenderTexture>& aRenderTarget)
+	GUIBackendContext::GUIBackendContext(DirectX12API& aGraphicsAPI, FrameGraphicsContext& aGraphicsContext, const std::shared_ptr<Core::RenderTexture>& aRenderTarget)
 		: myGraphicsContext(aGraphicsContext)
 		, myRenderTarget(aRenderTarget)
 	{
@@ -43,7 +43,7 @@ namespace Atrium::DirectX12
 		initInfo.SrvDescriptorHeap = myCBV_SRVHeap->GetHeap().Get();
 		initInfo.SrvDescriptorAllocFn = [](ImGui_ImplDX12_InitInfo* initInfo, D3D12_CPU_DESCRIPTOR_HANDLE* outCPUHandle, D3D12_GPU_DESCRIPTOR_HANDLE* outGPUHandle)
 			{
-				ImGuiContext* context = reinterpret_cast<ImGuiContext*>(initInfo->UserData);
+				GUIBackendContext* context = reinterpret_cast<GUIBackendContext*>(initInfo->UserData);
 
 				DescriptorHeapHandle handle = context->myCBV_SRVHeap->GetHeapHandleBlock(1);
 				if (Debug::Verify(outCPUHandle != nullptr, "There is a CPU handle out pointer."))
@@ -56,7 +56,7 @@ namespace Atrium::DirectX12
 
 		initInfo.SrvDescriptorFreeFn = [](ImGui_ImplDX12_InitInfo* initInfo, D3D12_CPU_DESCRIPTOR_HANDLE aCPUHandle, D3D12_GPU_DESCRIPTOR_HANDLE)
 			{
-				ImGuiContext* context = reinterpret_cast<ImGuiContext*>(initInfo->UserData);
+				GUIBackendContext* context = reinterpret_cast<GUIBackendContext*>(initInfo->UserData);
 				context->myCBV_SRVHeapHandles.erase(aCPUHandle.ptr);
 			};
 
@@ -64,21 +64,21 @@ namespace Atrium::DirectX12
 		#endif
 	}
 
-	ImGuiContext::~ImGuiContext()
+	GUIBackendContext::~GUIBackendContext()
 	{
 		#if IS_IMGUI_ENABLED
 		ImGui_ImplDX12_Shutdown();
 		#endif
 	}
 
-	void ImGuiContext::MarkFrameStart()
+	void GUIBackendContext::MarkFrameStart()
 	{
 		#if IS_IMGUI_ENABLED
 		ImGui_ImplDX12_NewFrame();
 		#endif
 	}
 
-	void ImGuiContext::MarkFrameEnd()
+	void GUIBackendContext::MarkFrameEnd()
 	{
 		#if IS_IMGUI_ENABLED
 		myGraphicsContext.SetRenderTargets({ myRenderTarget }, nullptr);

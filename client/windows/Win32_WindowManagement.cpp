@@ -1,5 +1,5 @@
 #include "Win32_WindowManagement.hpp"
-#include "Win32_ImGuiContext.hpp"
+#include "Win32_GUIContext.hpp"
 
 #include "Core_Diagnostics.hpp"
 
@@ -293,10 +293,10 @@ namespace Atrium::Win32
 		CleanupWindowClasses();
 	}
 
-	std::unique_ptr<Core::ImGuiContext> WindowManager::CreateImGuiContext(const std::shared_ptr<Core::Window>& aWindow)
+	std::unique_ptr<Core::GUIContext> WindowManager::CreateGUIContext(const std::shared_ptr<Core::Window>& aWindow)
 	{
-		return std::unique_ptr<Core::ImGuiContext>(
-			new ImGuiContext(aWindow)
+		return std::unique_ptr<Core::GUIContext>(
+			new GUIBackendContext(aWindow)
 		);
 	}
 

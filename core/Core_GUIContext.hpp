@@ -5,12 +5,12 @@
 
 namespace Atrium::Core
 {
-	class ImGuiContext
+	class GUIContext
 	{
 	public:
-		virtual ~ImGuiContext() = default;
+		virtual ~GUIContext() = default;
 
-		static std::unique_ptr<ImGuiContext> Composite(std::vector<std::unique_ptr<ImGuiContext>>&& someContexts);
+		static std::unique_ptr<GUIContext> Composite(std::vector<std::unique_ptr<GUIContext>>&& someContexts);
 
 		virtual void MarkFrameStart() = 0;
 		virtual void MarkFrameEnd() = 0;

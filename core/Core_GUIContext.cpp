@@ -1,14 +1,14 @@
-#include "Core_ImGuiContext.hpp"
+#include "Core_GUIContext.hpp"
 
 #include <memory>
 #include <vector>
 
 namespace Atrium::Core
 {
-    class ImGuiCompositeContext : public ImGuiContext
+    class GUICompositeContext : public GUIContext
     {
     public:
-        ImGuiCompositeContext(std::vector<std::unique_ptr<ImGuiContext>>&& someContexts)
+        GUICompositeContext(std::vector<std::unique_ptr<GUIContext>>&& someContexts)
             : myContexts(std::move(someContexts))
         {
 
@@ -27,11 +27,11 @@ namespace Atrium::Core
         }
 
     private:
-        std::vector<std::unique_ptr<ImGuiContext>> myContexts;
+        std::vector<std::unique_ptr<GUIContext>> myContexts;
     };
 
-    std::unique_ptr<ImGuiContext> ImGuiContext::Composite(std::vector<std::unique_ptr<ImGuiContext>>&& someContexts)
+    std::unique_ptr<GUIContext> GUIContext::Composite(std::vector<std::unique_ptr<GUIContext>>&& someContexts)
     {
-        return std::unique_ptr<ImGuiContext>(new ImGuiCompositeContext(std::move(someContexts)));
+        return std::unique_ptr<GUIContext>(new GUICompositeContext(std::move(someContexts)));
     }
 }

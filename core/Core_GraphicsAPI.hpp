@@ -5,7 +5,7 @@
 #include "Core_FrameContext.hpp"
 #include "Core_GraphicsBuffer.hpp"
 #include "Core_GraphicsPipeline.hpp"
-#include "Core_ImGuiContext.hpp"
+#include "Core_GUIContext.hpp"
 #include "Core_RenderTexture.hpp"
 
 #include <filesystem>
@@ -48,7 +48,7 @@ namespace Atrium::Core
 		 * @param aRenderTarget A render-target to create the context for.
 		 * @return The created context.
 		 */
-		virtual std::unique_ptr<ImGuiContext> CreateImGuiContext(const std::shared_ptr<Core::RenderTexture>& aRenderTarget) = 0;
+		virtual std::unique_ptr<GUIContext> CreateGUIContext(const std::shared_ptr<Core::RenderTexture>& aRenderTarget) = 0;
 
 		/**
 		 * @brief Get the current graphics-frame index.

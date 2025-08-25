@@ -63,7 +63,7 @@ namespace Atrium::Core
 		return nullptr;
 	}
 
-	std::unique_ptr<ImGuiContext> NullGraphicsHandler::CreateImGuiContext(const std::shared_ptr<Core::RenderTexture>&)
+	std::unique_ptr<GUIContext> NullGraphicsHandler::CreateGUIContext(const std::shared_ptr<Core::RenderTexture>&)
 	{
 		return nullptr;
 	}

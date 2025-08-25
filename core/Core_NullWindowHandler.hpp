@@ -7,7 +7,7 @@ namespace Atrium::Core
 	class NullWindowManager final : public WindowManager
 	{
 	public:
-		std::unique_ptr<ImGuiContext> CreateImGuiContext(const std::shared_ptr<Core::Window>&) { return nullptr; }
+		std::unique_ptr<GUIContext> CreateGUIContext(const std::shared_ptr<Core::Window>&) { return nullptr; }
 
 		std::shared_ptr<Window> NewWindow() { return nullptr; }
 

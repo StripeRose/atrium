@@ -1,7 +1,7 @@
 // Filter "Editor"
 
 #include "Atrium_AtriumApplication.hpp"
-#include "Atrium_ImGui.hpp"
+#include "Atrium_GUIHandler.hpp"
 
 #include <Core_GraphicsAPI.hpp>
 #include <Core_WindowManagement.hpp>
@@ -12,7 +12,7 @@
 
 namespace Atrium
 {
-	ImGuiHandler::ImGuiHandler([[maybe_unused]] const std::shared_ptr<Core::Window>& aWindow, const std::shared_ptr<Core::RenderTexture>& aRenderTarget, [[maybe_unused]] std::function<void()> anImGuiRenderCallback)
+	GUIHandler::GUIHandler([[maybe_unused]] const std::shared_ptr<Core::Window>& aWindow, const std::shared_ptr<Core::RenderTexture>& aRenderTarget, [[maybe_unused]] std::function<void()> anImGuiRenderCallback)
 		: myHasWindow(true)
 		#if IS_IMGUI_ENABLED
 		, myImGuiContext(nullptr)
@@ -75,25 +75,25 @@ namespace Atrium
 
 		AtriumApplication* runningApplication = AtriumApplication::GetRunningInstance();
 
-		std::vector<std::unique_ptr<Core::ImGuiContext>> backendContexts;
-		backendContexts.push_back(runningApplication->GetWindowHandler().CreateImGuiContext(aWindow));
-		backendContexts.push_back(runningApplication->GetGraphicsHandler().CreateImGuiContext(aRenderTarget));
-		myImGuiContexts = Core::ImGuiContext::Composite(std::move(
+		std::vector<std::unique_ptr<Core::GUIContext>> backendContexts;
+		backendContexts.push_back(runningApplication->GetWindowHandler().CreateGUIContext(aWindow));
+		backendContexts.push_back(runningApplication->GetGraphicsHandler().CreateGUIContext(aRenderTarget));
+		myGUIContext = Core::GUIContext::Composite(std::move(
 			backendContexts
 		));
 		#endif
 	}
 
-	ImGuiHandler::~ImGuiHandler()
+	GUIHandler::~GUIHandler()
 	{
 		#if IS_IMGUI_ENABLED
-		myImGuiContexts.reset();
+		myGUIContext.reset();
 		ImGui::DestroyContext(myImGuiContext);
 		myImGuiContext = nullptr;
 		#endif
 	}
 
-	Core::InputDeviceType ImGuiHandler::GetAllowedInputs() const
+	Core::InputDeviceType GUIHandler::GetAllowedInputs() const
 	{
 		Core::InputDeviceType deviceTypes = ~Core::InputDeviceType::Unknown;
 
@@ -111,7 +111,7 @@ namespace Atrium
 		return deviceTypes;
 	}
 
-	void ImGuiHandler::Render()
+	void GUIHandler::Render()
 	{
 		ZoneScoped;
 
@@ -119,19 +119,19 @@ namespace Atrium
 			return;
 
 		#if IS_IMGUI_ENABLED
-		myImGuiContexts->MarkFrameStart();
+		myGUIContext->MarkFrameStart();
 		ImGui::NewFrame();
 
 		myImGuiRenderCallback();
 
 		ImGui::Render();
 		ImGui::UpdatePlatformWindows();
-		myImGuiContexts->MarkFrameEnd();
+		myGUIContext->MarkFrameEnd();
 		#endif
 	}
 
 	#if IS_IMGUI_ENABLED
-	void ImGuiHandler::StyleColorsNord()
+	void GUIHandler::StyleColorsNord()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 

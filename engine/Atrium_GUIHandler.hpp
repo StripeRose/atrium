@@ -3,8 +3,9 @@
 #pragma once
 
 #include <Core_InputDevice.hpp>
-#include <Core_ImGuiContext.hpp>
+#include <Core_GUIContext.hpp>
 
+// Dear ImGUI context.
 struct ImGuiContext;
 
 namespace Atrium
@@ -15,11 +16,11 @@ namespace Atrium
 		class Window;
 	}
 
-	class ImGuiHandler
+	class GUIHandler
 	{
 	public:
-		ImGuiHandler(const std::shared_ptr<Core::Window>& aWindow, const std::shared_ptr<Core::RenderTexture>& aRenderTarget, std::function<void()> anImGuiRenderCallback);
-		~ImGuiHandler();
+		GUIHandler(const std::shared_ptr<Core::Window>& aWindow, const std::shared_ptr<Core::RenderTexture>& aRenderTarget, std::function<void()> anImGuiRenderCallback);
+		~GUIHandler();
 
 		Core::InputDeviceType GetAllowedInputs() const;
 
@@ -29,7 +30,7 @@ namespace Atrium
 	private:
 		void StyleColorsNord();
 
-		std::unique_ptr<Core::ImGuiContext> myImGuiContexts;
+		std::unique_ptr<Core::GUIContext> myGUIContext;
 		ImGuiContext* myImGuiContext;
 
 		std::function<void()> myImGuiRenderCallback;

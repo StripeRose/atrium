@@ -1,6 +1,6 @@
-// Filter "ImGui"
+// Filter "GUI"
 
-#include "Win32_ImGuiContext.hpp"
+#include "Win32_GUIContext.hpp"
 
 #include <Core_Diagnostics.hpp>
 
@@ -13,7 +13,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace Atrium::Win32
 {
-	ImGuiContext::ImGuiContext(const std::shared_ptr<Core::Window>& aWindow)
+	GUIBackendContext::GUIBackendContext(const std::shared_ptr<Core::Window>& aWindow)
 		: myWindow(std::static_pointer_cast<Window>(aWindow))
 	{
 		ZoneScoped;
@@ -31,7 +31,7 @@ namespace Atrium::Win32
 		#endif
 	}
 
-	ImGuiContext::~ImGuiContext()
+	GUIBackendContext::~GUIBackendContext()
 	{
 		ZoneScoped;
 		#if IS_IMGUI_ENABLED
@@ -41,14 +41,14 @@ namespace Atrium::Win32
 		#endif
 	}
 
-	void ImGuiContext::MarkFrameStart()
+	void GUIBackendContext::MarkFrameStart()
 	{
 		#if IS_IMGUI_ENABLED
 		ImGui_ImplWin32_NewFrame();
 		#endif
 	}
 
-	void ImGuiContext::MarkFrameEnd()
+	void GUIBackendContext::MarkFrameEnd()
 	{
 
 	}

@@ -1,9 +1,9 @@
-// Filter "ImGui"
+// Filter "GUI"
 
 #include "DX12_FrameContext.hpp"
 
 #include <Core_FrameContext.hpp>
-#include <Core_ImGuiContext.hpp>
+#include <Core_GUIContext.hpp>
 #include <Core_RenderTexture.hpp>
 #include <Core_WindowManagement.hpp>
 
@@ -14,11 +14,11 @@
 namespace Atrium::DirectX12
 {
 	class DirectX12API;
-	class ImGuiContext : public Core::ImGuiContext
+	class GUIBackendContext : public Core::GUIContext
 	{
 	public:
-		ImGuiContext(DirectX12API& aGraphicsAPI, FrameGraphicsContext& aGraphicsContext, const std::shared_ptr<Core::RenderTexture>& aRenderTarget);
-		~ImGuiContext() override;
+		GUIBackendContext(DirectX12API& aGraphicsAPI, FrameGraphicsContext& aGraphicsContext, const std::shared_ptr<Core::RenderTexture>& aRenderTarget);
+		~GUIBackendContext() override;
 
 		void MarkFrameStart() override;
 		void MarkFrameEnd() override;
