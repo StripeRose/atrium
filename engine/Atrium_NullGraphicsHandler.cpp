@@ -1,4 +1,4 @@
-// Filter "Graphics"
+// Filter "NullManagers"
 
 #include "Atrium_NullGraphicsHandler.hpp"
 

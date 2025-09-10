@@ -1,4 +1,4 @@
-// Filter "Graphics"
+// Filter "NullManagers"
 
 #pragma once
 

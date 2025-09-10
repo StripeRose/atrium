@@ -1,4 +1,4 @@
-// Filter "Input"
+// Filter "NullManagers"
 
 #pragma once
 

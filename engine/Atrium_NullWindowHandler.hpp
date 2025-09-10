@@ -1,3 +1,5 @@
+// Filter "NullManagers"
+
 #pragma once
 
 #include "Atrium_WindowManagement.hpp"
