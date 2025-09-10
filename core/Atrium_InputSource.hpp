@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "Core_InputDevice.hpp"
+#include "Atrium_InputDevice.hpp"
 
 #include <optional>
 #include <utility>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	/**
 	 * @brief Short-hand ID for referring to a specific input source on any device of the given type.

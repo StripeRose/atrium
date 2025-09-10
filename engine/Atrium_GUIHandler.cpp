@@ -3,8 +3,8 @@
 #include "Atrium_AtriumApplication.hpp"
 #include "Atrium_GUIHandler.hpp"
 
-#include <Core_GraphicsAPI.hpp>
-#include <Core_WindowManagement.hpp>
+#include <Atrium_GraphicsAPI.hpp>
+#include <Atrium_WindowManagement.hpp>
 
 #if IS_IMGUI_ENABLED
 #include <imgui.h>
@@ -12,7 +12,7 @@
 
 namespace Atrium
 {
-	GUIHandler::GUIHandler([[maybe_unused]] const std::shared_ptr<Core::Window>& aWindow, const std::shared_ptr<Core::RenderTexture>& aRenderTarget, [[maybe_unused]] std::function<void()> anImGuiRenderCallback)
+	GUIHandler::GUIHandler([[maybe_unused]] const std::shared_ptr<Window>& aWindow, const std::shared_ptr<RenderTexture>& aRenderTarget, [[maybe_unused]] std::function<void()> anImGuiRenderCallback)
 		: myHasWindow(true)
 		#if IS_IMGUI_ENABLED
 		, myImGuiContext(nullptr)
@@ -75,10 +75,10 @@ namespace Atrium
 
 		AtriumApplication* runningApplication = AtriumApplication::GetRunningInstance();
 
-		std::vector<std::unique_ptr<Core::GUIContext>> backendContexts;
+		std::vector<std::unique_ptr<GUIContext>> backendContexts;
 		backendContexts.push_back(runningApplication->GetWindowHandler().CreateGUIContext(aWindow));
 		backendContexts.push_back(runningApplication->GetGraphicsHandler().CreateGUIContext(aRenderTarget));
-		myGUIContext = Core::GUIContext::Composite(std::move(
+		myGUIContext = GUIContext::Composite(std::move(
 			backendContexts
 		));
 		#endif
@@ -93,18 +93,18 @@ namespace Atrium
 		#endif
 	}
 
-	Core::InputDeviceType GUIHandler::GetAllowedInputs() const
+	InputDeviceType GUIHandler::GetAllowedInputs() const
 	{
-		Core::InputDeviceType deviceTypes = ~Core::InputDeviceType::Unknown;
+		InputDeviceType deviceTypes = ~InputDeviceType::Unknown;
 
 		if (myHasWindow)
 		{
 			#if IS_IMGUI_ENABLED
 			ImGuiIO& io = ImGui::GetIO();
 			if (io.WantCaptureKeyboard)
-				deviceTypes &= ~Core::InputDeviceType::Keyboard;
+				deviceTypes &= ~InputDeviceType::Keyboard;
 			if (io.WantCaptureMouse)
-				deviceTypes &= ~Core::InputDeviceType::Mouse;
+				deviceTypes &= ~InputDeviceType::Mouse;
 			#endif
 		}
 

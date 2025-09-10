@@ -2,10 +2,10 @@
 
 #include "DX12_FrameContext.hpp"
 
-#include <Core_FrameContext.hpp>
-#include <Core_GUIContext.hpp>
-#include <Core_RenderTexture.hpp>
-#include <Core_WindowManagement.hpp>
+#include <Atrium_FrameContext.hpp>
+#include <Atrium_GUIContext.hpp>
+#include <Atrium_RenderTexture.hpp>
+#include <Atrium_WindowManagement.hpp>
 
 #if IS_IMGUI_ENABLED
 #include <DX12_DescriptorHeap.hpp>
@@ -14,10 +14,10 @@
 namespace Atrium::DirectX12
 {
 	class DirectX12API;
-	class GUIBackendContext : public Core::GUIContext
+	class GUIBackendContext : public Atrium::GUIContext
 	{
 	public:
-		GUIBackendContext(DirectX12API& aGraphicsAPI, FrameGraphicsContext& aGraphicsContext, const std::shared_ptr<Core::RenderTexture>& aRenderTarget);
+		GUIBackendContext(DirectX12API& aGraphicsAPI, FrameGraphicsContext& aGraphicsContext, const std::shared_ptr<Atrium::RenderTexture>& aRenderTarget);
 		~GUIBackendContext() override;
 
 		void MarkFrameStart() override;
@@ -25,7 +25,7 @@ namespace Atrium::DirectX12
 
 	private:
 		FrameGraphicsContext& myGraphicsContext;
-		std::shared_ptr<Core::RenderTexture> myRenderTarget;
+		std::shared_ptr<Atrium::RenderTexture> myRenderTarget;
 		std::unique_ptr<RenderPassDescriptorHeap> myCBV_SRVHeap;
 		std::map<std::uint64_t, DescriptorHeapHandle> myCBV_SRVHeapHandles;
 	};

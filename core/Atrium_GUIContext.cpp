@@ -1,9 +1,9 @@
-#include "Core_GUIContext.hpp"
+#include "Atrium_GUIContext.hpp"
 
 #include <memory>
 #include <vector>
 
-namespace Atrium::Core
+namespace Atrium
 {
     class GUICompositeContext : public GUIContext
     {

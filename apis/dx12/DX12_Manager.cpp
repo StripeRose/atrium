@@ -1,4 +1,4 @@
-#include "Core_Diagnostics.hpp"
+#include "Atrium_Diagnostics.hpp"
 
 #include "DX12_ComPtr.hpp"
 #include "DX12_Device.hpp"
@@ -19,7 +19,7 @@
 
 namespace Atrium::DirectX12
 {
-	std::unique_ptr<Core::GraphicsAPI> CreateDX12Manager()
+	std::unique_ptr<GraphicsAPI> CreateDX12Manager()
 	{
 		return std::make_unique<DirectX12API>();
 	}
@@ -74,16 +74,16 @@ namespace Atrium::DirectX12
 		ReportUnreleasedObjects();
 	}
 
-	std::shared_ptr<Core::FrameGraphicsContext> DirectX12API::CreateFrameGraphicsContext()
+	std::shared_ptr<Atrium::FrameGraphicsContext> DirectX12API::CreateFrameGraphicsContext()
 	{
 		return myFrameGraphicsContexts.emplace_back(
 			new FrameGraphicsContext(*myDevice, myCommandQueueManager->GetGraphicsQueue())
 		);
 	}
 
-	std::unique_ptr<Core::GUIContext> DirectX12API::CreateGUIContext(const std::shared_ptr<Core::RenderTexture>& aRenderTarget)
+	std::unique_ptr<Atrium::GUIContext> DirectX12API::CreateGUIContext(const std::shared_ptr<Atrium::RenderTexture>& aRenderTarget)
 	{
-		return std::unique_ptr<Core::GUIContext>(
+		return std::unique_ptr<Atrium::GUIContext>(
 			new GUIBackendContext(*this, *myPresentPrepareContext, aRenderTarget)
 		);
 	}

@@ -1,7 +1,7 @@
 #include "Win32_WindowManagement.hpp"
 #include "Win32_GUIContext.hpp"
 
-#include "Core_Diagnostics.hpp"
+#include "Atrium_Diagnostics.hpp"
 
 #include <memory>
 #include <windowsx.h>
@@ -293,14 +293,14 @@ namespace Atrium::Win32
 		CleanupWindowClasses();
 	}
 
-	std::unique_ptr<Core::GUIContext> WindowManager::CreateGUIContext(const std::shared_ptr<Core::Window>& aWindow)
+	std::unique_ptr<Atrium::GUIContext> WindowManager::CreateGUIContext(const std::shared_ptr<Atrium::Window>& aWindow)
 	{
-		return std::unique_ptr<Core::GUIContext>(
+		return std::unique_ptr<Atrium::GUIContext>(
 			new GUIBackendContext(aWindow)
 		);
 	}
 
-	std::shared_ptr<Atrium::Core::Window> WindowManager::NewWindow()
+	std::shared_ptr<Atrium::Window> WindowManager::NewWindow()
 	{
 		std::shared_ptr<Win32::Window> newWindow(new Win32::Window(myWindowClasses[0], !myHasCreatedTheFirstWindow));
 		myHasCreatedTheFirstWindow = true;

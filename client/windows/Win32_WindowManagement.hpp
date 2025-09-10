@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core_WindowManagement.hpp"
+#include "Atrium_WindowManagement.hpp"
 
 #include <Windows.h>
 #include <windowsx.h>
@@ -8,7 +8,7 @@
 namespace Atrium::Win32
 {
 	class WindowManager;
-	class Window final : public Atrium::Core::Window
+	class Window final : public Atrium::Window
 	{
 		friend WindowManager;
 	public:
@@ -68,15 +68,15 @@ namespace Atrium::Win32
 		int myShowNormalCommand;
 	};
 
-	class WindowManager final : public Atrium::Core::WindowManager
+	class WindowManager final : public Atrium::WindowManager
 	{
 	public:
 		WindowManager();
 		~WindowManager();
 
-		std::unique_ptr<Core::GUIContext> CreateGUIContext(const std::shared_ptr<Core::Window>& aWindow) override;
+		std::unique_ptr<Atrium::GUIContext> CreateGUIContext(const std::shared_ptr<Atrium::Window>& aWindow) override;
 
-		std::shared_ptr<Atrium::Core::Window> NewWindow() override;
+		std::shared_ptr<Atrium::Window> NewWindow() override;
 
 		void Update() override;
 

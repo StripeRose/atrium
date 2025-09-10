@@ -12,7 +12,7 @@ namespace Atrium::DirectX12
 	{
 	}
 
-	std::shared_ptr<Core::RenderTexture> ResourceManager::CreateRenderTextureForWindow(Core::Window& aWindow)
+	std::shared_ptr<Atrium::RenderTexture> ResourceManager::CreateRenderTextureForWindow(Window& aWindow)
 	{
 		ZoneScoped;
 
@@ -28,35 +28,35 @@ namespace Atrium::DirectX12
 		return swapChain;
 	}
 
-	std::shared_ptr<Core::GraphicsBuffer> ResourceManager::CreateGraphicsBuffer(GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
+	std::shared_ptr<Atrium::GraphicsBuffer> ResourceManager::CreateGraphicsBuffer(GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 	{
 		ZoneScoped;
 
-		return std::shared_ptr<GraphicsBuffer>(new GraphicsBuffer(myManager, aTarget, aCount, aStride));
+		return std::shared_ptr<Atrium::GraphicsBuffer>(new GraphicsBuffer(myManager, aTarget, aCount, aStride));
 	}
 
-	std::shared_ptr<Core::PipelineState> ResourceManager::CreatePipelineState(const Core::PipelineStateDescription& aPipelineState)
+	std::shared_ptr<Atrium::PipelineState> ResourceManager::CreatePipelineState(const PipelineStateDescription& aPipelineState)
 	{
 		return DirectX12::PipelineState::CreateFrom(
 			*myManager.GetDevice().GetDevice().Get(),
 			aPipelineState);
 	}
 
-	std::unique_ptr<Core::RootSignatureBuilder> ResourceManager::CreateRootSignature()
+	std::unique_ptr<Atrium::RootSignatureBuilder> ResourceManager::CreateRootSignature()
 	{
-		return std::unique_ptr<Core::RootSignatureBuilder>(new RootSignatureCreator(myManager.GetDevice().GetDevice().Get()));
+		return std::unique_ptr<Atrium::RootSignatureBuilder>(new RootSignatureCreator(myManager.GetDevice().GetDevice().Get()));
 	}
 
-	std::shared_ptr<Core::Shader> ResourceManager::CreateShader(const std::filesystem::path& aSource, Shader::Type aType, const char* anEntryPoint)
+	std::shared_ptr<Atrium::Shader> ResourceManager::CreateShader(const std::filesystem::path& aSource, Atrium::Shader::Type aType, const char* anEntryPoint)
 	{
 		ZoneScoped;
 
 		switch (aType)
 		{
-			case Shader::Type::Vertex:
+			case Atrium::Shader::Type::Vertex:
 				return Shader::CreateFromSource(aSource, anEntryPoint, "vs_5_1");
 
-			case Shader::Type::Pixel:
+			case Atrium::Shader::Type::Pixel:
 				return Shader::CreateFromSource(aSource, anEntryPoint, "ps_5_1");
 
 			default:
@@ -64,7 +64,7 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	std::shared_ptr<Core::Texture> ResourceManager::CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension)
+	std::shared_ptr<Atrium::Texture> ResourceManager::CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension)
 	{
 		DirectX::TexMetadata metadata;
 		metadata.arraySize = anArrayCount;
@@ -118,7 +118,7 @@ namespace Atrium::DirectX12
 		return std::make_shared<DirectX12::Texture>(myManager.GetDevice(), myManager.GetUploadContext(), metadata);
 	}
 
-	std::shared_ptr<SwapChain> ResourceManager::GetSwapChain(Core::Window& aWindow)
+	std::shared_ptr<SwapChain> ResourceManager::GetSwapChain(Window& aWindow)
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
 		auto it = myDrawSurfaceSwapChain.find(&aWindow);
@@ -134,7 +134,7 @@ namespace Atrium::DirectX12
 		return swapChains;
 	}
 
-	std::shared_ptr<Core::Texture> ResourceManager::LoadTexture(const std::filesystem::path& aPath)
+	std::shared_ptr<Atrium::Texture> ResourceManager::LoadTexture(const std::filesystem::path& aPath)
 	{
 		ZoneScoped;
 

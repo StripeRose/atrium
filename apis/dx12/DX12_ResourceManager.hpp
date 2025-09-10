@@ -3,7 +3,7 @@
 #include "DX12_Pipeline.hpp"
 #include "DX12_SwapChain.hpp"
 
-#include "Core_GraphicsAPI.hpp"
+#include "Atrium_GraphicsAPI.hpp"
 
 #include <map>
 #include <memory>
@@ -12,28 +12,28 @@
 namespace Atrium::DirectX12
 {
 	class DirectX12API;
-	class ResourceManager : public Core::GraphicsAPI::ResourceManager
+	class ResourceManager : public GraphicsAPI::ResourceManager
 	{
 	public:
 		ResourceManager(DirectX12API& aManager);
 
-		std::shared_ptr<Core::RenderTexture> CreateRenderTextureForWindow(Core::Window& aWindow) override;
+		std::shared_ptr<Atrium::RenderTexture> CreateRenderTextureForWindow(Window& aWindow) override;
 
-		std::shared_ptr<Core::GraphicsBuffer> CreateGraphicsBuffer(Core::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) override;
+		std::shared_ptr<Atrium::GraphicsBuffer> CreateGraphicsBuffer(Atrium::GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride) override;
 
-		std::shared_ptr<Core::PipelineState> CreatePipelineState(const Core::PipelineStateDescription& aPipelineState) override;
+		std::shared_ptr<Atrium::PipelineState> CreatePipelineState(const PipelineStateDescription& aPipelineState) override;
 
-		std::unique_ptr<Core::RootSignatureBuilder> CreateRootSignature() override;
+		std::unique_ptr<Atrium::RootSignatureBuilder> CreateRootSignature() override;
 
-		std::shared_ptr<Core::Shader> CreateShader(const std::filesystem::path& aSource, Core::Shader::Type aType, const char* anEntryPoint) override;
+		std::shared_ptr<Atrium::Shader> CreateShader(const std::filesystem::path& aSource, Atrium::Shader::Type aType, const char* anEntryPoint) override;
 
-		std::shared_ptr<Core::Texture> CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension) override;
+		std::shared_ptr<Atrium::Texture> CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension) override;
 
-		std::shared_ptr<SwapChain> GetSwapChain(Core::Window& aWindow);
+		std::shared_ptr<SwapChain> GetSwapChain(Window& aWindow);
 
 		std::vector<std::shared_ptr<SwapChain>> GetSwapChains();
 
-		std::shared_ptr<Core::Texture> LoadTexture(const std::filesystem::path& aPath) override;
+		std::shared_ptr<Atrium::Texture> LoadTexture(const std::filesystem::path& aPath) override;
 
 		void MarkFrameStart();
 
@@ -41,6 +41,6 @@ namespace Atrium::DirectX12
 		DirectX12API& myManager;
 
 		std::mutex mySwapChainMutex;
-		std::map<Core::Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
+		std::map<Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
 	};
 }

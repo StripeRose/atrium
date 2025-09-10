@@ -5,8 +5,8 @@
 #include "Win32_GameInput.h"
 #include "Win32_GameInputDevice.hpp"
 
-#include "Core_InputDeviceAPI.hpp"
-#include "Core_InputEvent.hpp"
+#include "Atrium_InputDeviceAPI.hpp"
+#include "Atrium_InputEvent.hpp"
 
 #include <wrl.h>
 
@@ -18,10 +18,10 @@ namespace Atrium::Win32
 	class GameInputHandler
 	{
 	public:
-		GameInputHandler(Atrium::Core::InputDeviceAPI& anInputDeviceAPI);
+		GameInputHandler(Atrium::InputDeviceAPI& anInputDeviceAPI);
 		~GameInputHandler();
 
-		void ReportInputEvents(Atrium::Core::InputDeviceType someDeviceTypes);
+		void ReportInputEvents(Atrium::InputDeviceType someDeviceTypes);
 
 	private:
 		static void HandleDeviceEvent(
@@ -40,6 +40,6 @@ namespace Atrium::Win32
 
 		std::map<Microsoft::WRL::ComPtr<IGameInputDevice>, std::unique_ptr<GameInputDevice>> myDevices;
 
-		Atrium::Core::InputDeviceAPI& myInputDeviceAPI;
+		Atrium::InputDeviceAPI& myInputDeviceAPI;
 	};
 }

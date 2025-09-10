@@ -4,14 +4,11 @@
 
 namespace Atrium
 {
-	namespace Core
-	{
-		class AudioAPI;
-		class FrameGraphicsContext;
-		class GraphicsAPI;
-		class InputDeviceAPI;
-		class WindowManager;
-	}
+	class AudioAPI;
+	class FrameGraphicsContext;
+	class GraphicsAPI;
+	class InputDeviceAPI;
+	class WindowManager;
 
 	class AtriumApplication
 	{
@@ -51,22 +48,22 @@ namespace Atrium
 		/**
 		 * @brief Get the currently active audio handler.
 		 */
-		[[nodiscard]] Core::AudioAPI& GetAudioHandler() { return *myAudioAPI; }
+		[[nodiscard]] AudioAPI& GetAudioHandler() { return *myAudioAPI; }
 
 		/**
 		 * @brief Get the currently active graphics handler.
 		 */
-		[[nodiscard]] Core::GraphicsAPI& GetGraphicsHandler() { return *myGraphicsAPI; }
+		[[nodiscard]] GraphicsAPI& GetGraphicsHandler() { return *myGraphicsAPI; }
 
 		/**
 		 * @brief Get the currently active input handler.
 		 */
-		[[nodiscard]] Core::InputDeviceAPI& GetInputHandler() { return *myInputDeviceAPI; }
+		[[nodiscard]] InputDeviceAPI& GetInputHandler() { return *myInputDeviceAPI; }
 
 		/**
 		 * @brief Get the currently active window handler.
 		 */
-		[[nodiscard]] Core::WindowManager& GetWindowHandler() { return *myWindowManager; }
+		[[nodiscard]] WindowManager& GetWindowHandler() { return *myWindowManager; }
 
 		/**
 		 * @brief Start up the engine to run the application.
@@ -84,7 +81,7 @@ namespace Atrium
 		virtual void HandleCloseRequest(bool& aShouldExit);
 
 		// Called once per frame.
-		virtual void HandleFrameLogic(Core::FrameGraphicsContext& aFrameContext) = 0;
+		virtual void HandleFrameLogic(FrameGraphicsContext& aFrameContext) = 0;
 
 		// Called when the last loop has ended and before the engine is cleaned up.
 		virtual void HandleShutdown() = 0;
@@ -105,12 +102,12 @@ namespace Atrium
 		void DoTick();
 		void CleanupEngine();
 
-		std::unique_ptr<Core::AudioAPI> myAudioAPI;
-		std::unique_ptr<Core::GraphicsAPI> myGraphicsAPI;
-		std::unique_ptr<Core::InputDeviceAPI> myInputDeviceAPI;
-		std::unique_ptr<Core::WindowManager> myWindowManager;
+		std::unique_ptr<AudioAPI> myAudioAPI;
+		std::unique_ptr<GraphicsAPI> myGraphicsAPI;
+		std::unique_ptr<InputDeviceAPI> myInputDeviceAPI;
+		std::unique_ptr<WindowManager> myWindowManager;
 
-		std::shared_ptr<Core::FrameGraphicsContext> myFrameGraphics;
+		std::shared_ptr<FrameGraphicsContext> myFrameGraphics;
 
 		bool myIsRunning;
 		bool myHasShutdownBeenRequested;

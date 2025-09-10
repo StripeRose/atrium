@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Core_GUIContext.hpp>
+#include <Atrium_GUIContext.hpp>
 
 #include <rose-common/EventSlot.hpp>
 #include <rose-common/math/Geometry.hpp>
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	class Window
 	{
@@ -73,7 +73,7 @@ namespace Atrium::Core
 		 * @param aWindow A window to create the context for.
 		 * @return The created context.
 		 */
-		virtual std::unique_ptr<GUIContext> CreateGUIContext(const std::shared_ptr<Core::Window>& aWindow) = 0;
+		virtual std::unique_ptr<GUIContext> CreateGUIContext(const std::shared_ptr<Window>& aWindow) = 0;
 
 		virtual std::shared_ptr<Window> NewWindow() = 0;
 

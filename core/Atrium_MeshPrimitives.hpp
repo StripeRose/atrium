@@ -7,7 +7,7 @@
 #include <functional>
 #include <vector>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	enum class MeshPrimitiveType
 	{

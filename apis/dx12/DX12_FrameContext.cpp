@@ -278,7 +278,7 @@ namespace Atrium::DirectX12
 		myPendingTextureResources.clear();
 	}
 
-	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Core::RenderTexture>& aTarget, ColorT<float> aClearColor)
+	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Atrium::RenderTexture>& aTarget, ColorT<float> aClearColor)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Clear color");
 		Debug::Assert(!!aTarget, "ClearColor() requires a target.");
@@ -306,7 +306,7 @@ namespace Atrium::DirectX12
 		);
 	}
 
-	void FrameGraphicsContext::ClearDepth(const std::shared_ptr<Core::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil)
+	void FrameGraphicsContext::ClearDepth(const std::shared_ptr<Atrium::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Clear depth");
 		Debug::Assert(!!aTarget, "ClearDepth() requires a target.");
@@ -433,7 +433,7 @@ namespace Atrium::DirectX12
 		myCommandList->IASetPrimitiveTopology(topology);
 	}
 
-	void FrameGraphicsContext::SetPipelineState(const std::shared_ptr<Core::PipelineState>& aPipelineState)
+	void FrameGraphicsContext::SetPipelineState(const std::shared_ptr<Atrium::PipelineState>& aPipelineState)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set pipeline state");
 		Debug::Assert(!!aPipelineState, "SetPipelineState() requires pipeline state to be non-null.");
@@ -443,7 +443,7 @@ namespace Atrium::DirectX12
 		myCommandList->SetGraphicsRootSignature(myCurrentPipelineState->GetRootSignature()->GetRootSignatureObject().Get());
 	}
 
-	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Core::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot)
+	void FrameGraphicsContext::SetVertexBuffer(const std::shared_ptr<const Atrium::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot)
 	{
 		Debug::Assert(!!aVertexBuffer, "Assumes a valid buffer.");
 
@@ -460,7 +460,7 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::GraphicsBuffer>& aBuffer)
+	void FrameGraphicsContext::SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Atrium::GraphicsBuffer>& aBuffer)
 	{
 		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
@@ -477,11 +477,11 @@ namespace Atrium::DirectX12
 		if (!myPendingBufferResources.contains(parameterInfo.value().RootParameterIndex))
 			myPendingBufferResources[parameterInfo.value().RootParameterIndex].resize(parameterInfo.value().Count);
 
-		std::vector<std::shared_ptr<Core::GraphicsBuffer>>& parameterBuffers = myPendingBufferResources.at(parameterInfo.value().RootParameterIndex);
+		std::vector<std::shared_ptr<Atrium::GraphicsBuffer>>& parameterBuffers = myPendingBufferResources.at(parameterInfo.value().RootParameterIndex);
 		parameterBuffers[parameterInfo.value().RegisterOffset] = aBuffer;
 	}
 
-	void FrameGraphicsContext::SetPipelineResource(Core::ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Core::Texture>& aTexture)
+	void FrameGraphicsContext::SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Atrium::Texture>& aTexture)
 	{
 		const std::optional<RootParameterMapping::ParameterInfo> parameterInfo = myCurrentPipelineState->GetRootSignature()->GetParameterInfo(
 			anUpdateFrequency,
@@ -498,7 +498,7 @@ namespace Atrium::DirectX12
 		if (!myPendingTextureResources.contains(parameterInfo.value().RootParameterIndex))
 			myPendingTextureResources[parameterInfo.value().RootParameterIndex].resize(parameterInfo.value().Count);
 
-		std::vector<std::shared_ptr<Core::Texture>>& parameterBuffers = myPendingTextureResources.at(parameterInfo.value().RootParameterIndex);
+		std::vector<std::shared_ptr<Atrium::Texture>>& parameterBuffers = myPendingTextureResources.at(parameterInfo.value().RootParameterIndex);
 		parameterBuffers[parameterInfo.value().RegisterOffset] = aTexture;
 	}
 
@@ -508,7 +508,7 @@ namespace Atrium::DirectX12
 		myCommandList->OMSetStencilRef(aStencilRef);
 	}
 
-	void FrameGraphicsContext::SetRenderTargets(const std::vector<std::shared_ptr<Core::RenderTexture>>& someTargets, const std::shared_ptr<Core::RenderTexture>& aDepthTarget)
+	void FrameGraphicsContext::SetRenderTargets(const std::vector<std::shared_ptr<Atrium::RenderTexture>>& someTargets, const std::shared_ptr<Atrium::RenderTexture>& aDepthTarget)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set render targets");
 		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> colorHandles;
@@ -590,7 +590,7 @@ namespace Atrium::DirectX12
 
 					for (std::size_t i = 0; i < aHeapHandlePair.first.size(); ++i)
 					{
-						const std::shared_ptr<Core::GraphicsBuffer>& bufferA = rootParameterBuffers.second.at(i);
+						const std::shared_ptr<Atrium::GraphicsBuffer>& bufferA = rootParameterBuffers.second.at(i);
 						if (bufferA != nullptr && bufferA != aHeapHandlePair.first.at(i))
 							return false;
 					}
@@ -643,7 +643,7 @@ namespace Atrium::DirectX12
 
 					for (std::size_t i = 0; i < aHeapHandlePair.first.size(); ++i)
 					{
-						const std::shared_ptr<Core::Texture>& texture = rootParameterTextures.second.at(i);
+						const std::shared_ptr<Atrium::Texture>& texture = rootParameterTextures.second.at(i);
 						if (texture != nullptr && texture != aHeapHandlePair.first.at(i))
 							return false;
 					}
@@ -662,7 +662,7 @@ namespace Atrium::DirectX12
 
 			for (std::size_t i = 0; i < rootParameterTextures.second.size(); ++i)
 			{
-				if (Core::Texture* texture = rootParameterTextures.second.at(i).get())
+				if (Atrium::Texture* texture = rootParameterTextures.second.at(i).get())
 				{
 					myDevice.GetDevice()->CopyDescriptorsSimple(
 						1,

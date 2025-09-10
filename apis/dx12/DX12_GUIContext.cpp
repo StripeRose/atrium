@@ -3,7 +3,7 @@
 #include "DX12_Device.hpp"
 #include "DX12_Manager.hpp"
 
-#include <Core_Diagnostics.hpp>
+#include <Atrium_Diagnostics.hpp>
 
 #if IS_IMGUI_ENABLED
 #include <backends/imgui_impl_dx12.h>
@@ -11,7 +11,7 @@
 
 namespace Atrium::DirectX12
 {
-	GUIBackendContext::GUIBackendContext(DirectX12API& aGraphicsAPI, FrameGraphicsContext& aGraphicsContext, const std::shared_ptr<Core::RenderTexture>& aRenderTarget)
+	GUIBackendContext::GUIBackendContext(DirectX12API& aGraphicsAPI, FrameGraphicsContext& aGraphicsContext, const std::shared_ptr<Atrium::RenderTexture>& aRenderTarget)
 		: myGraphicsContext(aGraphicsContext)
 		, myRenderTarget(aRenderTarget)
 	{

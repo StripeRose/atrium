@@ -1,10 +1,10 @@
 // Filter "Graphics"
 
-#include "Core_MeshPrimitives.hpp"
+#include "Atrium_MeshPrimitives.hpp"
 
 #include <vector>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	namespace MakeMeshPrimitives
 	{

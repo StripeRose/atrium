@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "Core_AudioAPI.hpp"
+#include "Atrium_AudioAPI.hpp"
 
-namespace Atrium::Core
+namespace Atrium
 {
 	/**
 	 * @brief Empty audio handler implementation which acts like functional API but does nothing.

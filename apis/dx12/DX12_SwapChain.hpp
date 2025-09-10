@@ -5,7 +5,7 @@
 #include "DX12_Enums.hpp"
 #include "DX12_RenderTexture.hpp"
 
-#include "Core_WindowManagement.hpp"
+#include "Atrium_WindowManagement.hpp"
 
 namespace Atrium::DirectX12
 {
@@ -14,7 +14,7 @@ namespace Atrium::DirectX12
 	class SwapChain : public RenderTarget
 	{
 	public:
-		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Core::Window& aWindow);
+		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Window& aWindow);
 		~SwapChain();
 
 		void Invalidate();
@@ -42,7 +42,7 @@ namespace Atrium::DirectX12
 
 		// Implementing RenderTexture
 	public:
-		const Core::RenderTextureDescriptor& GetDescriptor() const override;
+		const RenderTextureDescriptor& GetDescriptor() const override;
 		void* GetNativeDepthBufferPtr() const override;
 
 		// Implementing Texture
@@ -72,7 +72,7 @@ namespace Atrium::DirectX12
 		public:
 			SwapChainBackBuffer(
 				Device& aDevice,
-				const Core::RenderTextureDescriptor& aDescriptor,
+				const RenderTextureDescriptor& aDescriptor,
 				const ComPtr<ID3D12Resource>& aColorBuffer = nullptr,
 				const ComPtr<ID3D12Resource>& aDepthBuffer = nullptr);
 
@@ -82,7 +82,7 @@ namespace Atrium::DirectX12
 	private:
 		Device* myDevice;
 		ComPtr<IDXGISwapChain3> mySwapChain;
-		Atrium::Core::Window* myWindow;
+		Atrium::Window* myWindow;
 
 		std::vector<std::shared_ptr<SwapChainBackBuffer>> myBackBuffers;
 		std::optional<SizeT<int>> myDesiredResolution;

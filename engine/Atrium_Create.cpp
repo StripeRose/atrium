@@ -1,11 +1,11 @@
 #include "Atrium_AtriumApplication.hpp"
 
-#include "Core_Diagnostics.hpp"
+#include "Atrium_Diagnostics.hpp"
 
-#include "Core_NullAudioHandler.hpp"
-#include "Core_NullGraphicsHandler.hpp"
-#include "Core_NullInputHandler.hpp"
-#include "Core_NullWindowHandler.hpp"
+#include "Atrium_NullAudioHandler.hpp"
+#include "Atrium_NullGraphicsHandler.hpp"
+#include "Atrium_NullInputHandler.hpp"
+#include "Atrium_NullWindowHandler.hpp"
 
 #if _WIN32
 #include "DX12_Instancer.hpp"
@@ -36,10 +36,10 @@ namespace Atrium
 		#endif
 
 		// Populate null objects for missing API handlers.
-		if (!myAudioAPI) myAudioAPI.reset(new Core::NullAudioHandler());
-		if (!myInputDeviceAPI) myInputDeviceAPI.reset(new Core::NullInputHandler());
-		if (!myGraphicsAPI) myGraphicsAPI.reset(new Core::NullGraphicsHandler());
-		if (!myWindowManager) myWindowManager.reset(new Core::NullWindowManager());
+		if (!myAudioAPI) myAudioAPI.reset(new NullAudioHandler());
+		if (!myInputDeviceAPI) myInputDeviceAPI.reset(new NullInputHandler());
+		if (!myGraphicsAPI) myGraphicsAPI.reset(new NullGraphicsHandler());
+		if (!myWindowManager) myWindowManager.reset(new NullWindowManager());
 	}
 
 	void AtriumApplication::AssertAPIHandlersExist()

@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	class GUIContext
 	{

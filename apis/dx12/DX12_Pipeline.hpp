@@ -5,9 +5,9 @@
 #include "DX12_ComPtr.hpp"
 #include "DX12_Shader.hpp"
 
-#include "Core_FrameContext.hpp"
-#include "Core_GraphicsPipeline.hpp"
-#include "Core_RenderTexture.hpp"
+#include "Atrium_FrameContext.hpp"
+#include "Atrium_GraphicsPipeline.hpp"
+#include "Atrium_RenderTexture.hpp"
 
 #include <d3d12.h>
 
@@ -32,7 +32,7 @@ namespace Atrium::DirectX12
 	private:
 		struct Parameter
 		{
-			Core::ResourceUpdateFrequency myUpdateFrequency;
+			ResourceUpdateFrequency myUpdateFrequency;
 			RegisterType myRegisterType;
 			unsigned int myRegisterIndex;
 			unsigned int myCount;
@@ -44,7 +44,7 @@ namespace Atrium::DirectX12
 			friend RootParameterMapping;
 		public:
 			void AddMapping(
-				Core::ResourceUpdateFrequency anUpdateFrequency,
+				ResourceUpdateFrequency anUpdateFrequency,
 				RegisterType aRegisterType,
 				unsigned int aRegisterIndex,
 				unsigned int aCount
@@ -64,7 +64,7 @@ namespace Atrium::DirectX12
 
 	public:
 		void AddMapping(
-			Core::ResourceUpdateFrequency anUpdateFrequency,
+			ResourceUpdateFrequency anUpdateFrequency,
 			RegisterType aRegisterType,
 			unsigned int aRegisterIndex
 		);
@@ -72,7 +72,7 @@ namespace Atrium::DirectX12
 		Table& AddTable();
 
 		std::optional<ParameterInfo> GetParameterInfo(
-			Core::ResourceUpdateFrequency anUpdateFrequency,
+			ResourceUpdateFrequency anUpdateFrequency,
 			RegisterType aRegisterType,
 			unsigned int aRegisterIndex
 		) const;
@@ -84,7 +84,7 @@ namespace Atrium::DirectX12
 		std::vector<Table> myTableParameters;
 	};
 
-	class RootSignature : public Core::RootSignature
+	class RootSignature : public Atrium::RootSignature
 	{
 		friend class RootSignatureCreator;
 
@@ -92,7 +92,7 @@ namespace Atrium::DirectX12
 		const ComPtr<ID3D12RootSignature>& GetRootSignatureObject() const { return myRootSignature; }
 
 		std::optional<RootParameterMapping::ParameterInfo> GetParameterInfo(
-			Core::ResourceUpdateFrequency anUpdateFrequency,
+			ResourceUpdateFrequency anUpdateFrequency,
 			RootParameterMapping::RegisterType aRegisterType,
 			unsigned int aRegisterIndex
 		) const
@@ -110,7 +110,7 @@ namespace Atrium::DirectX12
 		const RootParameterMapping myParameterMapping;
 	};
 
-	class RootSignatureCreator : public Core::RootSignatureBuilder
+	class RootSignatureCreator : public Atrium::RootSignatureBuilder
 	{
 	private:
 		class Parameter
@@ -123,7 +123,7 @@ namespace Atrium::DirectX12
 			enum class Type { Table, Constant, CBV, SRV, UAV, Sampler } myType = Type::Constant;
 
 			unsigned int myShaderRegister = 0;
-			Core::ResourceUpdateFrequency myUpdateFrequency = Core::ResourceUpdateFrequency::PerObject;
+			ResourceUpdateFrequency myUpdateFrequency = ResourceUpdateFrequency::PerObject;
 			unsigned int myCount = 0;
 			D3D12_SHADER_VISIBILITY myVisibility = D3D12_SHADER_VISIBILITY_ALL;
 		};
@@ -133,15 +133,15 @@ namespace Atrium::DirectX12
 		{
 			friend RootSignatureCreator;
 		public:
-			RootSignatureBuilder::DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::CBV, aCount, aRegister, anUpdateFrequency); }
-			RootSignatureBuilder::DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::SRV, aCount, aRegister, anUpdateFrequency); }
-			RootSignatureBuilder::DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::UAV, aCount, aRegister, anUpdateFrequency); }
-			RootSignatureBuilder::DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::Sampler, aCount, aRegister, anUpdateFrequency); }
+			RootSignatureBuilder::DescriptorTable& AddCBVRange(unsigned int aCount, unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::CBV, aCount, aRegister, anUpdateFrequency); }
+			RootSignatureBuilder::DescriptorTable& AddSRVRange(unsigned int aCount, unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::SRV, aCount, aRegister, anUpdateFrequency); }
+			RootSignatureBuilder::DescriptorTable& AddUAVRange(unsigned int aCount, unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::UAV, aCount, aRegister, anUpdateFrequency); }
+			RootSignatureBuilder::DescriptorTable& AddSamplerRange(unsigned int aCount, unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency) override { return AddRange(Parameter::Type::Sampler, aCount, aRegister, anUpdateFrequency); }
 
 		private:
 			DescriptorTable() { myType = Type::Table; }
 
-			DescriptorTable& AddRange(Parameter::Type aType, unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
+			DescriptorTable& AddRange(Parameter::Type aType, unsigned int aCount, unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency)
 			{
 				Parameter& param = myRanges.emplace_back();
 				param.myType = aType;
@@ -182,25 +182,25 @@ namespace Atrium::DirectX12
 	public:
 		RootSignatureCreator(ID3D12Device* aDevice);
 
-		void AddCBV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override;
-		void AddConstant(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override;
-		void AddConstants(unsigned int aCount, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override;
+		void AddCBV(unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency) override;
+		void AddConstant(unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency) override;
+		void AddConstants(unsigned int aCount, unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency) override;
 
 		RootSignatureBuilder::DescriptorTable& AddTable() override;
 
 		RootSignatureBuilder::Sampler& AddSampler(unsigned int aRegister) override;
 
-		void AddSRV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override;
-		void AddUAV(unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency) override;
+		void AddSRV(unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency) override;
+		void AddUAV(unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency) override;
 
-		std::shared_ptr<Core::RootSignature> Finalize() const override;
+		std::shared_ptr<Atrium::RootSignature> Finalize() const override;
 
-		void SetVisibility(Shader::Type aShaderVisibility) override;
+		void SetVisibility(Atrium::Shader::Type aShaderVisibility) override;
 
 	private:
 		static bool PopulateTable(RootParameterMapping& aParameterMapping, std::vector<D3D12_DESCRIPTOR_RANGE1>& someRanges, D3D12_ROOT_PARAMETER1& aResult, const DescriptorTable& aTable);
 
-		Parameter& AddParameter(Parameter::Type aType, unsigned int aRegister, Core::ResourceUpdateFrequency anUpdateFrequency)
+		Parameter& AddParameter(Parameter::Type aType, unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency)
 		{
 			Parameter& param = *myParameters.emplace_back(new Parameter());
 			param.myType = aType;
@@ -227,10 +227,10 @@ namespace Atrium::DirectX12
 		D3D12_SHADER_VISIBILITY myCurrentVisibility = D3D12_SHADER_VISIBILITY_ALL;
 	};
 
-	class PipelineState : public Core::PipelineState
+	class PipelineState : public Atrium::PipelineState
 	{
 	public:
-		static std::shared_ptr<PipelineState> CreateFrom(ID3D12Device& aDevice, const Core::PipelineStateDescription& aPipelineStateDescription);
+		static std::shared_ptr<PipelineState> CreateFrom(ID3D12Device& aDevice, const PipelineStateDescription& aPipelineStateDescription);
 
 		const ComPtr<ID3D12PipelineState>& GetPipelineStateObject() const { return myPipelineState; }
 		const std::shared_ptr<RootSignature>& GetRootSignature() const { return myRootSignature; }
@@ -241,8 +241,8 @@ namespace Atrium::DirectX12
 	private:
 		PipelineState() = default;
 
-		static D3D12_BLEND ToDXBlend(Core::PipelineStateDescription::BlendFactor aFactor);
-		static D3D12_BLEND_OP ToDXBlend(Core::PipelineStateDescription::BlendOperation anOperation);
+		static D3D12_BLEND ToDXBlend(PipelineStateDescription::BlendFactor aFactor);
+		static D3D12_BLEND_OP ToDXBlend(PipelineStateDescription::BlendOperation anOperation);
 
 		ComPtr<ID3D12PipelineState> myPipelineState;
 

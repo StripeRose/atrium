@@ -4,9 +4,9 @@
 
 #include <rose-common/Color.hpp>
 
-#include "Core_GraphicsEnums.hpp"
+#include "Atrium_GraphicsEnums.hpp"
 
-namespace Atrium::Core
+namespace Atrium
 {
 	class Texture
 	{

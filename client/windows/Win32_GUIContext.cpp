@@ -2,7 +2,7 @@
 
 #include "Win32_GUIContext.hpp"
 
-#include <Core_Diagnostics.hpp>
+#include <Atrium_Diagnostics.hpp>
 
 #if IS_IMGUI_ENABLED
 #include <windef.h>
@@ -13,7 +13,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace Atrium::Win32
 {
-	GUIBackendContext::GUIBackendContext(const std::shared_ptr<Core::Window>& aWindow)
+	GUIBackendContext::GUIBackendContext(const std::shared_ptr<Atrium::Window>& aWindow)
 		: myWindow(std::static_pointer_cast<Window>(aWindow))
 	{
 		ZoneScoped;

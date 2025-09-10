@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "Core_Texture.hpp"
+#include "Atrium_Texture.hpp"
 
 #include <memory>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	struct RenderTextureDescriptor
 	{

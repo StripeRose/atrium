@@ -11,7 +11,7 @@
 
 namespace Atrium::DirectX12
 {
-	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Core::Window& aWindow)
+	SwapChain::SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Window& aWindow)
 		: myDevice(&aDevice)
 		, myWindow(&aWindow)
 	{
@@ -122,7 +122,7 @@ namespace Atrium::DirectX12
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDepthGPUResource();
 	}
 
-	const Core::RenderTextureDescriptor& SwapChain::GetDescriptor() const
+	const RenderTextureDescriptor& SwapChain::GetDescriptor() const
 	{
 		return myBackBuffers.at(GetCurrentBufferIndex())->GetDescriptor();
 	}
@@ -371,7 +371,7 @@ namespace Atrium::DirectX12
 			Debug::Assert(mySwapChain->GetBuffer(i, IID_PPV_ARGS(backBufferResource.ReleaseAndGetAddressOf())), "Get swapchain back buffer.");
 			//backBufferResource->SetName(BasicString<wchar_t>::Format(L"Backbuffer Texture #%i", i).ToCharArray());
 
-			Core::RenderTextureDescriptor rtDesc;
+			RenderTextureDescriptor rtDesc;
 			rtDesc.ColorFormat = GetRenderTextureFormat();
 			rtDesc.ColorGraphicsFormat = ToGraphicsFormat(rtDesc.ColorFormat);
 			rtDesc.DepthStencilFormat = GraphicsFormat::D32_SFloat;
@@ -401,7 +401,7 @@ namespace Atrium::DirectX12
 			return RenderTextureFormat::Default;
 	}
 
-	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, const ComPtr<ID3D12Resource>& aColorBuffer, const ComPtr<ID3D12Resource>& aDepthBuffer)
+	SwapChain::SwapChainBackBuffer::SwapChainBackBuffer(Device& aDevice, const RenderTextureDescriptor& aDescriptor, const ComPtr<ID3D12Resource>& aColorBuffer, const ComPtr<ID3D12Resource>& aDepthBuffer)
 		: RenderTexture(
 			aDevice,
 			aDescriptor,

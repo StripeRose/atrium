@@ -6,8 +6,8 @@
 #include "DX12_ResourceManager.hpp"
 #include "DX12_SwapChain.hpp"
 
-#include "Core_GraphicsAPI.hpp"
-#include "Core_WindowManagement.hpp"
+#include "Atrium_GraphicsAPI.hpp"
+#include "Atrium_WindowManagement.hpp"
 
 #include <d3d12.h>
 
@@ -18,7 +18,7 @@ namespace Atrium::DirectX12
 	class Device;
 	class RootSignature;
 
-	class DirectX12API final : public Atrium::Core::GraphicsAPI
+	class DirectX12API final : public Atrium::GraphicsAPI
 	{
 	public:
 		static std::size_t GetFramesInFlightAmount();
@@ -37,13 +37,13 @@ namespace Atrium::DirectX12
 
 		// Implementing Atrium::GraphicsAPI
 	public:
-		std::shared_ptr<Core::FrameGraphicsContext> CreateFrameGraphicsContext() override;
+		std::shared_ptr<Atrium::FrameGraphicsContext> CreateFrameGraphicsContext() override;
 
-		std::unique_ptr<Core::GUIContext> CreateGUIContext(const std::shared_ptr<Core::RenderTexture>& aRenderTarget) override;
+		std::unique_ptr<Atrium::GUIContext> CreateGUIContext(const std::shared_ptr<Atrium::RenderTexture>& aRenderTarget) override;
 
 		std::uint_least64_t GetCurrentFrameIndex() const override;
 
-		Core::GraphicsAPI::ResourceManager& GetResourceManager() override { return *myResourceManager; }
+		GraphicsAPI::ResourceManager& GetResourceManager() override { return *myResourceManager; }
 
 		bool SupportsMultipleWindows() const override { return true; }
 

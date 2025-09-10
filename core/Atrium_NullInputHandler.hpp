@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "Core_InputDeviceAPI.hpp"
+#include "Atrium_InputDeviceAPI.hpp"
 
-namespace Atrium::Core
+namespace Atrium
 {
 	/**
 	 * @brief Empty input handler implementation which acts like functional API but does nothing.

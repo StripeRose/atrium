@@ -6,7 +6,7 @@
 #include <memory>
 #include <string_view>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	/**
 	 * @brief A playable audio clip.

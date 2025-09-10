@@ -6,11 +6,11 @@
 #include "DX12_DescriptorHeap.hpp"
 #include "DX12_GPUResource.hpp"
 
-#include "Core_RenderTexture.hpp"
+#include "Atrium_RenderTexture.hpp"
 
 namespace Atrium::DirectX12
 {
-	class RenderTarget : public Core::RenderTexture
+	class RenderTarget : public RenderTexture
 	{
 	public:
 		virtual DescriptorHeapHandle GetColorView() const = 0;
@@ -31,11 +31,11 @@ namespace Atrium::DirectX12
 	public:
 		RenderTexture(
 			Device& aDevice,
-			const Core::RenderTextureDescriptor& aDescriptor
+			const RenderTextureDescriptor& aDescriptor
 		);
 		RenderTexture(
 			Device& aDevice,
-			const Core::RenderTextureDescriptor& aDescriptor,
+			const RenderTextureDescriptor& aDescriptor,
 			const std::shared_ptr<GPUResource>& aColorBuffer,
 			const std::shared_ptr<GPUResource>& aDepthBuffer
 		);
@@ -58,7 +58,7 @@ namespace Atrium::DirectX12
 
 		// Implementing RenderTexture
 	public:
-		const Core::RenderTextureDescriptor& GetDescriptor() const override { return myDescriptor; }
+		const RenderTextureDescriptor& GetDescriptor() const override { return myDescriptor; }
 		void* GetNativeDepthBufferPtr() const override { return myDepthResource->GetResource().Get(); }
 
 		// Implementing Texture
@@ -75,7 +75,7 @@ namespace Atrium::DirectX12
 	protected:
 		Device* myDevicePtr;
 
-		Core::RenderTextureDescriptor myDescriptor;
+		RenderTextureDescriptor myDescriptor;
 
 		std::shared_ptr<GPUResource> myResource;
 		std::shared_ptr<GPUResource> myDepthResource;

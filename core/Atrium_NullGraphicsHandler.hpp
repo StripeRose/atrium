@@ -2,17 +2,17 @@
 
 #pragma once
 
-#include "Core_GraphicsAPI.hpp"
+#include "Atrium_GraphicsAPI.hpp"
 
-namespace Atrium::Core
+namespace Atrium
 {
 	class NullGraphicsHandler final : public GraphicsAPI
 	{
 	public:
 		NullGraphicsHandler();
 
-		std::shared_ptr<Core::FrameGraphicsContext> CreateFrameGraphicsContext() override;
-		std::unique_ptr<GUIContext> CreateGUIContext(const std::shared_ptr<Core::RenderTexture>&) override;
+		std::shared_ptr<FrameGraphicsContext> CreateFrameGraphicsContext() override;
+		std::unique_ptr<GUIContext> CreateGUIContext(const std::shared_ptr<RenderTexture>&) override;
 		std::uint_least64_t GetCurrentFrameIndex() const override;
 		ResourceManager& GetResourceManager() override;
 		void MarkFrameStart() override;

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Core_Texture.hpp"
+#include "Atrium_Texture.hpp"
 
 #include "DX12_ComPtr.hpp"
 #include "DX12_DescriptorHeap.hpp"
@@ -46,7 +46,7 @@ namespace Atrium::DirectX12
 		DescriptorHeapHandle mySRVHandle;
 	};
 
-	class Texture : public Core::Texture
+	class Texture : public Atrium::Texture
 	{
 	public:
 		Texture(Device& aDevice, UploadContext& anUploader, const DirectX::TexMetadata& aMetadata);
@@ -56,7 +56,7 @@ namespace Atrium::DirectX12
 
 		DDSImage& GetImage() { return myImage; }
 
-		// Implements Core::Texture
+		// Implements Texture
 	public:
 		TextureDimension GetDimensions() const override;
 		unsigned int GetDepth() const override;

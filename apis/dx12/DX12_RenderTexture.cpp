@@ -7,11 +7,11 @@
 
 namespace Atrium::DirectX12
 {
-	RenderTexture::RenderTexture(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor)
+	RenderTexture::RenderTexture(Device& aDevice, const RenderTextureDescriptor& aDescriptor)
 		: RenderTexture(aDevice, aDescriptor, nullptr, nullptr)
 	{ }
 
-	RenderTexture::RenderTexture(Device& aDevice, const Core::RenderTextureDescriptor& aDescriptor, const std::shared_ptr<GPUResource>& aColorBuffer, const std::shared_ptr<GPUResource>& aDepthBuffer)
+	RenderTexture::RenderTexture(Device& aDevice, const RenderTextureDescriptor& aDescriptor, const std::shared_ptr<GPUResource>& aColorBuffer, const std::shared_ptr<GPUResource>& aDepthBuffer)
 		: myDescriptor(aDescriptor)
 		, myDevicePtr(&aDevice)
 		, myResource(aColorBuffer)

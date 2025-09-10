@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "Core_InputDevice.hpp"
+#include "Atrium_InputDevice.hpp"
 
 #include <rose-common/EventSlot.hpp>
 
 #include <span>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	struct InputEvent;
 	struct TextInputEvent;

@@ -2,15 +2,15 @@
 
 #pragma once
 
-#include "Core_FrameContext.hpp"
-#include "Core_GraphicsBuffer.hpp"
-#include "Core_GraphicsPipeline.hpp"
-#include "Core_GUIContext.hpp"
-#include "Core_RenderTexture.hpp"
+#include "Atrium_FrameContext.hpp"
+#include "Atrium_GraphicsBuffer.hpp"
+#include "Atrium_GraphicsPipeline.hpp"
+#include "Atrium_GUIContext.hpp"
+#include "Atrium_RenderTexture.hpp"
 
 #include <filesystem>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	class Window;
 
@@ -48,7 +48,7 @@ namespace Atrium::Core
 		 * @param aRenderTarget A render-target to create the context for.
 		 * @return The created context.
 		 */
-		virtual std::unique_ptr<GUIContext> CreateGUIContext(const std::shared_ptr<Core::RenderTexture>& aRenderTarget) = 0;
+		virtual std::unique_ptr<GUIContext> CreateGUIContext(const std::shared_ptr<RenderTexture>& aRenderTarget) = 0;
 
 		/**
 		 * @brief Get the current graphics-frame index.
@@ -139,12 +139,12 @@ namespace Atrium::Core
 		 * @param anArrayCount An amount of textures in the array. Defaults to 1.
 		 * @return The created texture.
 		 */
-		std::shared_ptr<Core::Texture> CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension)
+		std::shared_ptr<Texture> CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension)
 		{
 			return CreateTexture(aWidth, aHeight, aDepth, 1, aTextureFormat, aDimension);
 		}
 
-		virtual std::shared_ptr<Core::Texture> CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension) = 0;
+		virtual std::shared_ptr<Texture> CreateTexture(unsigned int aWidth, unsigned int aHeight, unsigned int aDepth, unsigned int anArrayCount, TextureFormat aTextureFormat, std::optional<TextureDimension> aDimension) = 0;
 
 		/**
 		 * @brief Load a texture from a file-system path.

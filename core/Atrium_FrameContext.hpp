@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "Core_Diagnostics.hpp"
-#include "Core_GraphicsBuffer.hpp"
-#include "Core_GraphicsEnums.hpp"
-#include "Core_GraphicsPipeline.hpp"
-#include "Core_RenderTexture.hpp"
+#include "Atrium_Diagnostics.hpp"
+#include "Atrium_GraphicsBuffer.hpp"
+#include "Atrium_GraphicsEnums.hpp"
+#include "Atrium_GraphicsPipeline.hpp"
+#include "Atrium_RenderTexture.hpp"
 
 #include <rose-common/Color.hpp>
 #include <rose-common/math/Geometry.hpp>
@@ -16,7 +16,7 @@
 #include <source_location>
 #include <vector>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	/**
 	 * @brief Handles graphics commands and GPU data submission for a specific frame.

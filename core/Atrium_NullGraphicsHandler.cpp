@@ -1,8 +1,8 @@
 // Filter "Graphics"
 
-#include "Core_NullGraphicsHandler.hpp"
+#include "Atrium_NullGraphicsHandler.hpp"
 
-namespace Atrium::Core
+namespace Atrium
 {
 	class NullFrameGraphicsContext final : public FrameGraphicsContext
 	{
@@ -58,12 +58,12 @@ namespace Atrium::Core
 	{
 	}
 
-	std::shared_ptr<Core::FrameGraphicsContext> NullGraphicsHandler::CreateFrameGraphicsContext()
+	std::shared_ptr<FrameGraphicsContext> NullGraphicsHandler::CreateFrameGraphicsContext()
 	{
 		return nullptr;
 	}
 
-	std::unique_ptr<GUIContext> NullGraphicsHandler::CreateGUIContext(const std::shared_ptr<Core::RenderTexture>&)
+	std::unique_ptr<GUIContext> NullGraphicsHandler::CreateGUIContext(const std::shared_ptr<RenderTexture>&)
 	{
 		return nullptr;
 	}

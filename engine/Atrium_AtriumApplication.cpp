@@ -1,10 +1,10 @@
 #include "Atrium_AtriumApplication.hpp"
 
-#include "Core_AudioAPI.hpp"
-#include "Core_Diagnostics.hpp"
-#include "Core_GraphicsAPI.hpp"
-#include "Core_InputDeviceAPI.hpp"
-#include "Core_WindowManagement.hpp"
+#include "Atrium_AudioAPI.hpp"
+#include "Atrium_Diagnostics.hpp"
+#include "Atrium_GraphicsAPI.hpp"
+#include "Atrium_InputDeviceAPI.hpp"
+#include "Atrium_WindowManagement.hpp"
 
 namespace Atrium
 {
@@ -105,7 +105,7 @@ namespace Atrium
 	{
 		myWindowManager->Update();
 
-		myInputDeviceAPI->ReportInputEvents(~Core::InputDeviceType::Unknown);
+		myInputDeviceAPI->ReportInputEvents(~InputDeviceType::Unknown);
 
 		myGraphicsAPI->MarkFrameStart();
 

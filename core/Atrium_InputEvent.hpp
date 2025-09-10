@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "Core_Diagnostics.hpp"
-#include "Core_InputSource.hpp"
+#include "Atrium_Diagnostics.hpp"
+#include "Atrium_InputSource.hpp"
 
 #include <bitset>
 #include <span>
 #include <string>
 
-namespace Atrium::Core
+namespace Atrium
 {
 	class InputDevice;
 
