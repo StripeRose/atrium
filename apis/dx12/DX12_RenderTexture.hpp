@@ -10,7 +10,7 @@
 
 namespace Atrium::DirectX12
 {
-	class RenderTarget : public RenderTexture
+	class RenderTarget : public Atrium::RenderTexture
 	{
 	public:
 		virtual DescriptorHeapHandle GetColorView() const = 0;
