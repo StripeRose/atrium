@@ -5,7 +5,6 @@
 #include "Atrium_FrameContext.hpp"
 #include "Atrium_GraphicsBuffer.hpp"
 #include "Atrium_GraphicsPipeline.hpp"
-#include "Atrium_GUIContext.hpp"
 #include "Atrium_RenderTexture.hpp"
 
 #include <filesystem>
@@ -42,13 +41,6 @@ namespace Atrium
 		 * @return A pointer to the created context.
 		 */
 		virtual std::shared_ptr<FrameGraphicsContext> CreateFrameGraphicsContext() = 0;
-
-		/**
-		 * @brief Create a new ImGui context for the graphics API.
-		 * @param aRenderTarget A render-target to create the context for.
-		 * @return The created context.
-		 */
-		virtual std::unique_ptr<GUIContext> CreateGUIContext(const std::shared_ptr<RenderTexture>& aRenderTarget) = 0;
 
 		/**
 		 * @brief Get the current graphics-frame index.

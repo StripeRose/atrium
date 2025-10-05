@@ -4,7 +4,6 @@ using Sharpmake;
 [module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
 [module: Sharpmake.Include("../../core/sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
-[module: Sharpmake.Include("../../libraries/imgui.sharpmake.cs")]
 
 namespace Atrium
 {
@@ -23,9 +22,6 @@ namespace Atrium
             conf.SolutionFolder = "Atrium/client";
 
             conf.AddPrivateDependency<Atrium.Core>(target);
-
-			if (target.Optimization != Sharpmake.Optimization.Retail || Atrium.Configuration.ImGuiInRetail)
-                conf.AddPublicDependency<DearImGui>(target);
 
 			conf.IncludePaths.Add("[project.SharpmakeCsPath]/../../libraries/GameInput/include");
 			conf.LibraryPaths.Add("[project.SharpmakeCsPath]/../../libraries/GameInput/lib/x64");

@@ -8,8 +8,6 @@ using Sharpmake;
 [module: Sharpmake.Include("../apis/dx12/sharpmake.cs")]
 [module: Sharpmake.Include("../client/windows/sharpmake.cs")]
 
-[module: Sharpmake.Include("../libraries/imgui.sharpmake.cs")]
-
 namespace Atrium
 {
     [Generate]
@@ -29,9 +27,6 @@ namespace Atrium
             conf.AddPublicDependency<RoseCommon>(target);
 
             conf.AddPublicDependency<Atrium.Core>(target);
-
-            if (target.Optimization != Sharpmake.Optimization.Retail || Atrium.Configuration.ImGuiInRetail)
-                conf.AddPublicDependency<DearImGui>(target);
 
             switch (target.Platform)
             {

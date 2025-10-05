@@ -1,5 +1,4 @@
 #include "Win32_WindowManagement.hpp"
-#include "Win32_GUIContext.hpp"
 
 #include "Atrium_Diagnostics.hpp"
 
@@ -291,13 +290,6 @@ namespace Atrium::Win32
 	{
 		myWindows.clear();
 		CleanupWindowClasses();
-	}
-
-	std::unique_ptr<Atrium::GUIContext> WindowManager::CreateGUIContext(const std::shared_ptr<Atrium::Window>& aWindow)
-	{
-		return std::unique_ptr<Atrium::GUIContext>(
-			new GUIBackendContext(aWindow)
-		);
 	}
 
 	std::shared_ptr<Atrium::Window> WindowManager::NewWindow()

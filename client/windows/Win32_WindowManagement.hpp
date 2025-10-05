@@ -74,8 +74,6 @@ namespace Atrium::Win32
 		WindowManager();
 		~WindowManager();
 
-		std::unique_ptr<Atrium::GUIContext> CreateGUIContext(const std::shared_ptr<Atrium::Window>& aWindow) override;
-
 		std::shared_ptr<Atrium::Window> NewWindow() override;
 
 		void Update() override;

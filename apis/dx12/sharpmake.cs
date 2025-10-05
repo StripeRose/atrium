@@ -4,7 +4,6 @@ using Sharpmake;
 [module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
 [module: Sharpmake.Include("../../core/sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
-[module: Sharpmake.Include("../../libraries/imgui.sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/d3d12ma.sharpmake.cs")]
 [module: Sharpmake.Include("../../libraries/directxtex.sharpmake.cs")]
 
@@ -30,9 +29,6 @@ namespace Atrium
             conf.AddPrivateDependency<Atrium.Core>(target);
             conf.AddPrivateDependency<D3D12MemoryAllocator>(target);
             conf.AddPrivateDependency<DirectXTex>(target);
-
-			if (target.Optimization != Sharpmake.Optimization.Retail || Atrium.Configuration.ImGuiInRetail)
-                conf.AddPublicDependency<DearImGui>(target);
 
             conf.Defines.Add("DX12_FRAMES_IN_FLIGHT=2");
 

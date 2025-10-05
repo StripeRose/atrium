@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Atrium_GUIContext.hpp>
-
 #include <rose-common/EventSlot.hpp>
 #include <rose-common/math/Geometry.hpp>
 
@@ -67,13 +65,6 @@ namespace Atrium
 	{
 	public:
 		virtual ~WindowManager() = default;
-
-		/**
-		 * @brief Create a new ImGui context for the graphics API.
-		 * @param aWindow A window to create the context for.
-		 * @return The created context.
-		 */
-		virtual std::unique_ptr<GUIContext> CreateGUIContext(const std::shared_ptr<Window>& aWindow) = 0;
 
 		virtual std::shared_ptr<Window> NewWindow() = 0;
 

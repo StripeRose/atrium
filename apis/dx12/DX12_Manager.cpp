@@ -5,7 +5,6 @@
 #include "DX12_Diagnostics.hpp"
 #include "DX12_GraphicsBuffer.hpp"
 #include "DX12_Instancer.hpp"
-#include "DX12_GUIContext.hpp"
 #include "DX12_Manager.hpp"
 #include "DX12_Pipeline.hpp"
 #include "DX12_Shader.hpp"
@@ -78,13 +77,6 @@ namespace Atrium::DirectX12
 	{
 		return myFrameGraphicsContexts.emplace_back(
 			new FrameGraphicsContext(*myDevice, myCommandQueueManager->GetGraphicsQueue())
-		);
-	}
-
-	std::unique_ptr<Atrium::GUIContext> DirectX12API::CreateGUIContext(const std::shared_ptr<Atrium::RenderTexture>& aRenderTarget)
-	{
-		return std::unique_ptr<Atrium::GUIContext>(
-			new GUIBackendContext(*this, *myPresentPrepareContext, aRenderTarget)
 		);
 	}
 
