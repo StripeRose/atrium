@@ -66,7 +66,7 @@ namespace Atrium::DirectX12
 		, myDescriptorHeapCPUStart({ 0 })
 		, myDescriptorHeapGPUStart({ 0 })
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		D3D12_DESCRIPTOR_HEAP_DESC heapDescriptor;
 		heapDescriptor.NumDescriptors = myMaxDescriptors;

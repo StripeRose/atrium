@@ -14,7 +14,7 @@ namespace Atrium::DirectX12
 
 	std::shared_ptr<Atrium::RenderTexture> ResourceManager::CreateRenderTextureForWindow(Window& aWindow)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		const std::scoped_lock lock(mySwapChainMutex);
 		std::shared_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
@@ -30,7 +30,7 @@ namespace Atrium::DirectX12
 
 	std::shared_ptr<Atrium::GraphicsBuffer> ResourceManager::CreateGraphicsBuffer(GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		return std::shared_ptr<Atrium::GraphicsBuffer>(new GraphicsBuffer(myManager, aTarget, aCount, aStride));
 	}
@@ -49,7 +49,7 @@ namespace Atrium::DirectX12
 
 	std::shared_ptr<Atrium::Shader> ResourceManager::CreateShader(const std::filesystem::path& aSource, Atrium::Shader::Type aType, const char* anEntryPoint)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		switch (aType)
 		{
@@ -136,7 +136,7 @@ namespace Atrium::DirectX12
 
 	std::shared_ptr<Atrium::Texture> ResourceManager::LoadTexture(const std::filesystem::path& aPath)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		const std::filesystem::path extension = aPath.extension();
 		if (extension == ".dds")

@@ -15,7 +15,7 @@ namespace Atrium::DirectX12
 		, myLastCompletedFenceValue(std::uint64_t(aQueueType) << 56)
 		, myFenceEventHandle(INVALID_HANDLE_VALUE)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		D3D12_COMMAND_QUEUE_DESC queueDescriptor = { };
 		queueDescriptor.Type = aQueueType;
@@ -164,7 +164,7 @@ namespace Atrium::DirectX12
 		, myAsyncComputeQueue(aDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE)
 		, myCopyQueue(aDevice, D3D12_COMMAND_LIST_TYPE_COPY)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		myGraphicsQueue.GetCommandQueue()->SetName(L"Main graphics queue");
 		myGraphicsQueue.GetFence()->SetName(L"Main graphics queue fence");

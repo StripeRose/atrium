@@ -18,7 +18,7 @@ namespace Atrium
 	// This function sets up all core API handlers that the rest of the engine is building off of, depending on the current platform.
 	void AtriumApplication::CreateAPIHandlers()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		#if _WIN32
 

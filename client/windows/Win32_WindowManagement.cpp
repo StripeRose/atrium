@@ -142,7 +142,7 @@ namespace Atrium::Win32
 		, myWindowState(WindowState::Normal)
 		, myShowNormalCommand(isFirstWindow ? SW_SHOWDEFAULT : SW_SHOWNORMAL)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 		myDefaultCursor = ::LoadCursor(NULL, IDC_ARROW);
 
 		myWndProcCallback = std::bind(&Window::HandleWindowMessage,
@@ -302,7 +302,7 @@ namespace Atrium::Win32
 
 	void WindowManager::Update()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 		ProcessWindowMessages();
 
 		for (std::size_t i = 0; i < myWindows.size(); ++i)
@@ -321,7 +321,7 @@ namespace Atrium::Win32
 
 	LRESULT WindowManager::WindowClassWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 		if (msg == WM_NCCREATE) [[unlikely]]
 		{
 			CREATESTRUCT* createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
@@ -338,7 +338,7 @@ namespace Atrium::Win32
 
 	void WindowManager::RegisterWindowClasses()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 		WNDCLASSEX& wndClass = myWindowClasses.emplace_back();
 		wndClass.cbSize = sizeof(wndClass);
 		wndClass.style = CS_CLASSDC;
@@ -358,7 +358,7 @@ namespace Atrium::Win32
 
 	void WindowManager::CleanupWindowClasses()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 		for (const WNDCLASSEX& wndClass : myWindowClasses)
 			::UnregisterClass(wndClass.lpszClassName, wndClass.hInstance);
 
@@ -367,7 +367,7 @@ namespace Atrium::Win32
 
 	void WindowManager::ProcessWindowMessages()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 		MSG message;
 		while (::PeekMessage(&message, nullptr, 0U, 0U, PM_REMOVE))
 		{

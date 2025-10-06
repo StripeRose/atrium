@@ -19,7 +19,7 @@ namespace Atrium::DirectX12
 		, myProfilingContext(aCommandQueue.GetProfilingContext())
 		#endif
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 		myFrameCommandAllocators.resize(DX12_FRAMES_IN_FLIGHT);
 
 		for (unsigned int i = 0; i < DX12_FRAMES_IN_FLIGHT; ++i)

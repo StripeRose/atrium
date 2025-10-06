@@ -14,7 +14,7 @@ namespace Atrium::DirectX12
 	Device::Device(const DeviceParameters& someParameters)
 		: myFeatureLevel(someParameters.MinimumFeatureLevel)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		myParameters = someParameters;
 
@@ -87,7 +87,7 @@ namespace Atrium::DirectX12
 
 	bool Device::SetupFactory(UINT someDXGIFlags)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		if (!Debug::Verify(CreateDXGIFactory2(someDXGIFlags, IID_PPV_ARGS(myDXGIFactory.GetAddressOf())), "Create DXGI Factory"))
 			return false;
@@ -110,7 +110,7 @@ namespace Atrium::DirectX12
 
 	bool Device::SetupAdapter()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		ComPtr<IDXGIFactory6> dxgiFactory6;
 		HRESULT hr = myDXGIFactory.As(&dxgiFactory6);
@@ -195,7 +195,7 @@ namespace Atrium::DirectX12
 
 	bool Device::SetupDevice()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		if (!Debug::Verify(D3D12CreateDevice(
 			myAdapter.Get(),
@@ -210,7 +210,7 @@ namespace Atrium::DirectX12
 
 	bool Device::SetupAllocator()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		D3D12MA::ALLOCATOR_DESC allocatorDesc = {};
 		allocatorDesc.pDevice = myDevice.Get();
@@ -227,7 +227,7 @@ namespace Atrium::DirectX12
 
 	bool Device::SetupInfoQueue()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 #ifndef NDEBUG
 		if (!Debug::Verify(myDevice.As(&myInfoQueue), "Get info queue."))
@@ -253,7 +253,7 @@ namespace Atrium::DirectX12
 
 	bool Device::FindMaximumFeatureLevel()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		static const D3D_FEATURE_LEVEL s_featureLevels[] =
 		{
@@ -281,7 +281,7 @@ namespace Atrium::DirectX12
 
 	bool Device::SetupHeapManager()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		myDescriptorHeapManager.reset(new DescriptorHeapManager(myDevice, DX12_FRAMES_IN_FLIGHT));
 		return myDescriptorHeapManager.get() != nullptr;

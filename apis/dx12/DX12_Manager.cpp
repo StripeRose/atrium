@@ -32,7 +32,7 @@ namespace Atrium::DirectX12
 		: myFrameIndex(static_cast<std::uint64_t>(-1))
 		, myFrameInFlight(0)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		myFrameEndFences.resize(DX12_FRAMES_IN_FLIGHT);
 		for (auto& frameEndFence : myFrameEndFences)
@@ -56,7 +56,7 @@ namespace Atrium::DirectX12
 
 	DirectX12API::~DirectX12API()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		Debug::Log("DX12 stop");
 
@@ -87,13 +87,13 @@ namespace Atrium::DirectX12
 
 	void DirectX12API::MarkFrameStart()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		myFrameIndex += 1;
 		myFrameInFlight = myFrameIndex % DX12_FRAMES_IN_FLIGHT;
 
 		{
-			ZoneScopedN("Waiting for previous frame");
+			PROFILE_SCOPE_NAME("Waiting for previous frame");
 
 			myCommandQueueManager->GetComputeQueue().WaitForFenceCPUBlocking(myFrameEndFences[myFrameInFlight].ComputeQueue);
 			myCommandQueueManager->GetCopyQueue().WaitForFenceCPUBlocking(myFrameEndFences[myFrameInFlight].CopyQueue);
@@ -113,17 +113,17 @@ namespace Atrium::DirectX12
 
 	void DirectX12API::MarkFrameEnd()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		{
-			ZoneScopedN("Process uploads");
+			PROFILE_SCOPE_NAME("Process uploads");
 			myUploadContext->ProcessUploads();
 			myFrameEndFences[myFrameInFlight].CopyQueue = myCommandQueueManager->GetCopyQueue().ExecuteCommandList(myUploadContext->GetCommandList());
 		}
 
 		// Submit the frame's work.
 		{
-			ZoneScopedN("Submit graphic commands");
+			PROFILE_SCOPE_NAME("Submit graphic commands");
 
 			std::vector<ComPtr<ID3D12CommandList>> commandLists;
 			commandLists.reserve(myFrameGraphicsContexts.size());
@@ -136,7 +136,7 @@ namespace Atrium::DirectX12
 		// Record used swapchains and make them ready to present.
 		std::vector<std::shared_ptr<SwapChain>> frameSwapChains;
 		{
-			ZoneScopedN("Set up used swapchains for presenting");
+			PROFILE_SCOPE_NAME("Set up used swapchains for presenting");
 			for (const auto& swapChain : myResourceManager->GetSwapChains())
 			{
 				if (swapChain->GetGPUResource()->GetUsageState() == D3D12_RESOURCE_STATE_PRESENT)
@@ -152,7 +152,7 @@ namespace Atrium::DirectX12
 		}
 
 		{
-			ZoneScopedN("Present");
+			PROFILE_SCOPE_NAME("Present");
 			for (const std::shared_ptr<SwapChain>& swapChain : frameSwapChains)
 				swapChain->Present();
 		}
@@ -161,7 +161,7 @@ namespace Atrium::DirectX12
 		TracyD3D12Collect(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
 		TracyD3D12Collect(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
 
-		FrameMark;
+		PROFILE_FRAMEMARK();
 		TracyD3D12NewFrame(myCommandQueueManager->GetComputeQueue().GetProfilingContext());
 		TracyD3D12NewFrame(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
 		TracyD3D12NewFrame(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
