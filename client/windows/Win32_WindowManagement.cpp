@@ -23,13 +23,13 @@ namespace Atrium::Win32
 		return myWindowHandle;
 	}
 
-	PointT<int> Window::GetPosition() const
+	Vector2<int> Window::GetPosition() const
 	{
 		const RECT windowRect = GetRect();
 		return { windowRect.left, windowRect.top };
 	}
 
-	SizeT<int> Window::GetSize() const
+	Vector2<int> Window::GetSize() const
 	{
 		const RECT windowRect = GetRect();
 		return {
@@ -57,7 +57,7 @@ namespace Atrium::Win32
 		return myWindowHandle == ::GetActiveWindow();
 	}
 
-	void Window::SetPosition(const PointT<int>& aPoint)
+	void Window::SetPosition(const Vector2<int>& aPoint)
 	{
 		RECT rect(aPoint.X, aPoint.Y, 0, 0);
 		::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
@@ -67,9 +67,9 @@ namespace Atrium::Win32
 			SWP_NOACTIVATE | SWP_NOSIZE);
 	}
 
-	void Window::SetSize(const SizeT<int>& aSize)
+	void Window::SetSize(const Vector2<int>& aSize)
 	{
-		RECT rect(0, 0, aSize.Width, aSize.Height);
+		RECT rect(0, 0, aSize.X, aSize.Y);
 		::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
 
 		::SetWindowPos(myWindowHandle, NULL,

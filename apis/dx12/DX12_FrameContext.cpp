@@ -278,7 +278,7 @@ namespace Atrium::DirectX12
 		myPendingTextureResources.clear();
 	}
 
-	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Atrium::RenderTexture>& aTarget, ColorT<float> aClearColor)
+	void FrameGraphicsContext::ClearColor(const std::shared_ptr<Atrium::RenderTexture>& aTarget, ColorARGB<float> aClearColor)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Clear color");
 		Debug::Assert(!!aTarget, "ClearColor() requires a target.");
@@ -385,14 +385,14 @@ namespace Atrium::DirectX12
 		myCommandList->DrawIndexedInstanced(anIndexCountPerInstance, anInstanceCount, aStartIndexLocation, aBaseVertexLocation, aStartInstanceLocation);
 	}
 
-	void FrameGraphicsContext::SetBlendFactor(ColorT<float> aBlendFactor)
+	void FrameGraphicsContext::SetBlendFactor(ColorARGB<float> aBlendFactor)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set blend factor");
 		float color[4] = { aBlendFactor.R, aBlendFactor.G, aBlendFactor.B, aBlendFactor.A };
 		myCommandList->OMSetBlendFactor(color);
 	}
 
-	void FrameGraphicsContext::SetScissorRect(const RectangleT<int>& aRectangle)
+	void FrameGraphicsContext::SetScissorRect(const Rectangle<int>& aRectangle)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set scissor rect");
 
@@ -538,12 +538,12 @@ namespace Atrium::DirectX12
 			dxDepthTarget ? &depthStencilHandle : nullptr);
 	}
 
-	void FrameGraphicsContext::SetViewportAndScissorRect(const SizeT<int>& aScreenSize)
+	void FrameGraphicsContext::SetViewportAndScissorRect(const Vector2<int>& aScreenSize)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set viewport and scissor rect");
 		D3D12_VIEWPORT viewport;
-		viewport.Width = static_cast<float>(aScreenSize.Width);
-		viewport.Height = static_cast<float>(aScreenSize.Height);
+		viewport.Width = static_cast<float>(aScreenSize.X);
+		viewport.Height = static_cast<float>(aScreenSize.Y);
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
 		viewport.TopLeftX = 0;
@@ -552,17 +552,17 @@ namespace Atrium::DirectX12
 		D3D12_RECT scissor;
 		scissor.top = 0;
 		scissor.left = 0;
-		scissor.bottom = aScreenSize.Height;
-		scissor.right = aScreenSize.Width;
+		scissor.bottom = aScreenSize.Y;
+		scissor.right = aScreenSize.X;
 
 		myCommandList->RSSetViewports(1, &viewport);
 		myCommandList->RSSetScissorRects(1, &scissor);
 	}
 
-	void FrameGraphicsContext::SetViewport(const RectangleT<float>& aRectangle)
+	void FrameGraphicsContext::SetViewport(const Rectangle<float>& aRectangle)
 	{
 		TracyD3D12Zone(myProfilingContext, myCommandList.Get(), "Set viewport");
-		const PointT<float> topLeft = aRectangle.TopLeft();
+		const Vector2<float> topLeft = aRectangle.TopLeft();
 
 		D3D12_VIEWPORT viewport;
 		viewport.TopLeftX = topLeft.X;

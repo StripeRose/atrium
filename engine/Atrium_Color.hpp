@@ -6,6 +6,6 @@
 
 namespace Atrium
 {
-	using Color = ColorT<float>;
-	using Color32 = ColorT<std::uint8_t>;
+	using Color = ColorARGB<float>;
+	using Color32 = ColorARGB<std::uint8_t>;
 }

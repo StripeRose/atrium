@@ -56,7 +56,7 @@ namespace Atrium
 		 * @param aTarget Target to clear the color buffer of.
 		 * @param aClearColor Color value to clear to.
 		 */
-		virtual void ClearColor(const std::shared_ptr<RenderTexture>& aTarget, ColorT<float> aClearColor) = 0;
+		virtual void ClearColor(const std::shared_ptr<RenderTexture>& aTarget, ColorARGB<float> aClearColor) = 0;
 
 		/**
 		 * @brief Clear a render texture's depth and stencil to a specified value.
@@ -123,7 +123,7 @@ namespace Atrium
 		 * 
 		 * @refactor Should this be a Color, or some other structure?
 		 */
-		virtual void SetBlendFactor(ColorT<float> aBlendFactor) = 0;
+		virtual void SetBlendFactor(ColorARGB<float> aBlendFactor) = 0;
 
 		/**
 		 * @brief Set the active Pipeline State Object, including its root signature.
@@ -170,7 +170,7 @@ namespace Atrium
 		 * 
 		 * @param aRectangle Sub-section rectangle in pixels.
 		 */
-		virtual void SetScissorRect(const RectangleT<int>& aRectangle) = 0;
+		virtual void SetScissorRect(const Rectangle<int>& aRectangle) = 0;
 
 		/**
 		 * @brief Set the reference value for depth stencil tests.
@@ -193,14 +193,14 @@ namespace Atrium
 		 * @refactor Doesn't do much different than calling SetScissorRect() and SetViewport().
 		 *           Could be removed to simplify.
 		 */
-		virtual void SetViewportAndScissorRect(const SizeT<int>& aScreenSize) = 0;
+		virtual void SetViewportAndScissorRect(const Vector2<int>& aScreenSize) = 0;
 
 		/**
 		 * @brief Specify a sub-section of the render target that should be used for drawing.
 		 * 
 		 * @param aRectangle Sub-section of the render-target, where (0,0) is the center.
 		 */
-		virtual void SetViewport(const RectangleT<float>& aRectangle) = 0;
+		virtual void SetViewport(const Rectangle<float>& aRectangle) = 0;
 
 		#pragma endregion
 	};

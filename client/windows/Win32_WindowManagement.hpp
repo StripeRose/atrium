@@ -31,16 +31,16 @@ namespace Atrium::Win32
 		
 		std::any GetNativeHandle() const override;
 
-		PointT<int> GetPosition() const override;
-		SizeT<int> GetSize() const override;
+		Vector2<int> GetPosition() const override;
+		Vector2<int> GetSize() const override;
 		std::wstring GetTitle() const override;
 
 		void Hide() override;
 
 		bool IsFocused() const override;
 
-		void SetPosition(const PointT<int>& aPoint) override;
-		void SetSize(const SizeT<int>& aSize) override;
+		void SetPosition(const Vector2<int>& aPoint) override;
+		void SetSize(const Vector2<int>& aSize) override;
 		void SetTitle(const char* aTitleText) override;
 		void SetTitle(const wchar_t* aTitleText) override;
 		void SetWindowState(WindowState aWindowState) override;

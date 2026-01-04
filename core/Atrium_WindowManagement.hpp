@@ -42,8 +42,8 @@ namespace Atrium
 		 */
 		virtual std::any GetNativeHandle() const = 0;
 
-		virtual PointT<int> GetPosition() const = 0;
-		virtual SizeT<int> GetSize() const = 0;
+		virtual Vector2<int> GetPosition() const = 0;
+		virtual Vector2<int> GetSize() const = 0;
 		virtual std::wstring GetTitle() const = 0;
 
 		/**
@@ -53,8 +53,8 @@ namespace Atrium
 
 		virtual bool IsFocused() const = 0;
 
-		virtual void SetPosition(const PointT<int>& aPoint) = 0;
-		virtual void SetSize(const SizeT<int>& aSize) = 0;
+		virtual void SetPosition(const Vector2<int>& aPoint) = 0;
+		virtual void SetSize(const Vector2<int>& aSize) = 0;
 		virtual void SetTitle(const char* aTitleText) = 0;
 		virtual void SetTitle(const wchar_t* aTitleText) = 0;
 		virtual void SetWindowState(WindowState aWindowState) = 0;

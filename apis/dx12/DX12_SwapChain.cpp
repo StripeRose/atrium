@@ -18,7 +18,7 @@ namespace Atrium::DirectX12
 		CreateRenderTextureForWindow(aDirectCommandQueue);
 		UpdateColorSpace();
 
-		SizeT<int> windowSize = aWindow.GetSize();
+		Vector2<int> windowSize = aWindow.GetSize();
 		GetBackBuffers(windowSize);
 
 		aWindow.OnSizeChanged.Connect(this, [&]() { OnDrawSurfaceResize(aWindow.GetSize()); });
@@ -173,9 +173,9 @@ namespace Atrium::DirectX12
 	void SwapChain::CreateRenderTextureForWindow(CommandQueue& aDirectCommandQueue)
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDescriptor = {};
-		const SizeT<int> windowSize = myWindow->GetSize();
-		swapChainDescriptor.Width = windowSize.Width;
-		swapChainDescriptor.Height = windowSize.Height;
+		const Vector2<int> windowSize = myWindow->GetSize();
+		swapChainDescriptor.Width = windowSize.X;
+		swapChainDescriptor.Height = windowSize.Y;
 		swapChainDescriptor.Format = ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat()));
 		swapChainDescriptor.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDescriptor.BufferCount = DX12_BACKBUFFER_COUNT;
@@ -215,10 +215,10 @@ namespace Atrium::DirectX12
 		if (!myDesiredResolution.has_value())
 			return;
 
-		const SizeT<int> newResolution = myDesiredResolution.value();
+		const Vector2<int> newResolution = myDesiredResolution.value();
 		myDesiredResolution.reset();
 
-		if ((newResolution.Width * newResolution.Height) == 0)
+		if ((newResolution.X * newResolution.Y) == 0)
 			return;
 
 		for (std::shared_ptr<SwapChainBackBuffer>& backBuffer : myBackBuffers)
@@ -231,8 +231,8 @@ namespace Atrium::DirectX12
 		Debug::Assert(mySwapChain, "There is a swap-chain to resize.");
 		HRESULT hr = mySwapChain->ResizeBuffers(
 			static_cast<UINT>(myBackBuffers.size()),
-			static_cast<UINT>(newResolution.Width),
-			static_cast<UINT>(newResolution.Height),
+			static_cast<UINT>(newResolution.X),
+			static_cast<UINT>(newResolution.Y),
 			ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat())),
 			myDevice->GetParameters().AllowTearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u
 		);
@@ -279,9 +279,9 @@ namespace Atrium::DirectX12
 				return;
 			}
 
-			const RectangleT<int> windowRect = RectangleT<int>(
-				PointT<int>(windowBounds.left, windowBounds.top),
-				PointT<int>(windowBounds.right, windowBounds.bottom)
+			const Rectangle<int> windowRect = Rectangle<int>(
+				Vector2<int>(windowBounds.left, windowBounds.top),
+				Vector2<int>(windowBounds.right, windowBounds.bottom)
 			);
 
 			ComPtr<IDXGIOutput> bestOutput;
@@ -300,9 +300,9 @@ namespace Atrium::DirectX12
 					// Get the rectangle bounds of current output.
 					DXGI_OUTPUT_DESC desc;
 					Debug::Assert(output->GetDesc(&desc), "Get adapter output description.");
-					const RectangleT<int> desktopCoordinates = RectangleT<int>(
-						PointT<int>(desc.DesktopCoordinates.left, desc.DesktopCoordinates.top),
-						PointT<int>(desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom));
+					const Rectangle<int> desktopCoordinates = Rectangle<int>(
+						Vector2<int>(desc.DesktopCoordinates.left, desc.DesktopCoordinates.top),
+						Vector2<int>(desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom));
 
 					// Compute the intersection
 					auto intersection = desktopCoordinates.Intersection(windowRect);
@@ -360,7 +360,7 @@ namespace Atrium::DirectX12
 		}
 	}
 
-	void SwapChain::GetBackBuffers(const SizeT<int>& aSize)
+	void SwapChain::GetBackBuffers(const Vector2<int>& aSize)
 	{
 		myBackBuffers.clear();
 
@@ -377,17 +377,17 @@ namespace Atrium::DirectX12
 			rtDesc.DepthStencilFormat = GraphicsFormat::D32_SFloat;
 			rtDesc.Dimension = TextureDimension::Tex2D;
 			rtDesc.IsSRGB = false;
-			rtDesc.Size_Width = aSize.Width;
-			rtDesc.Size_Height = aSize.Height;
+			rtDesc.Size_Width = aSize.X;
+			rtDesc.Size_Height = aSize.Y;
 			rtDesc.Size_Depth = 1;
 
 			myBackBuffers.emplace_back(new SwapChainBackBuffer(*myDevice, rtDesc, backBufferResource, nullptr));
 		}
 	}
 
-	void SwapChain::OnDrawSurfaceResize(const SizeT<int>& aSize)
+	void SwapChain::OnDrawSurfaceResize(const Vector2<int>& aSize)
 	{
-		if (aSize.Width <= 0 || aSize.Height <= 0)
+		if (aSize.X <= 0 || aSize.Y <= 0)
 			return;
 
 		myDesiredResolution = aSize;

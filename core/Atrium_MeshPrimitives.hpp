@@ -28,11 +28,11 @@ namespace Atrium
 	{
 		struct Vertex
 		{
-			Vector3T<float> Position;
-			Vector3T<float> Normal;
-			Vector3T<float> Binormal;
-			Vector3T<float> Tangent;
-			Vector2T<float> UV;
+			Vector3<float> Position;
+			Vector3<float> Normal;
+			Vector3<float> Binormal;
+			Vector3<float> Tangent;
+			Vector2<float> UV;
 		};
 
 		struct Triangle

@@ -122,7 +122,7 @@ namespace Atrium::DirectX12
 
 		void Reset(const std::uint_least8_t& aFrameInFlight) override;
 
-		void ClearColor(const std::shared_ptr<Atrium::RenderTexture>& aTarget, ColorT<float> aClearColor) override;
+		void ClearColor(const std::shared_ptr<Atrium::RenderTexture>& aTarget, ColorARGB<float> aClearColor) override;
 		void ClearDepth(const std::shared_ptr<Atrium::RenderTexture>& aTarget, float aDepth, std::uint8_t aStencil) override;
 
 		void DisableScissorRect() override;
@@ -137,17 +137,17 @@ namespace Atrium::DirectX12
 		void DrawInstanced(std::uint32_t aVertexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartVertexLocation, std::uint32_t aStartInstanceLocation) override;
 		void DrawIndexedInstanced(std::uint32_t anIndexCountPerInstance, std::uint32_t anInstanceCount, std::uint32_t aStartIndexLocation, std::uint32_t aBaseVertexLocation, std::uint32_t aStartInstanceLocation) override;
 
-		void SetBlendFactor(ColorT<float> aBlendFactor) override;
+		void SetBlendFactor(ColorARGB<float> aBlendFactor) override;
 		void SetPipelineState(const std::shared_ptr<Atrium::PipelineState>& aPipelineState) override;
 		void SetVertexBuffer(const std::shared_ptr<const Atrium::GraphicsBuffer>& aVertexBuffer, unsigned int aSlot) override;
 		void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Atrium::GraphicsBuffer>& aBuffer) override;
 		void SetPipelineResource(ResourceUpdateFrequency anUpdateFrequency, std::uint32_t aRegisterIndex, const std::shared_ptr<Atrium::Texture>& aTexture) override;
 		void SetPrimitiveTopology(PrimitiveTopology aTopology) override;
-		void SetScissorRect(const RectangleT<int>& aRectangle) override;
+		void SetScissorRect(const Rectangle<int>& aRectangle) override;
 		void SetStencilRef(std::uint32_t aStencilRef) override;
 		void SetRenderTargets(const std::vector<std::shared_ptr<Atrium::RenderTexture>>& someTargets, const std::shared_ptr<Atrium::RenderTexture>& aDepthTarget) override;
-		void SetViewportAndScissorRect(const SizeT<int>& aScreenSize) override;
-		void SetViewport(const RectangleT<float>& aRectangle) override;
+		void SetViewportAndScissorRect(const Vector2<int>& aScreenSize) override;
+		void SetViewport(const Rectangle<float>& aRectangle) override;
 
 	private:
 		inline std::uint32_t GetGroupCount(std::uint32_t threadCount, std::uint32_t groupSize) { return (threadCount + groupSize - 1) / groupSize; }
