@@ -226,11 +226,9 @@ namespace Atrium::DirectX12
 
 		UpdateColorSpace();
 
-		myBackBuffers.clear();
-
 		Debug::Assert(mySwapChain, "There is a swap-chain to resize.");
 		HRESULT hr = mySwapChain->ResizeBuffers(
-			static_cast<UINT>(myBackBuffers.size()),
+			static_cast<UINT>(DX12_BACKBUFFER_COUNT),
 			static_cast<UINT>(newResolution.X),
 			static_cast<UINT>(newResolution.Y),
 			ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat())),

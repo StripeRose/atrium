@@ -49,6 +49,7 @@ namespace Atrium::DirectX12
 		void MarkFrameEnd() override;
 
 	private:
+		void HandleSwapChainResize();
 		void ReportUnreleasedObjects();
 
 	private:

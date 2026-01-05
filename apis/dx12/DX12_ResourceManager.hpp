@@ -35,8 +35,6 @@ namespace Atrium::DirectX12
 
 		std::shared_ptr<Atrium::Texture> LoadTexture(const std::filesystem::path& aPath) override;
 
-		void MarkFrameStart();
-
 	private:
 		DirectX12API& myManager;
 

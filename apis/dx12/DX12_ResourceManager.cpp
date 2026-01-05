@@ -157,17 +157,4 @@ namespace Atrium::DirectX12
 
 		return nullptr;
 	}
-
-	void ResourceManager::MarkFrameStart()
-	{
-		const std::scoped_lock lock(mySwapChainMutex);
-		for (auto& swapChain : myDrawSurfaceSwapChain)
-		{
-			if (swapChain.second->NeedsResize())
-			{
-				myManager.GetCommandQueueManager().WaitForAllIdle();
-				swapChain.second->TriggerResize();
-			}
-		}
-	}
 }

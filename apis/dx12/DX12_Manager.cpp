@@ -108,7 +108,7 @@ namespace Atrium::DirectX12
 			contextIterator->Reset(myFrameInFlight);
 		myPresentPrepareContext->Reset(myFrameInFlight);
 
-		myResourceManager->MarkFrameStart();
+		HandleSwapChainResize();
 	}
 
 	void DirectX12API::MarkFrameEnd()
@@ -165,6 +165,32 @@ namespace Atrium::DirectX12
 		TracyD3D12NewFrame(myCommandQueueManager->GetComputeQueue().GetProfilingContext());
 		TracyD3D12NewFrame(myCommandQueueManager->GetCopyQueue().GetProfilingContext());
 		TracyD3D12NewFrame(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
+	}
+
+	void DirectX12API::HandleSwapChainResize()
+	{
+		const std::vector<std::shared_ptr<SwapChain>> swapchains = myResourceManager->GetSwapChains();
+
+		bool needsResize = false;
+		for (auto& swapChain : swapchains)
+		{
+			needsResize |= swapChain->NeedsResize();
+		}
+
+		if (needsResize)
+		{
+			// Not entirely sure why inserting a signal is required.
+			// Feels like it should be enough to wait for the previous inserted signal to finish,
+			// but perhaps not everything is cleaned up then.
+			CommandQueue& graphicsQueue = GetCommandQueueManager().GetGraphicsQueue();
+			graphicsQueue.WaitForFenceCPUBlocking(graphicsQueue.InsertSignal());
+
+			for (auto& swapChain : swapchains)
+			{
+				if (swapChain->NeedsResize())
+					swapChain->TriggerResize();
+			}
+		}
 	}
 
 	void DirectX12API::ReportUnreleasedObjects()
