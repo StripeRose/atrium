@@ -2,22 +2,25 @@
 
 #include <imgui_internal.h>
 
-ImVec2 toVec(const Atrium::Vector2& aVector) { return ImVec2(aVector.X, aVector.Y); }
-Atrium::Vector2 fromVec(const ImVec2& aVector) { return Atrium::Vector2(aVector.x, aVector.y); }
-
-ImVec4 toVec(const Atrium::Vector4& aVector) { return ImVec4(aVector.X, aVector.Y, aVector.Z, aVector.W); }
-Atrium::Vector4 fromVec(const ImVec4& aVector) { return Atrium::Vector4(aVector.x, aVector.y, aVector.z, aVector.w); }
-
-ImVec4 toColVec(const Atrium::Color& aColor) { return ImVec4(aColor.R, aColor.G, aColor.B, aColor.A); }
-Atrium::Color fromColVec(const ImVec4& aVector) { return Atrium::Color(aVector.w, aVector.x, aVector.y, aVector.z); }
-ImVec4 toCol32Vec(const Atrium::Color32& aColor) { return ImVec4(aColor.R / 255.f, aColor.G / 255.f, aColor.B / 255.f, aColor.A / 255.f); }
-Atrium::Color32 fromCol32Vec(const ImVec4& aVector)
+namespace
 {
-	return Atrium::Color32(
-		static_cast<std::uint8_t>(aVector.w * 255.f),
-		static_cast<std::uint8_t>(aVector.x * 255.f),
-		static_cast<std::uint8_t>(aVector.y * 255.f),
-		static_cast<std::uint8_t>(aVector.z * 255.f));
+	ImVec2 toVec(const Atrium::Vector2F& aVector) { return ImVec2(aVector.X, aVector.Y); }
+	Atrium::Vector2F fromVec(const ImVec2& aVector) { return Atrium::Vector2(aVector.x, aVector.y); }
+
+	ImVec4 toVec(const Atrium::Vector4F& aVector) { return ImVec4(aVector.X, aVector.Y, aVector.Z, aVector.W); }
+	Atrium::Vector4F fromVec(const ImVec4& aVector) { return Atrium::Vector4(aVector.x, aVector.y, aVector.z, aVector.w); }
+
+	ImVec4 toColVec(const Atrium::Color& aColor) { return ImVec4(aColor.R, aColor.G, aColor.B, aColor.A); }
+	Atrium::Color fromColVec(const ImVec4& aVector) { return Atrium::Color(aVector.w, aVector.x, aVector.y, aVector.z); }
+	ImVec4 toCol32Vec(const Atrium::Color32& aColor) { return ImVec4(aColor.R / 255.f, aColor.G / 255.f, aColor.B / 255.f, aColor.A / 255.f); }
+	Atrium::Color32 fromCol32Vec(const ImVec4& aVector)
+	{
+		return Atrium::Color32(
+			static_cast<std::uint8_t>(aVector.w * 255.f),
+			static_cast<std::uint8_t>(aVector.x * 255.f),
+			static_cast<std::uint8_t>(aVector.y * 255.f),
+			static_cast<std::uint8_t>(aVector.z * 255.f));
+	}
 }
 
 bool ImGui::ColorEdit4(const char* label, Atrium::Color& color, ImGuiColorEditFlags flags)

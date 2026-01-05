@@ -15,7 +15,7 @@ namespace Atrium::Extension
 	DearImGuiBackendContext_Win32::DearImGuiBackendContext_Win32(const std::shared_ptr<Atrium::Window>& aWindow)
 		: myWindow(std::static_pointer_cast<Atrium::Win32::Window>(aWindow))
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		myWindow->AdditionalWndProc = [](Win32::Window::AdditionalWndProcData& data) {
 			LPARAM result = ImGui_ImplWin32_WndProcHandler(data.WindowHandle, data.Message, data.WParam, data.LParam);
@@ -30,7 +30,7 @@ namespace Atrium::Extension
 
 	DearImGuiBackendContext_Win32::~DearImGuiBackendContext_Win32()
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 		myWindow->OnClosed.Disconnect(this);
 		myWindow->AdditionalWndProc = nullptr;
 		ImGui_ImplWin32_Shutdown();

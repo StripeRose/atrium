@@ -15,7 +15,7 @@ namespace Atrium::Extension
 		, myImGuiContext(nullptr)
 		, myImGuiRenderCallback(anImGuiRenderCallback)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		aWindow->OnClosed.Connect(this, [&]() { myHasWindow = false; });
 
@@ -96,7 +96,7 @@ namespace Atrium::Extension
 
 	void DearImGuiContext::Render(Atrium::FrameGraphicsContext& aFrameContext)
 	{
-		ZoneScoped;
+		PROFILE_SCOPE();
 
 		if (!myHasWindow)
 			return;
