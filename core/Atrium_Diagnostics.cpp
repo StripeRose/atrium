@@ -1,9 +1,6 @@
 
 #include "Atrium_Diagnostics.hpp"
 
-#include <codecvt>
-#include <locale>
-
 #ifdef TRACY_ENABLE
 _NODISCARD
 _Ret_notnull_
@@ -92,9 +89,13 @@ public:
 				break;
 		}
 
-		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
-		const std::string standardString = converterX.to_bytes(aMessage);
-		TracyLogString(severity, color, TRACY_CALLSTACK, standardString.size(), standardString.c_str());
+		std::string convertedVector;
+		convertedVector.resize(aMessage.size());
+
+		for (size_t i = 0; i <= aMessage.size(); ++i)
+			convertedVector[i] = static_cast<char>(aMessage[i]);
+
+		TracyLogString(severity, color, TRACY_CALLSTACK, convertedVector.size(), convertedVector.c_str());
 
 		TracyDebugLog::ourParentHandler->Log(aType, aMessage);
 	}
