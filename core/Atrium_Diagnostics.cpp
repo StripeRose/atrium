@@ -1,6 +1,9 @@
 
 #include "Atrium_Diagnostics.hpp"
 
+#include <codecvt>
+#include <locale>
+
 #ifdef TRACY_ENABLE
 _NODISCARD
 _Ret_notnull_
@@ -47,7 +50,6 @@ public:
 		{
 			case LogType::Information:
 				severity = tracy::MessageSeverity::Info;
-				color = 0x8080FF;
 				break;
 			case LogType::Warning:
 				severity = tracy::MessageSeverity::Warning;
@@ -69,6 +71,31 @@ public:
 
 	void Log(LogType aType, const std::wstring& aMessage) override
 	{
+		tracy::MessageSeverity severity = tracy::MessageSeverity::Info;
+		uint32_t color = 0;
+		switch (aType)
+		{
+			case LogType::Information:
+				severity = tracy::MessageSeverity::Info;
+				break;
+			case LogType::Warning:
+				severity = tracy::MessageSeverity::Warning;
+				color = 0xFFFF80;
+				break;
+			case LogType::Error:
+				severity = tracy::MessageSeverity::Error;
+				color = 0xFF8080;
+				break;
+			case LogType::Fatal:
+				severity = tracy::MessageSeverity::Fatal;
+				color = 0xFF0000;
+				break;
+		}
+
+		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
+		const std::string standardString = converterX.to_bytes(aMessage);
+		TracyLogString(severity, color, TRACY_CALLSTACK, standardString.size(), standardString.c_str());
+
 		TracyDebugLog::ourParentHandler->Log(aType, aMessage);
 	}
 
