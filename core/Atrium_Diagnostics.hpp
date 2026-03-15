@@ -40,6 +40,9 @@ void TracyDebug_DetachLog();
 
 #else
 
+#define PROFILE_ATTACH_LOG()
+#define PROFILE_DETACH_LOG()
+
 #define PROFILE_APPINFO(aText)
 
 #define PROFILE_FRAMEMARK()
