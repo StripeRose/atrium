@@ -16,7 +16,8 @@ namespace Atrium
 		ResourceManager& GetResourceManager() override;
 		void MarkFrameStart() override;
 		void MarkFrameEnd() override;
-		bool SupportsMultipleWindows() const;
+		bool SupportsMultipleWindows() const override;
+		void WaitForIdle() const override;
 
 	private:
 		std::uint_least64_t myFrameCounter;

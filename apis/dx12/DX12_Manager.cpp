@@ -167,6 +167,11 @@ namespace Atrium::DirectX12
 		TracyD3D12NewFrame(myCommandQueueManager->GetGraphicsQueue().GetProfilingContext());
 	}
 
+	void DirectX12API::WaitForIdle() const
+	{
+		myCommandQueueManager->WaitForAllIdle();
+	}
+
 	void DirectX12API::HandleSwapChainResize()
 	{
 		const std::vector<std::shared_ptr<SwapChain>> swapchains = myResourceManager->GetSwapChains();

@@ -70,6 +70,11 @@ namespace Atrium
 		 */
 		virtual bool SupportsMultipleWindows() const = 0;
 
+		/**
+		 * @brief Wait for the GPU to finish all work in progress.
+		 */
+		virtual void WaitForIdle() const = 0;
+
 		#pragma endregion
 	};
 

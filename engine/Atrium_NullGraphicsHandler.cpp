@@ -88,4 +88,9 @@ namespace Atrium
 	{
 		return false;
 	}
+
+	void NullGraphicsHandler::WaitForIdle() const
+	{
+
+	}
 }

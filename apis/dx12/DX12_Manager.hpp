@@ -48,6 +48,8 @@ namespace Atrium::DirectX12
 		void MarkFrameStart() override;
 		void MarkFrameEnd() override;
 
+		void WaitForIdle() const override;
+
 	private:
 		void HandleSwapChainResize();
 		void ReportUnreleasedObjects();

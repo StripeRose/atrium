@@ -99,6 +99,9 @@ namespace Atrium
 
 			DoTick();
 		}
+
+		if (myGraphicsAPI)
+			myGraphicsAPI->WaitForIdle();
 	}
 
 	void AtriumApplication::DoTick()
