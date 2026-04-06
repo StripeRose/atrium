@@ -24,7 +24,7 @@ namespace Atrium::Extension
 		void Render(Atrium::FrameGraphicsContext& aFrameContext) override;
 
 	private:
-		std::shared_ptr<Atrium::RenderTexture> myRenderTarget;
+		std::weak_ptr<Atrium::RenderTexture> myRenderTarget;
 		std::unique_ptr<DirectX12::RenderPassDescriptorHeap> myCBV_SRVHeap;
 		std::map<std::uint64_t, DirectX12::DescriptorHeapHandle> myCBV_SRVHeapHandles;
 	};

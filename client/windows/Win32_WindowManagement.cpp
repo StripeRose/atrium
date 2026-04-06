@@ -15,7 +15,6 @@ namespace Atrium::Win32
 	void Window::Close()
 	{
 		myHasRequestedClose = true;
-		OnClosing(myHasRequestedClose);
 	}
 
 	std::any Window::GetNativeHandle() const
@@ -275,9 +274,15 @@ namespace Atrium::Win32
 		if (myWindowHandle == NULL)
 			return;
 
-		OnClosed();
 		::DestroyWindow(myWindowHandle);
 		myWindowHandle = NULL;
+		OnClosed();
+
+		OnClosed.DisconnectAll();
+		OnClosing.DisconnectAll();
+		OnFocusChanged.DisconnectAll();
+		OnMoved.DisconnectAll();
+		OnSizeChanged.DisconnectAll();
 	}
 
 	WindowManager::WindowManager()
@@ -288,7 +293,12 @@ namespace Atrium::Win32
 
 	WindowManager::~WindowManager()
 	{
-		myWindows.clear();
+		for (const auto& windowPtr : myWindows)
+		{
+			if (!windowPtr.expired())
+				Debug::Assert(false, "Expecting no windows to remain when window manager is destroyed.");
+		}
+
 		CleanupWindowClasses();
 	}
 
@@ -308,12 +318,15 @@ namespace Atrium::Win32
 		for (std::size_t i = 0; i < myWindows.size(); ++i)
 		{
 			const std::size_t reverseIndex = (myWindows.size() - i) - 1;
-			Window* window = myWindows[reverseIndex].get();
+			std::shared_ptr<Win32::Window> window = myWindows[reverseIndex].lock();
 			if (window->myHasRequestedClose)
 			{
-				window->myHasRequestedClose = false;
+				window->OnClosing(window->myHasRequestedClose);
+				if (!window->myHasRequestedClose)
+					continue;
+
 				auto currentWindowIterator = myWindows.begin() + reverseIndex;
-				(*currentWindowIterator)->DestroyWindow();
+				window->DestroyWindow();
 				myWindows.erase(currentWindowIterator);
 			}
 		}

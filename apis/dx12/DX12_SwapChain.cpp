@@ -27,14 +27,10 @@ namespace Atrium::DirectX12
 
 	SwapChain::~SwapChain()
 	{
-		Invalidate();
-	}
-
-	void SwapChain::Invalidate()
-	{
 		if (myWindow != nullptr)
 		{
 			myWindow->OnSizeChanged.Disconnect(this);
+			myWindow->OnClosed.Disconnect(this);
 			myWindow = nullptr;
 		}
 

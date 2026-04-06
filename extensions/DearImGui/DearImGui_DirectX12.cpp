@@ -65,6 +65,7 @@ namespace Atrium::Extension
 	DearImGuiBackendContext_DirectX12::~DearImGuiBackendContext_DirectX12()
 	{
 		ImGui_ImplDX12_Shutdown();
+		myCBV_SRVHeap.reset();
 	}
 
 	void DearImGuiBackendContext_DirectX12::MarkFrameStart()
@@ -74,7 +75,11 @@ namespace Atrium::Extension
 
 	void DearImGuiBackendContext_DirectX12::Render(Atrium::FrameGraphicsContext& aFrameContext)
 	{
-		aFrameContext.SetRenderTargets({ myRenderTarget }, nullptr);
+		std::shared_ptr<Atrium::RenderTexture> target = myRenderTarget.lock();
+		if (!target)
+			return;
+
+		aFrameContext.SetRenderTargets({ target }, nullptr);
 
 		ID3D12GraphicsCommandList* commandList = static_cast<DirectX12::FrameGraphicsContext&>(aFrameContext).GetCommandList();
 		commandList->SetDescriptorHeaps(1, myCBV_SRVHeap->GetHeap().GetAddressOf());

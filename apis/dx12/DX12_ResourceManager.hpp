@@ -39,6 +39,6 @@ namespace Atrium::DirectX12
 		DirectX12API& myManager;
 
 		std::mutex mySwapChainMutex;
-		std::map<Window*, std::shared_ptr<SwapChain>> myDrawSurfaceSwapChain;
+		std::map<Window*, std::weak_ptr<SwapChain>> myDrawSurfaceSwapChain;
 	};
 }

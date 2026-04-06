@@ -87,7 +87,7 @@ namespace Atrium::Win32
 
 		void ProcessWindowMessages();
 
-		std::vector<std::shared_ptr<Win32::Window>> myWindows;
+		std::vector<std::weak_ptr<Win32::Window>> myWindows;
 		std::vector<WNDCLASSEX> myWindowClasses;
 		bool myHasCreatedTheFirstWindow;
 	};

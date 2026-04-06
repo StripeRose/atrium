@@ -16,16 +16,16 @@ namespace Atrium::DirectX12
 	{
 		PROFILE_SCOPE();
 
+		std::shared_ptr<SwapChain> createdSwapChain;
 		const std::scoped_lock lock(mySwapChainMutex);
-		std::shared_ptr<SwapChain>& swapChain = myDrawSurfaceSwapChain[&aWindow];
-		swapChain.reset(new SwapChain(myManager.GetDevice(), myManager.GetCommandQueueManager().GetGraphicsQueue(), aWindow));
-		swapChain->SetName(aWindow.GetTitle().c_str());
 
-		aWindow.OnClosed.Connect(this, [&]() {
-			myDrawSurfaceSwapChain.erase(&aWindow);
-			});
+		Debug::Assert(myDrawSurfaceSwapChain[&aWindow].expired(), "Assuming no swap-chain exists for the window.");
 
-		return swapChain;
+		createdSwapChain.reset(new SwapChain(myManager.GetDevice(), myManager.GetCommandQueueManager().GetGraphicsQueue(), aWindow));
+		createdSwapChain->SetName(aWindow.GetTitle().c_str());
+		myDrawSurfaceSwapChain[&aWindow] = createdSwapChain;
+
+		return createdSwapChain;
 	}
 
 	std::shared_ptr<Atrium::GraphicsBuffer> ResourceManager::CreateGraphicsBuffer(GraphicsBuffer::Target aTarget, std::uint32_t aCount, std::uint32_t aStride)
@@ -122,7 +122,7 @@ namespace Atrium::DirectX12
 	{
 		const std::scoped_lock lock(mySwapChainMutex);
 		auto it = myDrawSurfaceSwapChain.find(&aWindow);
-		return (it != myDrawSurfaceSwapChain.end()) ? it->second : nullptr;
+		return (it != myDrawSurfaceSwapChain.end()) ? it->second.lock() : nullptr;
 	}
 
 	std::vector<std::shared_ptr<SwapChain>> ResourceManager::GetSwapChains()
@@ -130,7 +130,11 @@ namespace Atrium::DirectX12
 		const std::scoped_lock lock(mySwapChainMutex);
 		std::vector<std::shared_ptr<SwapChain>> swapChains;
 		for (auto& swapChain : myDrawSurfaceSwapChain)
-			swapChains.push_back(swapChain.second);
+		{
+			std::shared_ptr<SwapChain> lockedSwapChain = swapChain.second.lock();
+			if (lockedSwapChain)
+				swapChains.push_back(lockedSwapChain);
+		}
 		return swapChains;
 	}
 

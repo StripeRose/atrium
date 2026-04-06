@@ -17,7 +17,6 @@ namespace Atrium::DirectX12
 		SwapChain(Device& aDevice, CommandQueue& aDirectCommandQueue, Atrium::Window& aWindow);
 		~SwapChain();
 
-		void Invalidate();
 		bool NeedsResize() const;
 		void TriggerResize();
 		void Present();

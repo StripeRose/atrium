@@ -18,7 +18,7 @@ namespace Atrium::Extension
 		void MarkFrameStart() override;
 
 	private:
-		std::shared_ptr<Atrium::Win32::Window> myWindow;
+		std::weak_ptr<Atrium::Win32::Window> myWindow;
 	};
 }
 

@@ -17,7 +17,9 @@ namespace Atrium::Extension
 	{
 		PROFILE_SCOPE();
 
-		myWindow->AdditionalWndProc = [](Win32::Window::AdditionalWndProcData& data) {
+		Atrium::Win32::Window* win32Window = static_cast<Atrium::Win32::Window*>(aWindow.get());
+
+		win32Window->AdditionalWndProc = [](Win32::Window::AdditionalWndProcData& data) {
 			LPARAM result = ImGui_ImplWin32_WndProcHandler(data.WindowHandle, data.Message, data.WParam, data.LParam);
 			ImGuiIO& io = ImGui::GetIO();
 			data.BlockKeyboard = io.WantCaptureKeyboard;
@@ -31,8 +33,13 @@ namespace Atrium::Extension
 	DearImGuiBackendContext_Win32::~DearImGuiBackendContext_Win32()
 	{
 		PROFILE_SCOPE();
-		myWindow->OnClosed.Disconnect(this);
-		myWindow->AdditionalWndProc = nullptr;
+
+		std::shared_ptr<Atrium::Win32::Window> window = myWindow.lock();
+		if (window)
+		{
+			window->OnClosed.Disconnect(this);
+			window->AdditionalWndProc = nullptr;
+		}
 		ImGui_ImplWin32_Shutdown();
 	}
 
