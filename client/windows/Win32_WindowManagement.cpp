@@ -179,8 +179,7 @@ namespace Atrium::Win32
 		wndProcData.BlockKeyboard = false;
 		wndProcData.BlockMouse = false;
 
-		if (AdditionalWndProc)
-			AdditionalWndProc(wndProcData);
+		OnWindowMessage(wndProcData);
 
 		if (wndProcData.BlockAllMessages)
 			return TRUE;

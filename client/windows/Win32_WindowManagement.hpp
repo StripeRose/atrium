@@ -46,7 +46,7 @@ namespace Atrium::Win32
 		void SetWindowState(WindowState aWindowState) override;
 		void Show() override;
 
-		std::function<void(AdditionalWndProcData&)> AdditionalWndProc;
+		EventSlot<AdditionalWndProcData&> OnWindowMessage;
 
 	private:
 		Window(const WNDCLASSEX& aWindowClass, bool isFirstWindow);

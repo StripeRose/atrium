@@ -22,6 +22,7 @@ namespace Atrium::Extension
 		IMGUI_CHECKVERSION();
 
 		myImGuiContext = ImGui::CreateContext();
+		ImGui::SetCurrentContext(myImGuiContext);
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -48,7 +49,7 @@ namespace Atrium::Extension
 			| ImGuiColorEditFlags_PickerHueWheel
 		);
 
-		StyleColorsNord();
+		//StyleColorsNord();
 
 		// Load Fonts
 		// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -73,6 +74,7 @@ namespace Atrium::Extension
 
 	DearImGuiContext::~DearImGuiContext()
 	{
+		ImGui::SetCurrentContext(myImGuiContext);
 		myBackends.clear();
 		ImGui::DestroyContext(myImGuiContext);
 		myImGuiContext = nullptr;
@@ -84,6 +86,7 @@ namespace Atrium::Extension
 
 		if (myHasWindow)
 		{
+			ImGui::SetCurrentContext(myImGuiContext);
 			ImGuiIO& io = ImGui::GetIO();
 			if (io.WantCaptureKeyboard)
 				deviceTypes &= ~InputDeviceType::Keyboard;
@@ -100,6 +103,8 @@ namespace Atrium::Extension
 
 		if (!myHasWindow)
 			return;
+
+		ImGui::SetCurrentContext(myImGuiContext);
 
 		for (const auto& backend : myBackends)
 			backend->MarkFrameStart();

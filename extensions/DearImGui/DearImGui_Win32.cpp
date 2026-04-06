@@ -17,15 +17,20 @@ namespace Atrium::Extension
 	{
 		PROFILE_SCOPE();
 
+		ImGuiContext* imguiContext = ImGui::GetCurrentContext();
+
 		Atrium::Win32::Window* win32Window = static_cast<Atrium::Win32::Window*>(aWindow.get());
 
-		win32Window->AdditionalWndProc = [](Win32::Window::AdditionalWndProcData& data) {
+		win32Window->OnWindowMessage.Connect(this, [imguiContext](Win32::Window::AdditionalWndProcData& data) {
+			ImGuiContext* previousContext = ImGui::GetCurrentContext();
+			ImGui::SetCurrentContext(imguiContext);
 			LPARAM result = ImGui_ImplWin32_WndProcHandler(data.WindowHandle, data.Message, data.WParam, data.LParam);
 			ImGuiIO& io = ImGui::GetIO();
 			data.BlockKeyboard = io.WantCaptureKeyboard;
 			data.BlockMouse = io.WantCaptureMouse;
 			data.BlockAllMessages = (result == TRUE);
-			};
+			ImGui::SetCurrentContext(previousContext);
+			});
 
 		ImGui_ImplWin32_Init(std::any_cast<HWND>(aWindow->GetNativeHandle()));
 	}
@@ -38,7 +43,7 @@ namespace Atrium::Extension
 		if (window)
 		{
 			window->OnClosed.Disconnect(this);
-			window->AdditionalWndProc = nullptr;
+			window->OnWindowMessage.Disconnect(this);
 		}
 		ImGui_ImplWin32_Shutdown();
 	}
