@@ -15,7 +15,7 @@ namespace Atrium::DirectX12
             return nullptr;
 
         UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if _DEBUG
+#ifndef NDEBUG
         flags |= D3DCOMPILE_DEBUG;
 #endif
 

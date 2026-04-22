@@ -9,7 +9,7 @@
 #include "DX12_Pipeline.hpp"
 #include "DX12_Shader.hpp"
 
-#ifdef IS_DEBUG_BUILD
+#ifndef NDEBUG
 #include <dxgi1_6.h>
 #include <dxgidebug.h>
 #endif
@@ -200,7 +200,7 @@ namespace Atrium::DirectX12
 
 	void DirectX12API::ReportUnreleasedObjects()
 	{
-		#if _DEBUG
+		#ifndef NDEBUG
 		ComPtr<IDXGIDebug1> debugInterface;
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(debugInterface.GetAddressOf()))))
 		{

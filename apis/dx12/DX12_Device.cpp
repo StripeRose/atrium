@@ -4,7 +4,7 @@
 
 #include "D3D12MemAlloc.h"
 
-#ifdef IS_DEBUG_BUILD
+#ifndef NDEBUG
 #include <dxgidebug.h>
 #include <d3d12sdklayers.h>
 #endif
@@ -20,7 +20,7 @@ namespace Atrium::DirectX12
 
 		UINT dxgiFactoryFlags = 0;
 
-#ifdef IS_DEBUG_BUILD
+#ifndef NDEBUG
 		SetupDebug(dxgiFactoryFlags);
 #endif
 		SetupFactory(dxgiFactoryFlags);
@@ -57,7 +57,7 @@ namespace Atrium::DirectX12
 			return { };
 	}
 
-#if _DEBUG
+#ifndef NDEBUG
 	void Device::SetupDebug(UINT& someDXGIFlagsOut)
 	{
 		ComPtr<ID3D12Debug> debugController;

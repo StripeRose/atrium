@@ -42,7 +42,7 @@ namespace Atrium::DirectX12
 		DescriptorHeapManager& GetDescriptorHeapManager() { return *myDescriptorHeapManager; }
 
 	private:
-#ifdef IS_DEBUG_BUILD
+#ifndef NDEBUG
 		void SetupDebug(UINT& someDXGIFlagsOut);
 #endif
 		bool SetupFactory(UINT someDXGIFlags);
