@@ -1,24 +1,26 @@
-using System.IO;
 using Sharpmake;
-
-[module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
-[module: Sharpmake.Include("../../core/sharpmake.cs")]
-[module: Sharpmake.Include("../../libraries/rose-common.sharpmake.cs")]
 
 namespace Atrium
 {
 	[Generate]
-	public class WindowsClient : Atrium.StaticLibraryProject
+	public class WindowsClient : Project
 	{
 		public WindowsClient()
 		{
 			Name = "Windows";
 			SourceRootPath = "[project.SharpmakeCsPath]";
+
+			AddTargets(new Target(
+				Platform.win64,
+				Util.AllFlags<DevEnv>(),
+				Util.AllFlags<Optimization>()
+			));
 		}
 
-		public override void ConfigureAll(Project.Configuration conf, Target target)
+		[Configure]
+		public void ConfigureAll(Configuration conf, Target target)
 		{
-			base.ConfigureAll(conf, target);
+			Util.SetDefaultBuildArguments(conf, target);
 			conf.SolutionFolder = "Atrium/client";
 
 			conf.AddPrivateDependency<Atrium.Core>(target);

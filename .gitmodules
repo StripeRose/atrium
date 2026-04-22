@@ -1,16 +1,3 @@
 [submodule "libraries/rose-common"]
 	path = libraries/rose-common
 	url = https://github.com/StripeRose/rose-common.git
-[submodule "libraries/DirectXTex"]
-	path = libraries/DirectXTex
-	url = https://github.com/Microsoft/DirectXTex
-[submodule "libraries/tracy"]
-	path = libraries/tracy
-	url = https://github.com/wolfpld/tracy.git
-[submodule "libraries/imgui"]
-	path = libraries/imgui
-	url = https://github.com/ocornut/imgui.git
-	branch = docking
-[submodule "libraries/D3D12MemoryAllocator"]
-	path = libraries/D3D12MemoryAllocator
-	url = https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator.git

@@ -1,29 +1,34 @@
-using System.IO;
 using Sharpmake;
-
-[module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
-[module: Sharpmake.Include("../libraries/rose-common.sharpmake.cs")]
-[module: Sharpmake.Include("../libraries/tracy.sharpmake.cs")]
 
 namespace Atrium
 {
 	[Generate]
-	public class Core : StaticLibraryProject
+	public class Core : Project
 	{
 		public Core()
 		{
 			Name = "Atrium Core";
 			SourceRootPath = "[project.SharpmakeCsPath]";
+
+			AddTargets(new Target(
+				Platform.win64,
+				Util.AllFlags<DevEnv>(),
+				Util.AllFlags<Optimization>()
+			));
 		}
 
-		public override void ConfigureAll(Project.Configuration conf, Target target)
+		[Configure]
+		public void ConfigureAll(Configuration conf, Target target)
 		{
-			base.ConfigureAll(conf, target);
+			Util.SetDefaultBuildArguments(conf, target);
 
 			conf.SolutionFolder = "Atrium";
+
+			RoseCommon.MainNamespace = "Atrium";
+			RoseCommon.MathNamespace = "Atrium";
 			conf.AddPublicDependency<RoseCommon>(target);
-			if (Atrium.Configuration.EnableProfiling)
-				conf.AddPublicDependency<Tracy>(target);
+
+			conf.AddPublicDependency<Tracy>(target);
 		}
 	}
 }

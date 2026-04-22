@@ -1,22 +1,34 @@
-using System.IO;
-
-[module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
+using Sharpmake;
 
 [Sharpmake.Generate]
-public class Tracy : Atrium.ExternalLibraryProject
+public class Tracy : Project
 {
 	public Tracy()
 	{
 		Name = "Tracy";
-		SourceRootPath = Path.Combine("[project.SharpmakeCsPath]", "tracy", "public");
+		
+		string repositoryPath = ExternalProject.Git(
+			"Tracy",
+			"https://github.com/wolfpld/tracy",
+			"master"
+		);
+
+		SourceRootPath = $"{repositoryPath}/public";
 
 		// Ignore all .cpp but TracyClient.cpp, which in turn includes the rest.
 		SourceFilesExcludeRegex.Add(@"^((?!TracyClient).)*\.cpp$");
+
+		AddTargets(new Target(
+			Platform.win32 | Platform.win64,
+			Util.AllFlags<DevEnv>(),
+			Util.AllFlags<Optimization>()
+		));
 	}
 
-	public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
+	[Configure]
+	public void ConfigureAll(Configuration conf, Target target)
 	{
-		base.ConfigureAll(conf, target);
+		Util.SetDefaultBuildArguments(conf, target);
 		
 		conf.SolutionFolder = "Atrium/external";
 

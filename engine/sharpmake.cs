@@ -1,37 +1,34 @@
-using System.IO;
 using Sharpmake;
-
-[module: Sharpmake.Include("../.sharpmake/coreproject.sharpmake.cs")]
-
-[module: Sharpmake.Include("../core/sharpmake.cs")]
-
-[module: Sharpmake.Include("../apis/dx12/sharpmake.cs")]
-[module: Sharpmake.Include("../client/windows/sharpmake.cs")]
 
 namespace Atrium
 {
 	[Generate]
-	public class Engine : Atrium.StaticLibraryProject
+	public class Engine : Project
 	{
 		public Engine()
 		{
 			Name = "Atrium";
 			SourceRootPath = "[project.SharpmakeCsPath]";
+
+			AddTargets(new Target(
+				Platform.win64,
+				Util.AllFlags<DevEnv>(),
+				Util.AllFlags<Optimization>()
+			));
 		}
 
-		public override void ConfigureAll(Project.Configuration conf, Target target)
+		[Configure]
+		public void ConfigureAll(Configuration conf, Target target)
 		{
-			base.ConfigureAll(conf, target);
+			Util.SetDefaultBuildArguments(conf, target);
 			conf.SolutionFolder = "Atrium";
-
-			conf.AddPublicDependency<RoseCommon>(target);
 
 			conf.AddPublicDependency<Atrium.Core>(target);
 
 			switch (target.Platform)
 			{
-				case Sharpmake.Platform.win32:
-				case Sharpmake.Platform.win64:
+				case Platform.win32:
+				case Platform.win64:
 					conf.AddPrivateDependency<WindowsClient>(target);
 					conf.AddPrivateDependency<DirectX12>(target);
 					break;

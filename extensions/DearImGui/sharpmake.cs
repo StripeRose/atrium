@@ -1,10 +1,4 @@
-using System.IO;
-
-[module: Sharpmake.Include("../../.sharpmake/coreproject.sharpmake.cs")]
-
-[module: Sharpmake.Include("../../apis/dx12/sharpmake.cs")]
-[module: Sharpmake.Include("../../client/windows/sharpmake.cs")]
-[module: Sharpmake.Include("../../engine/sharpmake.cs")]
+using Sharpmake;
 
 [System.Flags]
 public enum DearImGuiBackend
@@ -16,9 +10,9 @@ public enum DearImGuiBackend
 
 public static class DearImGuiTargetBackends
 {
-	public static DearImGuiBackend GetBackendsForTarget(Sharpmake.Target target)
+	public static DearImGuiBackend GetBackendsForTarget(Target target)
 	{
-		if (target.Platform.HasFlag(Sharpmake.Platform.win32) || target.Platform.HasFlag(Sharpmake.Platform.win64))
+		if (target.Platform.HasFlag(Platform.win32) || target.Platform.HasFlag(Platform.win64))
 		{
 			return DearImGuiBackend.DirectX12 | DearImGuiBackend.Win32;
 		}
@@ -27,20 +21,33 @@ public static class DearImGuiTargetBackends
 	}
 }
 
-[Sharpmake.Generate]
-public class DearImGuiLibrary : Atrium.ExternalLibraryProject
+[Generate]
+public class DearImGuiLibrary : Project
 {
 	public DearImGuiLibrary()
 	{
 		Name = "imgui";
-		SourceRootPath = "[project.SharpmakeCsPath]/../../libraries/imgui";
 
-		SourceFilesExcludeRegex.Add(@".*imgui(\\|\/)(examples|misc).*");
+		string repositoryPath = ExternalProject.Git(
+			"imgui",
+			"https://github.com/ocornut/imgui",
+			"v1.92.7-docking"
+		);
+
+		SourceRootPath = $"{repositoryPath}";
+		SourceFilesExcludeRegex.Add(@"(examples|misc).*");
+
+		AddTargets(new Target(
+			Platform.win64,
+			Util.AllFlags<DevEnv>(),
+			Util.AllFlags<Optimization>()
+		));
 	}
 
-	public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
+	[Configure]
+	public void ConfigureAll(Configuration conf, Target target)
 	{
-		base.ConfigureAll(conf, target);
+		Util.SetDefaultBuildArguments(conf, target);
 		conf.SolutionFolder = "Atrium/external";
 
 		conf.Defines.Add("IMGUI_DEFINE_MATH_OPERATORS");
@@ -48,12 +55,12 @@ public class DearImGuiLibrary : Atrium.ExternalLibraryProject
 		conf.ExportDefines.Add("IMGUI_DISABLE_OBSOLETE_FUNCTIONS");
 
 		conf.IncludePrivatePaths.Add(SourceRootPath);
-		conf.Options.Add(Sharpmake.Options.Vc.General.TreatWarningsAsErrors.Disable);
+		conf.Options.Add(Options.Vc.General.TreatWarningsAsErrors.Disable);
 
 		SetupBackendExcludes(conf, target);
 	}
 
-	private void SetupBackendExcludes(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
+	private void SetupBackendExcludes(Configuration conf, Target target)
 	{
 		DearImGuiBackend backends = DearImGuiTargetBackends.GetBackendsForTarget(target);
 
@@ -83,36 +90,46 @@ public class DearImGuiLibrary : Atrium.ExternalLibraryProject
 	}
 }
 
-[Sharpmake.Generate]
-public class DearImGui : Atrium.StaticLibraryProject
+namespace Atrium.Extension
 {
-	public DearImGui()
+	[Generate]
+	public class DearImGui : Project
 	{
-		Name = "Dear ImGui";
-		SourceRootPath = "[project.SharpmakeCsPath]";
-	}
-
-	public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
-	{
-		base.ConfigureAll(conf, target);
-		conf.SolutionFolder = "Atrium/extensions";
-
-		conf.ExportDefines.Add("IS_IMGUI_ENABLED=1");
-
-		conf.AddPrivateDependency<Atrium.Engine>(target);
-		conf.AddPublicDependency<DearImGuiLibrary>(target);
-
-		DearImGuiBackend backends = DearImGuiTargetBackends.GetBackendsForTarget(target);
-
-		if (backends.HasFlag(DearImGuiBackend.DirectX12))
+		public DearImGui()
 		{
-			conf.AddPrivateDependency<Atrium.DirectX12>(target);
-			conf.Defines.Add("IS_IMGUI_BACKEND_DIRECTX12=1");
+			Name = "Dear ImGui";
+			SourceRootPath = "[project.SharpmakeCsPath]";
+
+			AddTargets(new Target(
+				Platform.win64,
+				Util.AllFlags<DevEnv>(),
+				Util.AllFlags<Optimization>()
+			));
 		}
-		if (backends.HasFlag(DearImGuiBackend.Win32))
+
+		[Configure]
+		public void ConfigureAll(Configuration conf, Target target)
 		{
-			conf.AddPrivateDependency<Atrium.WindowsClient>(target);
-			conf.Defines.Add("IS_IMGUI_BACKEND_WIN32=1");
+			Util.SetDefaultBuildArguments(conf, target);
+			conf.SolutionFolder = "Atrium/extensions";
+
+			conf.ExportDefines.Add("IS_IMGUI_ENABLED=1");
+
+			conf.AddPrivateDependency<Atrium.Engine>(target);
+			conf.AddPublicDependency<DearImGuiLibrary>(target);
+
+			DearImGuiBackend backends = DearImGuiTargetBackends.GetBackendsForTarget(target);
+
+			if (backends.HasFlag(DearImGuiBackend.DirectX12))
+			{
+				conf.AddPrivateDependency<Atrium.DirectX12>(target);
+				conf.Defines.Add("IS_IMGUI_BACKEND_DIRECTX12=1");
+			}
+			if (backends.HasFlag(DearImGuiBackend.Win32))
+			{
+				conf.AddPrivateDependency<Atrium.WindowsClient>(target);
+				conf.Defines.Add("IS_IMGUI_BACKEND_WIN32=1");
+			}
 		}
 	}
 }

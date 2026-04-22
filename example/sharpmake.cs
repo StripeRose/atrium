@@ -13,7 +13,7 @@ public class Example_Executable : Atrium.ExecutableProject
 
 	public override void ConfigureAll(Sharpmake.Project.Configuration conf, Sharpmake.Target target)
 	{
-		base.ConfigureAll(conf, target);
+		Util.SetDefaultBuildArguments(conf, target);
 
 		conf.SolutionFolder = "Executables";
 		
@@ -31,7 +31,7 @@ public class Example_Solution : Atrium.Solution
 
 	public override void ConfigureAll(Sharpmake.Solution.Configuration conf, Sharpmake.Target target)
 	{
-		base.ConfigureAll(conf, target);
+		Util.SetDefaultBuildArguments(conf, target);
 		conf.SolutionPath = "[solution.SharpmakeCsPath]";
 
 		conf.AddProject<Example_Executable>(target);
