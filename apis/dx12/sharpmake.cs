@@ -27,7 +27,7 @@ public class D3D12MemoryAllocator : Project
 	public void ConfigureAll(Configuration conf, Target target)
 	{
 		Util.SetDefaultBuildArguments(conf, target);
-		conf.SolutionFolder = "external";
+		conf.SolutionFolder = "Atrium/External";
 
 		conf.Options.Add(Options.Vc.General.TreatWarningsAsErrors.Disable);
 		conf.Options.Add(Options.Vc.General.WarningLevel.Level0);
@@ -64,15 +64,14 @@ public class DirectXTex : Project
 	public void ConfigureAll(Configuration conf, Target target)
 	{
 		Util.SetDefaultBuildArguments(conf, target);
+		conf.SolutionFolder = "Atrium/External";
 
-		conf.SolutionFolder = "external";
 		conf.SourceFilesBuildExclude.Add("BCDirectCompute.cpp");
-
 		conf.IncludePrivatePaths.Add(@"[project.SourceRootPath]/../Common");
 	}
 }
 
-namespace Atrium
+namespace Atrium.Graphics
 {
 	[Generate]
 	public class DirectX12 : Project
@@ -96,7 +95,7 @@ namespace Atrium
 		public void ConfigureAll(Configuration conf, Target target)
 		{
 			Util.SetDefaultBuildArguments(conf, target);
-			conf.SolutionFolder = "Atrium/apis";
+			conf.SolutionFolder = "Atrium/Graphics";
 
 			conf.AddPrivateDependency<Atrium.Core>(target);
 			conf.AddPrivateDependency<D3D12MemoryAllocator>(target);

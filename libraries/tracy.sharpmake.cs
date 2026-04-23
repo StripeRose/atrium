@@ -29,8 +29,7 @@ public class Tracy : Project
 	public void ConfigureAll(Configuration conf, Target target)
 	{
 		Util.SetDefaultBuildArguments(conf, target);
-		
-		conf.SolutionFolder = "Atrium/external";
+		conf.SolutionFolder = "Atrium/External";
 
 		conf.Options.Add(Sharpmake.Options.Vc.General.TreatWarningsAsErrors.Disable);
 		conf.Options.Add(Sharpmake.Options.Vc.General.WarningLevel.Level0);

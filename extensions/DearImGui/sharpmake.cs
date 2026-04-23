@@ -48,7 +48,7 @@ public class DearImGuiLibrary : Project
 	public void ConfigureAll(Configuration conf, Target target)
 	{
 		Util.SetDefaultBuildArguments(conf, target);
-		conf.SolutionFolder = "Atrium/external";
+		conf.SolutionFolder = "Atrium/External";
 
 		conf.Defines.Add("IMGUI_DEFINE_MATH_OPERATORS");
 		conf.Defines.Add("IMGUI_DISABLE_OBSOLETE_FUNCTIONS");
@@ -111,23 +111,23 @@ namespace Atrium.Extension
 		public void ConfigureAll(Configuration conf, Target target)
 		{
 			Util.SetDefaultBuildArguments(conf, target);
-			conf.SolutionFolder = "Atrium/extensions";
+			conf.SolutionFolder = "Atrium/Extension";
 
 			conf.ExportDefines.Add("IS_IMGUI_ENABLED=1");
 
-			conf.AddPrivateDependency<Atrium.Engine>(target);
+			conf.AddPrivateDependency<Engine>(target);
 			conf.AddPublicDependency<DearImGuiLibrary>(target);
 
 			DearImGuiBackend backends = DearImGuiTargetBackends.GetBackendsForTarget(target);
 
 			if (backends.HasFlag(DearImGuiBackend.DirectX12))
 			{
-				conf.AddPrivateDependency<Atrium.DirectX12>(target);
+				conf.AddPrivateDependency<Graphics.DirectX12>(target);
 				conf.Defines.Add("IS_IMGUI_BACKEND_DIRECTX12=1");
 			}
 			if (backends.HasFlag(DearImGuiBackend.Win32))
 			{
-				conf.AddPrivateDependency<Atrium.WindowsClient>(target);
+				conf.AddPrivateDependency<Client.Windows>(target);
 				conf.Defines.Add("IS_IMGUI_BACKEND_WIN32=1");
 			}
 		}

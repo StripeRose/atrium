@@ -29,8 +29,8 @@ namespace Atrium
 			{
 				case Platform.win32:
 				case Platform.win64:
-					conf.AddPrivateDependency<WindowsClient>(target);
-					conf.AddPrivateDependency<DirectX12>(target);
+					conf.AddPrivateDependency<Client.Windows>(target);
+					conf.AddPrivateDependency<Graphics.DirectX12>(target);
 					break;
 			}
 		}

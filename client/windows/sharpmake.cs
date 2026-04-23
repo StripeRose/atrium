@@ -1,11 +1,11 @@
 using Sharpmake;
 
-namespace Atrium
+namespace Atrium.Client
 {
 	[Generate]
-	public class WindowsClient : Project
+	public class Windows : Project
 	{
-		public WindowsClient()
+		public Windows()
 		{
 			Name = "Windows";
 			SourceRootPath = "[project.SharpmakeCsPath]";
@@ -21,7 +21,7 @@ namespace Atrium
 		public void ConfigureAll(Configuration conf, Target target)
 		{
 			Util.SetDefaultBuildArguments(conf, target);
-			conf.SolutionFolder = "Atrium/client";
+			conf.SolutionFolder = "Atrium/Client";
 
 			conf.AddPrivateDependency<Atrium.Core>(target);
 

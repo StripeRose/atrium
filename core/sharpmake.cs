@@ -21,7 +21,6 @@ namespace Atrium
 		public void ConfigureAll(Configuration conf, Target target)
 		{
 			Util.SetDefaultBuildArguments(conf, target);
-
 			conf.SolutionFolder = "Atrium";
 
 			RoseCommon.MainNamespace = "Atrium";
