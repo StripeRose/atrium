@@ -20,9 +20,9 @@ namespace Atrium::DirectX12
 
 		UINT dxgiFactoryFlags = 0;
 
-#ifndef NDEBUG
+	#ifndef NDEBUG
 		SetupDebug(dxgiFactoryFlags);
-#endif
+	#endif
 		SetupFactory(dxgiFactoryFlags);
 		SetupAdapter();
 		SetupDevice();
@@ -50,7 +50,7 @@ namespace Atrium::DirectX12
 			allocation.ReleaseAndGetAddressOf(),
 			IID_NULL, NULL
 		);
-		
+
 		if (Debug::Verify(creationResult, "Create resource"))
 			return std::shared_ptr<GPUResource>(new GPUResource(allocation, anInitialState));
 		else
@@ -121,7 +121,7 @@ namespace Atrium::DirectX12
 					adapterIndex,
 					DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
 					IID_PPV_ARGS(myAdapter.ReleaseAndGetAddressOf())));
-				adapterIndex++)
+					adapterIndex++)
 			{
 				DXGI_ADAPTER_DESC1 adapterDescription;
 				if (FAILED(myAdapter->GetDesc1(&adapterDescription)))
@@ -152,7 +152,7 @@ namespace Atrium::DirectX12
 				SUCCEEDED(myDXGIFactory->EnumAdapters1(
 					adapterIndex,
 					myAdapter.ReleaseAndGetAddressOf()));
-				++adapterIndex)
+					++adapterIndex)
 			{
 				DXGI_ADAPTER_DESC1 adapterDescription;
 				if (FAILED(myAdapter->GetDesc1(&adapterDescription)))
@@ -229,7 +229,7 @@ namespace Atrium::DirectX12
 	{
 		PROFILE_SCOPE();
 
-#ifndef NDEBUG
+	#ifndef NDEBUG
 		if (!Debug::Verify(myDevice.As(&myInfoQueue), "Get info queue."))
 			return false;
 
@@ -246,7 +246,7 @@ namespace Atrium::DirectX12
 		//filter.DenyList.pIDList = hide;
 		//myInfoQueue->AddStorageFilterEntries(&filter);
 
-#endif
+	#endif
 
 		return true;
 	}

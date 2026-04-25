@@ -28,31 +28,31 @@ namespace Atrium
 		//--------------------------------------------------
 		// * Types
 		//--------------------------------------------------
-		#pragma region Types
+	#pragma region Types
 
 		struct ProfileContextZone;
 
-		#pragma endregion
+	#pragma endregion
 
 		//--------------------------------------------------
 		// * Methods
 		//--------------------------------------------------
-		#pragma region Methods
+	#pragma region Methods
 
-		/**
-		 * @brief Create a new graphics profiling zone.
-		 *        Do not use directly, use "CONTEXT_ZONE" macro instead.
-		 */
+	/**
+	 * @brief Create a new graphics profiling zone.
+	 *        Do not use directly, use "CONTEXT_ZONE" macro instead.
+	 */
 		virtual void BeginProfileZone(ProfileContextZone& aZoneScope
-#ifdef TRACY_ENABLE
+		#ifdef TRACY_ENABLE
 			, const tracy::SourceLocationData& aLocation
-#endif
+		#endif
 		) = 0;
 
 		/**
 		 * @brief Clear a render texture's color to a specific value.
 		 *        If the chosen target has no color buffer, the call does nothing.
-		 * 
+		 *
 		 * @param aTarget Target to clear the color buffer of.
 		 * @param aClearColor Color value to clear to.
 		 */
@@ -61,7 +61,7 @@ namespace Atrium
 		/**
 		 * @brief Clear a render texture's depth and stencil to a specified value.
 		 *        If the target has no depth buffer, the call does nothing.
-		 * 
+		 *
 		 * @param aTarget Target to clear the depth buffer of.
 		 * @param aDepth Depth value to clear to.
 		 * @param aStencil Stencil value to clear to.
@@ -80,7 +80,7 @@ namespace Atrium
 
 		/**
 		 * @brief Draw primitives.
-		 * 
+		 *
 		 * @param aVertexCount Number of vertices in the primitive.
 		 * @param aVertexStartOffset Index for the first vertex of the primitive.
 		 */
@@ -88,7 +88,7 @@ namespace Atrium
 
 		/**
 		 * @brief Draw indexed primitives.
-		 * 
+		 *
 		 * @param anIndexCount Number of vertex indices in the primitive.
 		 * @param aStartIndexLocation Location for the first verteex index of the primitive.
 		 * @param aBaseVertexLocation Vertex location offset.
@@ -97,7 +97,7 @@ namespace Atrium
 
 		/**
 		 * @brief Draw instanced primitives.
-		 * 
+		 *
 		 * @param aVertexCountPerInstance Number of vertices in the primitive per instance.
 		 * @param anInstanceCount Number of instances to draw.
 		 * @param aStartVertexLocation Vertex index to use as vertex index 0.
@@ -107,7 +107,7 @@ namespace Atrium
 
 		/**
 		 * @brief Draw indexed, instanced primitives.
-		 * 
+		 *
 		 * @param anIndexCountPerInstance Number of indices read from the index buffer for each instance.
 		 * @param anInstanceCount Number of instances to draw.
 		 * @param aStartIndexLocation Location for the first verteex index of the primitive.
@@ -118,23 +118,23 @@ namespace Atrium
 
 		/**
 		 * @brief Set the blend factor that modulate values for a pixel-shader, render-target, or both.
-		 * 
+		 *
 		 * @param aBlendFactor Color containing the blend-factors for each color component.
-		 * 
+		 *
 		 * @refactor Should this be a Color, or some other structure?
 		 */
 		virtual void SetBlendFactor(ColorARGB<float> aBlendFactor) = 0;
 
 		/**
 		 * @brief Set the active Pipeline State Object, including its root signature.
-		 * 
+		 *
 		 * @param aPipelineState Pipeline State Object to set.
 		 */
 		virtual void SetPipelineState(const std::shared_ptr<PipelineState>& aPipelineState) = 0;
 
 		/**
 		 * @brief Set a graphics buffer containing vertices as a current vertex buffer.
-		 * 
+		 *
 		 * @param aVertexBuffer Graphics buffer to use.
 		 * @param aSlot Index into the device's zero-based array of vertex buffer slots to set the graphics buffer.
 		 */
@@ -142,7 +142,7 @@ namespace Atrium
 
 		/**
 		 * @brief Bind a graphics buffer into a specific slot of the root signature, for use in shaders.
-		 * 
+		 *
 		 * @param anUpdateFrequency Update frequency of the chosen resource, to inform which register to use.
 		 * @param aRegisterIndex Index of the register to use.
 		 * @param aBuffer Graphics buffer to bind.
@@ -151,7 +151,7 @@ namespace Atrium
 
 		/**
 		 * @brief Bind a texture buffer into a specific slot of the root signature, for use in shaders.
-		 * 
+		 *
 		 * @param anUpdateFrequency Update frequency of the chosen resource, to inform which register to use.
 		 * @param aRegisterIndex Index of the register to use.
 		 * @param aTexture Texture buffer to bind.
@@ -160,28 +160,28 @@ namespace Atrium
 
 		/**
 		 * @brief Select the type of primitive topology that describes the input data for the Input Assembler stage.
-		 * 
+		 *
 		 * @param aTopology Type of primitive.
 		 */
 		virtual void SetPrimitiveTopology(PrimitiveTopology aTopology) = 0;
 
 		/**
 		 * @brief Specify a sub-section of the render target limit drawing within.
-		 * 
+		 *
 		 * @param aRectangle Sub-section rectangle in pixels.
 		 */
 		virtual void SetScissorRect(const Rectangle<int>& aRectangle) = 0;
 
 		/**
 		 * @brief Set the reference value for depth stencil tests.
-		 * 
+		 *
 		 * @param aStencilRef Reference value to perform against when doing depth-stencil tests.
 		 */
 		virtual void SetStencilRef(std::uint32_t aStencilRef) = 0;
 
 		/**
 		 * @brief Set a list of render targets to use for the graphics pipeline.
-		 * 
+		 *
 		 * @param someTargets List of render-targets for shader output. Can be empty if none should be bound.
 		 * @param aDepthTarget Depth stencil target to use. Can be null if none should be bound.
 		 */
@@ -189,7 +189,7 @@ namespace Atrium
 
 		/**
 		 * @brief Specify both viewport and scissor rect to cover the screen with the specified screen size.
-		 * 
+		 *
 		 * @refactor Doesn't do much different than calling SetScissorRect() and SetViewport().
 		 *           Could be removed to simplify.
 		 */
@@ -197,12 +197,12 @@ namespace Atrium
 
 		/**
 		 * @brief Specify a sub-section of the render target that should be used for drawing.
-		 * 
+		 *
 		 * @param aRectangle Sub-section of the render-target, where (0,0) is the center.
 		 */
 		virtual void SetViewport(const Rectangle<float>& aRectangle) = 0;
 
-		#pragma endregion
+	#pragma endregion
 	};
 
 	/**

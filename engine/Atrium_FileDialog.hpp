@@ -25,12 +25,12 @@ namespace Atrium::Editor
 		void SetTitle(const std::string_view& aLabel);
 
 	protected:
-#if _WIN32
+	#if _WIN32
 		void AddOptions(FILEOPENDIALOGOPTIONS someOptions);
 		void RemoveOptions(FILEOPENDIALOGOPTIONS someOptions);
 
 		Microsoft::WRL::ComPtr<::IFileDialog> myFileDialog;
-#endif
+	#endif
 	};
 
 	class OpenFileDialog : public FileDialog

@@ -212,7 +212,7 @@ namespace Atrium::Win32
 				{
 					case SC_KEYMENU:
 						return 0;
-						
+
 					case SC_MINIMIZE:
 						myWindowState = WindowState::Minimized;
 						break;
@@ -228,7 +228,7 @@ namespace Atrium::Win32
 							myWindowState = WindowState::Maximized;
 						else
 							myWindowState = WindowState::Normal;
-						
+
 						break;
 					}
 				}

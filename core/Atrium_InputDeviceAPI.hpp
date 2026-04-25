@@ -26,11 +26,11 @@ namespace Atrium
 		//--------------------------------------------------
 		// * Properties
 		//--------------------------------------------------
-		#pragma region Properties
+	#pragma region Properties
 
-		/**
-		 * @brief Slot for listening to input events from any device.
-		 */
+	/**
+	 * @brief Slot for listening to input events from any device.
+	 */
 		EventSlot<const InputEvent&> OnInput;
 
 		/**
@@ -38,17 +38,17 @@ namespace Atrium
 		 */
 		EventSlot<const TextInputEvent&> OnTextInput;
 
-		#pragma endregion
+	#pragma endregion
 
 		//--------------------------------------------------
 		// * Methods
 		//--------------------------------------------------
-		#pragma region Methods
+	#pragma region Methods
 
-		/**
-		 * @brief List all devices that are or have been connected to the application.
-		 * @return A span of references to the devices.
-		 */
+	/**
+	 * @brief List all devices that are or have been connected to the application.
+	 * @return A span of references to the devices.
+	 */
 		virtual std::span<std::reference_wrapper<InputDevice>> ListDevices() const = 0;
 
 		/**
@@ -57,6 +57,6 @@ namespace Atrium
 		 */
 		virtual void ReportInputEvents(InputDeviceType someDeviceTypes) = 0;
 
-		#pragma endregion
+	#pragma endregion
 	};
 }

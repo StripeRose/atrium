@@ -104,7 +104,8 @@ namespace Atrium::DirectX12
 		RootSignature(ComPtr<ID3D12RootSignature> aRootSignature, const RootParameterMapping& aParameterMapping)
 			: myRootSignature(aRootSignature)
 			, myParameterMapping(aParameterMapping)
-		{ }
+		{
+		}
 
 		const ComPtr<ID3D12RootSignature> myRootSignature;
 		const RootParameterMapping myParameterMapping;

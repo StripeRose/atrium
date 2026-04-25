@@ -16,22 +16,22 @@ namespace Atrium
 		//--------------------------------------------------
 		// * Construction
 		//--------------------------------------------------
-		#pragma region Construction
+	#pragma region Construction
 
 		AtriumApplication();
 		~AtriumApplication();
 
-		#pragma endregion
+	#pragma endregion
 
 	public:
 		//--------------------------------------------------
 		// * Methods
 		//--------------------------------------------------
-		#pragma region Methods
+	#pragma region Methods
 
-		/**
-		 * @brief Request the application to exit when possible.
-		 */
+	/**
+	 * @brief Request the application to exit when possible.
+	 */
 		void Exit();
 
 		/**
@@ -72,7 +72,7 @@ namespace Atrium
 		 */
 		int Run();
 
-		#pragma endregion
+	#pragma endregion
 
 	protected:
 		/**

@@ -29,36 +29,36 @@ namespace Atrium::DirectX12
 
 		switch (aQueueType)
 		{
-		case D3D12_COMMAND_LIST_TYPE_COMPUTE:
-			queueName = L"Compute queue";
-			break;
-		case D3D12_COMMAND_LIST_TYPE_COPY:
-			queueName = L"Copy queue";
-			break;
-		case D3D12_COMMAND_LIST_TYPE_DIRECT:
-			queueName = L"Graphics queue";
-			break;
+			case D3D12_COMMAND_LIST_TYPE_COMPUTE:
+				queueName = L"Compute queue";
+				break;
+			case D3D12_COMMAND_LIST_TYPE_COPY:
+				queueName = L"Copy queue";
+				break;
+			case D3D12_COMMAND_LIST_TYPE_DIRECT:
+				queueName = L"Graphics queue";
+				break;
 		}
 
 		if (queueName != nullptr)
 			myCommandQueue->SetName(queueName);
 
-#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
 		myProfilingContext = TracyD3D12Context(aDevice.Get(), myCommandQueue.Get());
 
 		switch (aQueueType)
 		{
-		case D3D12_COMMAND_LIST_TYPE_COMPUTE:
-			TracyD3D12ContextName(myProfilingContext, "Compute queue", 13);
-			break;
-		case D3D12_COMMAND_LIST_TYPE_COPY:
-			TracyD3D12ContextName(myProfilingContext, "Copy queue", 10);
-			break;
-		case D3D12_COMMAND_LIST_TYPE_DIRECT:
-			TracyD3D12ContextName(myProfilingContext, "Graphics queue", 14);
-			break;
+			case D3D12_COMMAND_LIST_TYPE_COMPUTE:
+				TracyD3D12ContextName(myProfilingContext, "Compute queue", 13);
+				break;
+			case D3D12_COMMAND_LIST_TYPE_COPY:
+				TracyD3D12ContextName(myProfilingContext, "Copy queue", 10);
+				break;
+			case D3D12_COMMAND_LIST_TYPE_DIRECT:
+				TracyD3D12ContextName(myProfilingContext, "Graphics queue", 14);
+				break;
 		}
-#endif
+	#endif
 
 		Debug::Assert(
 			aDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(myFence.ReleaseAndGetAddressOf())),
@@ -75,9 +75,9 @@ namespace Atrium::DirectX12
 
 	CommandQueue::~CommandQueue()
 	{
-		#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
 		TracyD3D12Destroy(myProfilingContext);
-		#endif
+	#endif
 	}
 
 	std::uint64_t CommandQueue::InsertSignal()
@@ -178,15 +178,15 @@ namespace Atrium::DirectX12
 	{
 		switch (aCommandType)
 		{
-		case D3D12_COMMAND_LIST_TYPE_DIRECT:
-			return &GetGraphicsQueue();
-		case D3D12_COMMAND_LIST_TYPE_COMPUTE:
-			return &GetComputeQueue();
-		case D3D12_COMMAND_LIST_TYPE_COPY:
-			return &GetCopyQueue();
-		default:
-			Debug::LogFatal("Tried to get an unsupported command queue type.");
-			return nullptr;
+			case D3D12_COMMAND_LIST_TYPE_DIRECT:
+				return &GetGraphicsQueue();
+			case D3D12_COMMAND_LIST_TYPE_COMPUTE:
+				return &GetComputeQueue();
+			case D3D12_COMMAND_LIST_TYPE_COPY:
+				return &GetCopyQueue();
+			default:
+				Debug::LogFatal("Tried to get an unsupported command queue type.");
+				return nullptr;
 		}
 	}
 

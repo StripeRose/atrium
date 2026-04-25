@@ -22,7 +22,7 @@ namespace Atrium::Extension
 			std::vector<std::unique_ptr<DearImGuiBackendContext>>& outBackends
 		);
 
-		virtual void MarkFrameStart() { };
-		virtual void Render([[maybe_unused]] Atrium::FrameGraphicsContext& aFrameContext) { };
+		virtual void MarkFrameStart() {};
+		virtual void Render([[maybe_unused]] Atrium::FrameGraphicsContext& aFrameContext) {};
 	};
 }

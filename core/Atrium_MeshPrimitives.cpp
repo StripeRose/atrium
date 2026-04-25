@@ -56,7 +56,7 @@ namespace Atrium
 					aPrimitive.Vertices.push_back(aVertex);
 
 				return static_cast<std::uint32_t>(vertexIndex);
-			};
+				};
 
 			MeshPrimitive::Triangle newTriangle;
 			newTriangle.V1 = findOrAddVertex(aTriangle[0]);
@@ -163,52 +163,52 @@ namespace Atrium
 			MeshPrimitive::Vertex* v = nullptr;
 
 			// Z-
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 0, 1 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, -1 }; v->UV = { 1, 0 }; v->Normal = {  0,  0, -1 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 0, 1 }; v->Normal = { 0,  0, -1 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { 0,  0, -1 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = { 0,  0, -1 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = { 0,  0, -1 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { 0,  0, -1 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -1, -1 }; v->UV = { 1, 0 }; v->Normal = { 0,  0, -1 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  1,  0 };
 
- 			//  Z+
- 			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = {  0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = {  0,  1,  0 };
+			//  Z+
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = { 0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { 0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { 0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = { 0,  0,  1 }; v->Tangent = { -1,  0,  0 }; v->Binormal = { 0,  1,  0 };
 
- 			//  X+
- 			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1, -1 }; v->UV = { 0, 1 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = {  1,  0,  0 }; v->Tangent = {  0,  0,  1 }; v->Binormal = {  0,  1,  0 };
+			//  X+
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  1, -1 }; v->UV = { 0, 1 }; v->Normal = { 1,  0,  0 }; v->Tangent = { 0,  0,  1 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 1,  0,  0 }; v->Tangent = { 0,  0,  1 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = { 1,  0,  0 }; v->Tangent = { 0,  0,  1 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -1, -1 }; v->UV = { 0, 0 }; v->Normal = { 1,  0,  0 }; v->Tangent = { 0,  0,  1 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 1,  0,  0 }; v->Tangent = { 0,  0,  1 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = { 1,  0,  0 }; v->Tangent = { 0,  0,  1 }; v->Binormal = { 0,  1,  0 };
 
- 			//  X-
- 			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 1, 0 }; v->Normal = { -1,  0,  0 }; v->Tangent = {  0,  0, -1 }; v->Binormal = {  0,  1,  0 };
+			//  X-
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = { -1,  0,  0 }; v->Tangent = { 0,  0, -1 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { -1,  0,  0 }; v->Tangent = { 0,  0, -1 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { -1,  0,  0 }; v->Tangent = { 0,  0, -1 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { -1,  0,  0 }; v->Tangent = { 0,  0, -1 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 1, 1 }; v->Normal = { -1,  0,  0 }; v->Tangent = { 0,  0, -1 }; v->Binormal = { 0,  1,  0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 1, 0 }; v->Normal = { -1,  0,  0 }; v->Tangent = { 0,  0, -1 }; v->Binormal = { 0,  1,  0 };
 
- 			//  Y+
- 			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 0, 0 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 0, 0 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1, -1 }; v->UV = { 1, 0 }; v->Normal = {  0,  1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0,  1 };
+			//  Y+
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1,  1 }; v->UV = { 0, 1 }; v->Normal = { 0,  1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0,  1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 0,  1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0,  1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 0, 0 }; v->Normal = { 0,  1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0,  1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, -1 }; v->UV = { 0, 0 }; v->Normal = { 0,  1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0,  1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  1,  1 }; v->UV = { 1, 1 }; v->Normal = { 0,  1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0,  1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  1, -1 }; v->UV = { 1, 0 }; v->Normal = { 0,  1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0,  1 };
 
- 			//  Y-
- 			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 0, 1 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, -1 }; v->UV = { 1, 1 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, -1 }; v->UV = { 1, 1 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = {  0, -1,  0 }; v->Tangent = {  1,  0,  0 }; v->Binormal = {  0,  0, -1 };
+			//  Y-
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, -1 }; v->UV = { 0, 1 }; v->Normal = { 0, -1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0, -1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -1, -1 }; v->UV = { 1, 1 }; v->Normal = { 0, -1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0, -1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { 0, -1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0, -1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1,  1 }; v->UV = { 0, 0 }; v->Normal = { 0, -1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0, -1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -1, -1 }; v->UV = { 1, 1 }; v->Normal = { 0, -1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0, -1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -1,  1 }; v->UV = { 1, 0 }; v->Normal = { 0, -1,  0 }; v->Tangent = { 1,  0,  0 }; v->Binormal = { 0,  0, -1 };
 
 			GenerateNormals_Flat(aPrimitive);
 		}
@@ -238,8 +238,8 @@ namespace Atrium
 			}
 
 			for (std::size_t i = 1; i < aPrimitive.Vertices.size() - 1; ++i)
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { static_cast<std::uint32_t>(first + 0), static_cast<std::uint32_t>(first + i), static_cast<std::uint32_t>(first + i + 1) });
-			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { static_cast<std::uint32_t>(first + 0), static_cast<std::uint32_t>(first + aPrimitive.Vertices.size() - 1), static_cast<std::uint32_t>(first + 1) });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ static_cast<std::uint32_t>(first + 0), static_cast<std::uint32_t>(first + i), static_cast<std::uint32_t>(first + i + 1) });
+			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ static_cast<std::uint32_t>(first + 0), static_cast<std::uint32_t>(first + aPrimitive.Vertices.size() - 1), static_cast<std::uint32_t>(first + 1) });
 
 			GenerateNormals_Flat(aPrimitive);
 		}
@@ -248,12 +248,12 @@ namespace Atrium
 		{
 			MeshPrimitive::Vertex* v = nullptr;
 			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  0,  1 }; v->UV = { 0, 1 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  0,  1 }; v->UV = { 1, 1 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  0,  1 }; v->UV = { 1, 1 };
 			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  0, -1 }; v->UV = { 0, 0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  0, -1 }; v->UV = { 1, 0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  0, -1 }; v->UV = { 1, 0 };
 
-			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 0, 1, 2 });
-			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 2, 1, 3 });
+			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 0, 1, 2 });
+			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 2, 1, 3 });
 
 			Subdivide(aPrimitive);
 
@@ -272,45 +272,45 @@ namespace Atrium
 			{
 				MeshPrimitive::Vertex* v = nullptr;
 				v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  t,  0 }; v->UV = { 0, 0 };
-				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  t,  0 }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  t,  0 }; v->UV = { 0, 0 };
 				v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -t,  0 }; v->UV = { 0, 0 };
-				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -t,  0 }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -t,  0 }; v->UV = { 0, 0 };
 
-				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  0, -1,  t }; v->UV = { 0, 0 };
-				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  0,  1,  t }; v->UV = { 0, 0 };
-				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  0, -1, -t }; v->UV = { 0, 0 };
-				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  0,  1, -t }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { 0, -1,  t }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { 0,  1,  t }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { 0, -1, -t }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { 0,  1, -t }; v->UV = { 0, 0 };
 
-				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  t,  0, -1 }; v->UV = { 0, 0 };
-				v = &aPrimitive.Vertices.emplace_back(); v->Position = {  t,  0,  1 }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { t,  0, -1 }; v->UV = { 0, 0 };
+				v = &aPrimitive.Vertices.emplace_back(); v->Position = { t,  0,  1 }; v->UV = { 0, 0 };
 				v = &aPrimitive.Vertices.emplace_back(); v->Position = { -t,  0, -1 }; v->UV = { 0, 0 };
 				v = &aPrimitive.Vertices.emplace_back(); v->Position = { -t,  0,  1 }; v->UV = { 0, 0 };
 			}
 
 			{
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  0, 11,  5 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  0,  5,  1 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  0,  1,  7 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  0,  7, 10 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  0, 10, 11 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 0, 11,  5 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 0,  5,  1 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 0,  1,  7 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 0,  7, 10 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 0, 10, 11 });
 
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  1,  5,  9 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  5, 11,  4 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 11, 10,  2 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 10,  7,  6 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  7,  1,  8 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 1,  5,  9 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 5, 11,  4 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 11, 10,  2 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 10,  7,  6 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 7,  1,  8 });
 
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  3,  9,  4 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  3,  4,  2 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  3,  2,  6 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  3,  6,  8 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  3,  8,  9 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 3,  9,  4 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 3,  4,  2 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 3,  2,  6 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 3,  6,  8 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 3,  8,  9 });
 
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  4,  9,  5 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  2,  4, 11 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  6,  2, 10 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  8,  6,  7 });
-				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle {  9,  8,  1 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 4,  9,  5 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 2,  4, 11 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 6,  2, 10 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 8,  6,  7 });
+				aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 9,  8,  1 });
 			}
 
 			Subdivide(aPrimitive);
@@ -325,12 +325,12 @@ namespace Atrium
 		{
 			MeshPrimitive::Vertex* v = nullptr;
 			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1,  1, 0 }; v->UV = { 0, 1 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1,  1, 0 }; v->UV = { 1, 1 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1,  1, 0 }; v->UV = { 1, 1 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 };
 			v = &aPrimitive.Vertices.emplace_back(); v->Position = { -1, -1, 0 }; v->UV = { 0, 0 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 };
-			v = &aPrimitive.Vertices.emplace_back(); v->Position = {  1, -1, 0 }; v->UV = { 1, 0 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 };
+			v = &aPrimitive.Vertices.emplace_back(); v->Position = { 1, -1, 0 }; v->UV = { 1, 0 }; v->Normal = { 0, 0, -1 }; v->Tangent = { 1, 0, 0 }; v->Binormal = { 0, 1, 0 };
 
-			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 0, 1, 2 });
-			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle { 2, 1, 3 });
+			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 0, 1, 2 });
+			aPrimitive.Triangles.emplace_back(MeshPrimitive::Triangle{ 2, 1, 3 });
 		}
 
 	}
@@ -341,30 +341,30 @@ namespace Atrium
 
 		switch (aType)
 		{
-		case MeshPrimitiveType::Capsule:
-			MakeMeshPrimitives::PopulateCapsule(primitive);
-			break;
-		case MeshPrimitiveType::Cube:
-			MakeMeshPrimitives::PopulateCube(primitive);
-			break;
-		case MeshPrimitiveType::Cylinder:
-			MakeMeshPrimitives::PopulateCylinder(primitive);
-			break;
-		case MeshPrimitiveType::Disc:
-			MakeMeshPrimitives::PopulateDisc(primitive);
-			break;
-		case MeshPrimitiveType::Plane:
-			MakeMeshPrimitives::PopulatePlane(primitive);
-			break;
-		case MeshPrimitiveType::Sphere:
-			MakeMeshPrimitives::PopulateSphere(primitive);
-			break;
-		case MeshPrimitiveType::Icosphere:
-			MakeMeshPrimitives::PopulateIcosphere(primitive);
-			break;
-		case MeshPrimitiveType::Quad:
-			MakeMeshPrimitives::PopulateQuad(primitive);
-			break;
+			case MeshPrimitiveType::Capsule:
+				MakeMeshPrimitives::PopulateCapsule(primitive);
+				break;
+			case MeshPrimitiveType::Cube:
+				MakeMeshPrimitives::PopulateCube(primitive);
+				break;
+			case MeshPrimitiveType::Cylinder:
+				MakeMeshPrimitives::PopulateCylinder(primitive);
+				break;
+			case MeshPrimitiveType::Disc:
+				MakeMeshPrimitives::PopulateDisc(primitive);
+				break;
+			case MeshPrimitiveType::Plane:
+				MakeMeshPrimitives::PopulatePlane(primitive);
+				break;
+			case MeshPrimitiveType::Sphere:
+				MakeMeshPrimitives::PopulateSphere(primitive);
+				break;
+			case MeshPrimitiveType::Icosphere:
+				MakeMeshPrimitives::PopulateIcosphere(primitive);
+				break;
+			case MeshPrimitiveType::Quad:
+				MakeMeshPrimitives::PopulateQuad(primitive);
+				break;
 		}
 
 		return primitive;

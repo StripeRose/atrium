@@ -14,12 +14,12 @@ namespace Atrium::Extension
 {
 	void DearImGuiBackendContext::CreateBackendHandlers(const std::shared_ptr<Window>& aWindow, const std::shared_ptr<RenderTexture>& aRenderTarget, std::vector<std::unique_ptr<DearImGuiBackendContext>>& outBackends)
 	{
-		#if IS_IMGUI_BACKEND_DIRECTX12
+	#if IS_IMGUI_BACKEND_DIRECTX12
 		outBackends.emplace_back(new DearImGuiBackendContext_DirectX12(aRenderTarget));
-		#endif
+	#endif
 
-		#if IS_IMGUI_BACKEND_WIN32
+	#if IS_IMGUI_BACKEND_WIN32
 		outBackends.emplace_back(new DearImGuiBackendContext_Win32(aWindow));
-		#endif
+	#endif
 	}
 }

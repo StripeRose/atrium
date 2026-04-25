@@ -14,13 +14,13 @@ namespace Atrium
 
 	enum class InputDeviceType : std::uint8_t
 	{
-		Unknown  = 0x00,
+		Unknown = 0x00,
 		Keyboard = 0x01,
-		Mouse    = 0x02,
-		Gamepad  = 0x04,
-		Touch    = 0x08,
+		Mouse = 0x02,
+		Gamepad = 0x04,
+		Touch = 0x08,
 		Joystick = 0x10,
-		Other    = 0x80
+		Other = 0x80
 	};
 
 	/**
@@ -34,11 +34,11 @@ namespace Atrium
 		//--------------------------------------------------
 		// * Properties
 		//--------------------------------------------------
-		#pragma region Properties
+	#pragma region Properties
 
-		/**
-		 * @brief Slot for listening to input events from the device.
-		 */
+	/**
+	 * @brief Slot for listening to input events from the device.
+	 */
 		EventSlot<const InputEvent&> OnInput;
 
 		/**
@@ -46,20 +46,20 @@ namespace Atrium
 		 */
 		EventSlot<const TextInputEvent&> OnTextInput;
 
-		#pragma endregion
+	#pragma endregion
 
 		//--------------------------------------------------
 		// * Methods
 		//--------------------------------------------------
-		#pragma region Methods
+	#pragma region Methods
 
-		/**
-		 * @brief Check whether the device is connected and usable.
-		 * @return True if the device is connected and usable.
-		 */
+	/**
+	 * @brief Check whether the device is connected and usable.
+	 * @return True if the device is connected and usable.
+	 */
 		virtual bool IsConnected() const = 0;
 
-		#pragma endregion
+	#pragma endregion
 	};
 }
 

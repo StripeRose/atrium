@@ -32,9 +32,9 @@ namespace Atrium::DirectX12
 		ComPtr<ID3D12CommandQueue> GetCommandQueue() { return myCommandQueue; }
 		D3D12_COMMAND_LIST_TYPE GetQueueType() const { return myQueueType; }
 
-#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
 		TracyD3D12Ctx& GetProfilingContext() { return myProfilingContext; }
-#endif
+	#endif
 
 		std::uint64_t PollCurrentFenceValue();
 		std::uint64_t GetLastCompletedFence() const { return myLastCompletedFenceValue; }
@@ -48,9 +48,9 @@ namespace Atrium::DirectX12
 		ComPtr<ID3D12CommandQueue> myCommandQueue;
 		D3D12_COMMAND_LIST_TYPE myQueueType;
 
-#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
 		TracyD3D12Ctx myProfilingContext;
-#endif
+	#endif
 
 		std::mutex myFenceMutex;
 		std::mutex myEventMutex;

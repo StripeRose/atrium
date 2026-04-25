@@ -20,20 +20,20 @@ namespace Atrium
 	{
 		PROFILE_SCOPE();
 
-		#if _WIN32
+	#if _WIN32
 
 		myGraphicsAPI.reset(DirectX12::CreateDX12Manager().release());
 		myInputDeviceAPI.reset(new Win32::InputDeviceAPI());
 		myWindowManager.reset(new Win32::WindowManager());
 
-		#elif !defined(IGNORE_NOOP_PLATFORM)
+	#elif !defined(IGNORE_NOOP_PLATFORM)
 
 		Debug::LogFatal(
 			"This platform deos not have any core implementations. Atrium will not do anything.\n"
 			"If this is intentional, define \"IGNORE_NOOP_PLATFORM\" to disable this error."
 		);
 
-		#endif
+	#endif
 
 		// Populate null objects for missing API handlers.
 		if (!myAudioAPI) myAudioAPI.reset(new NullAudioHandler());

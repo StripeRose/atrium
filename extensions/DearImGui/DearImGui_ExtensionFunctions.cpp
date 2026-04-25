@@ -136,7 +136,7 @@ void ImGui::Label(std::string_view text, LabelFlags flags)
 	}
 	if (flags == LabelFlags_Left)
 	{
-		ImGui::SetCursorScreenPos({ textRect.Max.x, textRect.Max.y - (textSize.y + window->DC.CurrLineTextBaseOffset)});
+		ImGui::SetCursorScreenPos({ textRect.Max.x, textRect.Max.y - (textSize.y + window->DC.CurrLineTextBaseOffset) });
 		ImGui::SameLine();
 	}
 	else if (flags == LabelFlags_Right)

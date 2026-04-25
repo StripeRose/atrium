@@ -113,17 +113,17 @@ namespace Atrium::DirectX12
 	{
 		switch (aFilter)
 		{
-		case FilterMode::Point:
-			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-			break;
-		case FilterMode::Bilinear:
-			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-			break;
-		case FilterMode::Trilinear:
-			myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-			break;
+			case FilterMode::Point:
+				myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+				break;
+			case FilterMode::Bilinear:
+				myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+				break;
+			case FilterMode::Trilinear:
+				myDescriptor.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+				break;
 		}
-		
+
 		return *this;
 	}
 
@@ -144,15 +144,15 @@ namespace Atrium::DirectX12
 	{
 		switch (aMode)
 		{
-		case TextureWrapMode::Clamp:
-			return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		case TextureWrapMode::Mirror:
-			return D3D12_TEXTURE_ADDRESS_MODE_MIRROR;
-		case TextureWrapMode::MirrorOnce:
-			return D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE;
-		case TextureWrapMode::Repeat:
-		default:
-			return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			case TextureWrapMode::Clamp:
+				return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+			case TextureWrapMode::Mirror:
+				return D3D12_TEXTURE_ADDRESS_MODE_MIRROR;
+			case TextureWrapMode::MirrorOnce:
+				return D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE;
+			case TextureWrapMode::Repeat:
+			default:
+				return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 		}
 	}
 
@@ -195,38 +195,12 @@ namespace Atrium::DirectX12
 
 				switch (param->myType)
 				{
-				case Parameter::Type::Constant:
-				{
-					rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-					rootParameter.Constants.ShaderRegister = param->myShaderRegister;
-					rootParameter.Constants.RegisterSpace = static_cast<UINT>(param->myUpdateFrequency);
-					rootParameter.Constants.Num32BitValues = param->myCount;
-
-					parameterMapping.AddMapping(
-						param->myUpdateFrequency,
-						RootParameterMapping::RegisterType::ConstantBuffer,
-						param->myShaderRegister
-					);
-
-					break;
-				}
-				case Parameter::Type::Table:
-				{
-					rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-					if (!PopulateTable(parameterMapping, descriptorRanges, rootParameter, *static_cast<DescriptorTable*>(param.get())))
-						return nullptr; // Table details were wrong, abort.
-					break;
-				}
-				case Parameter::Type::CBV:
-				case Parameter::Type::SRV:
-				case Parameter::Type::UAV:
-				{
-					Debug::Assert(param->myCount == 1, "Only 1 descriptor per root parameter.");
-
-					switch (param->myType)
+					case Parameter::Type::Constant:
 					{
-					case Parameter::Type::CBV:
-						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+						rootParameter.Constants.ShaderRegister = param->myShaderRegister;
+						rootParameter.Constants.RegisterSpace = static_cast<UINT>(param->myUpdateFrequency);
+						rootParameter.Constants.Num32BitValues = param->myCount;
 
 						parameterMapping.AddMapping(
 							param->myUpdateFrequency,
@@ -235,37 +209,63 @@ namespace Atrium::DirectX12
 						);
 
 						break;
-					case Parameter::Type::SRV:
-						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-
-						parameterMapping.AddMapping(
-							param->myUpdateFrequency,
-							RootParameterMapping::RegisterType::Texture,
-							param->myShaderRegister
-						);
-
+					}
+					case Parameter::Type::Table:
+					{
+						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+						if (!PopulateTable(parameterMapping, descriptorRanges, rootParameter, *static_cast<DescriptorTable*>(param.get())))
+							return nullptr; // Table details were wrong, abort.
 						break;
+					}
+					case Parameter::Type::CBV:
+					case Parameter::Type::SRV:
 					case Parameter::Type::UAV:
-						rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
+					{
+						Debug::Assert(param->myCount == 1, "Only 1 descriptor per root parameter.");
 
-						parameterMapping.AddMapping(
-							param->myUpdateFrequency,
-							RootParameterMapping::RegisterType::Unordered,
-							param->myShaderRegister
-						);
+						switch (param->myType)
+						{
+							case Parameter::Type::CBV:
+								rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+
+								parameterMapping.AddMapping(
+									param->myUpdateFrequency,
+									RootParameterMapping::RegisterType::ConstantBuffer,
+									param->myShaderRegister
+								);
+
+								break;
+							case Parameter::Type::SRV:
+								rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+
+								parameterMapping.AddMapping(
+									param->myUpdateFrequency,
+									RootParameterMapping::RegisterType::Texture,
+									param->myShaderRegister
+								);
+
+								break;
+							case Parameter::Type::UAV:
+								rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
+
+								parameterMapping.AddMapping(
+									param->myUpdateFrequency,
+									RootParameterMapping::RegisterType::Unordered,
+									param->myShaderRegister
+								);
+
+								break;
+						}
+
+						rootParameter.Descriptor.ShaderRegister = param->myShaderRegister;
+						rootParameter.Descriptor.RegisterSpace = static_cast<unsigned int>(param->myUpdateFrequency);
+						rootParameter.Descriptor.Flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE;
 
 						break;
 					}
-
-					rootParameter.Descriptor.ShaderRegister = param->myShaderRegister;
-					rootParameter.Descriptor.RegisterSpace = static_cast<unsigned int>(param->myUpdateFrequency);
-					rootParameter.Descriptor.Flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE;
-
-					break;
-				}
-				case Parameter::Type::Sampler:
-					Debug::LogError("Cannot have sampler root parameter. Use a descriptor table pointing to a range of samplers.");
-					return nullptr;
+					case Parameter::Type::Sampler:
+						Debug::LogError("Cannot have sampler root parameter. Use a descriptor table pointing to a range of samplers.");
+						return nullptr;
 				}
 			}
 		}
@@ -288,7 +288,7 @@ namespace Atrium::DirectX12
 		result = D3D12SerializeVersionedRootSignature(&rootSignatureDesc, &signature, &error);
 		if (SUCCEEDED(result))
 			result = myDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(dxRootSignature.ReleaseAndGetAddressOf()));
-		
+
 		if (!Debug::Verify(result, "Create root signature", error.Get()))
 			return nullptr;
 
@@ -299,22 +299,23 @@ namespace Atrium::DirectX12
 	{
 		switch (aShaderVisibility)
 		{
-		default:
-		case Atrium::Shader::Type::All:
-			myCurrentVisibility = D3D12_SHADER_VISIBILITY_ALL;
-			break;
-		case Atrium::Shader::Type::Vertex:
-			myCurrentVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-			break;
-		case Atrium::Shader::Type::Pixel:
-			myCurrentVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-			break;
+			default:
+			case Atrium::Shader::Type::All:
+				myCurrentVisibility = D3D12_SHADER_VISIBILITY_ALL;
+				break;
+			case Atrium::Shader::Type::Vertex:
+				myCurrentVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+				break;
+			case Atrium::Shader::Type::Pixel:
+				myCurrentVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+				break;
 		}
 	}
 
 	RootSignatureCreator::RootSignatureCreator(ID3D12Device* aDevice)
 		: myDevice(aDevice)
-	{ }
+	{
+	}
 
 	void RootSignatureCreator::AddCBV(unsigned int aRegister, ResourceUpdateFrequency anUpdateFrequency)
 	{
@@ -373,53 +374,53 @@ namespace Atrium::DirectX12
 
 			switch (range.myType)
 			{
-			case Parameter::Type::CBV:
-				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+				case Parameter::Type::CBV:
+					descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 
-				mappingTable.AddMapping(
-					range.myUpdateFrequency,
-					RootParameterMapping::RegisterType::ConstantBuffer,
-					range.myShaderRegister,
-					range.myCount
-				);
+					mappingTable.AddMapping(
+						range.myUpdateFrequency,
+						RootParameterMapping::RegisterType::ConstantBuffer,
+						range.myShaderRegister,
+						range.myCount
+					);
 
-				break;
-			case Parameter::Type::SRV:
-				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+					break;
+				case Parameter::Type::SRV:
+					descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 
-				mappingTable.AddMapping(
-					range.myUpdateFrequency,
-					RootParameterMapping::RegisterType::Texture,
-					range.myShaderRegister,
-					range.myCount
-				);
+					mappingTable.AddMapping(
+						range.myUpdateFrequency,
+						RootParameterMapping::RegisterType::Texture,
+						range.myShaderRegister,
+						range.myCount
+					);
 
-				break;
-			case Parameter::Type::UAV:
-				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+					break;
+				case Parameter::Type::UAV:
+					descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
 
-				mappingTable.AddMapping(
-					range.myUpdateFrequency,
-					RootParameterMapping::RegisterType::Unordered,
-					range.myShaderRegister,
-					range.myCount
-				);
+					mappingTable.AddMapping(
+						range.myUpdateFrequency,
+						RootParameterMapping::RegisterType::Unordered,
+						range.myShaderRegister,
+						range.myCount
+					);
 
-				break;
-			case Parameter::Type::Sampler:
-				descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+					break;
+				case Parameter::Type::Sampler:
+					descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
 
-				mappingTable.AddMapping(
-					range.myUpdateFrequency,
-					RootParameterMapping::RegisterType::Sampler,
-					range.myShaderRegister,
-					range.myCount
-				);
+					mappingTable.AddMapping(
+						range.myUpdateFrequency,
+						RootParameterMapping::RegisterType::Sampler,
+						range.myShaderRegister,
+						range.myCount
+					);
 
-				break;
-			default:
-				Debug::LogError("Incorrect descriptor range type.");
-				return false;
+					break;
+				default:
+					Debug::LogError("Incorrect descriptor range type.");
+					return false;
 			}
 
 			descriptorRange.RegisterSpace = static_cast<unsigned int>(range.myUpdateFrequency);
@@ -493,7 +494,7 @@ namespace Atrium::DirectX12
 		{
 			const PipelineStateDescription::Blend& blend = aPipelineStateDescription.BlendMode.BlendFactors[i];
 
-			blendDesc.RenderTarget[i] = D3D12_RENDER_TARGET_BLEND_DESC {
+			blendDesc.RenderTarget[i] = D3D12_RENDER_TARGET_BLEND_DESC{
 				blend.Enabled ? TRUE : FALSE,
 				FALSE,
 				ToDXBlend(blend.SourceFactor),
@@ -603,7 +604,7 @@ namespace Atrium::DirectX12
 			case PipelineStateDescription::BlendOperation::Max:
 				return D3D12_BLEND_OP_MAX;
 			case PipelineStateDescription::BlendOperation::Min:
-			return D3D12_BLEND_OP_MIN;
+				return D3D12_BLEND_OP_MIN;
 		}
 	}
 }

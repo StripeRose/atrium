@@ -145,7 +145,7 @@ namespace Atrium::DirectX12
 				frameSwapChains.push_back(swapChain);
 				myPresentPrepareContext->AddBarrier(*swapChain->GetGPUResource(), D3D12_RESOURCE_STATE_PRESENT);
 			}
-			
+
 			myPresentPrepareContext->FlushBarriers();
 
 			myFrameEndFences[myFrameInFlight].GraphicsQueue = myCommandQueueManager->GetGraphicsQueue().ExecuteCommandList(myPresentPrepareContext->GetCommandList());
@@ -200,13 +200,13 @@ namespace Atrium::DirectX12
 
 	void DirectX12API::ReportUnreleasedObjects()
 	{
-		#ifndef NDEBUG
+	#ifndef NDEBUG
 		ComPtr<IDXGIDebug1> debugInterface;
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(debugInterface.GetAddressOf()))))
 		{
 			//debugInterface->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
 			debugInterface->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
 		}
-		#endif
+	#endif
 	}
 }

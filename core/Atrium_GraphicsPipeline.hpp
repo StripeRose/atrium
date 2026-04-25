@@ -115,7 +115,8 @@ namespace Atrium
 				, Format(aFormat)
 				, InputSlot(anInputSlot)
 				, InstancePerStep(anInstancePerStep)
-			{ }
+			{
+			}
 
 			InputLayoutEntry(std::string aSemanticName, unsigned int aSemanticIndex, GraphicsFormat aFormat, unsigned int anInputSlot = 0, unsigned int anInstancePerStep = 0)
 				: SemanticName(aSemanticName)
@@ -123,7 +124,8 @@ namespace Atrium
 				, Format(aFormat)
 				, InputSlot(anInputSlot)
 				, InstancePerStep(anInstancePerStep)
-			{ }
+			{
+			}
 
 			// The HLSL semantic associated with this element.
 			// https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics

@@ -28,14 +28,14 @@ namespace Atrium
 		//--------------------------------------------------
 		// * Construction
 		//--------------------------------------------------
-		#pragma region Construction
+	#pragma region Construction
 
-		/**
-		 * @brief Construct an event representing a button press or release.
-		 * @param aDevice Device the event originates from.
-		 * @param aSource Input source, such as a keyboard key or controller button.
-		 * @param anEventType Type of event. Either "Pressed" or "Released".
-		 */
+	/**
+	 * @brief Construct an event representing a button press or release.
+	 * @param aDevice Device the event originates from.
+	 * @param aSource Input source, such as a keyboard key or controller button.
+	 * @param anEventType Type of event. Either "Pressed" or "Released".
+	 */
 		InputEvent(InputDevice& aDevice, const InputSourceId& aSource, InputEventType anEventType) noexcept
 			: Device(aDevice)
 			, Source(aSource)
@@ -76,12 +76,12 @@ namespace Atrium
 
 		}
 
-		#pragma endregion
+	#pragma endregion
 
 		//--------------------------------------------------
 		// * Properties
 		//--------------------------------------------------
-		#pragma region Properties
+	#pragma region Properties
 
 		InputDevice& Device;
 
@@ -93,7 +93,7 @@ namespace Atrium
 
 		float Delta;
 
-		#pragma endregion
+	#pragma endregion
 	};
 
 	/**
@@ -104,13 +104,13 @@ namespace Atrium
 		//--------------------------------------------------
 		// * Construction
 		//--------------------------------------------------
-		#pragma region Construction
+	#pragma region Construction
 
-		/**
-		 * @brief Construct an event representing a text-input event with a Unicode codepoint.
-		 * @param aDevice Device the event originated from.
-		 * @param aCodepoint Unicode codepoint that was entered.
-		 */
+	/**
+	 * @brief Construct an event representing a text-input event with a Unicode codepoint.
+	 * @param aDevice Device the event originated from.
+	 * @param aCodepoint Unicode codepoint that was entered.
+	 */
 		TextInputEvent(InputDevice& aDevice, const std::uint64_t& aCodepoint) noexcept
 			: Device(aDevice)
 			, Codepoint(aCodepoint)
@@ -118,17 +118,17 @@ namespace Atrium
 
 		}
 
-		#pragma endregion
+	#pragma endregion
 
 		//--------------------------------------------------
 		// * Properties
 		//--------------------------------------------------
-		#pragma region Properties
+	#pragma region Properties
 
 		InputDevice& Device;
 
 		std::uint64_t Codepoint;
 
-		#pragma endregion
+	#pragma endregion
 	};
 }

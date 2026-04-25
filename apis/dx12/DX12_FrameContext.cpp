@@ -15,9 +15,9 @@ namespace Atrium::DirectX12
 		, myCommandType(aCommandQueue.GetQueueType())
 		, myCurrentFrameHeap(nullptr)
 		, myResourceBarrierQueue()
-		#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
 		, myProfilingContext(aCommandQueue.GetProfilingContext())
-		#endif
+	#endif
 	{
 		PROFILE_SCOPE();
 		myFrameCommandAllocators.resize(DX12_FRAMES_IN_FLIGHT);
@@ -242,14 +242,14 @@ namespace Atrium::DirectX12
 	}
 
 	void FrameGraphicsContext::BeginProfileZone(ProfileContextZone& aZoneScope
-		#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
 		, const tracy::SourceLocationData& aLocation
-		#endif
+	#endif
 	)
 	{
 		std::memset(aZoneScope.Data, 0, sizeof(aZoneScope.Data));
 
-		#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
 		static_assert(sizeof(ProfileContextZone::Data) >= sizeof(tracy::D3D12ZoneScope));
 
 		std::construct_at(
@@ -264,7 +264,7 @@ namespace Atrium::DirectX12
 			tracy::D3D12ZoneScope* scope = reinterpret_cast<tracy::D3D12ZoneScope*>(&aZone.Data[0]);
 			scope->~D3D12ZoneScope();
 			};
-		#endif
+	#endif
 	}
 
 	void FrameGraphicsContext::Reset(const std::uint_least8_t& aFrameInFlight)

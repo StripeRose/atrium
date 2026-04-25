@@ -28,7 +28,7 @@ namespace Atrium::Win32
 		~Window();
 
 		void Close() override;
-		
+
 		std::any GetNativeHandle() const override;
 
 		Vector2<int> GetPosition() const override;

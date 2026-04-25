@@ -38,18 +38,18 @@ namespace Atrium
 		//--------------------------------------------------
 		// * Methods
 		//--------------------------------------------------
-		#pragma region Methods
+	#pragma region Methods
 
-		/**
-		 * @brief Get the amount of individual elements the GraphicsBuffer was created to hold.
-		 * 
-		 * @return The amount of elements.
-		 */
+	/**
+	 * @brief Get the amount of individual elements the GraphicsBuffer was created to hold.
+	 *
+	 * @return The amount of elements.
+	 */
 		virtual std::uint32_t GetCount() const = 0;
 
 		/**
 		 * @brief Get the size of each individual element the GraphicsBuffer was created to hold.
-		 * 
+		 *
 		 * @return The size in bytes.
 		 */
 		virtual std::uint32_t GetStride() const = 0;
@@ -59,14 +59,14 @@ namespace Atrium
 		 *        The type depends on the underlying API used.
 		 *        For DirectX 11 it is a ID3D11Resource.
 		 *        For DirectX 12 it is a ID3D12Resource.
-		 * 
+		 *
 		 * @return The pointer to the underlying graphics API buffer.
 		 */
 		virtual void* GetNativeBufferPtr() = 0;
 
 		/**
 		 * @brief Copy data from a section of T elements into the buffer.
-		 * 
+		 *
 		 * @tparam T Type of the elements to be filled.
 		 * @param aDataSpan Span pointing at a set of elements to copy.
 		 * @param aDestinationOffset Offset in the destination to start copying the data into.
@@ -79,7 +79,7 @@ namespace Atrium
 
 		/**
 		 * @brief Copy a section of data starting at a specified pointer.
-		 * 
+		 *
 		 * @param aDataPtr Pointer where the source data begins.
 		 * @param aDataSize The size of the source data.
 		 * @param aDestinationOffset Offset in the destination to start copying the data into.
@@ -88,12 +88,12 @@ namespace Atrium
 
 		/**
 		 * @brief Set the name of the buffer, to help with debugging.
-		 * 
+		 *
 		 * @param aName Name to use.
 		 */
 		virtual void SetName(const wchar_t* aName) = 0;
 
-		#pragma endregion
+	#pragma endregion
 	};
 }
 

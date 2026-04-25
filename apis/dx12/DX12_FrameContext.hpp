@@ -51,9 +51,9 @@ namespace Atrium::DirectX12
 		void BindDescriptorHeaps();
 
 		Device& myDevice;
-#ifdef TRACY_ENABLE
+	#ifdef TRACY_ENABLE
 		TracyD3D12Ctx& myProfilingContext;
-#endif
+	#endif
 
 		D3D12_COMMAND_LIST_TYPE myCommandType;
 		ComPtr<ID3D12GraphicsCommandList6> myCommandList;
@@ -115,9 +115,9 @@ namespace Atrium::DirectX12
 		FrameGraphicsContext(Device& aDevice, CommandQueue& aCommandQueue);
 
 		void BeginProfileZone(ProfileContextZone& aZoneScope
-#ifdef TRACY_ENABLE
+		#ifdef TRACY_ENABLE
 			, const tracy::SourceLocationData& aLocation
-#endif
+		#endif
 		) override;
 
 		void Reset(const std::uint_least8_t& aFrameInFlight) override;

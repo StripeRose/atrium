@@ -18,7 +18,7 @@ namespace Atrium
 		//--------------------------------------------------
 		// * Types
 		//--------------------------------------------------
-		#pragma region Types
+	#pragma region Types
 
 		enum class LoadState
 		{
@@ -35,17 +35,17 @@ namespace Atrium
 
 			// Audio is kept compressed in memory and is uncompressed at mix.
 			DecompressAtMix,
-			
+
 			// Stream audio from disk.
 			Streaming
 		};
 
-		#pragma endregion
+	#pragma endregion
 
 		//--------------------------------------------------
 		// * Methods
 		//--------------------------------------------------
-		#pragma region Methods
+	#pragma region Methods
 
 		virtual LoadType GetLoadType() const = 0;
 
@@ -61,7 +61,7 @@ namespace Atrium
 		 */
 		virtual void Stop() = 0;
 
-		#pragma endregion
+	#pragma endregion
 	};
 
 	/**

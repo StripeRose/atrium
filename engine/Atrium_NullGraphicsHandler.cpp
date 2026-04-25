@@ -8,9 +8,9 @@ namespace Atrium
 	{
 	public:
 		void BeginProfileZone(ProfileContextZone&
-			#ifdef TRACY_ENABLE
+		#ifdef TRACY_ENABLE
 			, const tracy::SourceLocationData&
-			#endif
+		#endif
 		) override {
 		}
 
@@ -81,7 +81,7 @@ namespace Atrium
 
 	void NullGraphicsHandler::MarkFrameEnd()
 	{
-		
+
 	}
 
 	bool NullGraphicsHandler::SupportsMultipleWindows() const

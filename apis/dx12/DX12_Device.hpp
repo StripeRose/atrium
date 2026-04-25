@@ -33,7 +33,7 @@ namespace Atrium::DirectX12
 			D3D12_RESOURCE_STATES anInitialState,
 			const D3D12_CLEAR_VALUE* aClearValue,
 			D3D12_HEAP_TYPE aHeapType = D3D12_HEAP_TYPE_DEFAULT
-			);
+		);
 
 		const DeviceParameters& GetParameters() const { return myParameters; }
 
@@ -42,9 +42,9 @@ namespace Atrium::DirectX12
 		DescriptorHeapManager& GetDescriptorHeapManager() { return *myDescriptorHeapManager; }
 
 	private:
-#ifndef NDEBUG
+	#ifndef NDEBUG
 		void SetupDebug(UINT& someDXGIFlagsOut);
-#endif
+	#endif
 		bool SetupFactory(UINT someDXGIFlags);
 		bool SetupAdapter();
 		bool SetupDevice();

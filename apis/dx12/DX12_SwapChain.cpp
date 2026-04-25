@@ -330,18 +330,18 @@ namespace Atrium::DirectX12
 		{
 			switch (ToDXGIFormat(ToGraphicsFormat(GetRenderTextureFormat())))
 			{
-			case DXGI_FORMAT_R10G10B10A2_UNORM:
-				// The application creates the HDR10 signal.
-				colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
-				break;
+				case DXGI_FORMAT_R10G10B10A2_UNORM:
+					// The application creates the HDR10 signal.
+					colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+					break;
 
-			case DXGI_FORMAT_R16G16B16A16_FLOAT:
-				// The system creates the HDR10 signal; application uses linear values.
-				colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
-				break;
+				case DXGI_FORMAT_R16G16B16A16_FLOAT:
+					// The system creates the HDR10 signal; application uses linear values.
+					colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
+					break;
 
-			default:
-				break;
+				default:
+					break;
 			}
 		}
 

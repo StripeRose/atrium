@@ -9,39 +9,39 @@
 
 namespace Atrium::DirectX12
 {
-    std::shared_ptr<Shader> Shader::CreateFromSource(const std::filesystem::path& aFilePath, const char* anEntryPoint, const char* aProfile)
-    {
-        if (aFilePath.empty() || !anEntryPoint || !aProfile)
-            return nullptr;
+	std::shared_ptr<Shader> Shader::CreateFromSource(const std::filesystem::path& aFilePath, const char* anEntryPoint, const char* aProfile)
+	{
+		if (aFilePath.empty() || !anEntryPoint || !aProfile)
+			return nullptr;
 
-        UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#ifndef NDEBUG
-        flags |= D3DCOMPILE_DEBUG;
-#endif
+		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+	#ifndef NDEBUG
+		flags |= D3DCOMPILE_DEBUG;
+	#endif
 
-        /*const D3D_SHADER_MACRO defines[] =
-        {
-            "EXAMPLE_DEFINE", "1",
-            NULL, NULL
-        };*/
+		/*const D3D_SHADER_MACRO defines[] =
+		{
+			"EXAMPLE_DEFINE", "1",
+			NULL, NULL
+		};*/
 
-        ComPtr<ID3DBlob> shaderBlob;
-        ComPtr<ID3DBlob> errorBlob;
-        HRESULT hr = D3DCompileFromFile(
-            aFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
-            anEntryPoint,
-            aProfile, flags, 0, shaderBlob.ReleaseAndGetAddressOf(), errorBlob.ReleaseAndGetAddressOf()
-        );
+		ComPtr<ID3DBlob> shaderBlob;
+		ComPtr<ID3DBlob> errorBlob;
+		HRESULT hr = D3DCompileFromFile(
+			aFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			anEntryPoint,
+			aProfile, flags, 0, shaderBlob.ReleaseAndGetAddressOf(), errorBlob.ReleaseAndGetAddressOf()
+		);
 
-        if (!Debug::Verify(SUCCEEDED(hr), "Compiling shader from file.\n%s", errorBlob ? (const char*)errorBlob->GetBufferPointer() : ""))
-            return nullptr;
+		if (!Debug::Verify(SUCCEEDED(hr), "Compiling shader from file.\n%s", errorBlob ? (const char*)errorBlob->GetBufferPointer() : ""))
+			return nullptr;
 
-        std::shared_ptr<Shader> shader(new Shader());
+		std::shared_ptr<Shader> shader(new Shader());
 
-        shader->myDataBlob = shaderBlob;
-        shader->myByteCode.pShaderBytecode = shader->myDataBlob->GetBufferPointer();
-        shader->myByteCode.BytecodeLength = shader->myDataBlob->GetBufferSize();
+		shader->myDataBlob = shaderBlob;
+		shader->myByteCode.pShaderBytecode = shader->myDataBlob->GetBufferPointer();
+		shader->myByteCode.BytecodeLength = shader->myDataBlob->GetBufferSize();
 
-        return shader;
-    }
+		return shader;
+	}
 }
