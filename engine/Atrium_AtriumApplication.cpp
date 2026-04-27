@@ -81,8 +81,6 @@ namespace Atrium
 		);
 
 		ourRunningApplication = this;
-
-		myFrameGraphics = myGraphicsAPI->CreateFrameGraphicsContext();
 	}
 
 	void AtriumApplication::RunMainLoop()
@@ -112,7 +110,7 @@ namespace Atrium
 
 		myGraphicsAPI->MarkFrameStart();
 
-		HandleFrameLogic(*myFrameGraphics);
+		HandleFrameLogic();
 
 		myGraphicsAPI->MarkFrameEnd();
 	}
@@ -121,8 +119,6 @@ namespace Atrium
 	{
 		// Game has exited and cleaned up its data, and is expected to not use the sub-systems any more.
 		// Time to clean them up before the run finally ends.
-
-		myFrameGraphics.reset();
 
 		ourRunningApplication = nullptr;
 	}

@@ -82,7 +82,7 @@ namespace Atrium
 		virtual void HandleCloseRequest(bool& aShouldExit);
 
 		// Called once per frame.
-		virtual void HandleFrameLogic(FrameGraphicsContext& aFrameContext) = 0;
+		virtual void HandleFrameLogic() = 0;
 
 		// Called when the last loop has ended and before the engine is cleaned up.
 		virtual void HandleShutdown() = 0;
@@ -107,8 +107,6 @@ namespace Atrium
 		std::unique_ptr<GraphicsAPI> myGraphicsAPI;
 		std::unique_ptr<InputDeviceAPI> myInputDeviceAPI;
 		std::unique_ptr<WindowManager> myWindowManager;
-
-		std::shared_ptr<FrameGraphicsContext> myFrameGraphics;
 
 		bool myIsRunning;
 		bool myHasShutdownBeenRequested;
