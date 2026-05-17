@@ -2,7 +2,7 @@
 
 #pragma once
 
-#if IS_IMGUI_BACKEND_WIN32
+#if ATRIUM_WIN32
 #include "DearImGui_Backend.hpp"
 
 #include <Win32_WindowManagement.hpp>

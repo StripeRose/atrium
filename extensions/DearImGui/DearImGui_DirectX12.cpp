@@ -1,6 +1,6 @@
 // Filter "Backends"
 
-#if IS_IMGUI_BACKEND_DIRECTX12
+#if ATRIUM_DX12
 #include "DearImGui_DirectX12.hpp"
 
 #include "DX12_Device.hpp"

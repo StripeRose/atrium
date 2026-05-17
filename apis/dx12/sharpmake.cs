@@ -76,6 +76,11 @@ namespace Atrium.Graphics
 	[Generate]
 	public class DirectX12 : Project
 	{
+		public static bool IsSupported(Target target)
+		{
+			return target.Platform == Platform.win32 || target.Platform == Platform.win64;
+		}
+
 		public DirectX12()
 		{
 			Name = "DirectX 12";

@@ -1,6 +1,6 @@
 // Filter "Backends"
 
-#if IS_IMGUI_BACKEND_WIN32
+#if ATRIUM_WIN32
 #include "DearImGui_Win32.hpp"
 
 #include <Atrium_Diagnostics.hpp>

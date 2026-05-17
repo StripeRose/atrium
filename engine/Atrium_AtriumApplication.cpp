@@ -13,10 +13,11 @@ namespace Atrium
 		AtriumApplication* ourRunningApplication(nullptr);
 	}
 
-	AtriumApplication::AtriumApplication()
+	AtriumApplication::AtriumApplication(const ApplicationParameters& someParameters)
 		: myIsRunning(false)
 		, myHasShutdownBeenRequested(false)
 		, myLastExitCode(EXIT_SUCCESS)
+		, myApplicationParameters(someParameters)
 	{
 		CreateAPIHandlers();
 		AssertAPIHandlersExist();

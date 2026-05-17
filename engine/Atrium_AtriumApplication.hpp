@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Atrium_ApplicationParameters.hpp"
+
 #include <memory>
 
 namespace Atrium
@@ -18,7 +20,7 @@ namespace Atrium
 		//--------------------------------------------------
 	#pragma region Construction
 
-		AtriumApplication();
+		AtriumApplication(const ApplicationParameters& someParameters);
 		~AtriumApplication();
 
 	#pragma endregion
@@ -67,6 +69,11 @@ namespace Atrium
 		[[nodiscard]] WindowManager& GetWindowHandler() { return *myWindowManager; }
 
 		/**
+		 * @brief Get the current application parameters.
+		 */
+		[[nodiscard]] const ApplicationParameters& GetParameters() { return myApplicationParameters; }
+
+		/**
 		 * @brief Start up the engine to run the application.
 		 * @return The final exit code of the application.
 		 */
@@ -107,6 +114,8 @@ namespace Atrium
 		std::unique_ptr<GraphicsAPI> myGraphicsAPI;
 		std::unique_ptr<InputDeviceAPI> myInputDeviceAPI;
 		std::unique_ptr<WindowManager> myWindowManager;
+
+		ApplicationParameters myApplicationParameters;
 
 		bool myIsRunning;
 		bool myHasShutdownBeenRequested;

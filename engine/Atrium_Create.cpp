@@ -7,8 +7,11 @@
 #include "Atrium_NullInputHandler.hpp"
 #include "Atrium_NullWindowHandler.hpp"
 
-#if _WIN32
+#ifdef ATRIUM_DX12
 #include "DX12_Instancer.hpp"
+#endif
+
+#ifdef ATRIUM_WIN32
 #include "Win32_WindowManagement.hpp"
 #include "Win32_InputDeviceAPI.hpp"
 #endif
@@ -20,9 +23,20 @@ namespace Atrium
 	{
 		PROFILE_SCOPE();
 
-	#if _WIN32
+	#if ATRIUM_WIN32
 
-		myGraphicsAPI.reset(DirectX12::CreateDX12Manager().release());
+		switch (myApplicationParameters.Graphics)
+		{
+			case ApplicationParameters::None:
+				break;
+
+			#ifdef ATRIUM_DX12
+			case ApplicationParameters::DirectX12:
+				myGraphicsAPI.reset(DirectX12::CreateDX12Manager().release());
+				break;
+			#endif
+		}
+
 		myInputDeviceAPI.reset(new Win32::InputDeviceAPI());
 		myWindowManager.reset(new Win32::WindowManager());
 
@@ -38,7 +52,11 @@ namespace Atrium
 		// Populate null objects for missing API handlers.
 		if (!myAudioAPI) myAudioAPI.reset(new NullAudioHandler());
 		if (!myInputDeviceAPI) myInputDeviceAPI.reset(new NullInputHandler());
-		if (!myGraphicsAPI) myGraphicsAPI.reset(new NullGraphicsHandler());
+		if (!myGraphicsAPI)
+		{
+			myGraphicsAPI.reset(new NullGraphicsHandler());
+			myApplicationParameters.Graphics = ApplicationParameters::None;
+		}
 		if (!myWindowManager) myWindowManager.reset(new NullWindowManager());
 	}
 

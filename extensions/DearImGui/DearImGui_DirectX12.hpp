@@ -2,7 +2,7 @@
 
 #pragma once
 
-#if IS_IMGUI_BACKEND_DIRECTX12
+#if ATRIUM_DX12
 
 #include "DearImGui_Backend.hpp"
 

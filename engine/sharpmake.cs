@@ -23,15 +23,25 @@ namespace Atrium
 			Util.SetDefaultBuildArguments(conf, target);
 			conf.SolutionFolder = "Atrium";
 
-			conf.AddPublicDependency<Atrium.Core>(target);
+			conf.AddPublicDependency<Core>(target);
 
 			switch (target.Platform)
 			{
 				case Platform.win32:
 				case Platform.win64:
+				{
 					conf.AddPrivateDependency<Client.Windows>(target);
-					conf.AddPrivateDependency<Graphics.DirectX12>(target);
+					conf.Defines.Add("ATRIUM_WIN32");
+					conf.ExportDefines.Add("ATRIUM_WIN32");
+
+					if (Graphics.DirectX12.IsSupported(target))
+					{
+						conf.AddPrivateDependency<Graphics.DirectX12>(target);
+						conf.Defines.Add("ATRIUM_DX12");
+						conf.ExportDefines.Add("ATRIUM_DX12");
+					}
 					break;
+				}
 			}
 		}
 	}
