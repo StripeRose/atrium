@@ -80,18 +80,18 @@ namespace Atrium::Extension
 		myImGuiContext = nullptr;
 	}
 
-	InputDeviceType DearImGuiContext::GetAllowedInputs() const
+	Atrium::Flags<Atrium::InputDeviceType> DearImGuiContext::GetAllowedInputs() const
 	{
-		InputDeviceType deviceTypes = ~InputDeviceType::Unknown;
+		Atrium::Flags<Atrium::InputDeviceType> deviceTypes = ~Atrium::Flags<Atrium::InputDeviceType>::All();
 
 		if (myHasWindow)
 		{
 			ImGui::SetCurrentContext(myImGuiContext);
 			ImGuiIO& io = ImGui::GetIO();
 			if (io.WantCaptureKeyboard)
-				deviceTypes &= ~InputDeviceType::Keyboard;
+				deviceTypes.Clear(InputDeviceType::Keyboard);
 			if (io.WantCaptureMouse)
-				deviceTypes &= ~InputDeviceType::Mouse;
+				deviceTypes.Clear(InputDeviceType::Mouse);
 		}
 
 		return deviceTypes;

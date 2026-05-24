@@ -17,7 +17,7 @@ namespace Atrium::Win32
 
 		std::span<std::reference_wrapper<Atrium::InputDevice>> ListDevices() const override;
 
-		void ReportInputEvents(Atrium::InputDeviceType someDeviceTypes) override;
+		void ReportInputEvents(Atrium::Flags<Atrium::InputDeviceType> someDeviceTypes) override;
 
 	private:
 		std::unique_ptr<GameInputHandler> myGameInputHandler;

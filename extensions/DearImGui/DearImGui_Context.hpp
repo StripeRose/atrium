@@ -5,6 +5,8 @@
 #include <Atrium_RenderTexture.hpp>
 #include <Atrium_WindowManagement.hpp>
 
+#include <rose-common/Flags.hpp>
+
 struct ImGuiContext;
 
 namespace Atrium::Extension
@@ -17,7 +19,7 @@ namespace Atrium::Extension
 		DearImGuiContext(const std::shared_ptr<Window>& aWindow, const std::shared_ptr<RenderTexture>& aRenderTarget, std::function<void()> anImGuiRenderCallback);
 		~DearImGuiContext();
 
-		InputDeviceType GetAllowedInputs() const;
+		Atrium::Flags<Atrium::InputDeviceType> GetAllowedInputs() const;
 
 		void Render(Atrium::FrameGraphicsContext& aFrameContext);
 

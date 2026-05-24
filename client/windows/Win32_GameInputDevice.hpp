@@ -8,6 +8,8 @@
 #include "Atrium_InputEvent.hpp"
 #include "Atrium_InputSource.hpp"
 
+#include <rose-common/Flags.hpp>
+
 #include <wrl.h>
 
 #include <optional>
@@ -24,7 +26,7 @@ namespace Atrium::Win32
 
 		void HandleDeviceEvent(GameInputDeviceStatus aCurrentStatus, GameInputDeviceStatus aPreviousStatus);
 
-		void ReportInputEvents(Atrium::InputDeviceType someDeviceTypes);
+		void ReportInputEvents(Atrium::Flags<Atrium::InputDeviceType> someDeviceTypes);
 
 	private:
 		struct ControllerReadingReference
@@ -34,7 +36,7 @@ namespace Atrium::Win32
 			std::span<GameInputSwitchPosition> Switches;
 		};
 
-		void HandleReadingEvent(Atrium::InputDeviceType someDeviceTypes, IGameInputReading& aPreviousReading, IGameInputReading& aReading);
+		void HandleReadingEvent(Atrium::Flags<Atrium::InputDeviceType> someDeviceTypes, IGameInputReading& aPreviousReading, IGameInputReading& aReading);
 
 		void HandleControllerReading(IGameInputReading& aPreviousReading, IGameInputReading& aReading);
 		void HandleKeyboardReading(IGameInputReading& aPreviousReading, IGameInputReading& aReading);

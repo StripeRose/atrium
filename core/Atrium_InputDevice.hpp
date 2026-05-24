@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <rose-common/Enum.hpp>
 #include <rose-common/EventSlot.hpp>
-
-#include <span>
 
 namespace Atrium
 {
@@ -14,13 +11,12 @@ namespace Atrium
 
 	enum class InputDeviceType : std::uint8_t
 	{
-		Unknown = 0x00,
-		Keyboard = 0x01,
-		Mouse = 0x02,
-		Gamepad = 0x04,
-		Touch = 0x08,
-		Joystick = 0x10,
-		Other = 0x80
+		Keyboard,
+		Mouse,
+		Gamepad,
+		Touch,
+		Joystick,
+		Other
 	};
 
 	/**
@@ -62,5 +58,3 @@ namespace Atrium
 	#pragma endregion
 	};
 }
-
-ENUM_FLAGS(Atrium::InputDeviceType);

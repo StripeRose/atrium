@@ -30,7 +30,7 @@ namespace Atrium::Win32
 			myLastReading = GetCurrentReading().value_or(myLastReading);
 	}
 
-	void GameInputDevice::ReportInputEvents(Atrium::InputDeviceType someDeviceTypes)
+	void GameInputDevice::ReportInputEvents(Atrium::Flags<Atrium::InputDeviceType> someDeviceTypes)
 	{
 		if (auto reading = GetCurrentReading())
 		{
@@ -68,21 +68,21 @@ namespace Atrium::Win32
 	}
 
 
-	void GameInputDevice::HandleReadingEvent(Atrium::InputDeviceType someDeviceTypes, IGameInputReading& aPreviousReading, IGameInputReading& aReading)
+	void GameInputDevice::HandleReadingEvent(Atrium::Flags<Atrium::InputDeviceType> someDeviceTypes, IGameInputReading& aPreviousReading, IGameInputReading& aReading)
 	{
-		if ((someDeviceTypes & Atrium::InputDeviceType::Joystick) == Atrium::InputDeviceType::Joystick)
+		if (someDeviceTypes.IsSet(Atrium::InputDeviceType::Joystick))
 			HandleControllerReading(aPreviousReading, aReading);
 
-		if ((someDeviceTypes & Atrium::InputDeviceType::Keyboard) == Atrium::InputDeviceType::Keyboard)
+		if (someDeviceTypes.IsSet(Atrium::InputDeviceType::Keyboard))
 			HandleKeyboardReading(aPreviousReading, aReading);
 
-		if ((someDeviceTypes & Atrium::InputDeviceType::Mouse) == Atrium::InputDeviceType::Mouse)
+		if (someDeviceTypes.IsSet(Atrium::InputDeviceType::Mouse))
 			HandleMouseReading(aPreviousReading, aReading);
 
-		if ((someDeviceTypes & Atrium::InputDeviceType::Gamepad) == Atrium::InputDeviceType::Gamepad)
+		if (someDeviceTypes.IsSet(Atrium::InputDeviceType::Gamepad))
 			HandleGamepadReading(aPreviousReading, aReading);
 
-		if ((someDeviceTypes & Atrium::InputDeviceType::Touch) == Atrium::InputDeviceType::Touch)
+		if (someDeviceTypes.IsSet(Atrium::InputDeviceType::Touch))
 			HandleTouchReading(aPreviousReading, aReading);
 	}
 

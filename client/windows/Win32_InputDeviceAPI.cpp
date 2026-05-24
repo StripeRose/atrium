@@ -16,7 +16,7 @@ namespace Atrium::Win32
 		return std::span<std::reference_wrapper<Atrium::InputDevice>>();
 	}
 
-	void InputDeviceAPI::ReportInputEvents(Atrium::InputDeviceType someDeviceTypes)
+	void InputDeviceAPI::ReportInputEvents(Atrium::Flags<Atrium::InputDeviceType> someDeviceTypes)
 	{
 		myGameInputHandler->ReportInputEvents(someDeviceTypes);
 	}

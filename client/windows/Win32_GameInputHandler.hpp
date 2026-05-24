@@ -21,7 +21,7 @@ namespace Atrium::Win32
 		GameInputHandler(Atrium::InputDeviceAPI& anInputDeviceAPI);
 		~GameInputHandler();
 
-		void ReportInputEvents(Atrium::InputDeviceType someDeviceTypes);
+		void ReportInputEvents(Atrium::Flags<Atrium::InputDeviceType> someDeviceTypes);
 
 	private:
 		static void HandleDeviceEvent(

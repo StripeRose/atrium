@@ -5,6 +5,7 @@
 #include "Atrium_InputDevice.hpp"
 
 #include <rose-common/EventSlot.hpp>
+#include <rose-common/Flags.hpp>
 
 #include <span>
 
@@ -55,7 +56,7 @@ namespace Atrium
 		 * @brief Trigger events for all input-events since the last report.
 		 * @param someDeviceTypes Flags of which input-device types to report.
 		 */
-		virtual void ReportInputEvents(InputDeviceType someDeviceTypes) = 0;
+		virtual void ReportInputEvents(Atrium::Flags<InputDeviceType> someDeviceTypes) = 0;
 
 	#pragma endregion
 	};

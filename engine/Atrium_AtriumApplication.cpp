@@ -107,7 +107,8 @@ namespace Atrium
 	{
 		myWindowManager->Update();
 
-		myInputDeviceAPI->ReportInputEvents(~InputDeviceType::Unknown);
+		// Todo: Figure out how to gather blocked input from active ImGui contexts.
+		myInputDeviceAPI->ReportInputEvents(Atrium::Flags<Atrium::InputDeviceType>::All());
 
 		myGraphicsAPI->MarkFrameStart();
 

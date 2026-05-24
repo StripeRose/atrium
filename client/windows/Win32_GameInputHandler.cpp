@@ -39,7 +39,7 @@ namespace Atrium::Win32
 		Debug::Assert(myGameInputAPI->UnregisterCallback(myDeviceCallbackToken), "Did not successfully stop callback");
 	}
 
-	void GameInputHandler::ReportInputEvents(Atrium::InputDeviceType someDeviceTypes)
+	void GameInputHandler::ReportInputEvents(Atrium::Flags<Atrium::InputDeviceType> someDeviceTypes)
 	{
 		for (const auto& it : myDevices)
 			it.second->ReportInputEvents(someDeviceTypes);
