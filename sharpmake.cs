@@ -12,3 +12,11 @@ using Sharpmake;
 [module: Include("core/sharpmake.cs")]
 
 [module: Include("libraries/tracy.sharpmake.cs")]
+
+public class FilteredProject : Project
+{
+	public override bool ResolveFilterPathForFile(string aFilePath, out string outFilterPath)
+	{
+		return Util.ResolveFilterPathForFile(System.IO.Path.Combine(SourceRootPath, aFilePath), out outFilterPath);
+	}
+}

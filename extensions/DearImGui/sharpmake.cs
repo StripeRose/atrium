@@ -89,7 +89,7 @@ public class DearImGuiLibrary : Project
 namespace Atrium.Extension
 {
 	[Generate]
-	public class DearImGui : Project
+	public class DearImGui : FilteredProject
 	{
 		public DearImGui()
 		{

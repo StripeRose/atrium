@@ -74,7 +74,7 @@ public class DirectXTex : Project
 namespace Atrium.Graphics
 {
 	[Generate]
-	public class DirectX12 : Project
+	public class DirectX12 : FilteredProject
 	{
 		public static bool IsSupported(Target target)
 		{
