@@ -33,7 +33,7 @@ namespace Atrium.Client
 	}
 
 	[Generate]
-	public class Windows : Project
+	public class Windows : FilteredProject
 	{
 		public Windows()
 		{

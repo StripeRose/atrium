@@ -3,7 +3,7 @@ using Sharpmake;
 namespace Atrium
 {
 	[Generate]
-	public class Engine : Project
+	public class Engine : FilteredProject
 	{
 		public Engine()
 		{
