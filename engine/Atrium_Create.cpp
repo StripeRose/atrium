@@ -11,6 +11,10 @@
 #include "DX12_Instancer.hpp"
 #endif
 
+#ifdef ATRIUM_VULKAN
+#include "VK_Instancer.hpp"
+#endif
+
 #ifdef ATRIUM_WIN32
 #include "Win32_WindowManagement.hpp"
 #include "Win32_InputDeviceAPI.hpp"
@@ -33,6 +37,15 @@ namespace Atrium
 			#ifdef ATRIUM_DX12
 			case ApplicationParameters::DirectX12:
 				myGraphicsAPI.reset(DirectX12::CreateDX12Manager().release());
+				break;
+			#endif
+
+			#ifdef ATRIUM_VULKAN
+			case ApplicationParameters::Vulkan:
+				myGraphicsAPI.reset(Vulkan::CreateVulkanManager(
+					myApplicationParameters.Name,
+					myApplicationParameters.Version
+				).release());
 				break;
 			#endif
 		}

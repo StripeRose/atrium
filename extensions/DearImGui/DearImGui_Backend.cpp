@@ -26,6 +26,12 @@ namespace Atrium::Extension
 				break;
 			#endif
 
+			/*case ApplicationParameters::Vulkan:
+			{
+				outBackends.emplace_back(new DearImGuiBackendContext_Vulkan(aRenderTarget));
+				break;
+			}*/
+
 			default:
 				outBackends.emplace_back(new DearImGuiBackendContext_NullGraphics());
 				break;

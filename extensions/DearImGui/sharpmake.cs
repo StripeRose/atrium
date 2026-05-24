@@ -37,6 +37,7 @@ public class DearImGuiLibrary : Project
 		conf.Options.Add(Options.Vc.General.TreatWarningsAsErrors.Disable);
 
 		SetupBackendExcludes(conf, target);
+		SetupBackendDependencies(conf, target);
 	}
 
 	private void SetupBackendExcludes(Configuration conf, Target target)
@@ -58,11 +59,30 @@ public class DearImGuiLibrary : Project
 		conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*sdl3.*");
 		conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*sdlgpu3.*");
 		conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*sdlrenderer.*");
-		conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*vulkan.*");
+		if (!Atrium.Graphics.Vulkan.IsSupported(target))
+			conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*vulkan.*");
 		conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*wgpu.*");
 
 		if (target.Platform != Platform.win32 && target.Platform != Platform.win64)
 			conf.SourceFilesBuildExcludeRegex.Add(@".*backends.*win32.*");
+	}
+
+	private void SetupBackendDependencies(Configuration conf, Target target)
+	{
+		if (Atrium.Graphics.Vulkan.IsSupported(target))
+		{
+			conf.IncludePaths.Add("$(VULKAN_SDK)/Include");
+			switch (target.Platform)
+			{
+				case Sharpmake.Platform.win32:
+					conf.LibraryPaths.Add("$(VULKAN_SDK)/Lib32");
+					break;
+				case Sharpmake.Platform.win64:
+					conf.LibraryPaths.Add("$(VULKAN_SDK)/Lib");
+					break;
+			}
+			conf.LibraryFiles.Add("vulkan-1.lib");
+		}
 	}
 }
 
@@ -96,6 +116,9 @@ namespace Atrium.Extension
 
 			if (Graphics.DirectX12.IsSupported(target))
 				conf.AddPrivateDependency<Graphics.DirectX12>(target);
+
+			if (Graphics.Vulkan.IsSupported(target))
+				conf.AddPrivateDependency<Graphics.Vulkan>(target);
 
 			if (target.Platform == Platform.win32 || target.Platform == Platform.win64)
 				conf.AddPrivateDependency<Client.Windows>(target);

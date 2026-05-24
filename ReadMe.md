@@ -18,6 +18,12 @@ The intent of this project is to create a graphics library and game engine that 
  * Windows 11
  * Visual Studio 2022 with CMake
 
+### Optional dependencies
+
+- [Vulkan SDK](https://www.vulkan.org/tools#download-these-essential-development-tools)
+	- Lowest tested SDK so far is 1.4.
+	- With "Vulkan Memory Allocator"
+
 ### Adding and setting up the repository
 
 In your desired project directory, either:

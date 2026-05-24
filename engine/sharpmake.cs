@@ -40,6 +40,12 @@ namespace Atrium
 						conf.Defines.Add("ATRIUM_DX12");
 						conf.ExportDefines.Add("ATRIUM_DX12");
 					}
+					if (Graphics.Vulkan.IsSupported(target))
+					{
+						conf.AddPrivateDependency<Graphics.Vulkan>(target);
+						conf.Defines.Add("ATRIUM_VULKAN");
+						conf.ExportDefines.Add("ATRIUM_VULKAN");
+					}
 					break;
 				}
 			}
