@@ -133,7 +133,7 @@ namespace Atrium::Win32
 			const float currentValue = axisStates.get()[i];
 			const float delta = currentValue - prevAxisStates.get()[i];
 			if (delta != 0.f)
-				OnInput.Invoke(Atrium::InputEvent(*this, Atrium::InputSourceId::Gamepad::Axis(i), currentValue, delta));
+				OnInput.Invoke(Atrium::InputEvent(*this, Atrium::InputSourceId::Joystick::Axis(i), currentValue, delta));
 		}
 
 		std::uint16_t firstButtonIndex = static_cast<std::uint16_t>(switchCount * 4);
@@ -147,17 +147,17 @@ namespace Atrium::Win32
 			else
 				continue;
 
-			OnInput.Invoke(Atrium::InputEvent(*this, Atrium::InputSourceId::Gamepad::Button(firstButtonIndex + i), eventType.value()));
+			OnInput.Invoke(Atrium::InputEvent(*this, Atrium::InputSourceId::Joystick::Button(firstButtonIndex + i), eventType.value()));
 		}
 
 		for (std::uint16_t i = 0; i < switchCount; ++i)
 		{
 			const std::uint8_t prevButtons = switchToBits(prevSwitchPositions.get()[i]);
 			const std::uint8_t newButtons = switchToBits(switchPositions.get()[i]);
-			HandleDigitalChange(prevButtons, newButtons, 0b1000, Atrium::InputSourceId::Gamepad::Button((i * 4) + 0));
-			HandleDigitalChange(prevButtons, newButtons, 0b0100, Atrium::InputSourceId::Gamepad::Button((i * 4) + 1));
-			HandleDigitalChange(prevButtons, newButtons, 0b0010, Atrium::InputSourceId::Gamepad::Button((i * 4) + 2));
-			HandleDigitalChange(prevButtons, newButtons, 0b0001, Atrium::InputSourceId::Gamepad::Button((i * 4) + 3));
+			HandleDigitalChange(prevButtons, newButtons, 0b1000, Atrium::InputSourceId::Joystick::Button((i * 4) + 0));
+			HandleDigitalChange(prevButtons, newButtons, 0b0100, Atrium::InputSourceId::Joystick::Button((i * 4) + 1));
+			HandleDigitalChange(prevButtons, newButtons, 0b0010, Atrium::InputSourceId::Joystick::Button((i * 4) + 2));
+			HandleDigitalChange(prevButtons, newButtons, 0b0001, Atrium::InputSourceId::Joystick::Button((i * 4) + 3));
 		}
 	}
 

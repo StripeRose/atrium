@@ -27,6 +27,7 @@ namespace Atrium
 		struct Keyboard;
 		struct Mouse;
 		struct Gamepad;
+		struct Joystick;
 
 	#pragma endregion
 
@@ -35,12 +36,7 @@ namespace Atrium
 		//--------------------------------------------------
 	#pragma region Construction
 
-		constexpr InputSourceId() noexcept
-			: Device(InputDeviceType::Unknown)
-			, Index(0)
-		{
-
-		}
+		constexpr InputSourceId() noexcept = delete;
 
 	#pragma endregion
 
@@ -267,16 +263,6 @@ namespace Atrium
 
 	struct InputSourceId::Gamepad
 	{
-		static constexpr InputSourceId Axis(std::uint16_t anIndex)
-		{
-			return InputSourceId(InputDeviceType::Gamepad, 0x1000 | anIndex);
-		}
-
-		static constexpr InputSourceId Button(std::uint16_t anIndex)
-		{
-			return InputSourceId(InputDeviceType::Gamepad, 0x2000 | anIndex);
-		}
-
 		static constexpr InputSourceId LeftX{ InputDeviceType::Gamepad, 0x0000 };
 		static constexpr InputSourceId LeftY{ InputDeviceType::Gamepad, 0x0001 };
 		static constexpr InputSourceId RightX{ InputDeviceType::Gamepad, 0x0002 };
@@ -302,5 +288,18 @@ namespace Atrium
 		static constexpr InputSourceId DPadRight{ InputDeviceType::Gamepad, 0x0011 };
 		static constexpr InputSourceId DPadLeft{ InputDeviceType::Gamepad, 0x0012 };
 		static constexpr InputSourceId DPadUp{ InputDeviceType::Gamepad, 0x0013 };
+	};
+
+	struct InputSourceId::Joystick
+	{
+		static constexpr InputSourceId Axis(std::uint16_t anIndex)
+		{
+			return InputSourceId(InputDeviceType::Joystick, 0x1000 | anIndex);
+		}
+
+		static constexpr InputSourceId Button(std::uint16_t anIndex)
+		{
+			return InputSourceId(InputDeviceType::Joystick, 0x2000 | anIndex);
+		}
 	};
 }
